@@ -1,0 +1,48 @@
+@import '../../../../vendor/filament/filament/resources/css/theme.css';
+
+@config 'tailwind.config.js';
+
+.fi-simple-main {
+    @apply shadow-xl rounded-sm;
+}
+
+.fi-btn {
+    @apply bg-[#005792] text-white shadow-lg;
+}
+
+.fi-btn:hover {
+    @apply bg-[#F29D35] text-white shadow-xl;
+}
+
+.fi-sidebar-header img,
+.fi-auth-container img {
+    content: url('/public/asset/logo2.png');
+    /* Logo dashboard */
+    max-height: 45px;
+    width: auto;
+    margin: 0 auto;
+}
+
+.fi-sidebar {
+    @apply shadow-lg;
+}
+
+.fi-sidebar-nav a {
+    @apply rounded-md px-3 py-2 flex items-center gap-3 text-blue-800 transition-colors duration-300;
+}
+
+.fi-sidebar-nav a:hover {
+    @apply bg-[#003366] text-white !important;
+}
+
+.fi-sidebar-nav a:hover span,
+.fi-sidebar-nav a:hover svg,
+.fi-sidebar-nav a:hover div {
+    color: white !important;
+    fill: black !important;
+    stroke: white !important;
+}
+
+.fi-ta-row:hover {
+    @apply bg-blue-300/50 transition-all duration-300;
+}
