@@ -11,13 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('customers', function (Blueprint $table) {
+        Schema::create('spk_marketings', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('phone_number');
-            $table->string('department');
-            $table->string('company_name');
-            $table->string('company_address');
+            $table->foreignId('spesifikasi_product_id')->constrained('spesifikasi_products')->onDelete('cascade');
+            $table->string('no_spk');
+            $table->date('tanggal');
+            $table->string('no_order');
+            $table->string('dari');
+            $table->string('kepada');
             $table->timestamps();
         });
     }
@@ -27,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('customers');
+        Schema::dropIfExists('spk_marketings');
     }
 };
