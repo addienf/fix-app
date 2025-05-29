@@ -12,6 +12,7 @@ use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
@@ -22,6 +23,7 @@ use Filament\Forms\Form;
 use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Actions\Action;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -34,6 +36,7 @@ use Saade\FilamentAutograph\Forms\Components\SignaturePad;
 class SpesifikasiProductResource extends Resource
 {
     protected static ?string $model = SpesifikasiProduct::class;
+    protected static ?int $navigationSort = 1;
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
     protected static ?string $navigationGroup = 'Sales';
     protected static ?string $navigationLabel = 'Spesifikasi Product';
@@ -77,29 +80,41 @@ class SpesifikasiProductResource extends Resource
                                         //     ->columnSpanFull()
                                         //     ->helperText('Hanya file PDF yang diperbolehkan. Maksimal ukuran 10 MB.'),
                                     ]),
-                                Repeater::make('specification')
+                                TableRepeater::make('specification')
                                     ->label('Pilih Spesifikasi')
                                     ->schema([
-                                        Grid::make(2)
-                                            ->schema([
-                                                self::selectInput('name', 'Jenis Spesifikasi', 'specification', '')
-                                                    ->reactive()
-                                                    ->required()
-                                                    ->options(config('spec.spesifikasi')),
-                                                self::textInput('value', 'Nilai Spesifikasi')
-                                                    ->visible(fn($get) => !in_array($get('name'), ['Water Feeding System', 'Software'])),
-                                                self::toogleButton('value', 'Nilai Spesifikasi')
-                                                    ->visible(fn($get) => in_array($get('name'), ['Water Feeding System', 'Software'])),
-                                            ])
+                                        Select::make('name')
+                                            ->reactive()
+                                            ->required()
+                                            ->label('Jenis Spesifikasi')
+                                            ->options(config('spec.spesifikasi'))
+                                            ->columnSpan(1),
+
+                                        ToggleButtons::make('value_bool')
+                                            ->boolean()
+                                            ->required()
+                                            ->inline()
+                                            ->inlineLabel(false)
+                                            ->label('Nilai')
+                                            ->visible(fn($get) => in_array($get('name'), ['Water Feeding System', 'Software']))
+                                            ->columnSpan(1),
+
+                                        TextInput::make('value_str')
+                                            ->required()
+                                            ->label('Nilai')
+                                            ->visible(fn($get) => !in_array($get('name'), ['Water Feeding System', 'Software']))
+                                            ->columnSpan(1),
                                     ])
-                                    ->collapsible()
-                                    ->addActionLabel('Tambah Data Spesifikasi'),
+                                    ->columns(2)
+                                    ->defaultItems(1)
+                                    ->columnSpanFull()
+                                    ->addActionLabel('Tambah Spesifikasi'),
                             ])
                             ->defaultItems(1)
                             ->reorderable()
                             ->collapsible()
                             ->columnSpanFull()
-                            ->addActionLabel('Tambah Data Detail'),
+                            ->addActionLabel('Tambah Data Detail Product'),
                     ]),
                 Fieldset::make('Penjelasan Tambahan')
                     ->schema([
@@ -107,18 +122,14 @@ class SpesifikasiProductResource extends Resource
                             ->label('Detail Spesifikasi')
                             ->columnSpanFull(),
                     ]),
-                Grid::make(2)
+                Fieldset::make('Detail PIC')
+                    ->relationship('pic')
                     ->schema([
-                        Fieldset::make('Detail PIC')
-                            ->relationship('pic')
-                            ->schema([
-                                DatePicker::make('date')
-                                    ->label('Tanggal')
-                                    // ->native(false)
-                                    ->displayFormat('M d Y'),
-                                self::textInput('name', 'Nama PIC'),
-                                self::signatureInput('signature'),
-                            ]),
+                        DatePicker::make('date')
+                            ->label('Tanggal')
+                            ->displayFormat('M d Y'),
+                        self::textInput('name', 'Nama PIC'),
+                        self::signatureInput('signature'),
                     ]),
             ]);
     }
@@ -141,6 +152,11 @@ class SpesifikasiProductResource extends Resource
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
+                Action::make('pdf_view')
+                    ->label(_('View PDF'))
+                    ->icon('heroicon-o-document')
+                    ->color('success')
+                    ->url(fn($record) => self::getUrl('pdfSpecProduct', ['record' => $record->id])),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -162,6 +178,7 @@ class SpesifikasiProductResource extends Resource
             'index' => Pages\ListSpesifikasiProducts::route('/'),
             'create' => Pages\CreateSpesifikasiProduct::route('/create'),
             'edit' => Pages\EditSpesifikasiProduct::route('/{record}/edit'),
+            'pdfSpecProduct' => Pages\viewPDF::route('/{record}/pdfSpecProduct')
         ];
     }
 
@@ -234,6 +251,7 @@ class SpesifikasiProductResource extends Resource
         return [
             self::textInput('name', 'Nama Customer'),
             self::textInput('phone_number', 'No Telpon'),
+            self::textInput('department', 'Department'),
             self::textInput('company_name', 'Nama Perusahaan'),
             self::textInput('company_address', 'Alamat Perusahaan'),
         ];

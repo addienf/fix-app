@@ -11,13 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('customers', function (Blueprint $table) {
+        Schema::create('spk_marketing_pics', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('phone_number');
-            $table->string('department');
-            $table->string('company_name');
-            $table->string('company_address');
+            $table->foreignId('spk_marketing_id')->constrained('spk_marketings')->onDelete('cascade');
+            $table->text('create_signature');
+            $table->string('create_name');
+            $table->text('receive_signature');
+            $table->string('receive_name');
             $table->timestamps();
         });
     }
@@ -27,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('customers');
+        Schema::dropIfExists('spk_marketing_pics');
     }
 };

@@ -21,7 +21,6 @@ class CreateSpesifikasiProduct extends CreateRecord
         return Notification::make()
             ->title('Data Spesifikasi Berhasil Di Buat')
             ->success()
-            // ->body('The User has been added and is ready to be edited if needed.')
             ->actions([
                 Action::make('view')->label('View Data')->button()
                     ->url(EditSpesifikasiProduct::getUrl(['record' => $this->record])),

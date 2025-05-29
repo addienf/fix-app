@@ -4,6 +4,7 @@ namespace App\Models\Sales\SpesifikasiProducts;
 
 use App\Models\Sales\SpesifikasiProducts\Pivot\SpesifikasiProductDetail;
 use App\Models\Sales\SpesifikasiProducts\Pivot\SpesifikasiProductPIC;
+use App\Models\Sales\SPKMarketings\SPKMarketing;
 use App\Models\Sales\URS;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -31,6 +32,11 @@ class SpesifikasiProduct extends Model
     public function pic()
     {
         return $this->hasOne(SpesifikasiProductPIC::class);
+    }
+
+    public function spk()
+    {
+        return $this->hasOne(SPKMarketing::class);
     }
 
     protected static function booted()
