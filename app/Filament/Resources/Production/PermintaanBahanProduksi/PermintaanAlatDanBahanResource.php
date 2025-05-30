@@ -1,20 +1,17 @@
 <?php
 
-namespace App\Filament\Resources\Production\Jadwal;
+namespace App\Filament\Resources\Production\PermintaanBahanProduksi;
 
-use App\Filament\Resources\Production\Jadwal\JadwalProduksiResource\Pages;
-use App\Filament\Resources\Production\Jadwal\JadwalProduksiResource\RelationManagers;
-use App\Models\Production\Jadwal\JadwalProduksi as JadwalJadwalProduksi;
-use App\Models\Production\JadwalProduksi;
+use App\Filament\Resources\Production\PermintaanBahanProduksi\PermintaanAlatDanBahanResource\Pages;
+use App\Filament\Resources\Production\PermintaanBahanProduksi\PermintaanAlatDanBahanResource\RelationManagers;
+use App\Models\Production\PermintaanBahanProduksi\PermintaanAlatDanBahan;
 use App\Models\Sales\SPKMarketings\SPKMarketing;
 use App\Services\SignatureUploader;
 use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Grid;
-use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Repeater;
-use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -30,72 +27,68 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Saade\FilamentAutograph\Forms\Components\SignaturePad;
 
-class JadwalProduksiResource extends Resource
+class PermintaanAlatDanBahanResource extends Resource
 {
-    protected static ?string $model = JadwalJadwalProduksi::class;
-    protected static ?int $navigationSort = 9;
+    protected static ?string $model = PermintaanAlatDanBahan::class;
+
+    // protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?int $navigationSort = 10;
     protected static ?string $navigationGroup = 'Production';
-    protected static ?string $navigationLabel = 'Jadwal Produksi';
-    protected static ?string $pluralLabel = 'Jadwal Produksi';
-    protected static ?string $modelLabel = 'Jadwal Produksi';
+    protected static ?string $navigationLabel = 'Permintaan Alat dan Bahan';
+    protected static ?string $pluralLabel = 'Permintaan Alat dan Bahan';
+    protected static ?string $modelLabel = 'Permintaan Alat dan Bahan';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
                 //
+                self::selectInput('spk_marketing_id', 'No SPK', 'spk', 'no_spk')
+                    ->columnSpanFull(),
                 Fieldset::make('Informasi Umum')
                     ->schema([
                         Grid::make(2)
                             ->schema([
-                                self::textInput('pic_name', 'Penanggung Jawab'),
+                                self::textInput('no_surat', 'No Surat'),
                                 self::datePicker('tanggal', 'Tanggal'),
+                                self::textInput('dari', 'Dari')
+                                    ->extraAttributes([
+                                        'readonly' => true,
+                                        'style' => 'pointer-events: none;'
+                                    ]),
+                                self::textInput('kepada', 'Kepada')
+                                    ->extraAttributes([
+                                        'readonly' => true,
+                                        'style' => 'pointer-events: none;'
+                                    ]),
                             ])
                     ]),
-                Section::make('Detail Jadwal Produksi')
+                Fieldset::make('List Detail Bahan Baku')
                     ->schema([
-                        self::selectInput('spk_marketing_id', 'No SPK', 'spk', 'no_spk')
-                            ->columnSpanFull(),
-                        Repeater::make('details')
-                            ->relationship('details')
-                            ->label('')
+                        Grid::make(2)
                             ->schema([
-                                Grid::make(6)
+                                Repeater::make('details')
+                                    ->relationship('details')
                                     ->schema([
-                                        self::textInput('nama_produk', 'Nama Produk')
-                                            ->extraAttributes([
-                                                'readonly' => true,
-                                                'style' => 'pointer-events: none;'
-                                            ]),
-                                        self::textInput('tipe', 'Tipe/Model'),
-                                        self::textInput('volume', 'Volume'),
-                                        self::textInput('jumlah', 'Jumlah')
-                                            ->extraAttributes([
-                                                'readonly' => true,
-                                                'style' => 'pointer-events: none;'
-                                            ]),
-                                        self::datePicker('tanggal_mulai', 'Tanggal Mulai'),
-                                        self::datePicker('tanggal_selesai', 'Tanggal Selesai')
+                                        Grid::make(4)
+                                            ->schema([
+                                                self::textInput('bahan_baku', 'Bahan Baku')
+                                                    ->extraAttributes([
+                                                        'readonly' => true,
+                                                        'style' => 'pointer-events: none;'
+                                                    ]),
+                                                self::textInput('spesifikasi', 'Spesifikasi'),
+                                                self::textInput('jumlah', 'Jumlah')->numeric(),
+                                                // self::textInput('keperluan_barang', 'Keperluan Barang')
+                                                Textarea::make('keperluan_barang')
+                                                    ->label('Keperluan Barang')
+                                            ])
                                     ])
+                                    ->deletable(false)
+                                    ->reorderable(false)
+                                    ->addable(false)
+                                    ->columnSpanFull()
                             ])
-                            ->deletable(false)
-                            ->reorderable(false)
-                            ->addable(false)
-                            ->columnSpanFull(),
-                    ]),
-                Fieldset::make('Sumber Daya Yang Digunakan')
-                    ->relationship('sumber')
-                    ->schema([
-                        self::textInput('mesin_yang_digunakan', 'Mesin Yang Digunakan'),
-                        self::textInput('tenaga_kerja', 'Tenaga Kerja'),
-                        TableRepeater::make('bahan_baku')
-                            ->label(' ')
-                            ->schema([
-                                self::textInput('bahan_baku', 'Bahan Baku'),
-                            ])
-                            ->columnSpanFull()
-                            ->reorderable(false)
-                            ->addActionLabel('Tambah Sumber Daya'),
                     ]),
                 Fieldset::make('PIC')
                     ->relationship('pic')
@@ -103,9 +96,9 @@ class JadwalProduksiResource extends Resource
                         Grid::make(2)
                             ->schema([
                                 self::textInput('create_name', 'Nama Pembuat'),
-                                self::textInput('approve_name', 'Nama Penyetuju'),
+                                self::textInput('receive_name', 'Nama Penerima'),
                                 self::signatureInput('create_signature', 'Dibuat Oleh'),
-                                self::signatureInput('approve_signature', 'Diterima Oleh'),
+                                self::signatureInput('receive_signature', 'Diterima Oleh'),
                             ])
                     ]),
             ]);
@@ -117,13 +110,15 @@ class JadwalProduksiResource extends Resource
             ->columns([
                 //
                 self::textColumn('spk.no_spk', 'No SPK'),
-                self::textColumn('pic_name', 'Nama PIC'),
-                self::textColumn('tanggal', 'Tanggal Dibuat'),
+                self::textColumn('no_surat', 'Nomor Surat'),
+                self::textColumn('tanggal', 'Tanggal Dibuat')->date('d M Y'),
+                self::textColumn('dari', 'Dari'),
+                self::textColumn('kepada', 'Kepada'),
                 ImageColumn::make('pic.create_signature')
                     ->label('Pembuat')
                     ->width(150)
                     ->height(75),
-                ImageColumn::make('pic.approve_signature')
+                ImageColumn::make('pic.receive_signature')
                     ->label('Penyetuju')
                     ->width(150)
                     ->height(75),
@@ -138,7 +133,7 @@ class JadwalProduksiResource extends Resource
                     ->label(_('View PDF'))
                     ->icon('heroicon-o-document')
                     ->color('success')
-                    ->url(fn($record) => self::getUrl('pdfJadwalProduksi', ['record' => $record->id])),
+                    ->url(fn($record) => self::getUrl('pdfPermintaanAlatdanBahan', ['record' => $record->id])),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -157,10 +152,10 @@ class JadwalProduksiResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListJadwalProduksis::route('/'),
-            'create' => Pages\CreateJadwalProduksi::route('/create'),
-            'edit' => Pages\EditJadwalProduksi::route('/{record}/edit'),
-            'pdfJadwalProduksi' => Pages\pdfJadwalProduksi::route('/{record}/pdfJadwalProduksi')
+            'index' => Pages\ListPermintaanAlatDanBahans::route('/'),
+            'create' => Pages\CreatePermintaanAlatDanBahan::route('/create'),
+            'edit' => Pages\EditPermintaanAlatDanBahan::route('/{record}/edit'),
+            'pdfPermintaanAlatdanBahan' => Pages\pdfPermintaanAlatdanBahan::route('/{record}/pdfPermintaanAlatdanBahan')
         ];
     }
 
@@ -186,18 +181,23 @@ class JadwalProduksiResource extends Resource
             ->afterStateUpdated(function ($state, callable $set) {
                 if (!$state) return;
 
-                $spk = SPKMarketing::with('spesifikasiProduct.details.product')->find($state);
+                // Ambil data SPK dan relasi yang dibutuhkan
+                $spk = SPKMarketing::with(['jadwalProduksi.sumber'])->find($state);
+                if (!$spk || !$spk->jadwalProduksi?->sumber) return;
 
-                if (!$spk) return;
+                $bahanBaku = $spk->jadwalProduksi->sumber->bahan_baku ?? [];
 
-                $products = $spk->spesifikasiProduct?->details?->map(function ($detail) {
+                // Ubah bahan baku jadi array yang bisa ditangkap Repeater
+                $details = collect($bahanBaku)->map(function ($item) {
                     return [
-                        'nama_produk' => $detail->product?->name ?? '',
-                        'jumlah'   => $detail->quantity ?? 0,
+                        'bahan_baku' => is_array($item) ? ($item['bahan_baku'] ?? '') : $item,
                     ];
                 })->toArray();
 
-                $set('details', $products);
+                // Set ke form
+                $set('dari', $spk->dari);
+                $set('kepada', $spk->kepada);
+                $set('details', $details);
             });
     }
 
@@ -207,8 +207,6 @@ class JadwalProduksiResource extends Resource
             DatePicker::make($fieldName)
             ->label($label)
             ->displayFormat('M d Y')
-            // ->placeholder('Masukan Tanggal')
-            // ->native(false)
             ->seconds(false);
     }
 
@@ -220,7 +218,7 @@ class JadwalProduksiResource extends Resource
             ->exportPenColor('#0118D8')
             ->afterStateUpdated(function ($state, $set) use ($fieldName) {
                 if (blank($state)) return;
-                $path = SignatureUploader::handle($state, 'ttd_', 'Production/Jadwal/Signatures');
+                $path = SignatureUploader::handle($state, 'ttd_', 'Production/PermintaanBahan/Signatures');
                 if ($path) {
                     $set($fieldName, $path);
                 }
