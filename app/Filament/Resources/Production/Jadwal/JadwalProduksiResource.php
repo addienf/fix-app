@@ -97,7 +97,7 @@ class JadwalProduksiResource extends Resource
                             ])
                             ->columnSpanFull()
                             ->reorderable(false)
-                            ->addActionLabel('Tambah Sumber Daya'),
+                            ->addActionLabel('Tambah Bahan Baku'),
                     ]),
                 Fieldset::make('PIC')
                     ->relationship('pic')
@@ -178,63 +178,67 @@ class JadwalProduksiResource extends Resource
     {
         return
             Select::make($fieldName)
-            ->relationship($relation, $title)
-            ->label($label)
-            ->native(false)
-            ->searchable()
-            ->preload()
-            ->required()
-            ->reactive()
-            ->afterStateUpdated(function ($state, callable $set) {
-                if (!$state) return;
+                ->relationship($relation, $title)
+                ->label($label)
+                ->native(false)
+                ->searchable()
+                ->preload()
+                ->required()
+                ->reactive()
+                ->afterStateUpdated(function ($state, callable $set) {
+                    if (!$state)
+                        return;
 
-                $spk = SPKMarketing::with('spesifikasiProduct.details.product')->find($state);
+                    $spk = SPKMarketing::with('spesifikasiProduct.details.product')->find($state);
 
-                if (!$spk) return;
+                    if (!$spk)
+                        return;
 
-                $products = $spk->spesifikasiProduct?->details?->map(function ($detail) {
-                    return [
-                        'nama_produk' => $detail->product?->name ?? '',
-                        'jumlah'   => $detail->quantity ?? 0,
-                    ];
-                })->toArray();
+                    $products = $spk->spesifikasiProduct?->details?->map(function ($detail) {
+                        return [
+                            'nama_produk' => $detail->product?->name ?? '',
+                            'jumlah' => $detail->quantity ?? 0,
+                        ];
+                    })->toArray();
 
-                $set('details', $products);
-            });
+                    $set('details', $products);
+                });
     }
 
     protected static function datePicker(string $fieldName, string $label): DatePicker
     {
         return
             DatePicker::make($fieldName)
-            ->label($label)
-            ->displayFormat('M d Y')
-            // ->placeholder('Masukan Tanggal')
-            // ->native(false)
-            ->seconds(false);
+                ->label($label)
+                ->displayFormat('M d Y')
+                // ->placeholder('Masukan Tanggal')
+                // ->native(false)
+                ->seconds(false);
     }
 
     protected static function signatureInput(string $fieldName, string $labelName): SignaturePad
     {
         return
             SignaturePad::make($fieldName)
-            ->label($labelName)
-            ->exportPenColor('#0118D8')
-            ->afterStateUpdated(function ($state, $set) use ($fieldName) {
-                if (blank($state)) return;
-                $path = SignatureUploader::handle($state, 'ttd_', 'Production/Jadwal/Signatures');
-                if ($path) {
-                    $set($fieldName, $path);
-                }
-            });
+                ->label($labelName)
+                ->exportPenColor('#0118D8')
+                ->helperText('*Harap Tandatangan di tengah area yang disediakan.')
+                ->afterStateUpdated(function ($state, $set) use ($fieldName) {
+                    if (blank($state))
+                        return;
+                    $path = SignatureUploader::handle($state, 'ttd_', 'Production/Jadwal/Signatures');
+                    if ($path) {
+                        $set($fieldName, $path);
+                    }
+                });
     }
 
     protected static function textColumn(string $fieldName, string $label): TextColumn
     {
         return
             TextColumn::make($fieldName)
-            ->label($label)
-            ->searchable()
-            ->sortable();
+                ->label($label)
+                ->searchable()
+                ->sortable();
     }
 }
