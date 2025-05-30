@@ -37,7 +37,7 @@ class SpesifikasiProductResource extends Resource
 {
     protected static ?string $model = SpesifikasiProduct::class;
     protected static ?int $navigationSort = 1;
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    // protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';/
     protected static ?string $navigationGroup = 'Sales';
     protected static ?string $navigationLabel = 'Spesifikasi Product';
     protected static ?string $pluralLabel = 'Spesifikasi Product';
@@ -239,10 +239,11 @@ class SpesifikasiProductResource extends Resource
     {
         return [
             self::textInput('no_urs', 'Nomor URS')
+                ->helperText('Format: XXX/QKS/MKT/URS/MM/YY')
                 ->unique(),
             self::selectInput('customer_id', 'Nama Customer', 'customer', 'name')
                 ->createOptionForm(fn() => self::customerFormSchema()),
-            self::textInput('permintaan_khusus', 'Remark'),
+            Textarea::make('permintaan_khusus')->label('Remark Permintaan Khusus')
         ];
     }
 

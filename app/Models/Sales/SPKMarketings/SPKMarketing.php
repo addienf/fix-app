@@ -2,6 +2,8 @@
 
 namespace App\Models\Sales\SPKMarketings;
 
+use App\Models\Production\Jadwal\JadwalProduksi as JadwalJadwalProduksi;
+use App\Models\Production\JadwalProduksi;
 use App\Models\Sales\SpesifikasiProducts\SpesifikasiProduct;
 use App\Models\Sales\SPKMarketings\Pivot\SPKMarketingPIC;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -34,6 +36,11 @@ class SPKMarketing extends Model
     public function pic()
     {
         return $this->hasOne(SPKMarketingPIC::class, 'spk_marketing_id');
+    }
+
+    public function jadwalProduksi()
+    {
+        return $this->hasOne(JadwalJadwalProduksi::class, 'spk_marketing_id');
     }
 
     protected static function booted()

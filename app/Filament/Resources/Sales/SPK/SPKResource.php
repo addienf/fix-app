@@ -27,7 +27,7 @@ class SPKResource extends Resource
 {
     protected static ?string $model = SPKMarketing::class;
     protected static ?int $navigationSort = 2;
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    // protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
     protected static ?string $navigationGroup = 'Sales';
     protected static ?string $navigationLabel = 'SPK Marketing';
     protected static ?string $pluralLabel = 'SPK Marketing';
