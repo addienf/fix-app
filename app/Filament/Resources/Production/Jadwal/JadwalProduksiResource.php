@@ -50,8 +50,6 @@ class JadwalProduksiResource extends Resource
                             ->schema([
                                 self::textInput('pic_name', 'Penanggung Jawab'),
                                 self::datePicker('tanggal', 'Tanggal'),
-                                // self::selectInput('spk_marketing_id', 'No SPK', 'spk', 'no_spk')
-                                //     ->columnSpanFull(),
                             ])
                     ]),
                 Section::make('Detail Jadwal Produksi')

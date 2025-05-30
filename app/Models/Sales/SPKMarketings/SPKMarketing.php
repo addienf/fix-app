@@ -4,6 +4,7 @@ namespace App\Models\Sales\SPKMarketings;
 
 use App\Models\Production\Jadwal\JadwalProduksi as JadwalJadwalProduksi;
 use App\Models\Production\JadwalProduksi;
+use App\Models\Production\PermintaanBahanProduksi\PermintaanAlatDanBahan;
 use App\Models\Sales\SpesifikasiProducts\SpesifikasiProduct;
 use App\Models\Sales\SPKMarketings\Pivot\SPKMarketingPIC;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -41,6 +42,11 @@ class SPKMarketing extends Model
     public function jadwalProduksi()
     {
         return $this->hasOne(JadwalJadwalProduksi::class, 'spk_marketing_id');
+    }
+
+    public function permintaan()
+    {
+        return $this->hasOne(PermintaanAlatDanBahan::class, 'spk_marketing_id');
     }
 
     protected static function booted()
