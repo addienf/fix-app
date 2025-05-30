@@ -139,35 +139,37 @@ class SPKResource extends Resource
     {
         return
             Select::make($fieldName)
-            ->relationship($relation, $title)
-            ->label($label)
-            ->native(false)
-            ->searchable()
-            ->preload()
-            ->required();
+                ->relationship($relation, $title)
+                ->label($label)
+                ->native(false)
+                ->searchable()
+                ->preload()
+                ->required();
     }
 
     protected static function signatureInput(string $fieldName, string $labelName): SignaturePad
     {
         return
             SignaturePad::make($fieldName)
-            ->label($labelName)
-            ->exportPenColor('#0118D8')
-            ->afterStateUpdated(function ($state, $set) use ($fieldName) {
-                if (blank($state)) return;
-                $path = SignatureUploader::handle($state, 'ttd_', 'Sales/SPK/Signatures');
-                if ($path) {
-                    $set($fieldName, $path);
-                }
-            });
+                ->label($labelName)
+                ->exportPenColor('#0118D8')
+                ->helperText('*Harap Tandatangan di tengah area yang disediakan.')
+                ->afterStateUpdated(function ($state, $set) use ($fieldName) {
+                    if (blank($state))
+                        return;
+                    $path = SignatureUploader::handle($state, 'ttd_', 'Sales/SPK/Signatures');
+                    if ($path) {
+                        $set($fieldName, $path);
+                    }
+                });
     }
 
     protected static function textColumn(string $fieldName, string $label): TextColumn
     {
         return
             TextColumn::make($fieldName)
-            ->label($label)
-            ->searchable()
-            ->sortable();
+                ->label($label)
+                ->searchable()
+                ->sortable();
     }
 }
