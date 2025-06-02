@@ -1,0 +1,53 @@
+<?php
+
+namespace App\Models\Warehouse\SerahTerima;
+
+use App\Models\Production\PermintaanBahanProduksi\PermintaanAlatDanBahan;
+use App\Models\Warehouse\SerahTerima\Pivot\SerahTerimaBahanDetail;
+use App\Models\Warehouse\SerahTerima\Pivot\SerahTerimaBahanPIC;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class SerahTerimaBahan extends Model
+{
+    use HasFactory;
+
+    protected $fillable = [
+        'permintaan_bahan_pro_id',
+        'tanggal',
+        'no_surat',
+        'dari',
+        'kepada',
+    ];
+
+    protected $casts = [
+        'tanggal' => 'date',
+    ];
+
+    public function permintaanBahanPro()
+    {
+        return $this->belongsTo(PermintaanAlatDanBahan::class, 'permintaan_bahan_pro_id');
+    }
+
+    public function details()
+    {
+        return $this->hasMany(SerahTerimaBahanDetail::class);
+    }
+
+    public function pic()
+    {
+        return $this->hasOne(SerahTerimaBahanPIC::class);
+    }
+    protected static function booted()
+    {
+        static::deleting(function ($model) {
+            foreach ($model->details as $detail) {
+                $detail->delete();
+            }
+
+            if ($model->pic) {
+                $model->pic->delete();
+            }
+        });
+    }
+}

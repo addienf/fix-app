@@ -6,6 +6,7 @@ use App\Models\Production\PermintaanBahanProduksi\Pivot\PermintaanAlatDanBahanDe
 use App\Models\Production\PermintaanBahanProduksi\Pivot\PermintaanAlatDanBahanPIC;
 use App\Models\Sales\SPKMarketings\SPKMarketing;
 use App\Models\Warehouse\PermintaanBahanWBB\PermintaanBahan;
+use App\Models\Warehouse\SerahTerima\SerahTerimaBahan;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -43,6 +44,11 @@ class PermintaanAlatDanBahan extends Model
     public function permintaanBahanWBB()
     {
         return $this->hasOne(PermintaanBahan::class, 'permintaan_bahan_pro_id');
+    }
+
+    public function serahTerimaBahan()
+    {
+        return $this->hasOne(SerahTerimaBahan::class, 'permintaan_bahan_pro_id');
     }
 
     protected static function booted()
