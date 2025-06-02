@@ -44,28 +44,6 @@
                 ['label' => 'Tanggal:', 'value' => $jadwal->tanggal],
                 ['label' => 'Penanggung Jawab:', 'value' => $jadwal->pic_name],
             ];
-
-            $produkList = [
-                [
-                    'nama' => 'Produk A',
-                    'model' => 'Type A1',
-                    'volume' => '100 L',
-                    'jumlah' => 100,
-                    'mulai' => '2025-06-01',
-                    'selesai' => '2025-06-05',
-                    'spk' => 'SPK-001',
-                ],
-                [
-                    'nama' => 'Produk B',
-                    'model' => 'Type B1',
-                    'volume' => '200 L',
-                    'jumlah' => 200,
-                    'mulai' => '2025-06-06',
-                    'selesai' => '2025-06-10',
-                    'spk' => 'SPK-002',
-                ],
-            ];
-
             $mesin = ['label' => 'Mesin yang Digunakan:', 'value' => $jadwal->sumber->mesin_yang_digunakan];
             $tenagaKerja = ['label' => 'Tenaga Kerja:', 'value' => $jadwal->sumber->tenaga_kerja];
         @endphp

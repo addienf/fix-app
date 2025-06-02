@@ -3,6 +3,7 @@
 namespace App\Models\Warehouse\PermintaanBahanWBB;
 
 use App\Models\Production\PermintaanBahanProduksi\PermintaanAlatDanBahan;
+use App\Models\Purchasing\Permintaan\PermintaanPembelian;
 use App\Models\Warehouse\PermintaanBahanWBB\Pivot\PermintaanBahanDetail;
 use App\Models\Warehouse\PermintaanBahanWBB\Pivot\PermintaanBahanPIC;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -39,6 +40,11 @@ class PermintaanBahan extends Model
         return $this->hasOne(PermintaanBahanPIC::class, 'permintaan_bahan_wbb_id');
     }
 
+    public function pembelian()
+    {
+        return $this->hasOne(PermintaanPembelian::class, 'permintaan_bahan_wbb_id');
+    }
+
     protected static function booted()
     {
         static::deleting(function ($model) {
@@ -48,6 +54,10 @@ class PermintaanBahan extends Model
 
             if ($model->pic) {
                 $model->pic->delete();
+            }
+
+            if ($model->pembelian) {
+                $model->pembelian->delete();
             }
         });
     }
