@@ -16,7 +16,7 @@
                 </td>
             </tr>
             <tr>
-                <td class="text-lg font-bold text-center border border-black">
+                <td class="text-lg font-bold text-center border border-black align-middle" style="width: 400px;">
                     Formulir Permintaan Bahan Baku dan Alat Kerja untuk Produksi
                 </td>
                 <td rowspan="2" class="p-0 align-top border border-black">
@@ -37,36 +37,37 @@
                 </td>
             </tr>
         </table>
+        
 
         @php
-            $infoUmum = [
-                ['label' => 'Nomor Surat :', 'value' => $permintaan_alat_bahan->no_surat],
-                ['label' => 'Dari :', 'value' => $permintaan_alat_bahan->dari],
-                [
-                    'label' => 'Tanggal : ',
-                    'value' => \Carbon\Carbon::parse($permintaan_alat_bahan->date)->translatedFormat('d F Y'),
-                ],
-                ['label' => 'Kepada :', 'value' => $permintaan_alat_bahan->kepada],
-            ];
+$infoUmum = [
+    ['label' => 'Nomor Surat :', 'value' => $permintaan_alat_bahan->no_surat],
+    ['label' => 'Dari :', 'value' => $permintaan_alat_bahan->dari],
+    [
+        'label' => 'Tanggal : ',
+        'value' => \Carbon\Carbon::parse($permintaan_alat_bahan->date)->translatedFormat('d F Y'),
+    ],
+    ['label' => 'Kepada :', 'value' => $permintaan_alat_bahan->kepada],
+];
         @endphp
-        <div class="grid max-w-4xl grid-cols-1 pt-2 pt-4 mx-auto mb-6 text-sm md:grid-cols-2 gap-x-6 gap-y-4">
-            @foreach ($infoUmum as $field)
-                <div class="flex flex-col items-start gap-2 md:flex-row md:gap-4 md:items-center">
-                    <label class="font-medium md:w-48">{{ $field['label'] }}</label>
-                    <input type="text"
-                        class="flex-1 w-full px-2 py-1 text-black bg-white border border-gray-300 rounded dark:border-gray-600 dark:bg-gray-800 dark:text-white"
-                        value="{{ $field['value'] }}" />
-                </div>
-            @endforeach
+<div class="grid max-w-4xl grid-cols-1 pt-2 pt-4 mx-auto mb-6 text-sm md:grid-cols-2 gap-x-6 gap-y-4">
+    @foreach ($infoUmum as $field)
+        <div class="flex flex-col items-start gap-2 md:flex-row md:gap-4 md:items-center">
+            <label class="font-medium md:w-48">{{ $field['label'] }}</label>
+            <input type="text" readonly
+                class="w-[400px] h-[32px] px-2 py-1 text-black bg-white border border-gray-300 rounded dark:border-gray-600 dark:bg-gray-800 dark:text-white"
+                value="{{ $field['value'] }}" />
         </div>
-
+    @endforeach
+</div>
         <!-- PARAGRAF PERMINTAAN -->
         <div class="max-w-4xl mx-auto mb-6 text-sm">
             <p class="mb-2">Dengan hormat,</p>
             <p class="flex flex-wrap items-center gap-1">
                 <span>Berdasarkan SPK MKT No.</span>
-                <input type="disabled"
-                    class="w-32 px-2 py-1 text-sm align-middle bg-transparent rounded outline-none h-7 focus:outline-none" />
+                <input readonly
+                    class="w-[400px] px-2 py-1 text-black bg-white border border-gray-300 rounded dark:border-gray-600 dark:bg-gray-800 dark:text-white"
+                    value="{{ $permintaan_alat_bahan->spk->no_spk }}" />
                 <span>mohon bantuan untuk memenuhi kebutuhan bahan/sparepart dengan rincian sebagai berikut:</span>
             </p>
         </div>
