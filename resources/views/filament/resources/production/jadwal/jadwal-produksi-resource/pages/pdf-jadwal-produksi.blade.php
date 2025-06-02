@@ -42,34 +42,12 @@
         <!-- A. Informasi Umum -->
         <div class="max-w-4xl pt-6 mx-auto mb-3 text-lg font-bold text-start">A. Informasi Umum</div>
         @php
-$infoUmum = [
-    ['label' => 'Tanggal:', 'value' => $jadwal->tanggal],
-    ['label' => 'Penanggung Jawab:', 'value' => $jadwal->pic_name],
-];
-
-$produkList = [
-    [
-        'nama' => 'Produk A',
-        'model' => 'Type A1',
-        'volume' => '100 L',
-        'jumlah' => 100,
-        'mulai' => '2025-06-01',
-        'selesai' => '2025-06-05',
-        'spk' => 'SPK-001',
-    ],
-    [
-        'nama' => 'Produk B',
-        'model' => 'Type B1',
-        'volume' => '200 L',
-        'jumlah' => 200,
-        'mulai' => '2025-06-06',
-        'selesai' => '2025-06-10',
-        'spk' => 'SPK-002',
-    ],
-];
-
-$mesin = ['label' => 'Mesin yang Digunakan:', 'value' => $jadwal->sumber->mesin_yang_digunakan];
-$tenagaKerja = ['label' => 'Tenaga Kerja:', 'value' => $jadwal->sumber->tenaga_kerja];
+            $infoUmum = [
+                ['label' => 'Tanggal:', 'value' => $jadwal->tanggal],
+                ['label' => 'Penanggung Jawab:', 'value' => $jadwal->pic_name],
+            ];
+            $mesin = ['label' => 'Mesin yang Digunakan:', 'value' => $jadwal->sumber->mesin_yang_digunakan];
+            $tenagaKerja = ['label' => 'Tenaga Kerja:', 'value' => $jadwal->sumber->tenaga_kerja];
         @endphp
 
         <div class="grid max-w-4xl grid-cols-1 pt-2 mx-auto mb-6 text-sm md:grid-cols-2 gap-x-6 gap-y-4">
