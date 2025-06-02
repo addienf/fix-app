@@ -71,14 +71,14 @@ class SpesifikasiProductResource extends Resource
                                 Grid::make()
                                     ->relationship('file')
                                     ->schema([
-                                        self::textInput('file_path', 'File Pendukung'),
-                                        // FileUpload::make('file_path')
-                                        //     ->label('File Pendukung')
-                                        //     ->directory('Sales/Spesifikasi/Files')
-                                        //     ->acceptedFileTypes(['application/pdf'])
-                                        //     ->maxSize(10240)
-                                        //     ->columnSpanFull()
-                                        //     ->helperText('Hanya file PDF yang diperbolehkan. Maksimal ukuran 10 MB.'),
+                                        // self::textInput('file_path', 'File Pendukung'),
+                                        FileUpload::make('file_path')
+                                            ->label('File Pendukung')
+                                            ->directory('Sales/Spesifikasi/Files')
+                                            ->acceptedFileTypes(['application/pdf'])
+                                            ->maxSize(10240)
+                                            ->columnSpanFull()
+                                            ->helperText('Hanya file PDF yang diperbolehkan. Maksimal ukuran 10 MB.'),
                                     ]),
                                 TableRepeater::make('specification')
                                     ->label('Pilih Spesifikasi')
@@ -194,47 +194,47 @@ class SpesifikasiProductResource extends Resource
     {
         return
             Select::make($fieldName)
-                ->relationship($relation, $title)
-                ->label($label)
-                ->native(false)
-                ->searchable()
-                ->preload()
-                ->required();
+            ->relationship($relation, $title)
+            ->label($label)
+            ->native(false)
+            ->searchable()
+            ->preload()
+            ->required();
     }
 
     protected static function toogleButton(string $fieldName, string $label): ToggleButtons
     {
         return
             ToggleButtons::make($fieldName)
-                ->label($label)
-                ->boolean()
-                ->grouped();
+            ->label($label)
+            ->boolean()
+            ->grouped();
     }
 
     protected static function signatureInput(string $fieldName): SignaturePad
     {
         return
             SignaturePad::make($fieldName)
-                ->label('')
-                ->exportPenColor('#0118D8')
-                ->helperText('*Harap Tandatangan di tengah area yang disediakan.')
-                ->afterStateUpdated(function ($state, $set) {
-                    if (blank($state))
-                        return;
-                    $path = SignatureUploader::handle($state, 'ttd_', 'Sales/Spesifikasi/Signatures');
-                    if ($path) {
-                        $set('signature', $path);
-                    }
-                });
+            ->label('')
+            ->exportPenColor('#0118D8')
+            ->helperText('*Harap Tandatangan di tengah area yang disediakan.')
+            ->afterStateUpdated(function ($state, $set) {
+                if (blank($state))
+                    return;
+                $path = SignatureUploader::handle($state, 'ttd_', 'Sales/Spesifikasi/Signatures');
+                if ($path) {
+                    $set('signature', $path);
+                }
+            });
     }
 
     protected static function textColumn(string $fieldName, string $label): TextColumn
     {
         return
             TextColumn::make($fieldName)
-                ->label($label)
-                ->searchable()
-                ->sortable();
+            ->label($label)
+            ->searchable()
+            ->sortable();
     }
 
     protected static function ursFormSchema(): array

@@ -66,7 +66,8 @@
             <p class="flex flex-wrap items-center gap-1">
                 <span>Berdasarkan SPK MKT No.</span>
                 <input type="disabled"
-                    class="w-32 px-2 py-1 text-sm align-middle bg-transparent rounded outline-none h-7 focus:outline-none" />
+                    class="w-32 px-2 py-1 text-sm align-middle bg-transparent rounded outline-none h-7 focus:outline-none"
+                    value="{{ $permintaan_alat_bahan->spk->no_spk }}" />
                 <span>mohon bantuan untuk memenuhi kebutuhan bahan/sparepart dengan rincian sebagai berikut:</span>
             </p>
         </div>
