@@ -3,7 +3,8 @@
         <h2 class="mb-3 text-xl font-bold text-center">Detail Jadwal Produksi</h2>
 
         <!-- HEADER DOKUMEN -->
-        <table class="w-full max-w-4xl mx-auto text-sm border border-black dark:border-gray-600" style="border-collapse: collapse;">
+        <table class="w-full max-w-4xl mx-auto text-sm border border-black dark:border-gray-600"
+            style="border-collapse: collapse;">
             <tr>
                 <td rowspan="3" class="p-2 text-center align-middle border border-black w-28 h-28">
                     <img src="{{ asset('asset/logo.png') }}" alt="Logo" class="object-contain mx-auto h-30" />
@@ -36,12 +37,12 @@
         </table>
 
         <!-- A. Informasi Umum -->
-        <div class="mb-3 text-lg font-bold text-start pt-4 max-w-4xl mx-auto">A. Informasi Umum</div>
+        <div class="max-w-4xl pt-4 mx-auto mb-3 text-lg font-bold text-start">A. Informasi Umum</div>
 
         @php
             $infoUmum = [
-                ['label' => 'Tanggal:', 'value' => '30 Mei 2025'],
-                ['label' => 'Penanggung Jawab:', 'value' => 'Budi Santoso'],
+                ['label' => 'Tanggal:', 'value' => $jadwal->tanggal],
+                ['label' => 'Penanggung Jawab:', 'value' => $jadwal->pic_name],
             ];
 
             $produkList = [
@@ -65,13 +66,8 @@
                 ],
             ];
 
-            $mesin = ['label' => 'Mesin yang Digunakan:', 'value' => 'Mesin Cetak X100'];
-            $tenagaKerja = ['label' => 'Tenaga Kerja:', 'value' => '10 Orang'];
-            $bahanBaku = [
-                ['nama' => 'Plastik', 'jumlah' => '50 Kg'],
-                ['nama' => 'Cat', 'jumlah' => '20 Liter'],
-                ['nama' => 'Perekat', 'jumlah' => '10 Kg'],
-            ];
+            $mesin = ['label' => 'Mesin yang Digunakan:', 'value' => $jadwal->sumber->mesin_yang_digunakan];
+            $tenagaKerja = ['label' => 'Tenaga Kerja:', 'value' => $jadwal->sumber->tenaga_kerja];
         @endphp
 
         <div class="grid max-w-4xl grid-cols-1 pt-2 mx-auto mb-6 text-sm md:grid-cols-2 gap-x-6 gap-y-4">
@@ -86,7 +82,7 @@
         </div>
 
         <!-- B. Detail Jadwal Produksi -->
-        <div class="mb-4 text-lg font-bold text-start pt-2 max-w-4xl mx-auto">B. Detail Jadwal Produksi</div>
+        <div class="max-w-4xl pt-2 mx-auto mb-4 text-lg font-bold text-start">B. Detail Jadwal Produksi</div>
         <div class="max-w-4xl mx-auto overflow-x-auto">
             <table class="w-full text-sm text-left border border-gray-300 dark:border-gray-600">
                 <thead class="text-black bg-gray-100 dark:bg-gray-800 dark:text-white">
@@ -102,16 +98,18 @@
                     </tr>
                 </thead>
                 <tbody class="bg-white dark:bg-gray-900">
-                    @foreach ($produkList as $index => $produk)
+                    @foreach ($jadwal->details as $index => $produk)
                         <tr>
                             <td class="px-4 py-2 border">{{ $index + 1 }}</td>
-                            <td class="px-4 py-2 border">{{ $produk['nama'] }}</td>
-                            <td class="px-4 py-2 border">{{ $produk['model'] }}</td>
+                            <td class="px-4 py-2 border">{{ $produk['nama_produk'] }}</td>
+                            <td class="px-4 py-2 border">{{ $produk['tipe'] }}</td>
                             <td class="px-4 py-2 border">{{ $produk['volume'] }}</td>
                             <td class="px-4 py-2 border">{{ $produk['jumlah'] }}</td>
-                            <td class="px-4 py-2 border">{{ $produk['mulai'] }}</td>
-                            <td class="px-4 py-2 border">{{ $produk['selesai'] }}</td>
-                            <td class="px-4 py-2 border">{{ $produk['spk'] }}</td>
+                            <td class="px-4 py-2 border">
+                                {{ \Carbon\Carbon::parse($produk['tanggal_mulai'])->translatedFormat('d F Y') }}</td>
+                            <td class="px-4 py-2 border">
+                                {{ \Carbon\Carbon::parse($produk['tanggal_selesai'])->translatedFormat('d F Y') }}</td>
+                            <td class="px-4 py-2 border">{{ $jadwal->spk->no_spk }}</td>
                         </tr>
                     @endforeach
                 </tbody>
@@ -119,9 +117,9 @@
         </div>
 
         <!-- C. Sumber Daya yang Digunakan -->
-        <div class="mb-3 text-lg font-bold text-start pt-4 max-w-4xl mx-auto">C. Sumber Daya yang Digunakan</div>
+        <div class="max-w-4xl pt-4 mx-auto mb-3 text-lg font-bold text-start">C. Sumber Daya yang Digunakan</div>
 
-        <div class="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6 mb-6 text-sm">
+        <div class="grid max-w-4xl grid-cols-1 gap-6 mx-auto mb-6 text-sm md:grid-cols-2">
             <!-- Mesin -->
             <div class="flex flex-col items-start gap-2">
                 <label class="font-medium md:w-full">{{ $mesin['label'] }}</label>
@@ -142,17 +140,18 @@
         <!-- Bahan Baku (Tabel) -->
         <div class="max-w-4xl mx-auto overflow-x-auto text-sm">
             <table class="w-full border border-gray-300 dark:border-gray-600">
-                <thead class="bg-gray-100 dark:bg-gray-800 text-black dark:text-white">
+                <thead class="text-black bg-gray-100 dark:bg-gray-800 dark:text-white">
                     <tr>
-                        <th class="px-4 py-2 border border-gray-300 dark:border-gray-600 text-left">Bahan Baku</th>
-                       
+                        <th class="px-4 py-2 text-left border border-gray-300 dark:border-gray-600">Bahan Baku</th>
+
                     </tr>
                 </thead>
                 <tbody class="bg-white dark:bg-gray-900">
-                    @foreach ($bahanBaku as $bahan)
+                    @foreach ($jadwal->sumber->bahan_baku as $bahan)
                         <tr>
-                            <td class="px-4 py-2 border border-gray-300 dark:border-gray-600">{{ $bahan['nama'] }}</td>
-                            
+                            <td class="px-4 py-2 border border-gray-300 dark:border-gray-600">
+                                {{ $bahan['bahan_baku'] }}</td>
+
                         </tr>
                     @endforeach
                 </tbody>
@@ -165,12 +164,20 @@
                 <!-- Yang Membuat -->
                 <div class="flex flex-col items-center">
                     <p class="mb-2 dark:text-white">Yang Membuat</p>
-                    <img src="" alt="Signature Pembuat" class="h-20 w-80" />
+                    <img src="{{ asset('storage/' . $jadwal->pic->create_signature) }}" alt="Signature Pembuat"
+                        class="h-20 w-80" />
+                    <div class="mt-2 font-medium">
+                        {{ $jadwal->pic->create_name }}
+                    </div>
                 </div>
                 <!-- Yang Menerima -->
                 <div class="flex flex-col items-center">
                     <p class="mb-2 dark:text-white">Yang Menerima</p>
-                    <img src="" alt="Signature Penerima" class="h-20 w-80" />
+                    <img src="{{ asset('storage/' . $jadwal->pic->approve_signature) }}" alt="Signature Penerima"
+                        class="h-20 w-80" />
+                    <div class="mt-2 font-medium">
+                        {{ $jadwal->pic->approve_name }}
+                    </div>
                 </div>
             </div>
         </div>

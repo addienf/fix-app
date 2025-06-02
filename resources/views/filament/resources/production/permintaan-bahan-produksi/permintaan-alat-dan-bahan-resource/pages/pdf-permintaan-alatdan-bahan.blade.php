@@ -8,7 +8,7 @@
         <table class="w-full max-w-4xl mx-auto text-sm border border-black dark:border-gray-600"
             style="border-collapse: collapse;">
             <tr>
-                <td rowspan="3" class="w-28 h-28 p-2 text-center align-middle border border-black">
+                <td rowspan="3" class="p-2 text-center align-middle border border-black w-28 h-28">
                     <img src="{{ asset('asset/logo.png') }}" alt="Logo" class="object-contain mx-auto h-30" />
                 </td>
                 <td colspan="2" class="font-bold text-center border border-black">
@@ -16,8 +16,8 @@
                 </td>
             </tr>
             <tr>
-                <td class="font-bold text-center border border-black text-lg">
-                    Jadwal Produksi
+                <td class="text-lg font-bold text-center border border-black">
+                    Formulir Permintaan Bahan Baku dan Alat Kerja untuk Produksi
                 </td>
                 <td rowspan="2" class="p-0 align-top border border-black">
                     <table class="w-full text-sm" style="border-collapse: collapse;">
@@ -39,26 +39,17 @@
         </table>
 
         @php
-$infoUmum = [
-    ['label' => 'Nomor Surat :', 'value' => '30 Mei 2025'],
-    ['label' => 'Dari :', 'value' => ''],
-    ['label' => 'Tanggal : ', 'value' => ''],
-    ['label' => 'Kepada :', 'value' => ''],
-];
-
-$produkList = [
-    [
-        'nama' => 'Produk A',
-        'model' => 'Type A1',
-        'volume' => '100 L',
-        'jumlah' => 100,
-        'mulai' => '2025-06-01',
-        'selesai' => '2025-06-05',
-        'spk' => 'SPK-001',
-    ],
-];
+            $infoUmum = [
+                ['label' => 'Nomor Surat :', 'value' => $permintaan_alat_bahan->no_surat],
+                ['label' => 'Dari :', 'value' => $permintaan_alat_bahan->dari],
+                [
+                    'label' => 'Tanggal : ',
+                    'value' => \Carbon\Carbon::parse($permintaan_alat_bahan->date)->translatedFormat('d F Y'),
+                ],
+                ['label' => 'Kepada :', 'value' => $permintaan_alat_bahan->kepada],
+            ];
         @endphp
-        <div class="grid max-w-4xl grid-cols-1 pt-2 mx-auto mb-6 text-sm md:grid-cols-2 gap-x-6 gap-y-4 pt-4">
+        <div class="grid max-w-4xl grid-cols-1 pt-2 pt-4 mx-auto mb-6 text-sm md:grid-cols-2 gap-x-6 gap-y-4">
             @foreach ($infoUmum as $field)
                 <div class="flex flex-col items-start gap-2 md:flex-row md:gap-4 md:items-center">
                     <label class="font-medium md:w-48">{{ $field['label'] }}</label>
@@ -70,14 +61,14 @@ $produkList = [
         </div>
 
         <!-- PARAGRAF PERMINTAAN -->
-        <div class="max-w-4xl mx-auto text-sm mb-6">
+        <div class="max-w-4xl mx-auto mb-6 text-sm">
             <p class="mb-2">Dengan hormat,</p>
             <p class="flex flex-wrap items-center gap-1">
                 <span>Berdasarkan SPK MKT No.</span>
                 <input type="disabled"
-                    class="w-32 h-7 px-2 py-1 text-sm align-middle bg-transparent rounded outline-none focus:outline-none" />
+                    class="w-32 px-2 py-1 text-sm align-middle bg-transparent rounded outline-none h-7 focus:outline-none" />
                 <span>mohon bantuan untuk memenuhi kebutuhan bahan/sparepart dengan rincian sebagai berikut:</span>
-            </p>  
+            </p>
         </div>
 
         <!-- TABEL PRODUK -->
@@ -93,13 +84,13 @@ $produkList = [
                     </tr>
                 </thead>
                 <tbody class="bg-white dark:bg-gray-900">
-                    @foreach ($produkList as $index => $produk)
+                    @foreach ($permintaan_alat_bahan->details as $index => $produk)
                         <tr>
                             <td class="px-4 py-2 border">{{ $index + 1 }}</td>
-                            <td class="px-4 py-2 border">{{ $produk['nama'] }}</td>
-                            <td class="px-4 py-2 border">{{ $produk['model'] }}</td>
-                            <td class="px-4 py-2 border">{{ $produk['volume'] }}</td>
+                            <td class="px-4 py-2 border">{{ $produk['bahan_baku'] }}</td>
+                            <td class="px-4 py-2 border">{{ $produk['spesifikasi'] }}</td>
                             <td class="px-4 py-2 border">{{ $produk['jumlah'] }}</td>
+                            <td class="px-4 py-2 border">{{ $produk['keperluan_barang'] }}</td>
                         </tr>
                     @endforeach
                 </tbody>
@@ -111,11 +102,19 @@ $produkList = [
             <div class="flex items-start justify-between gap-4">
                 <div class="flex flex-col items-center">
                     <p class="mb-2 dark:text-white">Yang Membuat</p>
-                    <img src="" alt="Signature Pembuat" class="h-20 w-80" />
+                    <img src="{{ asset('storage/' . $permintaan_alat_bahan->pic->create_signature) }}"
+                        alt="Product Signature" class="h-20 w-80" />
+                    <div class="mt-2 font-medium">
+                        {{ $permintaan_alat_bahan->pic->create_name }}
+                    </div>
                 </div>
                 <div class="flex flex-col items-center">
                     <p class="mb-2 dark:text-white">Yang Menerima</p>
-                    <img src="" alt="Signature Penerima" class="h-20 w-80" />
+                    <img src="{{ asset('storage/' . $permintaan_alat_bahan->pic->receive_signature) }}"
+                        alt="Product Signature" class="h-20 w-80" />
+                    <div class="mt-2 font-medium">
+                        {{ $permintaan_alat_bahan->pic->receive_name }}
+                    </div>
                 </div>
             </div>
         </div>
