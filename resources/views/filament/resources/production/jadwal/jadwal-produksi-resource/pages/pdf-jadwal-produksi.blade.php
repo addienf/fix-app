@@ -3,29 +3,31 @@
         <h2 class="mb-3 text-xl font-bold text-center">Detail Jadwal Produksi</h2>
 
         <!-- HEADER DOKUMEN -->
-        <table class="w-full max-w-4xl mx-auto text-sm border border-black dark:border-gray-600"
+        <table class="w-full max-w-4xl mx-auto text-sm border border-black dark:border-white dark:bg-gray-900 dark:text-white"
             style="border-collapse: collapse;">
             <tr>
-                <td rowspan="3" class="p-2 text-center align-middle border border-black w-28 h-28">
+                <td rowspan="3"
+                    class="p-2 text-center align-middle border border-black dark:border-white w-28 h-28 dark:bg-gray-900">
                     <img src="{{ asset('asset/logo.png') }}" alt="Logo" class="object-contain mx-auto h-30" />
                 </td>
-                <td colspan="2" class="font-bold text-center border border-black">
+                <td colspan="2" class="font-bold text-center border border-black dark:border-white dark:bg-gray-900">
                     PT. QLab Kinarya Sentosa
                 </td>
             </tr>
             <tr>
-                <td class="font-bold text-center border border-black" style="font-size: 20px;">
+                <td class="font-bold text-center border border-black dark:border-white dark:bg-gray-900"
+                    style="font-size: 20px;">
                     Jadwal Produksi
                 </td>
-                <td rowspan="2" class="p-0 align-top border border-black">
-                    <table class="w-full text-sm" style="border-collapse: collapse;">
+                <td rowspan="2" class="p-0 align-top border border-black dark:border-white dark:bg-gray-900">
+                    <table class="w-full text-sm dark:bg-gray-900 dark:text-white" style="border-collapse: collapse;">
                         <tr>
-                            <td class="px-3 py-2">No. Dokumen</td>
-                            <td class="px-3 py-2 font-semibold">: FO-QKS-PRD-01-01</td>
+                            <td class="px-3 py-2 border-b border-black dark:border-white">No. Dokumen</td>
+                            <td class="px-3 py-2 font-semibold border-b border-black dark:border-white">: FO-QKS-PRD-01-01</td>
                         </tr>
                         <tr>
-                            <td class="px-3 py-2">Tanggal Rilis</td>
-                            <td class="px-3 py-2 font-semibold">: 12 Maret 2025</td>
+                            <td class="px-3 py-2 border-b border-black dark:border-white">Tanggal Rilis</td>
+                            <td class="px-3 py-2 font-semibold border-b border-black dark:border-white">: 12 Maret 2025</td>
                         </tr>
                         <tr>
                             <td class="px-3 py-2">Revisi</td>
@@ -36,38 +38,38 @@
             </tr>
         </table>
 
+
         <!-- A. Informasi Umum -->
-        <div class="max-w-4xl pt-4 mx-auto mb-3 text-lg font-bold text-start">A. Informasi Umum</div>
-
+        <div class="max-w-4xl pt-6 mx-auto mb-3 text-lg font-bold text-start">A. Informasi Umum</div>
         @php
-            $infoUmum = [
-                ['label' => 'Tanggal:', 'value' => $jadwal->tanggal],
-                ['label' => 'Penanggung Jawab:', 'value' => $jadwal->pic_name],
-            ];
+$infoUmum = [
+    ['label' => 'Tanggal:', 'value' => $jadwal->tanggal],
+    ['label' => 'Penanggung Jawab:', 'value' => $jadwal->pic_name],
+];
 
-            $produkList = [
-                [
-                    'nama' => 'Produk A',
-                    'model' => 'Type A1',
-                    'volume' => '100 L',
-                    'jumlah' => 100,
-                    'mulai' => '2025-06-01',
-                    'selesai' => '2025-06-05',
-                    'spk' => 'SPK-001',
-                ],
-                [
-                    'nama' => 'Produk B',
-                    'model' => 'Type B1',
-                    'volume' => '200 L',
-                    'jumlah' => 200,
-                    'mulai' => '2025-06-06',
-                    'selesai' => '2025-06-10',
-                    'spk' => 'SPK-002',
-                ],
-            ];
+$produkList = [
+    [
+        'nama' => 'Produk A',
+        'model' => 'Type A1',
+        'volume' => '100 L',
+        'jumlah' => 100,
+        'mulai' => '2025-06-01',
+        'selesai' => '2025-06-05',
+        'spk' => 'SPK-001',
+    ],
+    [
+        'nama' => 'Produk B',
+        'model' => 'Type B1',
+        'volume' => '200 L',
+        'jumlah' => 200,
+        'mulai' => '2025-06-06',
+        'selesai' => '2025-06-10',
+        'spk' => 'SPK-002',
+    ],
+];
 
-            $mesin = ['label' => 'Mesin yang Digunakan:', 'value' => $jadwal->sumber->mesin_yang_digunakan];
-            $tenagaKerja = ['label' => 'Tenaga Kerja:', 'value' => $jadwal->sumber->tenaga_kerja];
+$mesin = ['label' => 'Mesin yang Digunakan:', 'value' => $jadwal->sumber->mesin_yang_digunakan];
+$tenagaKerja = ['label' => 'Tenaga Kerja:', 'value' => $jadwal->sumber->tenaga_kerja];
         @endphp
 
         <div class="grid max-w-4xl grid-cols-1 pt-2 mx-auto mb-6 text-sm md:grid-cols-2 gap-x-6 gap-y-4">
