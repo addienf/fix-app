@@ -2,55 +2,55 @@
     <x-filament::section>
         <h2 class="mb-3 text-xl font-bold text-center">Detail Surat Perintah Kerja</h2>
         <!-- HEADER DOKUMEN MIRIP EXCEL -->
-        <table class="w-full max-w-4xl mx-auto text-sm border border-black dark:border-white dark:bg-gray-900 dark:text-white"
-            style="border-collapse: collapse;">
-            <tr>
-                <td rowspan="3"
-                    class="p-2 text-center align-middle border border-black dark:border-white w-28 h-28 dark:bg-gray-900">
-                    <img src="{{ asset('asset/logo.png') }}" alt="Logo" class="object-contain mx-auto h-30" />
-                </td>
-                <td colspan="2" class="font-bold text-center border border-black dark:border-white dark:bg-gray-900">
-                    PT. QLab Kinarya Sentosa
-                </td>
-            </tr>
-            <tr>
-                <td class="font-bold text-center border border-black dark:border-white dark:bg-gray-900"
-                    style="font-size: 20px;">
-                    Surat Perintah Kerja
-                </td>
-                <td rowspan="2" class="p-0 align-top border border-black dark:border-white dark:bg-gray-900">
-                    <table class="w-full text-sm dark:bg-gray-900" style="border-collapse: collapse;">
-                        <tr>
-                            <td class="px-3 py-2 border-b border-black dark:border-white">No. Dokumen</td>
-                            <td class="px-3 py-2 font-semibold border-b border-black dark:border-white"> : FO-QKS-PRD-01-01</td>
-                        </tr>
-                        <tr>
-                            <td class="px-3 py-2 border-b border-black dark:border-white">Tanggal Rilis</td>
-                            <td class="px-3 py-2 font-semibold border-b border-black dark:border-white"> : 12 Maret 2025</td>
-                        </tr>
-                        <tr>
-                            <td class="px-3 py-2">Revisi</td>
-                            <td class="px-3 py-2 font-semibold"> : 0</td>
-                        </tr>
-                    </table>
-                </td>
-            </tr>
-        </table>
-    
+<table class="w-full max-w-4xl mx-auto text-sm border border-black dark:border-white dark:bg-gray-900 dark:text-white"
+    style="border-collapse: collapse;">
+    <tr>
+        <td rowspan="3"
+            class="p-2 text-center align-middle border border-black dark:border-white w-28 h-28 dark:bg-gray-900">
+            <img src="{{ asset('asset/logo.png') }}" alt="Logo" class="object-contain mx-auto h-30" />
+        </td>
+        <td colspan="2" class="font-bold text-center border border-black dark:border-white dark:bg-gray-900">
+            PT. QLab Kinarya Sentosa
+        </td>
+    </tr>
+    <tr>
+        <td class="font-bold text-center border border-black dark:border-white dark:bg-gray-900"
+            style="font-size: 20px;">
+            Surat Perintah Kerja
+        </td>
+        <td rowspan="2" class="p-0 align-top border border-black dark:border-white dark:bg-gray-900">
+            <table class="w-full text-sm dark:bg-gray-900" style="border-collapse: collapse;">
+                <tr>
+                    <td class="px-3 py-2 border-b border-black dark:border-white">No. Dokumen</td>
+                    <td class="px-3 py-2 font-semibold border-b border-black dark:border-white"> : FO-QKS-PRD-01-01</td>
+                </tr>
+                <tr>
+                    <td class="px-3 py-2 border-b border-black dark:border-white">Tanggal Rilis</td>
+                    <td class="px-3 py-2 font-semibold border-b border-black dark:border-white"> : 12 Maret 2025</td>
+                </tr>
+                <tr>
+                    <td class="px-3 py-2">Revisi</td>
+                    <td class="px-3 py-2 font-semibold"> : 0</td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
+
         <!-- Form Input -->
         <div class="grid max-w-4xl grid-cols-1 pt-6 mx-auto mb-6 text-sm md:grid-cols-2 gap-x-6 gap-y-4">
             @php
-$fields = [
-    [
-        'label' => 'Tanggal :',
-        'value' => \Carbon\Carbon::parse($spk_mkt->tanggal)->translatedFormat('d F Y'),
-    ],
-    ['label' => 'No SPK :', 'value' => $spk_mkt->no_spk],
-    ['label' => 'Customer :', 'value' => $spk_mkt->spesifikasiProduct->urs->customer->name],
-    ['label' => 'Dari :', 'value' => $spk_mkt->dari],
-    ['label' => 'No Order :', 'value' => $spk_mkt->no_order],
-    ['label' => 'Kepada :', 'value' => $spk_mkt->kepada],
-];
+                $fields = [
+                    [
+                        'label' => 'Tanggal :',
+                        'value' => \Carbon\Carbon::parse($spk_mkt->tanggal)->translatedFormat('d F Y'),
+                    ],
+                    ['label' => 'No SPK :', 'value' => $spk_mkt->no_spk],
+                    ['label' => 'Customer :', 'value' => $spk_mkt->spesifikasiProduct->urs->customer->name],
+                    ['label' => 'Dari :', 'value' => $spk_mkt->dari],
+                    ['label' => 'No Order :', 'value' => $spk_mkt->no_order],
+                    ['label' => 'Kepada :', 'value' => $spk_mkt->kepada],
+                ];
             @endphp
 
             @foreach ($fields as $field)
