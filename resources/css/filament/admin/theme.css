@@ -24,7 +24,7 @@
 }
 
 .fi-sidebar {
-    @apply shadow-lg;
+    @apply shadow-lg; 
 }
 
 .fi-sidebar-nav a {
