@@ -3,29 +3,31 @@
         <h2 class="mb-3 text-xl font-bold text-center">Detail Permintaan Spesifikasi Produk</h2>
 
         <!-- HEADER DOKUMEN -->
-        <table class="w-full max-w-4xl mx-auto text-sm border border-black dark:border-gray-600"
+        <table class="w-full max-w-4xl mx-auto text-sm border border-black dark:border-white dark:bg-gray-900 dark:text-white"
             style="border-collapse: collapse;">
             <tr>
-                <td rowspan="3" class="w-28 h-28 p-2 border border-black text-center align-middle">
+                <td rowspan="3"
+                    class="w-28 h-28 p-2 border border-black dark:border-white text-center align-middle dark:bg-gray-900">
                     <img src="{{ asset('asset/logo.png') }}" alt="Logo" class="object-contain h-30 mx-auto" />
                 </td>
-                <td colspan="2" class="text-center font-bold border border-black">
+                <td colspan="2" class="text-center font-bold border border-black dark:border-white dark:bg-gray-900">
                     PT. QLab Kinarya Sentosa
                 </td>
             </tr>
             <tr>
-                <td class="text-center font-bold border border-black" style="font-size: 20px;">
+                <td class="text-center font-bold border border-black dark:border-white dark:bg-gray-900"
+                    style="font-size: 20px;">
                     Permintaan Spesifikasi Produk
                 </td>
-                <td rowspan="2" class="p-0 border border-black align-top">
-                    <table class="w-full text-sm" style="border-collapse: collapse;">
+                <td rowspan="2" class="p-0 border border-black dark:border-white align-top dark:bg-gray-900">
+                    <table class="w-full text-sm dark:bg-gray-900 dark:text-white" style="border-collapse: collapse;">
                         <tr>
-                            <td class="px-3 py-2">No. Dokumen</td>
-                            <td class="px-3 py-2 font-semibold"> : FO-QKS-PRD-01-01</td>
+                            <td class="px-3 py-2 border-b border-black dark:border-white">No. Dokumen</td>
+                            <td class="px-3 py-2 font-semibold border-b border-black dark:border-white"> : FO-QKS-PRD-01-01</td>
                         </tr>
                         <tr>
-                            <td class="px-3 py-2">Tanggal Rilis</td>
-                            <td class="px-3 py-2 font-semibold"> : 12 Maret 2025</td>
+                            <td class="px-3 py-2 border-b border-black dark:border-white">Tanggal Rilis</td>
+                            <td class="px-3 py-2 font-semibold border-b border-black dark:border-white"> : 12 Maret 2025</td>
                         </tr>
                         <tr>
                             <td class="px-3 py-2">Revisi</td>
@@ -35,17 +37,17 @@
                 </td>
             </tr>
         </table>
-
+    
         <!-- FORM -->
         @php
-            $fields = [
-                ['label' => 'No', 'value' => $spesifikasi->urs->no_urs],
-                ['label' => 'Phone Number', 'value' => $spesifikasi->urs->customer->phone_number],
-                ['label' => 'Nama', 'value' => $spesifikasi->urs->customer->name],
-                ['label' => 'Company Name', 'value' => $spesifikasi->urs->customer->company_name],
-                ['label' => 'Department', 'value' => $spesifikasi->urs->customer->department],
-                ['label' => 'Company Address', 'value' => $spesifikasi->urs->customer->company_address],
-            ];
+$fields = [
+    ['label' => 'No', 'value' => $spesifikasi->urs->no_urs],
+    ['label' => 'Phone Number', 'value' => $spesifikasi->urs->customer->phone_number],
+    ['label' => 'Nama', 'value' => $spesifikasi->urs->customer->name],
+    ['label' => 'Company Name', 'value' => $spesifikasi->urs->customer->company_name],
+    ['label' => 'Department', 'value' => $spesifikasi->urs->customer->department],
+    ['label' => 'Company Address', 'value' => $spesifikasi->urs->customer->company_address],
+];
         @endphp
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 max-w-4xl mx-auto text-sm pt-6">
@@ -61,7 +63,7 @@
 
         <!-- Spesifikasi Teknis -->
         @php
-            $chunks = $spesifikasi->details->chunk(2); // Bagi tiap 2 item
+$chunks = $spesifikasi->details->chunk(2); // Bagi tiap 2 item
         @endphp
 
         <div class="max-w-4xl mx-auto pt-6 text-sm space-y-4">
@@ -87,10 +89,10 @@
                                     <input type="text" disabled
                                         class="w-full px-2 py-1 bg-white text-black dark:bg-gray-800 dark:text-white border border-gray-300 dark:border-gray-600 rounded cursor-not-allowed"
                                         value="{{ in_array($spec['name'], ['Water Feeding System', 'Software'])
-                                            ? (isset($spec['value_bool']) && $spec['value_bool']
-                                                ? 'Ya'
-                                                : 'Tidak')
-                                            : $spec['value_str'] ?? '-' }}" />
+                ? (isset($spec['value_bool']) && $spec['value_bool']
+                    ? 'Ya'
+                    : 'Tidak')
+                : $spec['value_str'] ?? '-' }}" />
                                 </div>
                             @endforeach
                         </div>
