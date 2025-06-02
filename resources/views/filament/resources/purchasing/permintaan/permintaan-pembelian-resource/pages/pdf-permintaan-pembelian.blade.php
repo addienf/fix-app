@@ -85,10 +85,10 @@ $permintaan_alat_bahan = (object) [
         @php
             $permintaan_alat_bahan = (object) [
                 'pic' => (object) [
-                    'create_signature' => '',
-                    'create_name' => '',
-                    'receive_signature' => '',
-                    'receive_name' => '',
+                    'create_signature' => 'signatures/dummy-create-signature.png',
+                    'create_name' => 'Ahmad Fauzi',
+                    'receive_signature' => 'signatures/dummy-receive-signature.png',
+                    'receive_name' => 'Budi Santoso',
                 ],
             ];
         @endphp
