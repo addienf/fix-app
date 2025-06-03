@@ -27,7 +27,7 @@ class PeminjamanAlatResource extends Resource
 {
     protected static ?string $model = PeminjamanAlat::class;
 
-    // protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-wrench';
     protected static ?int $navigationSort = 3;
     protected static ?string $navigationGroup = 'Warehouse';
     protected static ?string $navigationLabel = 'Peminjaman Alat';
@@ -133,32 +133,33 @@ class PeminjamanAlatResource extends Resource
     {
         return
             DatePicker::make($fieldName)
-            ->label($label)
-            ->displayFormat('M d Y')
-            ->seconds(false);
+                ->label($label)
+                ->displayFormat('M d Y')
+                ->seconds(false);
     }
 
     protected static function signatureInput(string $fieldName, string $labelName): SignaturePad
     {
         return
             SignaturePad::make($fieldName)
-            ->label($labelName)
-            ->exportPenColor('#0118D8')
-            ->afterStateUpdated(function ($state, $set) use ($fieldName) {
-                if (blank($state)) return;
-                $path = SignatureUploader::handle($state, 'ttd_', 'Warehouse/PeminjamanAlat/Signatures');
-                if ($path) {
-                    $set($fieldName, $path);
-                }
-            });
+                ->label($labelName)
+                ->exportPenColor('#0118D8')
+                ->afterStateUpdated(function ($state, $set) use ($fieldName) {
+                    if (blank($state))
+                        return;
+                    $path = SignatureUploader::handle($state, 'ttd_', 'Warehouse/PeminjamanAlat/Signatures');
+                    if ($path) {
+                        $set($fieldName, $path);
+                    }
+                });
     }
 
     protected static function textColumn(string $fieldName, string $label): TextColumn
     {
         return
             TextColumn::make($fieldName)
-            ->label($label)
-            ->searchable()
-            ->sortable();
+                ->label($label)
+                ->searchable()
+                ->sortable();
     }
 }
