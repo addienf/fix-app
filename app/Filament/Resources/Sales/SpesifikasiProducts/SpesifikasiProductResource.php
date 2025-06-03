@@ -37,7 +37,7 @@ class SpesifikasiProductResource extends Resource
 {
     protected static ?string $model = SpesifikasiProduct::class;
     protected static ?int $navigationSort = 1;
-    // protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';/
+    protected static ?string $navigationIcon = 'heroicon-o-circle-stack';
     protected static ?string $navigationGroup = 'Sales';
     protected static ?string $navigationLabel = 'Spesifikasi Product';
     protected static ?string $pluralLabel = 'Spesifikasi Product';
@@ -194,47 +194,47 @@ class SpesifikasiProductResource extends Resource
     {
         return
             Select::make($fieldName)
-            ->relationship($relation, $title)
-            ->label($label)
-            ->native(false)
-            ->searchable()
-            ->preload()
-            ->required();
+                ->relationship($relation, $title)
+                ->label($label)
+                ->native(false)
+                ->searchable()
+                ->preload()
+                ->required();
     }
 
     protected static function toogleButton(string $fieldName, string $label): ToggleButtons
     {
         return
             ToggleButtons::make($fieldName)
-            ->label($label)
-            ->boolean()
-            ->grouped();
+                ->label($label)
+                ->boolean()
+                ->grouped();
     }
 
     protected static function signatureInput(string $fieldName): SignaturePad
     {
         return
             SignaturePad::make($fieldName)
-            ->label('')
-            ->exportPenColor('#0118D8')
-            ->helperText('*Harap Tandatangan di tengah area yang disediakan.')
-            ->afterStateUpdated(function ($state, $set) {
-                if (blank($state))
-                    return;
-                $path = SignatureUploader::handle($state, 'ttd_', 'Sales/Spesifikasi/Signatures');
-                if ($path) {
-                    $set('signature', $path);
-                }
-            });
+                ->label('')
+                ->exportPenColor('#0118D8')
+                ->helperText('*Harap Tandatangan di tengah area yang disediakan.')
+                ->afterStateUpdated(function ($state, $set) {
+                    if (blank($state))
+                        return;
+                    $path = SignatureUploader::handle($state, 'ttd_', 'Sales/Spesifikasi/Signatures');
+                    if ($path) {
+                        $set('signature', $path);
+                    }
+                });
     }
 
     protected static function textColumn(string $fieldName, string $label): TextColumn
     {
         return
             TextColumn::make($fieldName)
-            ->label($label)
-            ->searchable()
-            ->sortable();
+                ->label($label)
+                ->searchable()
+                ->sortable();
     }
 
     protected static function ursFormSchema(): array

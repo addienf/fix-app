@@ -7,11 +7,11 @@
 }
 
 .fi-btn {
-    @apply bg-[#005792] text-white shadow-lg;
+    @apply bg-[#222fb2] text-white shadow-lg transition-all duration-500 ease-in-out ;
 }
 
 .fi-btn:hover {
-    @apply bg-[#F29D35] text-white shadow-xl;
+    @apply bg-gradient-to-r from-[#222fb2] to-[#367CEF] text-white shadow-xl transition-all duration-500 ease-in-out;
 }
 
 .fi-sidebar-header img,
@@ -23,16 +23,44 @@
     margin: 0 auto;
 }
 
-.fi-sidebar {
-    @apply shadow-lg; 
+@layer components {
+
+
+    .fi-sidebar-item-button.bg-gray-100 {
+        @apply border border-white bg-white/15;
+    }
+
+    .dark .fi-sidebar-item-button.bg-gray-100 {
+        @apply bg-gradient-to-r from-[#212932] to-[#212932] text-white;   }
 }
 
+.fi-topbar {
+    @apply border-b border-gray-100 dark:border-black;
+}
+.fi-topbar * {
+    @apply  text-gray-900 dark:text-gray-100;
+}
+
+.fi-sidebar {
+    @apply shadow-lg bg-gradient-to-t from-[#367CEF] to-[#092056];
+}
+.dark .fi-sidebar {
+    @apply bg-gradient-to-t from-[#2e2e2e] to-[#18181B] shadow-lg;
+}
+
+.fi-sidebar * {
+    @apply text-white;
+}
 .fi-sidebar-nav a {
     @apply rounded-md px-3 py-2 flex items-center gap-3 text-blue-800 transition-colors duration-300;
 }
 
-.fi-sidebar-nav a:hover {
-    @apply bg-[#003366] text-white !important;
+/* .fi-sidebar-nav a:hover {
+    @apply bg-white/50 text-white;
+} */
+
+.dark .fi-sidebar-nav a:hover {
+   @apply bg-transparent border border-white text-white;
 }
 
 .fi-sidebar-nav a:hover span,
