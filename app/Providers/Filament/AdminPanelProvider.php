@@ -4,6 +4,8 @@ namespace App\Providers\Filament;
 
 use App\Filament\Pages\Auth\LoginCustom;
 use App\Filament\Pages\Auth\ResetPasswordCustom;
+use App\Filament\Widgets\AdminChartWidget;
+use App\Filament\Widgets\AdminStatsWidget;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -49,6 +51,8 @@ class AdminPanelProvider extends PanelProvider
             ->widgets([
                 Widgets\AccountWidget::class,
                 Widgets\FilamentInfoWidget::class,
+                AdminStatsWidget::class,
+                AdminChartWidget::class
             ])
             ->middleware([
                 EncryptCookies::class,
