@@ -167,37 +167,42 @@ class PermintaanBahanResource extends Resource
             ->maxLength(255);
     }
 
-    protected static function selectInput(string $fieldName, string $label, string $relation, string $title): Select
+    protected static function selectInput($fieldName, $relation, $title, $label): Select
     {
         return
             Select::make($fieldName)
-                ->relationship($relation, $title)
-                ->label($label)
-                ->native(false)
-                ->searchable()
-                ->preload()
-                ->required()
-                ->reactive()
-                ->afterStateUpdated(function ($state, callable $set) {
-                    if (!$state)
-                        return;
+            // ->relationship($relation, $title)
+            ->relationship(
+                $relation,
+                $title,
+                fn($query) => $query->where('status', false)
+            )
+            ->label($label)
+            ->native(false)
+            ->searchable()
+            ->preload()
+            ->required()
+            ->reactive()
+            ->afterStateUpdated(function ($state, callable $set) {
+                if (!$state)
+                    return;
 
-                    $pab = PermintaanAlatDanBahan::with('details')->find($state);
+                $pab = PermintaanAlatDanBahan::with('details')->find($state);
 
-                    if (!$pab)
-                        return;
+                if (!$pab)
+                    return;
 
-                    $detailBahan = $pab->details?->map(function ($detail) {
-                        return [
-                            'bahan_baku' => $detail->bahan_baku ?? '',
-                            'spesifikasi' => $detail->spesifikasi ?? '',
-                            'jumlah' => $detail->jumlah ?? 0,
-                            'keperluan_barang' => $detail->keperluan_barang ?? '',
-                        ];
-                    })->toArray();
+                $detailBahan = $pab->details?->map(function ($detail) {
+                    return [
+                        'bahan_baku' => $detail->bahan_baku ?? '',
+                        'spesifikasi' => $detail->spesifikasi ?? '',
+                        'jumlah' => $detail->jumlah ?? 0,
+                        'keperluan_barang' => $detail->keperluan_barang ?? '',
+                    ];
+                })->toArray();
 
-                    $set('details', $detailBahan);
-                })
+                $set('details', $detailBahan);
+            })
         ;
     }
 
@@ -205,9 +210,9 @@ class PermintaanBahanResource extends Resource
     {
         return
             DatePicker::make($fieldName)
-                ->label($label)
-                ->displayFormat('M d Y')
-                ->seconds(false);
+            ->label($label)
+            ->displayFormat('M d Y')
+            ->seconds(false);
     }
 
     protected static function signatureInput(string $fieldName, string $labelName): SignaturePad
@@ -231,8 +236,8 @@ class PermintaanBahanResource extends Resource
     {
         return
             TextColumn::make($fieldName)
-                ->label($label)
-                ->searchable()
-                ->sortable();
+            ->label($label)
+            ->searchable()
+            ->sortable();
     }
 }

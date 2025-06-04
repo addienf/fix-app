@@ -29,7 +29,7 @@ class PeminjamanAlatResource extends Resource
     protected static ?string $model = PeminjamanAlat::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-wrench';
-    protected static ?int $navigationSort = 3;
+    protected static ?int $navigationSort = 6;
     protected static ?string $navigationGroup = 'Warehouse';
     protected static ?string $navigationLabel = 'Peminjaman Alat';
     protected static ?string $pluralLabel = 'Peminjaman Alat';
@@ -136,9 +136,9 @@ class PeminjamanAlatResource extends Resource
     {
         return
             DatePicker::make($fieldName)
-                ->label($label)
-                ->displayFormat('M d Y')
-                ->seconds(false);
+            ->label($label)
+            ->displayFormat('M d Y')
+            ->seconds(false);
     }
 
     protected static function signatureInput(string $fieldName, string $labelName): SignaturePad
@@ -162,8 +162,8 @@ class PeminjamanAlatResource extends Resource
     {
         return
             TextColumn::make($fieldName)
-                ->label($label)
-                ->searchable()
-                ->sortable();
+            ->label($label)
+            ->searchable()
+            ->sortable();
     }
 }

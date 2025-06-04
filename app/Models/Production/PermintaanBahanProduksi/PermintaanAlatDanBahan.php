@@ -20,6 +20,7 @@ class PermintaanAlatDanBahan extends Model
         'no_surat',
         'dari',
         'kepada',
+        'status',
     ];
 
     protected $casts = [
