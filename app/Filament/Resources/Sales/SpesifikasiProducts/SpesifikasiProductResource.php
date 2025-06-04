@@ -48,7 +48,7 @@ class SpesifikasiProductResource extends Resource
         return $form
             ->schema([
                 //
-                Fieldset::make('Informasi Umum')
+                Section::make('Informasi Umum')
                     ->schema([
                         self::selectInput('urs_id', 'No URS', 'urs', 'no_urs')
                             ->createOptionForm(fn() => self::ursFormSchema()),
@@ -56,7 +56,7 @@ class SpesifikasiProductResource extends Resource
                         self::toogleButton('is_stock', 'Untuk Stock ?')
                     ])
                     ->columns(3),
-                Fieldset::make('Detail Spesifikasi Product')
+                Section::make('Detail Spesifikasi Product')
                     ->schema([
                         Repeater::make('details')
                             ->label('')
@@ -86,22 +86,23 @@ class SpesifikasiProductResource extends Resource
                                         Select::make('name')
                                             ->reactive()
                                             ->required()
-                                            ->label('Jenis Spesifikasi')
+                                            ->label('')
                                             ->options(config('spec.spesifikasi'))
-                                            ->columnSpan(1),
-
+                                            ->columnSpan(1)
+                                            ->placeholder('Pilih Jenis Spesifikasi'),
                                         ToggleButtons::make('value_bool')
                                             ->boolean()
+                                            ->grouped()
                                             ->required()
                                             ->inline()
-                                            ->inlineLabel(false)
-                                            ->label('Nilai')
+                                            ->inlineLabel(condition: false)
+                                            ->label('')
                                             ->visible(fn($get) => in_array($get('name'), ['Water Feeding System', 'Software']))
                                             ->columnSpan(1),
-
                                         TextInput::make('value_str')
                                             ->required()
-                                            ->label('Nilai')
+                                            ->label('')
+                                            ->placeholder('Masukkan Nilai')
                                             ->visible(fn($get) => !in_array($get('name'), ['Water Feeding System', 'Software']))
                                             ->columnSpan(1),
                                     ])
@@ -116,13 +117,13 @@ class SpesifikasiProductResource extends Resource
                             ->columnSpanFull()
                             ->addActionLabel('Tambah Data Detail Product'),
                     ]),
-                Fieldset::make('Penjelasan Tambahan')
+                Section::make('Penjelasan Tambahan')
                     ->schema([
                         Textarea::make('detail_specification')
                             ->label('Detail Spesifikasi')
                             ->columnSpanFull(),
                     ]),
-                Fieldset::make('Detail PIC')
+                Section::make('Detail PIC')
                     ->relationship('pic')
                     ->schema([
                         DatePicker::make('date')
@@ -143,6 +144,7 @@ class SpesifikasiProductResource extends Resource
                 self::textColumn('urs.customer.name', 'Nama Customer'),
                 ImageColumn::make('pic.signature')
                     ->width(150)
+                    ->label('PIC')
                     ->height(75),
                 self::textColumn('delivery_address', 'Alamat Pengiriman'),
             ])

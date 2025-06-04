@@ -7,6 +7,7 @@ use App\Filament\Resources\Warehouse\SerahTerima\SerahTerimaBahanResource\Relati
 use App\Models\Production\PermintaanBahanProduksi\PermintaanAlatDanBahan;
 use App\Models\Warehouse\SerahTerima\SerahTerimaBahan;
 use App\Services\SignatureUploader;
+use Filament\Forms\Components\Section;
 use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Fieldset;
@@ -42,9 +43,12 @@ class SerahTerimaBahanResource extends Resource
         return $form
             ->schema([
                 //
-                self::selectInput('permintaan_bahan_pro_id', 'No Surat', 'permintaanBahanPro', 'no_surat')
-                    ->columnSpanFull(),
-                Fieldset::make('Informasi Umum')
+                Section::make('Nomor Surat')
+                    ->schema([
+                        self::selectInput('permintaan_bahan_pro_id', 'Pilih Nomor Surat', 'permintaanBahanPro', 'no_surat')
+                            ->columnSpanFull(),
+                    ]),
+                Section::make('Informasi Umum')
                     ->schema([
                         Grid::make(2)
                             ->schema([
@@ -54,7 +58,7 @@ class SerahTerimaBahanResource extends Resource
                                 self::textInput('kepada', 'Kepada'),
                             ])
                     ]),
-                Fieldset::make('List Detail Bahan Baku')
+                Section::make('List Detail Bahan Baku')
                     ->schema([
                         Grid::make(2)
                             ->schema([
@@ -92,7 +96,7 @@ class SerahTerimaBahanResource extends Resource
                                     ->columnSpanFull()
                             ])
                     ]),
-                Fieldset::make('PIC')
+                Section::make('PIC')
                     ->relationship('pic')
                     ->schema([
                         Grid::make(2)
@@ -218,6 +222,7 @@ class SerahTerimaBahanResource extends Resource
             SignaturePad::make($fieldName)
                 ->label($labelName)
                 ->exportPenColor('#0118D8')
+                ->helperText('*Harap Tandatangan di tengah area yang disediakan.')
                 ->afterStateUpdated(function ($state, $set) use ($fieldName) {
                     if (blank($state))
                         return;

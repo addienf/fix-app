@@ -6,6 +6,7 @@ use App\Filament\Resources\Warehouse\Peminjaman\PeminjamanAlatResource\Pages;
 use App\Filament\Resources\Warehouse\Peminjaman\PeminjamanAlatResource\RelationManagers;
 use App\Models\Warehouse\Peminjaman\PeminjamanAlat;
 use App\Services\SignatureUploader;
+use Filament\Forms\Components\Section;
 use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Fieldset;
@@ -39,7 +40,7 @@ class PeminjamanAlatResource extends Resource
         return $form
             ->schema([
                 //
-                Fieldset::make('')
+                Section::make('Data Peminjaman Alat')
                     ->schema([
                         Grid::make(2)
                             ->schema([
@@ -57,20 +58,22 @@ class PeminjamanAlatResource extends Resource
                                             ])
                                     ])
                                     ->defaultItems(1)
+                                    ->addActionLabel('Tambah Barang')
                                     ->columnSpanFull(),
                             ])
                     ]),
-                Fieldset::make('')
+                Section::make('Peminjaman')
                     ->relationship('pic')
                     ->schema([
-                        Grid::make(3)
+                        Grid::make()
+                            ->columns(2) // Membagi dua kolom
                             ->schema([
-                                self::textInput('department', 'Department')
+                                self::textInput('department', 'Departemen')
                                     ->default(auth()->user()->role),
                                 self::textInput('nama_peminjam', 'Nama Peminjam')
                                     ->default(auth()->user()->name),
-                                self::signatureInput('signature', 'Tanda Tangan')
-                            ])
+                            ]),
+                        self::signatureInput('signature', 'Tanda Tangan')->columnSpanFull(),
                     ])
             ]);
     }
@@ -144,6 +147,7 @@ class PeminjamanAlatResource extends Resource
             SignaturePad::make($fieldName)
                 ->label($labelName)
                 ->exportPenColor('#0118D8')
+                ->helperText('*Harap Tandatangan di tengah area yang disediakan.')
                 ->afterStateUpdated(function ($state, $set) use ($fieldName) {
                     if (blank($state))
                         return;

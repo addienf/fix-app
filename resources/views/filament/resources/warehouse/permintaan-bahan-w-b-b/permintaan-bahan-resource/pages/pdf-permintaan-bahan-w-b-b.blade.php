@@ -66,12 +66,12 @@ $infoUmum = [
             <p class="mb-2">Dengan hormat,</p>
             <p class="flex flex-wrap items-center gap-1">
                 <span>Berdasarkan Permintaan Barang No</span>
-                <input type="disabled"
-                    class="w-32 px-2 py-1 text-sm align-middle bg-transparent rounded outline-none h-7 focus:outline-none"
+                <input disabled
+                    class="w-45 px-2 py-1 text-sm align-middle bg-transparent border-none h-7"
                     value="{{ $permintaan_bahan->permintaanBahanPro->no_surat }}" />
                 <span>Dari Departemen</span>
-                <input type="disabled"
-                    class="w-32 px-2 py-1 text-sm align-middle bg-transparent rounded outline-none h-7 focus:outline-none"
+                <input disabled
+                    class="w-32 px-2 py-1 text-sm align-middle bg-transparent border-none h-7"
                     value=" {{ $permintaan_bahan->dari }}" />
                 <span>mohon bantuan untuk memenuhi kebutuhan bahan/sparepart dengan rincian sebagai berikut:</span>
             </p>

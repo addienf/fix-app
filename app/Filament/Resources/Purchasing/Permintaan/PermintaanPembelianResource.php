@@ -7,6 +7,7 @@ use App\Filament\Resources\Purchasing\Permintaan\PermintaanPembelianResource\Rel
 use App\Models\Purchasing\Permintaan\PermintaanPembelian;
 use App\Models\Warehouse\PermintaanBahanWBB\PermintaanBahan;
 use App\Services\SignatureUploader;
+use Filament\Forms\Components\Section;
 use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Fieldset;
@@ -30,7 +31,7 @@ class PermintaanPembelianResource extends Resource
 {
     protected static ?string $model = PermintaanPembelian::class;
 
-    // protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-shopping-cart';
     protected static ?int $navigationSort = 8;
     protected static ?string $navigationGroup = 'Purchasing';
     protected static ?string $navigationLabel = 'Permintaan Pembelian';
@@ -42,10 +43,12 @@ class PermintaanPembelianResource extends Resource
     {
         return $form
             ->schema([
-                //
-                self::selectInput('permintaan_bahan_wbb_id', 'No Surat', 'permintaanBahanWBB', 'no_surat')
-                    ->columnSpanFull(),
-                Fieldset::make('List Detail Bahan Baku')
+                Section::make('Nomor Surat')
+                    ->schema([
+                        self::selectInput('permintaan_bahan_wbb_id', 'Pilih Nomor Surat', 'permintaanBahanWBB', 'no_surat')
+                            ->columnSpanFull(),
+                    ]),
+                Section::make('List Detail Bahan Baku')
                     ->schema([
                         Grid::make(2)
                             ->schema([
@@ -75,7 +78,7 @@ class PermintaanPembelianResource extends Resource
                                     ->columnSpanFull()
                             ])
                     ]),
-                Fieldset::make('PIC')
+                Section::make('PIC')
                     ->relationship('pic')
                     ->schema([
                         Grid::make(2)
@@ -152,33 +155,33 @@ class PermintaanPembelianResource extends Resource
     {
         return
             Select::make($fieldName)
-            ->relationship($relation, $title)
-            ->label($label)
-            ->native(false)
-            ->searchable()
-            ->preload()
-            ->required()
-            ->reactive()
-            ->afterStateUpdated(function ($state, callable $set) {
-                if (!$state)
-                    return;
+                ->relationship($relation, $title)
+                ->label($label)
+                ->native(false)
+                ->searchable()
+                ->preload()
+                ->required()
+                ->reactive()
+                ->afterStateUpdated(function ($state, callable $set) {
+                    if (!$state)
+                        return;
 
-                $pab = PermintaanBahan::with('details')->find($state);
+                    $pab = PermintaanBahan::with('details')->find($state);
 
-                if (!$pab)
-                    return;
+                    if (!$pab)
+                        return;
 
-                $detailBahan = $pab->details?->map(function ($detail) {
-                    return [
-                        'nama_barang' => $detail->bahan_baku ?? '',
-                        // 'spesifikasi' => $detail->spesifikasi ?? '',
-                        'jumlah' => $detail->jumlah ?? 0,
-                        // 'keperluan_barang' => $detail->keperluan_barang ?? '',
-                    ];
-                })->toArray();
+                    $detailBahan = $pab->details?->map(function ($detail) {
+                        return [
+                            'nama_barang' => $detail->bahan_baku ?? '',
+                            // 'spesifikasi' => $detail->spesifikasi ?? '',
+                            'jumlah' => $detail->jumlah ?? 0,
+                            // 'keperluan_barang' => $detail->keperluan_barang ?? '',
+                        ];
+                    })->toArray();
 
-                $set('details', $detailBahan);
-            })
+                    $set('details', $detailBahan);
+                })
         ;
     }
 
@@ -186,32 +189,34 @@ class PermintaanPembelianResource extends Resource
     {
         return
             DatePicker::make($fieldName)
-            ->label($label)
-            ->displayFormat('M d Y')
-            ->seconds(false);
+                ->label($label)
+                ->displayFormat('M d Y')
+                ->seconds(false);
     }
 
     protected static function signatureInput(string $fieldName, string $labelName): SignaturePad
     {
         return
             SignaturePad::make($fieldName)
-            ->label($labelName)
-            ->exportPenColor('#0118D8')
-            ->afterStateUpdated(function ($state, $set) use ($fieldName) {
-                if (blank($state)) return;
-                $path = SignatureUploader::handle($state, 'ttd_', 'Purchasing/PermintaanPembelian/Signatures');
-                if ($path) {
-                    $set($fieldName, $path);
-                }
-            });
+                ->label($labelName)
+                ->exportPenColor('#0118D8')
+                ->helperText('*Harap Tandatangan di tengah area yang disediakan.')
+                ->afterStateUpdated(function ($state, $set) use ($fieldName) {
+                    if (blank($state))
+                        return;
+                    $path = SignatureUploader::handle($state, 'ttd_', 'Purchasing/PermintaanPembelian/Signatures');
+                    if ($path) {
+                        $set($fieldName, $path);
+                    }
+                });
     }
 
     protected static function textColumn(string $fieldName, string $label): TextColumn
     {
         return
             TextColumn::make($fieldName)
-            ->label($label)
-            ->searchable()
-            ->sortable();
+                ->label($label)
+                ->searchable()
+                ->sortable();
     }
 }
