@@ -11,21 +11,21 @@ use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Grid;
-use Filament\Forms\Components\Hidden;
-use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Repeater;
-use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\ToggleButtons;
 use Filament\Forms\Form;
 use Filament\Forms\Set;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Actions\Action;
+use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Icetalker\FilamentTableRepeater\Forms\Components\TableRepeater;
 use Illuminate\Database\Eloquent\Builder;
@@ -37,6 +37,7 @@ class SpesifikasiProductResource extends Resource
 {
     protected static ?string $model = SpesifikasiProduct::class;
     protected static ?int $navigationSort = 1;
+    protected static ?string $slug = 'sales/spesifikasi-product';
     protected static ?string $navigationIcon = 'heroicon-o-circle-stack';
     protected static ?string $navigationGroup = 'Sales';
     protected static ?string $navigationLabel = 'Spesifikasi Product';
@@ -150,13 +151,24 @@ class SpesifikasiProductResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
-                Action::make('pdf_view')
-                    ->label(_('View PDF'))
-                    ->icon('heroicon-o-document')
-                    ->color('success')
-                    ->url(fn($record) => self::getUrl('pdfSpecProduct', ['record' => $record->id])),
+                ActionGroup::make([
+                    Tables\Actions\EditAction::make()
+                        ->color('info'),
+                    Tables\Actions\DeleteAction::make()
+                        ->successNotification(null)
+                        ->after(function ($record) {
+                            Notification::make()
+                                ->title('Spesifikasi Product deleted successfully')
+                                ->body("The Spesifikasi Product \"{$record->urs->no_urs}\" has been permanently removed.")
+                                ->danger()
+                                ->send();
+                        }),
+                    Action::make('pdf_view')
+                        ->label(_('View PDF'))
+                        ->icon('heroicon-o-document')
+                        ->color('success')
+                        ->url(fn($record) => self::getUrl('pdfSpecProduct', ['record' => $record->id])),
+                ])
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -194,47 +206,47 @@ class SpesifikasiProductResource extends Resource
     {
         return
             Select::make($fieldName)
-                ->relationship($relation, $title)
-                ->label($label)
-                ->native(false)
-                ->searchable()
-                ->preload()
-                ->required();
+            ->relationship($relation, $title)
+            ->label($label)
+            ->native(false)
+            ->searchable()
+            ->preload()
+            ->required();
     }
 
     protected static function toogleButton(string $fieldName, string $label): ToggleButtons
     {
         return
             ToggleButtons::make($fieldName)
-                ->label($label)
-                ->boolean()
-                ->grouped();
+            ->label($label)
+            ->boolean()
+            ->grouped();
     }
 
     protected static function signatureInput(string $fieldName): SignaturePad
     {
         return
             SignaturePad::make($fieldName)
-                ->label('')
-                ->exportPenColor('#0118D8')
-                ->helperText('*Harap Tandatangan di tengah area yang disediakan.')
-                ->afterStateUpdated(function ($state, $set) {
-                    if (blank($state))
-                        return;
-                    $path = SignatureUploader::handle($state, 'ttd_', 'Sales/Spesifikasi/Signatures');
-                    if ($path) {
-                        $set('signature', $path);
-                    }
-                });
+            ->label('')
+            ->exportPenColor('#0118D8')
+            ->helperText('*Harap Tandatangan di tengah area yang disediakan.')
+            ->afterStateUpdated(function ($state, $set) {
+                if (blank($state))
+                    return;
+                $path = SignatureUploader::handle($state, 'ttd_', 'Sales/Spesifikasi/Signatures');
+                if ($path) {
+                    $set('signature', $path);
+                }
+            });
     }
 
     protected static function textColumn(string $fieldName, string $label): TextColumn
     {
         return
             TextColumn::make($fieldName)
-                ->label($label)
-                ->searchable()
-                ->sortable();
+            ->label($label)
+            ->searchable()
+            ->sortable();
     }
 
     protected static function ursFormSchema(): array
