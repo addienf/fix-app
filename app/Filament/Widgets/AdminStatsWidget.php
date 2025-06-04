@@ -2,66 +2,65 @@
 
 namespace App\Filament\Widgets;
 
-use App\Models\Sales\SpesifikasiProducts\SpesifikasiProduct;
-use App\Models\Sales\SPKMarketings\SPKMarketing;
+use App\Models\User;
+use App\Traits\HasModelFilter;
 use EightyNine\FilamentAdvancedWidget\AdvancedStatsOverviewWidget as BaseWidget;
 use EightyNine\FilamentAdvancedWidget\AdvancedStatsOverviewWidget\Stat;
+use Filament\Widgets\Concerns\InteractsWithPageFilters;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Cache;
 
 class AdminStatsWidget extends BaseWidget
 {
     protected static ?string $pollingInterval = null;
+
+    use InteractsWithPageFilters;
+    use HasModelFilter;
+
+    protected static ?int $sort = 1;
+
+    public function getColumns(): int
+    {
+        return 2;
+    }
     protected function getStats(): array
     {
-        $totalSpecM = SpesifikasiProduct::query()
-            ->whereBetween('created_at', [now()->startOfMonth(), now()->endOfMonth()])
-            ->count();
-        $totalSPKM = SPKMarketing::query()
-            ->whereBetween('created_at', [now()->startOfMonth(), now()->endOfMonth()])
-            ->count();
+        $selectedMonth = $this->filters['selectedMonth'] ?? now()->month;
+        $year = now()->year;
 
-        $totalSalesThisMonth = $totalSpecM + $totalSPKM;
+        $model = $this->getSelectedModelConfig();
+        $modelKey = $model['key'];
+        $label = $model['label'];
+        $modelClass = $model['class'];
 
-        $monthlySales = collect(range(1, 12))->map(function ($month) {
-            return SPKMarketing::whereMonth('created_at', $month)
-                ->whereYear('created_at', now()->year)
+        // Stat bulanan
+        $monthlyKey = $this->getCacheKey('stat-monthly', $modelKey, "{$year}-{$selectedMonth}");
+        $monthlyCount = Cache::remember($monthlyKey, now()->addMinutes(10), function () use ($modelClass, $selectedMonth, $year) {
+            return $modelClass::whereMonth('created_at', $selectedMonth)
+                ->whereYear('created_at', $year)
                 ->count();
         });
 
-        $totalSpecY = SpesifikasiProduct::query()
-            ->whereBetween('created_at', [now()->startOfYear(), now()->endOfYear()])
-            ->count();
-        $totalSPKY = SPKMarketing::query()
-            ->whereBetween('created_at', [now()->startOfYear(), now()->endOfYear()])
-            ->count();
-
-        $totalSalesThisYear = $totalSpecY + $totalSPKY;
-
-        $yearlySales = collect(range(now()->year - 4, now()->year))->map(function ($year) {
-            return SPKMarketing::whereYear('created_at', $year)->count();
+        // Stat tahunan
+        $yearlyKey = $this->getCacheKey('stat-yearly', $modelKey, $year);
+        $yearlyCount = Cache::remember($yearlyKey, now()->addMinutes(10), function () use ($modelClass, $year) {
+            return $modelClass::whereYear('created_at', $year)->count();
         });
 
-
-        $totalSales = SpesifikasiProduct::count() + SPKMarketing::count();
         return [
-            //
-            Stat::make('Total Data Dari Department Sales Bulan Ini', number_format($totalSalesThisMonth))
+            Stat::make("Total {$label} Bulan Ini", $monthlyCount)
                 ->icon('heroicon-o-chart-bar')
-                ->description('Gabungan data dari Spesifikasi dan SPK')
-                ->descriptionIcon('heroicon-o-arrow-trending-up', 'before')
-                ->descriptionColor('success')
-                ->iconColor('primary')
-                ->progress($totalSalesThisMonth / $totalSales * 100)
-                ->progressBarColor('success')
-                ->chart($monthlySales->toArray()),
-            Stat::make('Total Data Dari Department Sales Tahun Ini', number_format($totalSalesThisYear))
+                ->iconColor('success')
+                ->description("Model: {$label}, Bulan: " . Carbon::create()->month($selectedMonth)->format('F'))
+                ->chart([0, 0, 0, 0, 0, 0])
+                ->chartColor('success'),
+
+            Stat::make("Total {$label} Tahun Ini", $yearlyCount)
                 ->icon('heroicon-o-chart-bar')
-                ->description('Gabungan data dari Spesifikasi dan SPK')
-                ->descriptionIcon('heroicon-o-arrow-trending-up', 'before')
-                ->descriptionColor('success')
-                ->iconColor('primary')
-                ->progress($totalSalesThisYear / $totalSales * 100)
-                ->progressBarColor('success')
-                ->chart($yearlySales->toArray()),
+                ->iconColor('info')
+                ->description("Tahun: {$year}")
+                ->chart([0, 0, 0, 0, 0, 0])
+                ->chartColor('info'),
         ];
     }
 }
