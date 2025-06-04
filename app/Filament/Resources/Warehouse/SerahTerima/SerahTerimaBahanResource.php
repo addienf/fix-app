@@ -31,7 +31,7 @@ class SerahTerimaBahanResource extends Resource
     protected static ?string $model = SerahTerimaBahan::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-square-2-stack';
-    protected static ?int $navigationSort = 4;
+    protected static ?int $navigationSort = 7;
     protected static ?string $navigationGroup = 'Warehouse';
     protected static ?string $navigationLabel = 'Serah Terima Bahan';
     protected static ?string $pluralLabel = 'Serah Terima Bahan';
@@ -173,33 +173,38 @@ class SerahTerimaBahanResource extends Resource
     {
         return
             Select::make($fieldName)
-                ->relationship($relation, $title)
-                ->label($label)
-                ->native(false)
-                ->searchable()
-                ->preload()
-                ->required()
-                ->reactive()
-                ->afterStateUpdated(function ($state, callable $set) {
-                    if (!$state)
-                        return;
+            // ->relationship($relation, $title)
+            ->relationship(
+                $relation,
+                $title,
+                fn($query) => $query->where('status', true)
+            )
+            ->label($label)
+            ->native(false)
+            ->searchable()
+            ->preload()
+            ->required()
+            ->reactive()
+            ->afterStateUpdated(function ($state, callable $set) {
+                if (!$state)
+                    return;
 
-                    $pab = PermintaanAlatDanBahan::with('details')->find($state);
+                $pab = PermintaanAlatDanBahan::with('details')->find($state);
 
-                    if (!$pab)
-                        return;
+                if (!$pab)
+                    return;
 
-                    $detailBahan = $pab->details?->map(function ($detail) {
-                        return [
-                            'bahan_baku' => $detail->bahan_baku ?? '',
-                            'spesifikasi' => $detail->spesifikasi ?? '',
-                            'jumlah' => $detail->jumlah ?? 0,
-                            'keperluan_barang' => $detail->keperluan_barang ?? '',
-                        ];
-                    })->toArray();
+                $detailBahan = $pab->details?->map(function ($detail) {
+                    return [
+                        'bahan_baku' => $detail->bahan_baku ?? '',
+                        'spesifikasi' => $detail->spesifikasi ?? '',
+                        'jumlah' => $detail->jumlah ?? 0,
+                        'keperluan_barang' => $detail->keperluan_barang ?? '',
+                    ];
+                })->toArray();
 
-                    $set('details', $detailBahan);
-                })
+                $set('details', $detailBahan);
+            })
         ;
     }
 
@@ -207,33 +212,33 @@ class SerahTerimaBahanResource extends Resource
     {
         return
             DatePicker::make($fieldName)
-                ->label($label)
-                ->displayFormat('M d Y')
-                ->seconds(false);
+            ->label($label)
+            ->displayFormat('M d Y')
+            ->seconds(false);
     }
 
     protected static function signatureInput(string $fieldName, string $labelName): SignaturePad
     {
         return
             SignaturePad::make($fieldName)
-                ->label($labelName)
-                ->exportPenColor('#0118D8')
-                ->afterStateUpdated(function ($state, $set) use ($fieldName) {
-                    if (blank($state))
-                        return;
-                    $path = SignatureUploader::handle($state, 'ttd_', 'Warehouse/SerahTerimaBahan/Signatures');
-                    if ($path) {
-                        $set($fieldName, $path);
-                    }
-                });
+            ->label($labelName)
+            ->exportPenColor('#0118D8')
+            ->afterStateUpdated(function ($state, $set) use ($fieldName) {
+                if (blank($state))
+                    return;
+                $path = SignatureUploader::handle($state, 'ttd_', 'Warehouse/SerahTerimaBahan/Signatures');
+                if ($path) {
+                    $set($fieldName, $path);
+                }
+            });
     }
 
     protected static function textColumn(string $fieldName, string $label): TextColumn
     {
         return
             TextColumn::make($fieldName)
-                ->label($label)
-                ->searchable()
-                ->sortable();
+            ->label($label)
+            ->searchable()
+            ->sortable();
     }
 }

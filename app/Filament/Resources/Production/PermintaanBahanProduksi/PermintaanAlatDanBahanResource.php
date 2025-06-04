@@ -15,10 +15,12 @@ use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\ToggleButtons;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Actions\Action;
+use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -43,8 +45,11 @@ class PermintaanAlatDanBahanResource extends Resource
         return $form
             ->schema([
                 //
-                self::selectInput('spk_marketing_id', 'No SPK', 'spk', 'no_spk')
-                    ->columnSpanFull(),
+                self::selectInput('spk_marketing_id', 'No SPK', 'spk', 'no_spk'),
+                ToggleButtons::make('status')
+                    ->label('Status Stock Barang')
+                    ->boolean()
+                    ->grouped(),
                 Fieldset::make('Informasi Umum')
                     ->schema([
                         Grid::make(2)
@@ -79,7 +84,6 @@ class PermintaanAlatDanBahanResource extends Resource
                                                     ]),
                                                 self::textInput('spesifikasi', 'Spesifikasi'),
                                                 self::textInput('jumlah', 'Jumlah')->numeric(),
-                                                // self::textInput('keperluan_barang', 'Keperluan Barang')
                                                 Textarea::make('keperluan_barang')
                                                     ->label('Keperluan Barang')
                                             ])
@@ -112,28 +116,46 @@ class PermintaanAlatDanBahanResource extends Resource
                 self::textColumn('spk.no_spk', 'No SPK'),
                 self::textColumn('no_surat', 'Nomor Surat'),
                 self::textColumn('tanggal', 'Tanggal Dibuat')->date('d M Y'),
-                self::textColumn('dari', 'Dari'),
-                self::textColumn('kepada', 'Kepada'),
-                ImageColumn::make('pic.create_signature')
-                    ->label('Pembuat')
-                    ->width(150)
-                    ->height(75),
-                ImageColumn::make('pic.receive_signature')
-                    ->label('Penyetuju')
-                    ->width(150)
-                    ->height(75),
+                self::textColumn('status', 'Status Stock Barang')
+                    ->badge()
+                    ->default(null)
+                    ->placeholder('Belum Diproses')
+                    ->formatStateUsing(function ($state) {
+                        if (is_null($state)) {
+                            return 'Belum Diproses';
+                        }
+                        return $state ? 'Ready' : 'Not Ready';
+                    })
+                    ->color(function ($state) {
+                        if (is_null($state)) {
+                            return 'warning';
+                        }
+                        return $state ? 'success' : 'danger';
+                    }),
+                // self::textColumn('dari', 'Dari'),
+                // self::textColumn('kepada', 'Kepada'),
+                // ImageColumn::make('pic.create_signature')
+                //     ->label('Pembuat')
+                //     ->width(150)
+                //     ->height(75),
+                // ImageColumn::make('pic.receive_signature')
+                //     ->label('Penyetuju')
+                //     ->width(150)
+                //     ->height(75),
             ])
             ->filters([
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
-                Action::make('pdf_view')
-                    ->label(_('View PDF'))
-                    ->icon('heroicon-o-document')
-                    ->color('success')
-                    ->url(fn($record) => self::getUrl('pdfPermintaanAlatdanBahan', ['record' => $record->id])),
+                ActionGroup::make([
+                    Tables\Actions\EditAction::make(),
+                    Tables\Actions\DeleteAction::make(),
+                    Action::make('pdf_view')
+                        ->label(_('View PDF'))
+                        ->icon('heroicon-o-document')
+                        ->color('success')
+                        ->url(fn($record) => self::getUrl('pdfPermintaanAlatdanBahan', ['record' => $record->id])),
+                ])
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
