@@ -3,17 +3,16 @@
 namespace App\Filament\Widgets;
 
 use App\Models\User;
-use App\Traits\HasModelFilter;
+use Carbon\Carbon;
 use EightyNine\FilamentAdvancedWidget\AdvancedChartWidget;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Flowframe\Trend\Trend;
 use Flowframe\Trend\TrendValue;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
+use App\Traits\HasModelFilter;
 
-class AdminChartWidget extends AdvancedChartWidget
+class AdminChartYearWidget extends AdvancedChartWidget
 {
-
     use InteractsWithPageFilters;
     use HasModelFilter;
     protected static ?int $sort = 2;
@@ -26,41 +25,44 @@ class AdminChartWidget extends AdvancedChartWidget
 
     public function getHeading(): string
     {
-        $selectedMonth = $this->filters['selectedMonth'] ?? now()->month;
-        $monthName = Carbon::create()->month($selectedMonth)->format('F');
+        $year = now()->year;
+        $config = $this->getSelectedModelConfig('user');
 
-        $config = $this->getSelectedModelConfig();
-        return "Total Data {$config['label']} Bulan - {$monthName}";
+        return "Total Data {$config['label']} Tahun - {$year}";
     }
 
     protected function getData(): array
     {
-        $month = $this->filters['selectedMonth'] ?? now()->month;
-        $year = now()->year;
 
-        $config = $this->getSelectedModelConfig();
+        $year = now()->year;
+        $start = Carbon::create($year, 1, 1)->startOfDay();
+        $end = Carbon::create($year, 12, 31)->endOfDay();
+
+        $config = $this->getSelectedModelConfig('user');
         $modelClass = $config['class'];
         $label = $config['label'];
-        $start = Carbon::create($year, $month)->startOfMonth();
-        $end = Carbon::create($year, $month)->endOfMonth();
 
-        $cacheKey = $this->getCacheKey('chart-daily', $config['key'], "{$year}-{$month}");
+        $cacheKey = $this->getCacheKey('chart-yearly', $config['key'], $year);
 
         $data = Cache::remember($cacheKey, now()->addMinutes(10), function () use ($modelClass, $start, $end) {
             return Trend::query($modelClass::query())
                 ->between($start, $end)
-                ->perDay()
+                ->perMonth()
                 ->count();
         });
 
         return [
             'datasets' => [
                 [
-                    'label' => "Jumlah Data {$label} per Hari",
-                    'data' => $data->map(fn(TrendValue $val) => $val->aggregate),
+                    'label' => "Jumlah Data {$label} per Bulan",
+                    'data' => collect(range(1, 12))->map(function ($month) use ($data) {
+                        return $data->firstWhere(
+                            fn(TrendValue $val) => Carbon::parse($val->date)->month === $month
+                        )?->aggregate ?? 0;
+                    }),
                 ],
             ],
-            'labels' => $data->map(fn(TrendValue $val) => Carbon::parse($val->date)->format('d M')),
+            'labels' => $this->getMonthLabels(),
         ];
     }
 
@@ -68,17 +70,4 @@ class AdminChartWidget extends AdvancedChartWidget
     {
         return 'bar';
     }
-
-    // protected function getOptions(): ?array
-    // {
-    //     return [
-    //         'scales' => [
-    //             'y' => [
-    //                 'ticks' => [
-    //                     'precision' => 0,
-    //                 ],
-    //             ],
-    //         ],
-    //     ];
-    // }
 }
