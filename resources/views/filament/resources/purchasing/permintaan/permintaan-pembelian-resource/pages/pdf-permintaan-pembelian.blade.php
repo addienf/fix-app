@@ -42,12 +42,12 @@
             </tr>
         </table>
 
-        <div class="max-w-4xl mx-auto mb-6 text-sm">
+        <div class="max-w-4xl mx-auto mb-6 text-sm pt-6">
             <p class="mb-2">Dengan hormat,</p>
             <p class="flex flex-wrap items-center gap-1">
                 <span>Berdasarkan Permintaan Barang No.</span>
-                <input readonly
-                    class="w-[400px] px-2 py-1 text-black bg-white border border-gray-300 rounded dark:border-gray-600 dark:bg-gray-800 dark:text-white"
+                <input disabled
+                    class="w-45 px-2 py-1 text-sm align-middle bg-transparent border-none h-7"
                     value="{{ $permintaan_pembelian->permintaanBahanWBB->no_surat }}" />
                 <span>mohon bantuan untuk memenuhi kebutuhan bahan/sparepart dengan rincian sebagai berikut:</span>
             </p>

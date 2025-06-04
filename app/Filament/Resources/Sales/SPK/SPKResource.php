@@ -9,8 +9,9 @@ use App\Models\Sales\SPKMarketings\SPKMarketing;
 use App\Services\SignatureUploader;
 use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Fieldset;
+use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -45,36 +46,44 @@ class SPKResource extends Resource
         return $form
             ->schema([
                 //
-                Fieldset::make('Informasi Umum')
+                Section::make('Informasi Umum')
+                    ->collapsible()
                     ->schema([
-                        DatePicker::make('tanggal')
-                            ->label('Rencana Pengiriman')
-                            ->required()
-                            ->displayFormat('M d Y'),
-                        self::textInput('no_spk', 'Nomor SPK'),
-                        Select::make('spesifikasi_product_id')
-                            ->label('Customer')
-                            ->required()
-                            ->options(function () {
-                                return SpesifikasiProduct::with('urs.customer') // load relasi sampai customer
-                                    ->get()
-                                    ->mapWithKeys(function ($item) {
-                                        $noUrs = $item->urs->no_urs ?? '-';
-                                        $customerName = $item->urs->customer->name ?? '-';
-                                        return [$item->id => "{$noUrs} - {$customerName}"];
-                                    });
-                            }),
-                        self::textInput('dari', 'Dari'),
-                        self::textInput('no_order', 'Nomor Order'),
-                        self::textInput('kepada', 'Kepada'),
+                        Grid::make(3) // dua kolom
+                            ->schema([
+                                self::textInput('no_order', 'Nomor Order'),
+                                self::textInput('no_spk', 'Nomor SPK'),
+                                DatePicker::make('tanggal')
+                                    ->label('Rencana Pengiriman')
+                                    ->required()
+                                    ->displayFormat('M d Y'),
+                                Select::make('spesifikasi_product_id')
+                                    ->label('Customer')
+                                    ->required()
+                                    ->options(function () {
+                                        return SpesifikasiProduct::with('urs.customer')
+                                            ->get()
+                                            ->mapWithKeys(function ($item) {
+                                                $noUrs = $item->urs->no_urs ?? '-';
+                                                $customerName = $item->urs->customer->name ?? '-';
+                                                return [$item->id => "{$noUrs} - {$customerName}"];
+                                            });
+                                    }),
+                                self::textInput('dari', 'Dari'),
+                                self::textInput('kepada', 'Kepada'),
+                            ]),
                     ]),
-                Fieldset::make('Detail PIC')
+                Section::make('Detail PIC')
+                    ->collapsible()
                     ->relationship('pic')
                     ->schema([
-                        self::textInput('create_name', 'PIC Pembuat'),
-                        self::textInput('receive_name', 'PIC Penerima'),
-                        self::signatureInput('create_signature', 'Dibuat Oleh'),
-                        self::signatureInput('receive_signature', 'Diterima Oleh'),
+                        Grid::make(2)
+                            ->schema([
+                                self::textInput('create_name', 'PIC Pembuat'),
+                                self::textInput('receive_name', 'PIC Penerima'),
+                                self::signatureInput('create_signature', 'Dibuat Oleh'),
+                                self::signatureInput('receive_signature', 'Diterima Oleh'),
+                            ]),
                     ]),
             ]);
     }
@@ -88,9 +97,11 @@ class SPKResource extends Resource
                 self::textColumn('no_order', 'No Order'),
                 ImageColumn::make('pic.create_signature')
                     ->width(150)
+                    ->label('PIC')
                     ->height(75),
                 ImageColumn::make('pic.receive_signature')
                     ->width(150)
+                    ->label('PIC')
                     ->height(75),
             ])
             ->filters([

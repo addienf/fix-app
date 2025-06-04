@@ -9,6 +9,7 @@ use App\Models\Sales\SPKMarketings\SPKMarketing;
 use App\Services\SignatureUploader;
 use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Repeater;
@@ -29,11 +30,12 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Saade\FilamentAutograph\Forms\Components\SignaturePad;
 
+
 class PermintaanAlatDanBahanResource extends Resource
 {
     protected static ?string $model = PermintaanAlatDanBahan::class;
 
-    // protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-wrench-screwdriver';
     protected static ?int $navigationSort = 10;
     protected static ?string $navigationGroup = 'Production';
     protected static ?string $navigationLabel = 'Permintaan Alat dan Bahan';
@@ -45,12 +47,16 @@ class PermintaanAlatDanBahanResource extends Resource
         return $form
             ->schema([
                 //
-                self::selectInput('spk_marketing_id', 'No SPK', 'spk', 'no_spk'),
-                ToggleButtons::make('status')
-                    ->label('Status Stock Barang')
-                    ->boolean()
-                    ->grouped(),
-                Fieldset::make('Informasi Umum')
+                Section::make('No SPK')
+                    ->schema([
+                        self::selectInput('spk_marketing_id', 'Pilih No SPK', 'spk', 'no_spk')
+                            ->columnSpanFull(),
+                      ToggleButtons::make('status')
+                            ->label('Status Stock Barang')
+                            ->boolean()
+                            ->grouped(),
+                    ]),
+                Section::make('Informasi Umum')
                     ->schema([
                         Grid::make(2)
                             ->schema([
@@ -68,7 +74,7 @@ class PermintaanAlatDanBahanResource extends Resource
                                     ]),
                             ])
                     ]),
-                Fieldset::make('List Detail Bahan Baku')
+                Section::make('List Detail Bahan Baku')
                     ->schema([
                         Grid::make(2)
                             ->schema([
@@ -94,7 +100,7 @@ class PermintaanAlatDanBahanResource extends Resource
                                     ->columnSpanFull()
                             ])
                     ]),
-                Fieldset::make('PIC')
+                Section::make('PIC')
                     ->relationship('pic')
                     ->schema([
                         Grid::make(2)
@@ -193,66 +199,70 @@ class PermintaanAlatDanBahanResource extends Resource
     {
         return
             Select::make($fieldName)
-            ->relationship($relation, $title)
-            ->label($label)
-            ->native(false)
-            ->searchable()
-            ->preload()
-            ->required()
-            ->reactive()
-            ->afterStateUpdated(function ($state, callable $set) {
-                if (!$state) return;
+                ->relationship($relation, $title)
+                ->label($label)
+                ->native(false)
+                ->searchable()
+                ->preload()
+                ->required()
+                ->reactive()
+                ->afterStateUpdated(function ($state, callable $set) {
+                    if (!$state)
+                        return;
 
-                // Ambil data SPK dan relasi yang dibutuhkan
-                $spk = SPKMarketing::with(['jadwalProduksi.sumber'])->find($state);
-                if (!$spk || !$spk->jadwalProduksi?->sumber) return;
+                    // Ambil data SPK dan relasi yang dibutuhkan
+                    $spk = SPKMarketing::with(['jadwalProduksi.sumber'])->find($state);
+                    if (!$spk || !$spk->jadwalProduksi?->sumber)
+                        return;
 
-                $bahanBaku = $spk->jadwalProduksi->sumber->bahan_baku ?? [];
+                    $bahanBaku = $spk->jadwalProduksi->sumber->bahan_baku ?? [];
 
-                // Ubah bahan baku jadi array yang bisa ditangkap Repeater
-                $details = collect($bahanBaku)->map(function ($item) {
-                    return [
-                        'bahan_baku' => is_array($item) ? ($item['bahan_baku'] ?? '') : $item,
-                    ];
-                })->toArray();
+                    // Ubah bahan baku jadi array yang bisa ditangkap Repeater
+                    $details = collect($bahanBaku)->map(function ($item) {
+                        return [
+                            'bahan_baku' => is_array($item) ? ($item['bahan_baku'] ?? '') : $item,
+                        ];
+                    })->toArray();
 
-                // Set ke form
-                $set('dari', $spk->dari);
-                $set('kepada', $spk->kepada);
-                $set('details', $details);
-            });
+                    // Set ke form
+                    $set('dari', $spk->dari);
+                    $set('kepada', $spk->kepada);
+                    $set('details', $details);
+                });
     }
 
     protected static function datePicker(string $fieldName, string $label): DatePicker
     {
         return
             DatePicker::make($fieldName)
-            ->label($label)
-            ->displayFormat('M d Y')
-            ->seconds(false);
+                ->label($label)
+                ->displayFormat('M d Y')
+                ->seconds(false);
     }
 
     protected static function signatureInput(string $fieldName, string $labelName): SignaturePad
     {
         return
             SignaturePad::make($fieldName)
-            ->label($labelName)
-            ->exportPenColor('#0118D8')
-            ->afterStateUpdated(function ($state, $set) use ($fieldName) {
-                if (blank($state)) return;
-                $path = SignatureUploader::handle($state, 'ttd_', 'Production/PermintaanBahan/Signatures');
-                if ($path) {
-                    $set($fieldName, $path);
-                }
-            });
+                ->label($labelName)
+                ->exportPenColor('#0118D8')
+                ->helperText('*Harap Tandatangan di tengah area yang disediakan.')
+                ->afterStateUpdated(function ($state, $set) use ($fieldName) {
+                    if (blank($state))
+                        return;
+                    $path = SignatureUploader::handle($state, 'ttd_', 'Production/PermintaanBahan/Signatures');
+                    if ($path) {
+                        $set($fieldName, $path);
+                    }
+                });
     }
 
     protected static function textColumn(string $fieldName, string $label): TextColumn
     {
         return
             TextColumn::make($fieldName)
-            ->label($label)
-            ->searchable()
-            ->sortable();
+                ->label($label)
+                ->searchable()
+                ->sortable();
     }
 }

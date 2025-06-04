@@ -55,7 +55,7 @@ $infoUmum = [
     @foreach ($infoUmum as $field)
         <div class="flex flex-col items-start gap-2 md:flex-row md:gap-4 md:items-center">
             <label class="font-medium md:w-48">{{ $field['label'] }}</label>
-            <input type="text" readonly
+            <input disabled
                 class="w-[400px] h-[32px] px-2 py-1 text-black bg-white border border-gray-300 rounded dark:border-gray-600 dark:bg-gray-800 dark:text-white"
                 value="{{ $field['value'] }}" />
         </div>
@@ -66,8 +66,8 @@ $infoUmum = [
             <p class="mb-2">Dengan hormat,</p>
             <p class="flex flex-wrap items-center gap-1">
                 <span>Berdasarkan SPK MKT No.</span>
-                <input readonly
-                    class="w-[400px] px-2 py-1 text-black bg-white border border-gray-300 rounded dark:border-gray-600 dark:bg-gray-800 dark:text-white"
+                <input disabled
+                    class="w-45 px-2 py-1 text-sm align-middle bg-transparent border-none h-7"
                     value="{{ $permintaan_alat_bahan->spk->no_spk }}" />
                 <span>mohon bantuan untuk memenuhi kebutuhan bahan/sparepart dengan rincian sebagai berikut:</span>
             </p>

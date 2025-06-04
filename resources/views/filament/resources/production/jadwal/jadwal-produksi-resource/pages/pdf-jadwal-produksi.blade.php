@@ -41,24 +41,24 @@
 
         <!-- A. Informasi Umum -->
         <div class="max-w-4xl pt-6 mx-auto mb-3 text-lg font-bold text-start">A. Informasi Umum</div>
-        @php
+                    @php
             $infoUmum = [
                 ['label' => 'Tanggal:', 'value' => $jadwal->tanggal],
                 ['label' => 'Penanggung Jawab:', 'value' => $jadwal->pic_name],
             ];
             $mesin = ['label' => 'Mesin yang Digunakan:', 'value' => $jadwal->sumber->mesin_yang_digunakan];
             $tenagaKerja = ['label' => 'Tenaga Kerja:', 'value' => $jadwal->sumber->tenaga_kerja];
-        @endphp
+                    @endphp
 
-        <div class="grid max-w-4xl grid-cols-1 pt-2 mx-auto mb-6 text-sm md:grid-cols-2 gap-x-6 gap-y-4">
-            @foreach ($infoUmum as $field)
-                <div class="flex flex-col items-start gap-2 md:flex-row md:gap-4 md:items-center">
-                    <label class="font-medium md:w-48">{{ $field['label'] }}</label>
-                    <input type="text"
-                        class="flex-1 w-full px-2 py-1 text-black bg-white border border-gray-300 rounded cursor-not-allowed dark:border-gray-600 dark:bg-gray-800 dark:text-white"
-                        value="{{ $field['value'] }}" readonly />
-                </div>
-            @endforeach
+            <div class="grid max-w-4xl grid-cols-1 pt-2 mx-auto mb-6 text-sm md:grid-cols-2 gap-x-6 gap-y-4">
+                @foreach ($infoUmum as $field)
+                    <div class="flex flex-col items-start gap-2 md:flex-row md:gap-4 md:items-center">
+                        <label class="font-medium md:w-48">{{ $field['label'] }}</label>
+                        <input type="text"
+                            class="w-[400px] px-2 py-1 text-black bg-white border border-gray-300 rounded cursor-not-allowed dark:border-gray-600 dark:bg-gray-800 dark:text-white"
+                            value="{{ $field['value'] }}" readonly />
+                    </div>
+                @endforeach
         </div>
 
         <!-- B. Detail Jadwal Produksi -->

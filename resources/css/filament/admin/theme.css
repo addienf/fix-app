@@ -7,8 +7,7 @@
 }
 
 .fi-btn {
-    @apply bg-[#222fb2] text-white shadow-lg transition-all duration-500 ease-in-out ;
-}
+    @apply bg-[#222fb2] text-white shadow-lg transition-all duration-75 ease-in-out; }
 
 .fi-btn:hover {
     @apply bg-gradient-to-r from-[#222fb2] to-[#367CEF] text-white shadow-xl transition-all duration-500 ease-in-out;
@@ -71,6 +70,42 @@
     stroke: white !important;
 }
 
+@layer components {
+    .fi-ta thead tr {
+        @apply bg-blue-300/20 text-white !important;
+    } 
+}
 .fi-ta-row:hover {
     @apply bg-blue-300/50 transition-all duration-300;
 }
+
+.fi-ta{
+    @apply border border-blue-200 rounded-lg dark:border-gray-50/20;
+}
+
+.fi-section-header {
+    @apply bg-blue-400/20 text-white rounded-t-lg border border-blue-200 dark:bg-gray-800 dark:border-gray-100 !important;
+}
+
+.fi-section-content {
+    @apply border border-blue-200 rounded-lg dark:border-gray-50;
+}
+.fi-wi-stats-overview-stat{
+    @apply border border-blue-200 rounded-lg;
+}
+
+.filament-tables-header {
+    @apply bg-white/50 !important;
+    border: none !important;
+    box-shadow: none !important;
+    /* kalau ada shadow yang mirip border */
+}
+
+/* .fi-main{
+    @apply bg-gradient-to-t from-[#2e2e2e]/10 to-[#18181B]/10;
+} */
+/* 
+.fi-fo-repeater{
+    @apply bg-blue-400/20 text-white rounded-t-lg !important;
+        border: none !important;
+} */

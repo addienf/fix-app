@@ -35,6 +35,7 @@ class JadwalProduksiResource extends Resource
     protected static ?string $model = JadwalJadwalProduksi::class;
     protected static ?int $navigationSort = 9;
     protected static ?string $navigationGroup = 'Production';
+    protected static ?string $navigationIcon = 'heroicon-o-calendar';
     protected static ?string $navigationLabel = 'Jadwal Produksi';
     protected static ?string $pluralLabel = 'Jadwal Produksi';
     protected static ?string $modelLabel = 'Jadwal Produksi';
@@ -44,7 +45,7 @@ class JadwalProduksiResource extends Resource
         return $form
             ->schema([
                 //
-                Fieldset::make('Informasi Umum')
+                Section::make('Informasi Umum')
                     ->schema([
                         Grid::make(2)
                             ->schema([
@@ -83,21 +84,23 @@ class JadwalProduksiResource extends Resource
                             ->addable(false)
                             ->columnSpanFull(),
                     ]),
-                Fieldset::make('Sumber Daya Yang Digunakan')
+                Section::make('Sumber Daya Yang Digunakan')
                     ->relationship('sumber')
                     ->schema([
                         self::textInput('mesin_yang_digunakan', 'Mesin Yang Digunakan'),
                         self::textInput('tenaga_kerja', 'Tenaga Kerja'),
-                        TableRepeater::make('bahan_baku')
-                            ->label(' ')
+                        Repeater::make('bahan_baku')
+                            ->label('')
                             ->schema([
-                                self::textInput('bahan_baku', 'Bahan Baku'),
+                                self::textInput('bahan_baku', 'Masukkan Bahan Baku')
+                                    ->extraInputAttributes(['class' => 'font-normal']),
                             ])
-                            ->columnSpanFull()
+                            // ->columnSpanFull()
+                            ->addActionLabel('Tambah Bahan Baku')
                             ->reorderable(false)
-                            ->addActionLabel('Tambah Bahan Baku'),
+                            ->defaultItems(1)
                     ]),
-                Fieldset::make('PIC')
+                Section::make('PIC')
                     ->relationship('pic')
                     ->schema([
                         Grid::make(2)
