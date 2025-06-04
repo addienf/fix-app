@@ -46,22 +46,24 @@ class AdminStatsWidget extends BaseWidget
             //
             Stat::make('Total Data Dari Department Sales Bulan Ini', number_format($totalSalesThisMonth))
                 ->icon('heroicon-o-chart-bar')
-                ->description('Gabungan data dari Spesifikasi dan SPK')
+                ->description('Total data dari Spesifikasi dan SPK')
                 ->descriptionIcon('heroicon-o-arrow-trending-up', 'before')
                 ->descriptionColor('success')
                 ->iconColor('primary')
                 ->progress($totalSalesThisMonth / $totalSales * 100)
                 ->progressBarColor('success')
-                ->chart($monthlySales->toArray()),
+                ->chart($monthlySales->toArray())
+                ->chartColor('primary'),
             Stat::make('Total Data Dari Department Sales Tahun Ini', number_format($totalSalesThisYear))
                 ->icon('heroicon-o-chart-bar')
-                ->description('Gabungan data dari Spesifikasi dan SPK')
+                ->description('Total data dari Spesifikasi dan SPK')
                 ->descriptionIcon('heroicon-o-arrow-trending-up', 'before')
                 ->descriptionColor('success')
                 ->iconColor('primary')
                 ->progress($totalSalesThisYear / $totalSales * 100)
                 ->progressBarColor('success')
-                ->chart($yearlySales->toArray()),
+                ->chart($yearlySales->toArray())
+                ->chartColor('primary'),
         ];
     }
 }
