@@ -45,7 +45,7 @@ class PermintaanBahanResource extends Resource
                 //
                 Section::make('Nomor Surat')
                     ->schema([
-                        self::selectInput('permintaan_bahan_pro_id', 'Pilih Nomor Surat', 'permintaanBahanPro', 'no_surat')
+                        self::selectInput('permintaan_bahan_pro_id', 'permintaanBahanPro', 'no_surat', 'Pilih Nomor Surat')
                             ->columnSpanFull(),
                     ]),
                 Section::make('Informasi Umum')
@@ -219,17 +219,17 @@ class PermintaanBahanResource extends Resource
     {
         return
             SignaturePad::make($fieldName)
-                ->label($labelName)
-                ->exportPenColor('#0118D8')
-                ->helperText('*Harap Tandatangan di tengah area yang disediakan.')
-                ->afterStateUpdated(function ($state, $set) use ($fieldName) {
-                    if (blank($state))
-                        return;
-                    $path = SignatureUploader::handle($state, 'ttd_', 'Warehouse/PermintaanBahan/Signatures');
-                    if ($path) {
-                        $set($fieldName, $path);
-                    }
-                });
+            ->label($labelName)
+            ->exportPenColor('#0118D8')
+            ->helperText('*Harap Tandatangan di tengah area yang disediakan.')
+            ->afterStateUpdated(function ($state, $set) use ($fieldName) {
+                if (blank($state))
+                    return;
+                $path = SignatureUploader::handle($state, 'ttd_', 'Warehouse/PermintaanBahan/Signatures');
+                if ($path) {
+                    $set($fieldName, $path);
+                }
+            });
     }
 
     protected static function textColumn(string $fieldName, string $label): TextColumn

@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Sales\SpesifikasiProducts\SpesifikasiProductRes
 
 use App\Filament\Resources\Sales\SpesifikasiProducts\SpesifikasiProductResource;
 use App\Models\Sales\SpesifikasiProducts\SpesifikasiProduct;
+use Filament\Actions\Action;
 use Filament\Resources\Pages\Page;
 
 class viewPDF extends Page
@@ -20,5 +21,17 @@ class viewPDF extends Page
     {
         $this->record = $record;
         $this->spesifikasi = SpesifikasiProduct::with(['urs', 'pic', 'details'])->find($record);
+    }
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            Action::make('print')
+                ->label('Download')
+                ->icon('heroicon-o-printer')
+                ->color('info')
+                ->requiresConfirmation()
+                ->url(route('pdf.specProduct', ['id' => $this->record]))
+        ];
     }
 }
