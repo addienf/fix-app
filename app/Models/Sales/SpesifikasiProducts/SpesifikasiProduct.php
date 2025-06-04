@@ -8,10 +8,11 @@ use App\Models\Sales\SPKMarketings\SPKMarketing;
 use App\Models\Sales\URS;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Notifications\Notifiable;
 
 class SpesifikasiProduct extends Model
 {
-    use HasFactory;
+    use HasFactory, Notifiable;
     protected $fillable = [
         'urs_id',
         'is_stock',
