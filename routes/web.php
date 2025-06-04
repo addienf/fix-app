@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\PDFController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -16,3 +17,5 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return redirect()->route('filament.admin.auth.login');
 });
+
+Route::get('/sales/spesifikasi-product/print-pdf/{id}', [PDFController::class, 'pdfSpesifikasiProduct'])->name('pdf.specProduct');
