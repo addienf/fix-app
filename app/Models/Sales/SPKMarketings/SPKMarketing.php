@@ -5,6 +5,7 @@ namespace App\Models\Sales\SPKMarketings;
 use App\Models\Production\Jadwal\JadwalProduksi as JadwalJadwalProduksi;
 use App\Models\Production\JadwalProduksi;
 use App\Models\Production\PermintaanBahanProduksi\PermintaanAlatDanBahan;
+use App\Models\Quality\Standarisasi\StandarisasiDrawing;
 use App\Models\Sales\SpesifikasiProducts\SpesifikasiProduct;
 use App\Models\Sales\SPKMarketings\Pivot\SPKMarketingPIC;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -49,11 +50,16 @@ class SPKMarketing extends Model
         return $this->hasOne(PermintaanAlatDanBahan::class, 'spk_marketing_id');
     }
 
+    public function standarisasi()
+    {
+        return $this->hasOne(StandarisasiDrawing::class, 'spk_marketing_id');
+    }
+
     protected static function booted()
     {
         static::deleting(function ($spesifikasi) {
-            if ($spesifikasi->spkMarketingPIC) {
-                $spesifikasi->spkMarketingPIC->delete();
+            if ($spesifikasi->pic) {
+                $spesifikasi->pic->delete();
             }
         });
     }
