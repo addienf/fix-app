@@ -49,14 +49,13 @@ class SPKResource extends Resource
                 Section::make('Informasi Umum')
                     ->collapsible()
                     ->schema([
-                        Grid::make(3) // dua kolom
+                        Grid::make(2)
                             ->schema([
-                                self::textInput('no_order', 'Nomor Order'),
-                                self::textInput('no_spk', 'Nomor SPK'),
                                 DatePicker::make('tanggal')
                                     ->label('Rencana Pengiriman')
                                     ->required()
                                     ->displayFormat('M d Y'),
+                                self::textInput('no_spk', 'Nomor SPK'),
                                 Select::make('spesifikasi_product_id')
                                     ->label('Customer')
                                     ->required()
@@ -70,6 +69,7 @@ class SPKResource extends Resource
                                             });
                                     }),
                                 self::textInput('dari', 'Dari'),
+                                self::textInput('no_order', 'Nomor Order'),
                                 self::textInput('kepada', 'Kepada'),
                             ]),
                     ]),
@@ -154,37 +154,37 @@ class SPKResource extends Resource
     {
         return
             Select::make($fieldName)
-            ->relationship($relation, $title)
-            ->label($label)
-            ->native(false)
-            ->searchable()
-            ->preload()
-            ->required();
+                ->relationship($relation, $title)
+                ->label($label)
+                ->native(false)
+                ->searchable()
+                ->preload()
+                ->required();
     }
 
     protected static function signatureInput(string $fieldName, string $labelName): SignaturePad
     {
         return
             SignaturePad::make($fieldName)
-            ->label($labelName)
-            ->exportPenColor('#0118D8')
-            ->helperText('*Harap Tandatangan di tengah area yang disediakan.')
-            ->afterStateUpdated(function ($state, $set) use ($fieldName) {
-                if (blank($state))
-                    return;
-                $path = SignatureUploader::handle($state, 'ttd_', 'Sales/SPK/Signatures');
-                if ($path) {
-                    $set($fieldName, $path);
-                }
-            });
+                ->label($labelName)
+                ->exportPenColor('#0118D8')
+                ->helperText('*Harap Tandatangan di tengah area yang disediakan.')
+                ->afterStateUpdated(function ($state, $set) use ($fieldName) {
+                    if (blank($state))
+                        return;
+                    $path = SignatureUploader::handle($state, 'ttd_', 'Sales/SPK/Signatures');
+                    if ($path) {
+                        $set($fieldName, $path);
+                    }
+                });
     }
 
     protected static function textColumn(string $fieldName, string $label): TextColumn
     {
         return
             TextColumn::make($fieldName)
-            ->label($label)
-            ->searchable()
-            ->sortable();
+                ->label($label)
+                ->searchable()
+                ->sortable();
     }
 }
