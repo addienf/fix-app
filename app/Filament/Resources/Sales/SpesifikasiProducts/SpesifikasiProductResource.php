@@ -128,12 +128,18 @@ class SpesifikasiProductResource extends Resource
                 Section::make('Detail PIC')
                     ->relationship('pic')
                     ->schema([
-                        DatePicker::make('date')
-                            ->label('Tanggal')
-                            ->displayFormat('M d Y'),
-                        self::textInput('name', 'Nama PIC'),
-                        self::signatureInput('signature'),
+                        Grid::make(2)
+                            ->schema([
+                                self::textInput('name', 'Nama PIC'),
+                                DatePicker::make('date')
+                                    ->label('Tanggal')
+                                    ->displayFormat('M d Y'),
+                                self::signatureInput('signature')
+                                    ->label('Tanda Tangan')
+                                    ->columnSpan(2),
+                            ]),
                     ]),
+
             ]);
     }
 
@@ -209,47 +215,47 @@ class SpesifikasiProductResource extends Resource
     {
         return
             Select::make($fieldName)
-            ->relationship($relation, $title)
-            ->label($label)
-            ->native(false)
-            ->searchable()
-            ->preload()
-            ->required();
+                ->relationship($relation, $title)
+                ->label($label)
+                ->native(false)
+                ->searchable()
+                ->preload()
+                ->required();
     }
 
     protected static function toogleButton(string $fieldName, string $label): ToggleButtons
     {
         return
             ToggleButtons::make($fieldName)
-            ->label($label)
-            ->boolean()
-            ->grouped();
+                ->label($label)
+                ->boolean()
+                ->grouped();
     }
 
     protected static function signatureInput(string $fieldName): SignaturePad
     {
         return
             SignaturePad::make($fieldName)
-            ->label('')
-            ->exportPenColor('#0118D8')
-            ->helperText('*Harap Tandatangan di tengah area yang disediakan.')
-            ->afterStateUpdated(function ($state, $set) {
-                if (blank($state))
-                    return;
-                $path = SignatureUploader::handle($state, 'ttd_', 'Sales/Spesifikasi/Signatures');
-                if ($path) {
-                    $set('signature', $path);
-                }
-            });
+                ->label('')
+                ->exportPenColor('#0118D8')
+                ->helperText('*Harap Tandatangan di tengah area yang disediakan.')
+                ->afterStateUpdated(function ($state, $set) {
+                    if (blank($state))
+                        return;
+                    $path = SignatureUploader::handle($state, 'ttd_', 'Sales/Spesifikasi/Signatures');
+                    if ($path) {
+                        $set('signature', $path);
+                    }
+                });
     }
 
     protected static function textColumn(string $fieldName, string $label): TextColumn
     {
         return
             TextColumn::make($fieldName)
-            ->label($label)
-            ->searchable()
-            ->sortable();
+                ->label($label)
+                ->searchable()
+                ->sortable();
     }
 
     protected static function ursFormSchema(): array
