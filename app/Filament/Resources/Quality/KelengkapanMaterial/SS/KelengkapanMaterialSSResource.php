@@ -75,11 +75,15 @@ class KelengkapanMaterialSSResource extends Resource
                                     ->label('No Order')
                                     ->default('No Order Dari SPK')
                                     ->disabled(),
-                                ToggleButtons::make('result')
-                                    ->label('Result')
+                                // ToggleButtons::make('result')
+                                //     ->label('Result')
+                                //     ->boolean()
+                                //     ->grouped()
+                                //     ->inline(false)
+                                //     ->required(),
+                                Radio::make('result')
+                                    ->inline()
                                     ->boolean()
-                                    ->grouped()
-                                    ->inline(false)
                                     ->required(),
                                 Select::make('select')
                                     ->label('Keterangan')
