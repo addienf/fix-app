@@ -1,0 +1,297 @@
+<?php
+
+namespace App\Filament\Resources\Quality\KelengkapanMaterial\SS;
+
+use App\Filament\Resources\Quality\KelengkapanMaterial\SS\KelengkapanMaterialSSResource\Pages;
+use App\Filament\Resources\Quality\KelengkapanMaterial\SS\KelengkapanMaterialSSResource\RelationManagers;
+use App\Models\Quality\KelengkapanMaterial\SS\KelengkapanMaterialSS;
+use App\Models\Sales\SPKMarketings\SPKMarketing;
+use App\Services\SignatureUploader;
+use Filament\Actions\Action;
+use Filament\Forms;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Fieldset;
+use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Radio;
+use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\ToggleButtons;
+use Filament\Forms\Form;
+use Filament\Resources\Resource;
+use Filament\Tables;
+use Filament\Tables\Actions\ActionGroup;
+use Filament\Tables\Columns\ImageColumn;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Table;
+use Icetalker\FilamentTableRepeater\Forms\Components\TableRepeater;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Saade\FilamentAutograph\Forms\Components\SignaturePad;
+
+class KelengkapanMaterialSSResource extends Resource
+{
+    protected static ?string $model = KelengkapanMaterialSS::class;
+
+    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?int $navigationSort = 7;
+    protected static ?string $navigationGroup = 'Quality';
+    protected static ?string $navigationLabel = 'Kelengkapan Material SS';
+    protected static ?string $pluralLabel = 'Kelengkapan Material SS';
+    protected static ?string $modelLabel = 'Kelengkapan Material SS';
+
+    public static function form(Form $form): Form
+    {
+        $defaultParts = collect(config('kelengkapanSS.parts'))
+            ->map(fn($part) => ['part' => $part])
+            ->toArray();
+        return $form
+            ->schema([
+                //
+                Section::make('Chamber Identification')
+                    ->collapsible()
+                    ->schema([
+                        self::selectInput('spk_marketing_id', 'No SPK', 'spk', 'no_spk')
+                            ->required(),
+                        self::textInput('tipe', 'Type/Model'),
+                        self::textInput('ref_document', 'Ref Document'),
+                    ])->columns(3),
+                Section::make('Tabel Kelengkapan Material')
+                    ->relationship('detail')
+                    ->collapsible()
+                    ->schema([
+                        TableRepeater::make('details')
+                            ->label('')
+                            ->schema([
+                                TextInput::make('part')
+                                    ->label('Part')
+                                    ->extraAttributes([
+                                        'readonly' => true,
+                                        'style' => 'pointer-events: none;'
+                                    ]),
+                                TextInput::make('no_order_temp')
+                                    ->label('No Order')
+                                    ->default('No Order Dari SPK')
+                                    ->disabled(),
+                                ToggleButtons::make('result')
+                                    ->label('Result')
+                                    ->boolean()
+                                    ->grouped()
+                                    ->inline(false)
+                                    ->required(),
+                                Select::make('select')
+                                    ->label('Keterangan')
+                                    ->options([
+                                        'ok' => 'OK',
+                                        'h' => 'Hold',
+                                        'r' => 'Repaired',
+                                    ])
+                                    ->required(),
+                            ])
+                            ->default($defaultParts)
+                            ->columns(3)
+                            ->addable(false)
+                            ->deletable(false),
+                    ]),
+                Fieldset::make('')
+                    ->schema([
+                        Textarea::make('note')
+                            ->required()
+                            ->label('Note')
+                            ->columnSpanFull()
+                    ]),
+                Section::make('PIC')
+                    ->relationship('pic')
+                    ->collapsible()
+                    ->schema([
+                        Grid::make(3)
+                            ->schema([
+                                self::textInput('inspected_name', 'Inspected By')
+                                    ->required(),
+                                self::textInput('accepted_name', 'Accepted By')
+                                    ->required(),
+                                self::textInput('approved_name', 'Approved By')
+                                    ->required(),
+                                self::signatureInput('inspected_signature', '')
+                                    ->required(),
+                                self::signatureInput('accepted_signature', '')
+                                    ->required(),
+                                self::signatureInput('approved_signature', '')
+                                    ->required(),
+                                self::datePicker('inspected_date', '')
+                                    ->required(),
+                                self::datePicker('accepted_date', '')
+                                    ->required(),
+                                self::datePicker('approved_date', '')
+                                    ->required(),
+                            ])
+                    ]),
+            ]);
+    }
+
+    public static function table(Table $table): Table
+    {
+        return $table
+            ->columns([
+                //
+                self::textColumn('spk.no_spk', 'NO SPK'),
+                self::textColumn('tipe', 'Type/Model'),
+                self::textColumn('ref_document', 'Ref Document'),
+                ImageColumn::make('pic.inspected_signature')
+                    ->width(150)
+                    ->label('Inspected')
+                    ->height(75),
+                ImageColumn::make('pic.accepted_signature')
+                    ->width(150)
+                    ->label('Accepted')
+                    ->height(75),
+                ImageColumn::make('pic.approved_signature')
+                    ->width(150)
+                    ->label('Approved')
+                    ->height(75),
+            ])
+            ->filters([
+                //
+            ])
+            ->actions([
+                ActionGroup::make([
+                    Tables\Actions\EditAction::make(),
+                    Tables\Actions\DeleteAction::make(),
+                    Action::make('pdf_view')
+                        ->label(_('View PDF'))
+                        ->icon('heroicon-o-document')
+                        ->color('success')
+                        ->url(fn($record) => self::getUrl('pdfKelengkapanMaterialSS', ['record' => $record->id])),
+                ])
+            ])
+            ->bulkActions([
+                Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\DeleteBulkAction::make(),
+                ]),
+            ]);
+    }
+
+    public static function getRelations(): array
+    {
+        return [
+            //
+        ];
+    }
+
+    public static function getPages(): array
+    {
+        return [
+            'index' => Pages\ListKelengkapanMaterialSS::route('/'),
+            'create' => Pages\CreateKelengkapanMaterialSS::route('/create'),
+            'edit' => Pages\EditKelengkapanMaterialSS::route('/{record}/edit'),
+            'pdfKelengkapanMaterialSS' => Pages\pdfKelengkapanMaterialSS::route('/{record}/pdfKelengkapanMaterialSS')
+        ];
+    }
+
+    protected static function textInput(string $fieldName, string $label): TextInput
+    {
+        return TextInput::make($fieldName)
+            ->label($label)
+            ->required()
+            ->maxLength(255);
+    }
+
+    protected static function selectInput(string $fieldName, string $label, string $relation, string $title): Select
+    {
+        return
+            Select::make($fieldName)
+            ->relationship($relation, $title)
+            ->label($label)
+            ->native(false)
+            ->searchable()
+            ->preload()
+            ->required()
+            ->reactive()
+            // ->afterStateUpdated(function ($state, callable $set) {
+            //     if (!$state) return;
+
+            //     $spk = SPKMarketing::find($state);
+
+            //     if (!$spk) return;
+
+            //     $noOrder = $spk->no_spk?->map(function ($detail) {
+            //         return [
+            //             'no_order_temp' => $detail->no_order ?? 'Nomor Order Dari SPK',
+            //         ];
+            //     })->toArray();
+
+            //     $set('details', $noOrder);
+            // })
+        ;
+        // ->afterStateUpdated(function ($state, callable $set) {
+        //     if (!$state)
+        //         return;
+
+        //     $pab = PermintaanAlatDanBahan::with('details')->find($state);
+
+        //     if (!$pab)
+        //         return;
+
+        //     $detailBahan = $pab->details?->map(function ($detail) {
+        //         return [
+        //             'bahan_baku' => $detail->bahan_baku ?? '',
+        //             'spesifikasi' => $detail->spesifikasi ?? '',
+        //             'jumlah' => $detail->jumlah ?? 0,
+        //             'keperluan_barang' => $detail->keperluan_barang ?? '',
+        //         ];
+        //     })->toArray();
+
+        //     $set('details', $detailBahan);
+        // })
+    }
+
+    protected static function selectInputOptions(string $fieldName, string $label, string $config): Select
+    {
+        return
+            Select::make($fieldName)
+            ->options(config($config))
+            ->label($label)
+            ->native(false)
+            ->searchable()
+            ->preload()
+            ->required()
+            ->reactive();
+    }
+
+    protected static function datePicker(string $fieldName, string $label): DatePicker
+    {
+        return
+            DatePicker::make($fieldName)
+            ->label($label)
+            ->displayFormat('M d Y')
+            ->seconds(false);
+    }
+
+    protected static function signatureInput(string $fieldName, string $labelName): SignaturePad
+    {
+        return
+            SignaturePad::make($fieldName)
+            ->label($labelName)
+            ->exportPenColor('#0118D8')
+            ->helperText('*Harap Tandatangan di tengah area yang disediakan.')
+            ->afterStateUpdated(function ($state, $set) use ($fieldName) {
+                if (blank($state))
+                    return;
+                $path = SignatureUploader::handle($state, 'ttd_', 'Quality/KelengkapanMaterial/SS/Signatures');
+                if ($path) {
+                    $set($fieldName, $path);
+                }
+            });
+    }
+
+    protected static function textColumn(string $fieldName, string $label): TextColumn
+    {
+        return
+            TextColumn::make($fieldName)
+            ->label($label)
+            ->searchable()
+            ->sortable();
+    }
+}
