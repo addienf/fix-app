@@ -49,15 +49,18 @@ class SpesifikasiProductResource extends Resource
     {
         return $form
             ->schema([
-                //
                 Section::make('Informasi Umum')
                     ->schema([
                         self::selectInput('urs_id', 'No URS', 'urs', 'no_urs')
+                            ->required()
                             ->createOptionForm(fn() => self::ursFormSchema()),
-                        self::textInput('delivery_address', 'Alamat Pengiriman'),
+                        self::textInput('delivery_address', 'Alamat Pengiriman')
+                            ->required(),
                         self::toogleButton('is_stock', 'Untuk Stock ?')
+                            ->required()
                     ])
                     ->columns(3),
+
                 Section::make('Detail Spesifikasi Product')
                     ->schema([
                         Repeater::make('details')
@@ -66,19 +69,21 @@ class SpesifikasiProductResource extends Resource
                             ->schema([
                                 Grid::make(2)
                                     ->schema([
-                                        self::selectInput('product_id', 'Pilih Product', 'product', 'name'),
+                                        self::selectInput('product_id', 'Pilih Product', 'product', 'name')
+                                            ->required(),
                                         self::textInput('quantity', 'Banyak Product')
-                                            ->numeric(),
+                                            ->numeric()
+                                            ->required(),
                                     ]),
                                 Grid::make()
                                     ->relationship('file')
                                     ->schema([
-                                        // self::textInput('file_path', 'File Pendukung'),
                                         FileUpload::make('file_path')
                                             ->label('File Pendukung')
                                             ->directory('Sales/Spesifikasi/Files')
                                             ->acceptedFileTypes(['application/pdf'])
                                             ->maxSize(10240)
+                                            ->required()
                                             ->columnSpanFull()
                                             ->helperText('Hanya file PDF yang diperbolehkan. Maksimal ukuran 10 MB.'),
                                     ]),
@@ -119,27 +124,32 @@ class SpesifikasiProductResource extends Resource
                             ->columnSpanFull()
                             ->addActionLabel('Tambah Data Detail Product'),
                     ]),
+
                 Section::make('Penjelasan Tambahan')
                     ->schema([
                         Textarea::make('detail_specification')
                             ->label('Detail Spesifikasi')
+                            ->required()
                             ->columnSpanFull(),
                     ]),
+
                 Section::make('Detail PIC')
                     ->relationship('pic')
                     ->schema([
                         Grid::make(2)
                             ->schema([
-                                self::textInput('name', 'Nama PIC'),
+                                self::textInput('name', 'Nama PIC')
+                                    ->required(),
                                 DatePicker::make('date')
                                     ->label('Tanggal')
+                                    ->required()
                                     ->displayFormat('M d Y'),
                                 self::signatureInput('signature')
                                     ->label('Tanda Tangan')
+                                    ->required()
                                     ->columnSpan(2),
                             ]),
                     ]),
-
             ]);
     }
 

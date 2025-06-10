@@ -50,7 +50,8 @@ class JadwalProduksiResource extends Resource
                         Grid::make(2)
                             ->schema([
                                 self::textInput('pic_name', 'Penanggung Jawab'),
-                                self::datePicker('tanggal', 'Tanggal'),
+                                self::datePicker('tanggal', 'Tanggal')
+                                    ->required(),
                             ])
                     ]),
                 Section::make('Detail Jadwal Produksi')
@@ -75,8 +76,10 @@ class JadwalProduksiResource extends Resource
                                                 'readonly' => true,
                                                 'style' => 'pointer-events: none;'
                                             ]),
-                                        self::datePicker('tanggal_mulai', 'Tanggal Mulai'),
+                                        self::datePicker('tanggal_mulai', 'Tanggal Mulai')
+                                            ->required(),
                                         self::datePicker('tanggal_selesai', 'Tanggal Selesai')
+                                            ->required()
                                     ])
                             ])
                             ->deletable(false)

@@ -38,7 +38,7 @@ class KelengkapanMaterialSSResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-newspaper';
     protected static ?int $navigationSort = 7;
     protected static ?string $navigationGroup = 'Quality';
-    protected static ?string $navigationLabel = 'Kelengkapan Material Stainless Steel';
+    protected static ?string $navigationLabel = 'Kelengkapan Material SS';
     protected static ?string $pluralLabel = 'Kelengkapan Material Stainless Steel';
     protected static ?string $modelLabel = 'Kelengkapan Material Stainless Steel';
 
