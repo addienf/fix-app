@@ -51,7 +51,7 @@ class PermintaanAlatDanBahanResource extends Resource
                     ->schema([
                         self::selectInput('spk_marketing_id', 'Pilih No SPK', 'spk', 'no_spk')
                             ->columnSpanFull(),
-                      ToggleButtons::make('status')
+                        ToggleButtons::make('status')
                             ->label('Status Stock Barang')
                             ->boolean()
                             ->grouped(),
@@ -61,7 +61,8 @@ class PermintaanAlatDanBahanResource extends Resource
                         Grid::make(2)
                             ->schema([
                                 self::textInput('no_surat', 'No Surat'),
-                                self::datePicker('tanggal', 'Tanggal'),
+                                self::datePicker('tanggal', 'Tanggal')
+                                    ->required(),
                                 self::textInput('dari', 'Dari')
                                     ->extraAttributes([
                                         'readonly' => true,

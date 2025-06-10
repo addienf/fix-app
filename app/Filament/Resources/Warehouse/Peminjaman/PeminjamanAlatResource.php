@@ -44,8 +44,10 @@ class PeminjamanAlatResource extends Resource
                     ->schema([
                         Grid::make(2)
                             ->schema([
-                                self::datePicker('tanggal_pinjam', 'Tanggal Pinjam'),
-                                self::datePicker('tanggal_kembali', 'Tanggal Kembali'),
+                                self::datePicker('tanggal_pinjam', 'Tanggal Pinjam')
+                                    ->required(),
+                                self::datePicker('tanggal_kembali', 'Tanggal Kembali')
+                                    ->required(),
                                 Repeater::make('details')
                                     ->relationship('details')
                                     ->label('Barang')
@@ -136,9 +138,9 @@ class PeminjamanAlatResource extends Resource
     {
         return
             DatePicker::make($fieldName)
-            ->label($label)
-            ->displayFormat('M d Y')
-            ->seconds(false);
+                ->label($label)
+                ->displayFormat('M d Y')
+                ->seconds(false);
     }
 
     protected static function signatureInput(string $fieldName, string $labelName): SignaturePad
@@ -162,8 +164,8 @@ class PeminjamanAlatResource extends Resource
     {
         return
             TextColumn::make($fieldName)
-            ->label($label)
-            ->searchable()
-            ->sortable();
+                ->label($label)
+                ->searchable()
+                ->sortable();
     }
 }
