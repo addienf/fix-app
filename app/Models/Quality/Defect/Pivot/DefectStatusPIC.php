@@ -1,19 +1,20 @@
 <?php
 
-namespace App\Models\Quality\PengecekanMaterial\SS;
+namespace App\Models\Quality\Defect\Pivot;
 
+use App\Models\Quality\Defect\DefectStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 
-class PengecekanMaterialSSPIC extends Model
+class DefectStatusPIC extends Model
 {
     use HasFactory;
 
-    protected $table = 'pengecekan_material_ss_pics';
+    protected $table = 'defect_status_pics';
 
     protected $fillable = [
-        'pengecekan_material_id',
+        'defect_status_id',
         'inspected_signature',
         'inspected_name',
         'inspected_date',
@@ -25,9 +26,9 @@ class PengecekanMaterialSSPIC extends Model
         'approved_date',
     ];
 
-    public function kelengpakanSS()
+    public function defect()
     {
-        return $this->belongsTo(PengecekanMaterialSS::class, 'pengecekan_material_id');
+        return $this->belongsTo(DefectStatus::class);
     }
 
     protected static function booted(): void
@@ -61,10 +62,6 @@ class PengecekanMaterialSSPIC extends Model
         static::deleting(function ($model) {
             if ($model->inspected_signature && Storage::disk('public')->exists($model->inspected_signature)) {
                 Storage::disk('public')->delete($model->inspected_signature);
-            }
-
-            if ($model->accepted_signature && Storage::disk('public')->exists($model->accepted_signature)) {
-                Storage::disk('public')->delete($model->accepted_signature);
             }
 
             if ($model->approved_signature && Storage::disk('public')->exists($model->approved_signature)) {

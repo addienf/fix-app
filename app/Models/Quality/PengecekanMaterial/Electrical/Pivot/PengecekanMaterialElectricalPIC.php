@@ -1,19 +1,20 @@
 <?php
 
-namespace App\Models\Quality\PengecekanMaterial\SS;
+namespace App\Models\Quality\PengecekanMaterial\Electrical\Pivot;
 
+use App\Models\Quality\PengecekanMaterial\Electrical\PengecekanMaterialElectrical;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 
-class PengecekanMaterialSSPIC extends Model
+class PengecekanMaterialElectricalPIC extends Model
 {
     use HasFactory;
 
-    protected $table = 'pengecekan_material_ss_pics';
+    protected $table = 'electrical_pics';
 
     protected $fillable = [
-        'pengecekan_material_id',
+        'pengecekan_electrical_id',
         'inspected_signature',
         'inspected_name',
         'inspected_date',
@@ -25,9 +26,9 @@ class PengecekanMaterialSSPIC extends Model
         'approved_date',
     ];
 
-    public function kelengpakanSS()
+    public function pengecekanElectrical()
     {
-        return $this->belongsTo(PengecekanMaterialSS::class, 'pengecekan_material_id');
+        return $this->belongsTo(PengecekanMaterialElectrical::class, 'pengecekan_electrical_id');
     }
 
     protected static function booted(): void
