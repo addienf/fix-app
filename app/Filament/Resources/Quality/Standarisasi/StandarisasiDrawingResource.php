@@ -8,7 +8,7 @@ use App\Models\Quality\Standarisasi\StandarisasiDrawing;
 use App\Services\SignatureUploader;
 use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Fieldset;
+use Filament\Forms\Components\Card;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Section;
@@ -31,7 +31,7 @@ use Saade\FilamentAutograph\Forms\Components\SignaturePad;
 class StandarisasiDrawingResource extends Resource
 {
     protected static ?string $model = StandarisasiDrawing::class;
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-photo';
     protected static ?int $navigationSort = 7;
     protected static ?string $navigationGroup = 'Quality';
     protected static ?string $navigationLabel = 'Standarisasi Drawing';
@@ -43,12 +43,15 @@ class StandarisasiDrawingResource extends Resource
         return $form
             ->schema([
                 //
-                Fieldset::make()
+                Card::make()
                     ->schema([
-                        self::selectInput('spk_marketing_id', 'No SPK', 'spk', 'no_spk')
-                            ->required(),
-                        self::datePicker('tanggal', 'Tanggal')
-                            ->required()
+                        Grid::make(2)
+                            ->schema([
+                                self::selectInput('spk_marketing_id', 'No SPK', 'spk', 'no_spk')
+                                    ->required(),
+                                self::datePicker('tanggal', 'Tanggal')
+                                    ->required(),
+                            ]),
                     ]),
                 Section::make('Identitas Gambar Kerja')
                     ->collapsible()
@@ -91,7 +94,7 @@ class StandarisasiDrawingResource extends Resource
                             ->helperText('Hanya file PDF yang diperbolehkan. Maksimal ukuran 10 MB.')
                             ->required(),
                         Textarea::make('catatan')
-                            ->label('Catatan Atau Koreksi Yang Dibutuhkan')
+                            ->label('Catatan atau Koreksi yang Dibutuhkan')
                             ->required(),
                     ]),
                 Section::make('PIC')
@@ -184,60 +187,60 @@ class StandarisasiDrawingResource extends Resource
     {
         return
             Select::make($fieldName)
-            ->relationship($relation, $title)
-            ->label($label)
-            ->native(false)
-            ->searchable()
-            ->preload()
-            ->required()
-            ->reactive();
+                ->relationship($relation, $title)
+                ->label($label)
+                ->native(false)
+                ->searchable()
+                ->preload()
+                ->required()
+                ->reactive();
     }
 
     protected static function selectInputOptions(string $fieldName, string $label, string $config): Select
     {
         return
             Select::make($fieldName)
-            ->options(config($config))
-            ->label($label)
-            ->native(false)
-            ->searchable()
-            ->preload()
-            ->required()
-            ->reactive();
+                ->options(config($config))
+                ->label($label)
+                ->native(false)
+                ->searchable()
+                ->preload()
+                ->required()
+                ->reactive();
     }
 
     protected static function datePicker(string $fieldName, string $label): DatePicker
     {
         return
             DatePicker::make($fieldName)
-            ->label($label)
-            ->displayFormat('M d Y')
-            ->seconds(false);
+                ->label($label)
+                ->displayFormat('M d Y')
+                ->seconds(false);
     }
 
     protected static function signatureInput(string $fieldName, string $labelName): SignaturePad
     {
         return
             SignaturePad::make($fieldName)
-            ->label($labelName)
-            ->exportPenColor('#0118D8')
-            ->helperText('*Harap Tandatangan di tengah area yang disediakan.')
-            ->afterStateUpdated(function ($state, $set) use ($fieldName) {
-                if (blank($state))
-                    return;
-                $path = SignatureUploader::handle($state, 'ttd_', 'Quality/StandarisasiDrawing/Signatures');
-                if ($path) {
-                    $set($fieldName, $path);
-                }
-            });
+                ->label($labelName)
+                ->exportPenColor('#0118D8')
+                ->helperText('*Harap Tandatangan di tengah area yang disediakan.')
+                ->afterStateUpdated(function ($state, $set) use ($fieldName) {
+                    if (blank($state))
+                        return;
+                    $path = SignatureUploader::handle($state, 'ttd_', 'Quality/StandarisasiDrawing/Signatures');
+                    if ($path) {
+                        $set($fieldName, $path);
+                    }
+                });
     }
 
     protected static function textColumn(string $fieldName, string $label): TextColumn
     {
         return
             TextColumn::make($fieldName)
-            ->label($label)
-            ->searchable()
-            ->sortable();
+                ->label($label)
+                ->searchable()
+                ->sortable();
     }
 }

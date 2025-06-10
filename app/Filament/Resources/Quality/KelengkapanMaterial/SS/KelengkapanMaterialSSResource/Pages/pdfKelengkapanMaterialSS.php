@@ -12,7 +12,7 @@ class pdfKelengkapanMaterialSS extends Page
 
     protected static string $view = 'filament.resources.quality.kelengkapan-material.s-s.kelengkapan-material-s-s-resource.pages.pdf-kelengkapan-material-s-s';
 
-    protected static ?string $title = 'Serah Terima Bahan';
+    protected static ?string $title = 'Kelengkapan Material Stainless Steel';
 
     public $record;
 

@@ -10,7 +10,7 @@ use App\Services\SignatureUploader;
 use Filament\Actions\Action;
 use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Fieldset;
+use Filament\Forms\Components\Card;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Repeater;
@@ -35,12 +35,12 @@ class KelengkapanMaterialSSResource extends Resource
 {
     protected static ?string $model = KelengkapanMaterialSS::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-newspaper';
     protected static ?int $navigationSort = 7;
     protected static ?string $navigationGroup = 'Quality';
-    protected static ?string $navigationLabel = 'Kelengkapan Material SS';
-    protected static ?string $pluralLabel = 'Kelengkapan Material SS';
-    protected static ?string $modelLabel = 'Kelengkapan Material SS';
+    protected static ?string $navigationLabel = 'Kelengkapan Material Stainless Steel';
+    protected static ?string $pluralLabel = 'Kelengkapan Material Stainless Steel';
+    protected static ?string $modelLabel = 'Kelengkapan Material Stainless Steel';
 
     public static function form(Form $form): Form
     {
@@ -99,7 +99,7 @@ class KelengkapanMaterialSSResource extends Resource
                             ->addable(false)
                             ->deletable(false),
                     ]),
-                Fieldset::make('')
+                Card::make('')
                     ->schema([
                         Textarea::make('note')
                             ->required()
@@ -206,13 +206,13 @@ class KelengkapanMaterialSSResource extends Resource
     {
         return
             Select::make($fieldName)
-            ->relationship($relation, $title)
-            ->label($label)
-            ->native(false)
-            ->searchable()
-            ->preload()
-            ->required()
-            ->reactive()
+                ->relationship($relation, $title)
+                ->label($label)
+                ->native(false)
+                ->searchable()
+                ->preload()
+                ->required()
+                ->reactive()
             // ->afterStateUpdated(function ($state, callable $set) {
             //     if (!$state) return;
 
@@ -255,47 +255,47 @@ class KelengkapanMaterialSSResource extends Resource
     {
         return
             Select::make($fieldName)
-            ->options(config($config))
-            ->label($label)
-            ->native(false)
-            ->searchable()
-            ->preload()
-            ->required()
-            ->reactive();
+                ->options(config($config))
+                ->label($label)
+                ->native(false)
+                ->searchable()
+                ->preload()
+                ->required()
+                ->reactive();
     }
 
     protected static function datePicker(string $fieldName, string $label): DatePicker
     {
         return
             DatePicker::make($fieldName)
-            ->label($label)
-            ->displayFormat('M d Y')
-            ->seconds(false);
+                ->label($label)
+                ->displayFormat('M d Y')
+                ->seconds(false);
     }
 
     protected static function signatureInput(string $fieldName, string $labelName): SignaturePad
     {
         return
             SignaturePad::make($fieldName)
-            ->label($labelName)
-            ->exportPenColor('#0118D8')
-            ->helperText('*Harap Tandatangan di tengah area yang disediakan.')
-            ->afterStateUpdated(function ($state, $set) use ($fieldName) {
-                if (blank($state))
-                    return;
-                $path = SignatureUploader::handle($state, 'ttd_', 'Quality/KelengkapanMaterial/SS/Signatures');
-                if ($path) {
-                    $set($fieldName, $path);
-                }
-            });
+                ->label($labelName)
+                ->exportPenColor('#0118D8')
+                ->helperText('*Harap Tandatangan di tengah area yang disediakan.')
+                ->afterStateUpdated(function ($state, $set) use ($fieldName) {
+                    if (blank($state))
+                        return;
+                    $path = SignatureUploader::handle($state, 'ttd_', 'Quality/KelengkapanMaterial/SS/Signatures');
+                    if ($path) {
+                        $set($fieldName, $path);
+                    }
+                });
     }
 
     protected static function textColumn(string $fieldName, string $label): TextColumn
     {
         return
             TextColumn::make($fieldName)
-            ->label($label)
-            ->searchable()
-            ->sortable();
+                ->label($label)
+                ->searchable()
+                ->sortable();
     }
 }
