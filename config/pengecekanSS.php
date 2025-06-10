@@ -1,27 +1,37 @@
 <?php
 return [
     [
-        'mainPart' => 'Chamber',
+        'mainPart' => 'Body Chamber Welding',
         'parts' => [
             'Right Outer Side of Wall',
             'Left Outer Side of Wall',
-            'Rear Outer Side of Wall',
+            // 'Rear Outer Side of Wall',
+            // 'Rear Hole for Humidifier',
+            // 'Right Door of Chamber',
+            // 'Middle Door of Chamber',
+            // 'Left Door of Chamber',
+            // 'Display Side of Chamber',
+            // 'Cooling System Circular Hole',
         ]
     ],
-    // [
-    //     'mainPart' => 'Holes',
-    //     'parts' => [
-    //         'Right Outer Side of Holes',
-    //         'Left Outer Side of Holes',
-    //         'Rear Outer Side of Holes',
-    //     ]
-    // ],
-    // [
-    //     'mainPart' => 'Skates',
-    //     'parts' => [
-    //         'Right Outer Side of Skates',
-    //         'Left Outer Side of Skates',
-    //         'Rear Outer Side of Skates',
-    //     ]
-    // ],
+    [
+        'mainPart' => 'Body Chamber Hole',
+        'parts' => [
+            'Cibration Hole',
+            'Humidifier System Hole',
+            // 'Box Level Switch Pipe Hole',
+            // 'Level Switch Cable Hole',
+            // 'RJ45 Hole',
+            // 'USB Hole',
+            // 'Level Switch Container Cable Hole',
+            // 'Power Cable Hole',
+            // 'Cooling System Circulation Hole',
+            // 'Buzzer Alarm Hole',
+            // 'HMI Display/Sisplay Hole',
+            // 'Proximity Sensor Hole',
+            // 'Blower Circulation Hole',
+            // 'Cup Holder Hole',
+            // 'Probe Chamber Hole',
+        ]
+    ],
 ];

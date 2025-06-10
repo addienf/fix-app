@@ -5,7 +5,9 @@ namespace App\Models\Sales\SPKMarketings;
 use App\Models\Production\Jadwal\JadwalProduksi as JadwalJadwalProduksi;
 use App\Models\Production\JadwalProduksi;
 use App\Models\Production\PermintaanBahanProduksi\PermintaanAlatDanBahan;
+use App\Models\Quality\Defect\DefectStatus;
 use App\Models\Quality\KelengkapanMaterial\SS\KelengkapanMaterialSS;
+use App\Models\Quality\PengecekanMaterial\Electrical\PengecekanMaterialElectrical;
 use App\Models\Quality\PengecekanMaterial\SS\PengecekanMaterialSS;
 use App\Models\Quality\Standarisasi\StandarisasiDrawing;
 use App\Models\Sales\SpesifikasiProducts\SpesifikasiProduct;
@@ -65,6 +67,16 @@ class SPKMarketing extends Model
     public function pengecekanSS()
     {
         return $this->hasOne(PengecekanMaterialSS::class, 'spk_marketing_id');
+    }
+
+    public function defect()
+    {
+        return $this->hasOne(DefectStatus::class, 'spk_marketing_id');
+    }
+
+    public function pengecekanElectrical()
+    {
+        return $this->hasOne(PengecekanMaterialElectrical::class, 'spk_marketing_id');
     }
 
     protected static function booted()

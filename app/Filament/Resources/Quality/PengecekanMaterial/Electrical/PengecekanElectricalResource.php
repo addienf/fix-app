@@ -1,17 +1,17 @@
 <?php
 
-namespace App\Filament\Resources\Quality\PengecekanMaterial\SS;
+namespace App\Filament\Resources\Quality\PengecekanMaterial\Electrical;
 
-use App\Filament\Resources\Quality\PengecekanMaterial\SS\PengecekanMaterialSSResource\Pages;
-use App\Filament\Resources\Quality\PengecekanMaterial\SS\PengecekanMaterialSSResource\RelationManagers;
-use App\Models\Quality\PengecekanMaterial\SS\PengecekanMaterialSS;
+use App\Filament\Resources\Quality\PengecekanMaterial\Electrical\PengecekanElectricalResource\Pages;
+use App\Filament\Resources\Quality\PengecekanMaterial\Electrical\PengecekanElectricalResource\Pages\pdfPengecekanElectrical;
+use App\Filament\Resources\Quality\PengecekanMaterial\Electrical\PengecekanElectricalResource\RelationManagers;
+use App\Models\Quality\PengecekanMaterial\Electrical\PengecekanMaterialElectrical;
 use App\Services\SignatureUploader;
 use Filament\Actions\Action;
 use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Grid;
-use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
@@ -28,24 +28,22 @@ use Icetalker\FilamentTableRepeater\Forms\Components\TableRepeater;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Saade\FilamentAutograph\Forms\Components\SignaturePad;
-use Suleymanozev\FilamentRadioButtonField\Forms\Components\RadioButton;
 use Wallo\FilamentSelectify\Components\ButtonGroup;
-use Wallo\FilamentSelectify\Components\ToggleButton;
 
-class PengecekanMaterialSSResource extends Resource
+class PengecekanElectricalResource extends Resource
 {
-    protected static ?string $model = PengecekanMaterialSS::class;
+    protected static ?string $model = PengecekanMaterialElectrical::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
     protected static ?int $navigationSort = 7;
     protected static ?string $navigationGroup = 'Quality';
-    protected static ?string $navigationLabel = 'Pengecekan Material SS';
-    protected static ?string $pluralLabel = 'Pengecekan Material SS';
-    protected static ?string $modelLabel = 'Pengecekan Material SS';
+    protected static ?string $navigationLabel = 'Pengecekan Material Electrical';
+    protected static ?string $pluralLabel = 'Pengecekan Material Electrical';
+    protected static ?string $modelLabel = 'Pengecekan Material Electrical';
 
     public static function form(Form $form): Form
     {
-        $defaultParts = collect(config('pengecekanSS'))
+        $defaultParts = collect(config('pengecekanElectrical'))
             ->map(function ($group) {
                 return [
                     'mainPart' => $group['mainPart'],
@@ -67,7 +65,7 @@ class PengecekanMaterialSSResource extends Resource
                                 self::selectInput('spk_marketing_id', 'No SPK', 'spk', 'no_spk')
                                     ->required(),
                                 self::textInput('tipe', 'Type/Model'),
-                                self::textInput('ref_document', 'Ref Document'),
+                                self::textInput('volume', 'Volume'),
                             ]),
                     ]),
                 Section::make('Tabel Kelengkapan Material')
@@ -161,7 +159,7 @@ class PengecekanMaterialSSResource extends Resource
                 //
                 self::textColumn('spk.no_spk', 'NO SPK'),
                 self::textColumn('tipe', 'Type/Model'),
-                self::textColumn('ref_document', 'Ref Document'),
+                self::textColumn('volume', 'Volume'),
                 ImageColumn::make('pic.inspected_signature')
                     ->width(150)
                     ->label('Inspected')
@@ -186,7 +184,7 @@ class PengecekanMaterialSSResource extends Resource
                         ->label(_('View PDF'))
                         ->icon('heroicon-o-document')
                         ->color('success')
-                        ->url(fn($record) => self::getUrl('pdfPengecekanMaterialSS', ['record' => $record->id])),
+                        ->url(fn($record) => self::getUrl('pdfPengecekanElectrical', ['record' => $record->id])),
                 ])
             ])
             ->bulkActions([
@@ -206,10 +204,10 @@ class PengecekanMaterialSSResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListPengecekanMaterialSS::route('/'),
-            'create' => Pages\CreatePengecekanMaterialSS::route('/create'),
-            'edit' => Pages\EditPengecekanMaterialSS::route('/{record}/edit'),
-            'pdfPengecekanMaterialSS' => Pages\pdfPengecekanMaterialSS::route('/{record}/pdfPengecekanMaterialSS')
+            'index' => Pages\ListPengecekanElectricals::route('/'),
+            'create' => Pages\CreatePengecekanElectrical::route('/create'),
+            'edit' => Pages\EditPengecekanElectrical::route('/{record}/edit'),
+            'pdfPengecekanElectrical' => pdfPengecekanElectrical::route('/{record}/pdfPengecekanElectrical')
         ];
     }
 
@@ -266,7 +264,7 @@ class PengecekanMaterialSSResource extends Resource
             ->afterStateUpdated(function ($state, $set) use ($fieldName) {
                 if (blank($state))
                     return;
-                $path = SignatureUploader::handle($state, 'ttd_', 'Quality/PengecekanMaterial/SS/Signatures');
+                $path = SignatureUploader::handle($state, 'ttd_', 'Quality/PengecekanMaterial/Electrical/Signatures');
                 if ($path) {
                     $set($fieldName, $path);
                 }
