@@ -31,7 +31,7 @@ class PermintaanBahanResource extends Resource
 {
     protected static ?string $model = PermintaanBahan::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-clipboard';
+    protected static ?string $navigationIcon = 'heroicon-o-cog-6-tooth';
     protected static ?int $navigationSort = 5;
     protected static ?string $navigationGroup = 'Warehouse';
     protected static ?string $navigationLabel = 'Permintaan Bahan Warehouse';
@@ -53,7 +53,8 @@ class PermintaanBahanResource extends Resource
                         Grid::make(2)
                             ->schema([
                                 self::textInput('no_surat', 'No Surat'),
-                                self::datePicker('tanggal', 'Tanggal'),
+                                self::datePicker('tanggal', 'Tanggal')
+                                    ->required(),
                                 self::textInput('dari', 'Dari'),
                                 self::textInput('kepada', 'Kepada'),
                             ])
@@ -171,38 +172,38 @@ class PermintaanBahanResource extends Resource
     {
         return
             Select::make($fieldName)
-            // ->relationship($relation, $title)
-            ->relationship(
-                $relation,
-                $title,
-                fn($query) => $query->where('status', false)
-            )
-            ->label($label)
-            ->native(false)
-            ->searchable()
-            ->preload()
-            ->required()
-            ->reactive()
-            ->afterStateUpdated(function ($state, callable $set) {
-                if (!$state)
-                    return;
+                // ->relationship($relation, $title)
+                ->relationship(
+                    $relation,
+                    $title,
+                    fn($query) => $query->where('status', false)
+                )
+                ->label($label)
+                ->native(false)
+                ->searchable()
+                ->preload()
+                ->required()
+                ->reactive()
+                ->afterStateUpdated(function ($state, callable $set) {
+                    if (!$state)
+                        return;
 
-                $pab = PermintaanAlatDanBahan::with('details')->find($state);
+                    $pab = PermintaanAlatDanBahan::with('details')->find($state);
 
-                if (!$pab)
-                    return;
+                    if (!$pab)
+                        return;
 
-                $detailBahan = $pab->details?->map(function ($detail) {
-                    return [
-                        'bahan_baku' => $detail->bahan_baku ?? '',
-                        'spesifikasi' => $detail->spesifikasi ?? '',
-                        'jumlah' => $detail->jumlah ?? 0,
-                        'keperluan_barang' => $detail->keperluan_barang ?? '',
-                    ];
-                })->toArray();
+                    $detailBahan = $pab->details?->map(function ($detail) {
+                        return [
+                            'bahan_baku' => $detail->bahan_baku ?? '',
+                            'spesifikasi' => $detail->spesifikasi ?? '',
+                            'jumlah' => $detail->jumlah ?? 0,
+                            'keperluan_barang' => $detail->keperluan_barang ?? '',
+                        ];
+                    })->toArray();
 
-                $set('details', $detailBahan);
-            })
+                    $set('details', $detailBahan);
+                })
         ;
     }
 
@@ -210,34 +211,34 @@ class PermintaanBahanResource extends Resource
     {
         return
             DatePicker::make($fieldName)
-            ->label($label)
-            ->displayFormat('M d Y')
-            ->seconds(false);
+                ->label($label)
+                ->displayFormat('M d Y')
+                ->seconds(false);
     }
 
     protected static function signatureInput(string $fieldName, string $labelName): SignaturePad
     {
         return
             SignaturePad::make($fieldName)
-            ->label($labelName)
-            ->exportPenColor('#0118D8')
-            ->helperText('*Harap Tandatangan di tengah area yang disediakan.')
-            ->afterStateUpdated(function ($state, $set) use ($fieldName) {
-                if (blank($state))
-                    return;
-                $path = SignatureUploader::handle($state, 'ttd_', 'Warehouse/PermintaanBahan/Signatures');
-                if ($path) {
-                    $set($fieldName, $path);
-                }
-            });
+                ->label($labelName)
+                ->exportPenColor('#0118D8')
+                ->helperText('*Harap Tandatangan di tengah area yang disediakan.')
+                ->afterStateUpdated(function ($state, $set) use ($fieldName) {
+                    if (blank($state))
+                        return;
+                    $path = SignatureUploader::handle($state, 'ttd_', 'Warehouse/PermintaanBahan/Signatures');
+                    if ($path) {
+                        $set($fieldName, $path);
+                    }
+                });
     }
 
     protected static function textColumn(string $fieldName, string $label): TextColumn
     {
         return
             TextColumn::make($fieldName)
-            ->label($label)
-            ->searchable()
-            ->sortable();
+                ->label($label)
+                ->searchable()
+                ->sortable();
     }
 }
