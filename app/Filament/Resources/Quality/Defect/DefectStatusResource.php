@@ -17,6 +17,7 @@ use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\MorphToSelect;
 use Filament\Forms\Components\MorphToSelect\Type;
+use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -27,9 +28,11 @@ use Filament\Tables;
 use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Icetalker\FilamentTableRepeater\Forms\Components\TableRepeater;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Saade\FilamentAutograph\Forms\Components\SignaturePad;
+use Wallo\FilamentSelectify\Components\ButtonGroup;
 
 class DefectStatusResource extends Resource
 {
@@ -47,48 +50,14 @@ class DefectStatusResource extends Resource
         return $form
             ->schema([
                 //
-                MorphToSelect::make('defectable')
-                    ->types([
-                        Type::make(PengecekanMaterialSS::class)
-                            ->label('Pengecekan Material SS')
-                            ->titleAttribute('spk_marketing_id')
-                            ->getOptionLabelFromRecordUsing(fn($record) => $record->spk?->no_spk ?? 'SPK Tidak Ditemukan'),
-                        Type::make(PengecekanMaterialElectrical::class)
-                            ->label('Pengecekan Material Elektrikal')
-                            ->titleAttribute('spk_marketing_id')
-                            ->getOptionLabelFromRecordUsing(fn($record) => $record->spk?->no_spk ?? 'SPK Tidak Ditemukan'),
-                    ])
-                    ->reactive()
-                    ->columnSpanFull()
-                    ->required()
-                    ->afterStateUpdated(function ($state, callable $set) {
-                        if (! is_array($state)) return;
-
-                        $modelClass = $state['defectable_type'] ?? null;
-                        $modelId = $state['defectable_id'] ?? null;
-
-                        if ($modelClass) {
-
-                            $model = $modelClass::find($modelId);
-
-                            if ($model?->spk_marketing_id) {
-
-                                $set('model', $modelClass);
-                                $set('spk_marketing_id', $model->spk_marketing_id);
-                                $set('no_spk', $model->spk?->no_spk);
-                            }
-                        }
-                    }),
-
                 Fieldset::make('')
                     ->schema([
-                        self::textInput('model', 'Model')->disabled(),
-                        self::textInput('no_spk', 'No SPK')->disabled(),
-                    ])
-                    ->columns(2),
+                        self::Morp()
+                    ]),
                 Section::make('Chamber Identification')
                     ->collapsible()
                     ->schema([
+                        self::textInput('no_spk', 'No SPK')->disabled(),
                         self::textInput('spk_marketing_id', 'ID SPK')
                             ->dehydrated()
                             ->extraAttributes([
@@ -98,7 +67,53 @@ class DefectStatusResource extends Resource
                         self::textInput('tipe', 'Type/Model'),
                         self::textInput('volume', 'Volume'),
                         self::textInput('serial_number', 'S/N'),
-                    ])->columns(5),
+                    ])->columns(6),
+                // Fieldset::make('')
+                //     // ->relationship('detail')
+                //     ->schema([
+                //         Repeater::make('details')
+                //             ->schema([
+                //                 self::textInput('mainPart', 'Main Part')
+                //                     ->required(false)
+                //                     ->extraAttributes([
+                //                         'readonly' => true,
+                //                         'style' => 'pointer-events: none;'
+                //                     ]),
+                //                 TableRepeater::make('parts')
+                //                     ->label('')
+                //                     ->schema([
+                //                         self::textInput('part', 'Part')
+                //                             ->extraAttributes([
+                //                                 'readonly' => true,
+                //                                 'style' => 'pointer-events: none;'
+                //                             ]),
+                //                         ButtonGroup::make('result')
+                //                             ->options([
+                //                                 '1' => 'Yes',
+                //                                 '0' => 'No',
+                //                             ])
+                //                             ->onColor('primary')
+                //                             ->offColor('gray')
+                //                             ->gridDirection('row')
+                //                             ->default('individual'),
+                //                         Select::make('status')
+                //                             ->label('Status')
+                //                             ->options([
+                //                                 'ok' => 'OK',
+                //                                 'h' => 'Hold',
+                //                                 'r' => 'Repaired',
+                //                             ])
+                //                             ->required(),
+                //                     ])
+                //                     ->addable(false)
+                //                     ->deletable(false)
+                //                     ->reorderable(false),
+                //             ])
+                //             ->columnSpanFull()
+                //             ->addable(false)
+                //             ->deletable(false)
+                //             ->reorderable(false)
+                //     ]),
                 Fieldset::make('')
                     ->schema([
                         Textarea::make('note')
@@ -232,5 +247,62 @@ class DefectStatusResource extends Resource
             ->label($label)
             ->searchable()
             ->sortable();
+    }
+
+    protected static function Morp(): MorphToSelect
+    {
+        return
+            MorphToSelect::make('defectable')
+            ->types([
+                Type::make(PengecekanMaterialSS::class)
+                    ->label('Pengecekan Material SS')
+                    ->titleAttribute('spk_marketing_id')
+                    ->getOptionLabelFromRecordUsing(fn($record) => $record->spk?->no_spk ?? 'SPK Tidak Ditemukan'),
+                Type::make(PengecekanMaterialElectrical::class)
+                    ->label('Pengecekan Material Elektrikal')
+                    ->titleAttribute('spk_marketing_id')
+                    ->getOptionLabelFromRecordUsing(fn($record) => $record->spk?->no_spk ?? 'SPK Tidak Ditemukan'),
+            ])
+            ->reactive()
+            ->columnSpanFull()
+            ->required()
+            ->afterStateUpdated(function ($state, callable $set, $get) {
+                if (! is_array($state)) return;
+
+                $modelClass = $state['defectable_type'] ?? null;
+                $modelId = $state['defectable_id'] ?? null;
+
+                if ($modelClass) {
+
+                    $model = $modelClass::find($modelId);
+
+                    if ($model?->spk_marketing_id) {
+
+                        $set('modelClass', $modelClass);
+                        $set('spk_marketing_id', $model->spk_marketing_id);
+                        $set('no_spk', $model->spk?->no_spk);
+
+                        // Ambil semua details
+                        $details = $model->detail?->details ?? [];
+
+                        // Filter bagian yang result-nya "0"
+                        $filtered = collect($details)->map(function ($item) {
+                            $filteredParts = collect($item['parts'])->filter(fn($part) => $part['result'] === "0")->values()->all();
+
+                            if (count($filteredParts)) {
+                                return [
+                                    'mainPart' => $item['mainPart'],
+                                    'parts' => $filteredParts,
+                                ];
+                            }
+
+                            return null;
+                        })->filter()->values()->all(); // Reset key biar arraynya rapih
+
+                        // Set hasil filtered ke form
+                        $set('details', $filtered);
+                    }
+                }
+            });
     }
 }

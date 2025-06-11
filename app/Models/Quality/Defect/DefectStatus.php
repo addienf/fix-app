@@ -34,12 +34,12 @@ class DefectStatus extends Model
 
     public function detail()
     {
-        return $this->hasMany(DefectStatusDetail::class);
+        return $this->hasOne(DefectStatusDetail::class);
     }
 
     public function pic()
     {
-        return $this->hasMany(DefectStatusPIC::class);
+        return $this->hasOne(DefectStatusPIC::class);
     }
 
     protected static function booted()
@@ -51,10 +51,6 @@ class DefectStatus extends Model
 
             if ($model->pic) {
                 $model->pic->delete();
-            }
-
-            if ($model->defectable) {
-                $model->defectable->delete();
             }
         });
     }

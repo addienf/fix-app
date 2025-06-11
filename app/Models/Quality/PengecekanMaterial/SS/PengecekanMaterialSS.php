@@ -2,6 +2,7 @@
 
 namespace App\Models\Quality\PengecekanMaterial\SS;
 
+use App\Models\Quality\Penyerahan\PenyerahanElectrical;
 use App\Models\Sales\SPKMarketings\SPKMarketing;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -32,6 +33,11 @@ class PengecekanMaterialSS extends Model
     public function detail()
     {
         return $this->hasOne(PengecekanMaterialSSDetail::class, 'pengecekan_material_id');
+    }
+
+    public function penyerahan()
+    {
+        return $this->hasOne(PenyerahanElectrical::class, 'pengecekan_material_id');
     }
 
     protected static function booted()
