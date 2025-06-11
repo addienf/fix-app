@@ -31,7 +31,7 @@ use Saade\FilamentAutograph\Forms\Components\SignaturePad;
 class StandarisasiDrawingResource extends Resource
 {
     protected static ?string $model = StandarisasiDrawing::class;
-    protected static ?string $navigationIcon = 'heroicon-o-photo';
+    protected static ?string $navigationIcon = 'heroicon-o-check-circle';
     protected static ?int $navigationSort = 7;
     protected static ?string $navigationGroup = 'Quality';
     protected static ?string $navigationLabel = 'Standarisasi Drawing';

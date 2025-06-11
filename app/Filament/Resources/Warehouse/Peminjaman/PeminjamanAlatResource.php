@@ -28,7 +28,7 @@ class PeminjamanAlatResource extends Resource
 {
     protected static ?string $model = PeminjamanAlat::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-wrench';
+    protected static ?string $navigationIcon = 'heroicon-o-cog-6-tooth';
     protected static ?int $navigationSort = 6;
     protected static ?string $navigationGroup = 'Warehouse';
     protected static ?string $navigationLabel = 'Peminjaman Alat';

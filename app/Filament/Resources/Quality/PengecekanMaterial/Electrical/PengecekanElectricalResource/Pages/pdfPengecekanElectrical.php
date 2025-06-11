@@ -12,7 +12,7 @@ class pdfPengecekanElectrical extends Page
 
     protected static string $view = 'filament.resources.quality.pengecekan-material.electrical.pengecekan-electrical-resource.pages.pdf-pengecekan-electrical';
 
-    protected static ?string $title = 'Defect Status';
+    protected static ?string $title = 'Pengecekan Material Electrical';
 
     public $record;
 

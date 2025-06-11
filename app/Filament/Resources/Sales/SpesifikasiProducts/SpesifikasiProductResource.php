@@ -39,7 +39,8 @@ class SpesifikasiProductResource extends Resource
     protected static ?string $model = SpesifikasiProduct::class;
     protected static ?int $navigationSort = 1;
     protected static ?string $slug = 'sales/spesifikasi-product';
-    protected static ?string $navigationIcon = 'heroicon-o-circle-stack';
+    // protected static ?string $navigationIcon = 'heroicon-o-document-arrow-up';
+    protected static ?string $navigationIcon = 'heroicon-o-arrow-up-circle';
     protected static ?string $navigationGroup = 'Sales';
     protected static ?string $navigationLabel = 'Spesifikasi Product';
     protected static ?string $pluralLabel = 'Spesifikasi Product';

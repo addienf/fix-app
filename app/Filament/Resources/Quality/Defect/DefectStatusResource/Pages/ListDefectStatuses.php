@@ -23,7 +23,7 @@ class ListDefectStatuses extends ListRecords
         return
             [
                 null => Tab::make('All'),
-                'Stanless Stell' => Tab::make()->query(fn($query) => $query->where('defectable_type', 'App\Models\Quality\PengecekanMaterial\SS\PengecekanMaterialSS')),
+                'Stainless Steel' => Tab::make()->query(fn($query) => $query->where('defectable_type', 'App\Models\Quality\PengecekanMaterial\SS\PengecekanMaterialSS')),
                 'Electrical' => Tab::make()->query(fn($query) => $query->where('defectable_type', 'App\Models\Quality\PengecekanMaterial\Electrical\PengecekanMaterialElectrical')),
             ];
     }

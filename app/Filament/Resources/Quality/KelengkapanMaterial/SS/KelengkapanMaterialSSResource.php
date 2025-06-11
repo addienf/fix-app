@@ -35,7 +35,7 @@ class KelengkapanMaterialSSResource extends Resource
 {
     protected static ?string $model = KelengkapanMaterialSS::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-newspaper';
+    protected static ?string $navigationIcon = 'heroicon-o-check-circle';
     protected static ?int $navigationSort = 7;
     protected static ?string $navigationGroup = 'Quality';
     protected static ?string $navigationLabel = 'Kelengkapan Material SS';
