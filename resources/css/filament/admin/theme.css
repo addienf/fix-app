@@ -101,6 +101,9 @@
     /* kalau ada shadow yang mirip border */
 }
 
+.fi-fieldset{
+    @apply border border-blue-300 bg-white;
+}
 /* .fi-main{
     @apply bg-gradient-to-t from-[#2e2e2e]/10 to-[#18181B]/10;
 } */

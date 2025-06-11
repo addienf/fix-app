@@ -31,7 +31,7 @@ class SerahTerimaBahanResource extends Resource
 {
     protected static ?string $model = SerahTerimaBahan::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-square-2-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-cog-6-tooth';
     protected static ?int $navigationSort = 7;
     protected static ?string $navigationGroup = 'Warehouse';
     protected static ?string $navigationLabel = 'Serah Terima Bahan';

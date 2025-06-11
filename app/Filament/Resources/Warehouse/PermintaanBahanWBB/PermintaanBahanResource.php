@@ -31,7 +31,7 @@ class PermintaanBahanResource extends Resource
 {
     protected static ?string $model = PermintaanBahan::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-clipboard';
+    protected static ?string $navigationIcon = 'heroicon-o-cog-6-tooth';
     protected static ?int $navigationSort = 5;
     protected static ?string $navigationGroup = 'Warehouse';
     protected static ?string $navigationLabel = 'Permintaan Bahan Warehouse';

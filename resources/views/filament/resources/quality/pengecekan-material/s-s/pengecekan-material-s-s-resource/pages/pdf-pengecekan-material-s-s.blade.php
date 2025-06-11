@@ -128,6 +128,13 @@ $rows = [
                 @endforeach
             </tbody>
         </table>
+        
+        <div class="w-full max-w-4xl mx-auto mb-6">
+            <label for="note" class="block text-sm font-medium text-gray-700 mb-1">Note:</label>
+            <textarea id="note" name="note" rows="4"
+                class="w-full border border-black px-3 py-2 text-sm resize-none"></textarea>  
+        </div>
+        
         <div class="pt-6 mb-6 max-w-4xl mx-auto">
             <div class="grid grid-cols-3 gap-4 text-sm">
                 @foreach (['Checked By', 'Accepted By', 'Approved By'] as $role)
