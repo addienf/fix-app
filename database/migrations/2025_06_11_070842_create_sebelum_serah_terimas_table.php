@@ -15,11 +15,11 @@ return new class extends Migration
             $table->id();
             $table->foreignId('penyerahan_electrical_id')->constrained('penyerahan_electricals')->onDelete('cascade');
             $table->string('kondisi_fisik');
-            $table->text('detail_kondisi_fisik');
+            $table->text('detail_kondisi_fisik')->nullable();
             $table->string('kelengkapan_komponen');
-            $table->text('detail_kelengkapan_komponen');
+            $table->text('detail_kelengkapan_komponen')->nullable();
             $table->string('dokumen_pendukung');
-            $table->string('file_pendukung');
+            $table->string('file_pendukung')->nullable();
             $table->timestamps();
         });
     }

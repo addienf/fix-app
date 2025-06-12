@@ -16,8 +16,8 @@ class PenerimaElectrical extends Model
         'diterima_oleh',
         'catatan_tambahan',
         'status_penerimaan',
-        // 'penjelasan_status',
-        // 'alasan_status'
+        'penjelasan_status',
+        'alasan_status'
     ];
 
     protected $casts = [

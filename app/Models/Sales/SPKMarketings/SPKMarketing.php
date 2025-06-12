@@ -4,14 +4,18 @@ namespace App\Models\Sales\SPKMarketings;
 
 use App\Models\Production\Jadwal\JadwalProduksi as JadwalJadwalProduksi;
 use App\Models\Production\JadwalProduksi;
+use App\Models\Production\Penyerahan\PenyerahanProdukJadi;
 use App\Models\Production\PermintaanBahanProduksi\PermintaanAlatDanBahan;
+use App\Models\Production\SPK\SPKQuality;
 use App\Models\Quality\Defect\DefectStatus;
 use App\Models\Quality\KelengkapanMaterial\SS\KelengkapanMaterialSS;
+use App\Models\Quality\Pengecekan\PengecekanPerforma;
 use App\Models\Quality\PengecekanMaterial\Electrical\PengecekanMaterialElectrical;
 use App\Models\Quality\PengecekanMaterial\SS\PengecekanMaterialSS;
 use App\Models\Quality\Standarisasi\StandarisasiDrawing;
 use App\Models\Sales\SpesifikasiProducts\SpesifikasiProduct;
 use App\Models\Sales\SPKMarketings\Pivot\SPKMarketingPIC;
+use App\Models\Warehouse\Pelabelan\QCPassed;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -77,6 +81,26 @@ class SPKMarketing extends Model
     public function pengecekanElectrical()
     {
         return $this->hasOne(PengecekanMaterialElectrical::class, 'spk_marketing_id');
+    }
+
+    public function spkQC()
+    {
+        return $this->hasOne(SPKQuality::class, 'spk_marketing_id');
+    }
+
+    public function produkJadi()
+    {
+        return $this->hasOne(PenyerahanProdukJadi::class, 'spk_marketing_id');
+    }
+
+    public function pengecekanPerforma()
+    {
+        return $this->hasOne(PengecekanPerforma::class, 'spk_marketing_id');
+    }
+
+    public function qc()
+    {
+        return $this->hasOne(QCPassed::class, 'spk_marketing_id');
     }
 
     protected static function booted()
