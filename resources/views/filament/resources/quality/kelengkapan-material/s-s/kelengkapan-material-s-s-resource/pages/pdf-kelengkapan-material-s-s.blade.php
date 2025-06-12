@@ -154,8 +154,7 @@
                             class="w-full mb-2 border border-gray-300 p-2 rounded bg-gray-100 text-gray-500 cursor-not-allowed" />
 
                         <label class="block mb-1">Signature</label>
-                        <input type="file" disabled
-                            class="w-full mb-2 border border-gray-300 p-2 rounded bg-gray-100 text-gray-500 cursor-not-allowed" />
+                        <div class="w-full h-24 mb-2 border border-black rounded bg-white"></div>
 
                         <label class="block mb-1">Date</label>
                         <input type="date" readonly value="{{ now()->format('Y-m-d') }}"

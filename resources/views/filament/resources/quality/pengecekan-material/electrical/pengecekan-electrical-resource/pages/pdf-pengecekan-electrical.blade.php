@@ -115,16 +115,16 @@ $fields = [
             </tr>
     
             @php
-                $displayParts = [
-                    'Installation',
-                    'Cabling',
-                    'Function',
-                    'Home Display',
-                    'Status and Display',
-                    'Control Panel display',
-                    'Settings display',
-                    'Login function',
-                ];
+$displayParts = [
+    'Installation',
+    'Cabling',
+    'Function',
+    'Home Display',
+    'Status and Display',
+    'Control Panel display',
+    'Settings display',
+    'Login function',
+];
             @endphp
     
             @foreach ($displayParts as $i => $part)
@@ -147,7 +147,7 @@ $fields = [
             </tr>
     
             @php
-                $airParts = ['Blower Installation', 'Cabling', 'Function'];
+$airParts = ['Blower Installation', 'Cabling', 'Function'];
             @endphp
     
             @foreach ($airParts as $i => $part)
@@ -182,5 +182,23 @@ $fields = [
             </tr>
         </tbody>
     </table>
+    <div class="p-4 mb-6 max-w-4xl mx-auto">
+        <div class="grid grid-cols-3 gap-4 text-sm">
+            @foreach (['Checked By', 'Accepted By', 'Approved By'] as $role)
+                <div>
+                    <label class="font-semibold block mb-1">{{ $role }}</label>
+                    <input type="text" value="{{ $role }} User" readonly
+                        class="w-full mb-2 border border-gray-300 p-2 rounded bg-gray-100 text-gray-500 cursor-not-allowed" />
+
+                    <label class="block mb-1">Signature</label>
+                    <div class="w-full h-24 mb-2 border border-black rounded bg-white"></div>
+
+                    <label class="block mb-1">Date</label>
+                    <input type="date" readonly value="{{ now()->format('Y-m-d') }}"
+                        class="w-full border border-gray-300 p-2 rounded bg-gray-100 text-gray-500 cursor-not-allowed" />
+                </div>
+            @endforeach
+        </div>
+    </div>
 </x-filament::section>
 </x-filament-panels::page>

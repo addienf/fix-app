@@ -135,24 +135,23 @@ $rows = [
                 class="w-full border border-black px-3 py-2 text-sm resize-none"></textarea>  
         </div>
         
-        <div class="pt-6 mb-6 max-w-4xl mx-auto">
-            <div class="grid grid-cols-3 gap-4 text-sm">
-                @foreach (['Checked By', 'Accepted By', 'Approved By'] as $role)
-                    <div>
-                        <label class="font-semibold block mb-1">{{ $role }}</label>
-                        <input type="text" value="{{ $role }} User" readonly
-                            class="w-full mb-2 border border-gray-300 p-2 rounded bg-gray-100 text-gray-500 cursor-not-allowed" />
+    <div class="p-4 mb-6 max-w-4xl mx-auto">
+        <div class="grid grid-cols-3 gap-4 text-sm">
+            @foreach (['Checked By', 'Accepted By', 'Approved By'] as $role)
+                <div>
+                    <label class="font-semibold block mb-1">{{ $role }}</label>
+                    <input type="text" value="{{ $role }} User" readonly
+                        class="w-full mb-2 border border-gray-300 p-2 rounded bg-gray-100 text-gray-500 cursor-not-allowed" />
 
-                        <label class="block mb-1">Signature</label>
-                        <input type="file" disabled
-                            class="w-full mb-2 border border-gray-300 p-2 rounded bg-gray-100 text-gray-500 cursor-not-allowed" />
+                    <label class="block mb-1">Signature</label>
+                    <div class="w-full h-24 mb-2 border border-black rounded bg-white"></div>
 
-                        <label class="block mb-1">Date</label>
-                        <input type="date" readonly value="{{ now()->format('Y-m-d') }}"
-                            class="w-full border border-gray-300 p-2 rounded bg-gray-100 text-gray-500 cursor-not-allowed" />
-                    </div>
-                @endforeach
-            </div>
+                    <label class="block mb-1">Date</label>
+                    <input type="date" readonly value="{{ now()->format('Y-m-d') }}"
+                        class="w-full border border-gray-300 p-2 rounded bg-gray-100 text-gray-500 cursor-not-allowed" />
+                </div>
+            @endforeach
         </div>
+    </div>
     </x-filament::section>
 </x-filament-panels::page>
