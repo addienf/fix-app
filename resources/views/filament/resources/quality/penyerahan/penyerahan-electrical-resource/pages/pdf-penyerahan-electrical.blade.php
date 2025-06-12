@@ -234,6 +234,14 @@ $fields = [
         @endforeach
     </div>
 </div>
+<div class="max-w-4xl mx-auto mt-4 mb-6 text-sm">
+    <h2 class="text-xl font-semibold mb-1">Catatan:</h2>
+    <p>
+        Formulir ini harus diisi dengan lengkap sebelum produk diserahkan ke divisi berikutnya.
+        Jika ada kendala, harap segera dikomunikasikan kepada pihak terkait. <br>
+        Terima kasih.
+    </p>
+</div>
 
 
 </x-filament::section>   
