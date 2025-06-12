@@ -43,7 +43,7 @@
 
 <h2 class="text-xl font-bold text-start max-w-4xl mx-auto pt-4">Dari Divisi Mekanik ke Divisi Elektrikal</h2>
 
-<h2 class="text-xl font-bold text-start max-w-4xl mx-auto pt-4">A.Informasi Produk</h2>
+<h2 class="text-xl font-bold text-start max-w-4xl mx-auto pt-4">A. Informasi Produk</h2>
 <div class="w-full max-w-4xl mx-auto pt-6 mb-3 text-sm space-y-3">
     @php
 $fields = [
@@ -90,7 +90,7 @@ $fields = [
 </div>
 <div class="max-w-4xl mx-auto text-sm space-y-6">
     <!-- B. PENGECEKAN SEBELUM SERAH TERIMA -->
-    <h2 class="text-xl font-bold text-start max-w-4xl mx-auto   ">B.Pengecekan Sebelum Serah Terima</h2>
+    <h2 class="text-xl font-bold text-start max-w-4xl mx-auto   ">B. Pengecekan Sebelum Serah Terima</h2>
 
     <!-- 1. Kondisi Fisik Produk -->
     <div>
