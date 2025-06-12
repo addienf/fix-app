@@ -11,8 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('pengecekan_material_electricals', function (Blueprint $table) {
+        Schema::create('pengecekan_performa_details', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('pengecekan_performa_id')->constrained('pengecekan_performas')->onDelete('cascade');
+            $table->json('details');
             $table->timestamps();
         });
     }
@@ -22,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('pengecekan_material_electricals');
+        Schema::dropIfExists('pengecekan_performa_details');
     }
 };
