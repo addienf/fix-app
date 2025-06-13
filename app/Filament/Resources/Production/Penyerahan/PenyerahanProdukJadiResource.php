@@ -6,10 +6,11 @@ use App\Filament\Resources\Production\Penyerahan\PenyerahanProdukJadiResource\Pa
 use App\Filament\Resources\Production\Penyerahan\PenyerahanProdukJadiResource\RelationManagers;
 use App\Models\Production\Penyerahan\PenyerahanProdukJadi;
 use App\Services\SignatureUploader;
+use Filament\Forms\Components\Grid;
 use Filament\Actions\Action;
 use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Fieldset;
+use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -38,22 +39,25 @@ class PenyerahanProdukJadiResource extends Resource
         return $form
             ->schema([
                 //
-                Fieldset::make('Informasi Umum')
+                Section::make('Informasi Umum')
                     ->schema([
-                        self::selectInput('spk_marketing_id', 'No SPK Marketing', 'spk', 'no_spk')
-                            ->required(),
-                        self::datePicker('tanggal', 'Tanggal'),
-                        self::textInput('pic', 'Penanggung Jawab'),
-                        self::textInput('penerima', 'Penerima')
+                        Grid::make(2)
+                            ->schema([
+                                self::selectInput('spk_marketing_id', 'No SPK Marketing', 'spk', 'no_spk')
+                                    ->required(),
+                                self::datePicker('tanggal', 'Tanggal'),
+                                self::textInput('pic', 'Penanggung Jawab'),
+                                self::textInput('penerima', 'Penerima'),
+                            ]),
                     ]),
 
-                Fieldset::make('Kondisi Produk')
+                Section::make('Kondisi Produk')
                     ->schema([
                         self::selectKondisi()
                             ->columnSpanFull()
                     ]),
 
-                Fieldset::make('Catatan Tambahan')
+                Section::make('Catatan Tambahan')
                     ->schema([
                         self::textArea('catatan_tambahan', 'Catatan Tambahan')
                             ->columnSpanFull()
@@ -119,70 +123,70 @@ class PenyerahanProdukJadiResource extends Resource
     {
         return
             Select::make($fieldName)
-            ->relationship($relation, $title)
-            ->label($label)
-            ->native(false)
-            ->searchable()
-            ->preload()
-            ->required()
-            ->reactive();
+                ->relationship($relation, $title)
+                ->label($label)
+                ->native(false)
+                ->searchable()
+                ->preload()
+                ->required()
+                ->reactive();
     }
 
     protected static function selectKondisi(): Select
     {
         return
             Select::make('kondisi_produk')
-            ->label('Kondisi Produk')
-            ->required()
-            ->placeholder('Pilih Kondisi Produk')
-            ->options([
-                'baik' => 'Baik',
-                'rusak' => 'Rusak',
-                'perlu_perbaikan' => 'Perlu Perbaikan'
-            ]);
+                ->label('Kondisi Produk')
+                ->required()
+                ->placeholder('Pilih Kondisi Produk')
+                ->options([
+                    'baik' => 'Baik',
+                    'rusak' => 'Rusak',
+                    'perlu_perbaikan' => 'Perlu Perbaikan'
+                ]);
     }
 
     protected static function datePicker(string $fieldName, string $label): DatePicker
     {
         return
             DatePicker::make($fieldName)
-            ->label($label)
-            ->displayFormat('M d Y')
-            ->seconds(false);
+                ->label($label)
+                ->displayFormat('M d Y')
+                ->seconds(false);
     }
 
     protected static function signatureInput(string $fieldName, string $labelName): SignaturePad
     {
         return
             SignaturePad::make($fieldName)
-            ->label($labelName)
-            ->exportPenColor('#0118D8')
-            ->helperText('*Harap Tandatangan di tengah area yang disediakan.')
-            ->afterStateUpdated(function ($state, $set) use ($fieldName) {
-                if (blank($state))
-                    return;
-                $path = SignatureUploader::handle($state, 'ttd_', 'Production/PenyerahanElectrical/Signatures');
-                if ($path) {
-                    $set($fieldName, $path);
-                }
-            });
+                ->label($labelName)
+                ->exportPenColor('#0118D8')
+                ->helperText('*Harap Tandatangan di tengah area yang disediakan.')
+                ->afterStateUpdated(function ($state, $set) use ($fieldName) {
+                    if (blank($state))
+                        return;
+                    $path = SignatureUploader::handle($state, 'ttd_', 'Production/PenyerahanElectrical/Signatures');
+                    if ($path) {
+                        $set($fieldName, $path);
+                    }
+                });
     }
 
     protected static function textArea(string $fieldName, string $label): Textarea
     {
         return
             Textarea::make($fieldName)
-            ->label($label)
-            ->required()
-            ->maxLength(255);
+                ->label($label)
+                ->required()
+                ->maxLength(255);
     }
 
     protected static function textColumn(string $fieldName, string $label): TextColumn
     {
         return
             TextColumn::make($fieldName)
-            ->label($label)
-            ->searchable()
-            ->sortable();
+                ->label($label)
+                ->searchable()
+                ->sortable();
     }
 }

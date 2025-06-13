@@ -9,5 +9,7 @@ class pdfIncommingMaterialNonSS extends Page
 {
     protected static string $resource = IncommingMaterialNonSSResource::class;
 
+    protected static ?string $title = 'Incoming Material Non Stainless Steel';
+
     protected static string $view = 'filament.resources.quality.incomming-material.material-non-s-s.incomming-material-non-s-s-resource.pages.pdf-incomming-material-non-s-s';
 }

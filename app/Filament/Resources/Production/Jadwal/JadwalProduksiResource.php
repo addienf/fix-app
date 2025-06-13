@@ -35,7 +35,7 @@ class JadwalProduksiResource extends Resource
     protected static ?string $model = JadwalJadwalProduksi::class;
     protected static ?int $navigationSort = 9;
     protected static ?string $navigationGroup = 'Production';
-    protected static ?string $navigationIcon = 'heroicon-o-calendar';
+    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
     protected static ?string $navigationLabel = 'Jadwal Produksi';
     protected static ?string $pluralLabel = 'Jadwal Produksi';
     protected static ?string $modelLabel = 'Jadwal Produksi';

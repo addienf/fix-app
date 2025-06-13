@@ -51,10 +51,7 @@ class DefectStatusResource extends Resource
         return $form
             ->schema([
                 //
-                Fieldset::make('')
-                    ->schema([
-                        self::Morp()
-                    ]),
+                self::Morp(),
                 Section::make('Chamber Identification')
                     ->collapsible()
                     ->schema([
@@ -193,117 +190,118 @@ class DefectStatusResource extends Resource
     {
         return
             Select::make($fieldName)
-            ->relationship($relation, $title)
-            ->label($label)
-            ->native(false)
-            ->searchable()
-            ->preload()
-            ->required()
-            ->reactive();
+                ->relationship($relation, $title)
+                ->label($label)
+                ->native(false)
+                ->searchable()
+                ->preload()
+                ->required()
+                ->reactive();
     }
 
     protected static function selectInputOptions(string $fieldName, string $label, string $config): Select
     {
         return
             Select::make($fieldName)
-            ->options(config($config))
-            ->label($label)
-            ->native(false)
-            ->searchable()
-            ->preload()
-            ->required()
-            ->reactive();
+                ->options(config($config))
+                ->label($label)
+                ->native(false)
+                ->searchable()
+                ->preload()
+                ->required()
+                ->reactive();
     }
 
     protected static function datePicker(string $fieldName, string $label): DatePicker
     {
         return
             DatePicker::make($fieldName)
-            ->label($label)
-            ->displayFormat('M d Y')
-            ->seconds(false);
+                ->label($label)
+                ->displayFormat('M d Y')
+                ->seconds(false);
     }
 
     protected static function signatureInput(string $fieldName, string $labelName): SignaturePad
     {
         return
             SignaturePad::make($fieldName)
-            ->label($labelName)
-            ->exportPenColor('#0118D8')
-            ->helperText('*Harap Tandatangan di tengah area yang disediakan.')
-            ->afterStateUpdated(function ($state, $set) use ($fieldName) {
-                if (blank($state))
-                    return;
-                $path = SignatureUploader::handle($state, 'ttd_', 'Quality/DefectStatus/Signatures');
-                if ($path) {
-                    $set($fieldName, $path);
-                }
-            });
+                ->label($labelName)
+                ->exportPenColor('#0118D8')
+                ->helperText('*Harap Tandatangan di tengah area yang disediakan.')
+                ->afterStateUpdated(function ($state, $set) use ($fieldName) {
+                    if (blank($state))
+                        return;
+                    $path = SignatureUploader::handle($state, 'ttd_', 'Quality/DefectStatus/Signatures');
+                    if ($path) {
+                        $set($fieldName, $path);
+                    }
+                });
     }
 
     protected static function textColumn(string $fieldName, string $label): TextColumn
     {
         return
             TextColumn::make($fieldName)
-            ->label($label)
-            ->searchable()
-            ->sortable();
+                ->label($label)
+                ->searchable()
+                ->sortable();
     }
 
     protected static function Morp(): MorphToSelect
     {
         return
             MorphToSelect::make('defectable')
-            ->types([
-                Type::make(PengecekanMaterialSS::class)
-                    ->label('Pengecekan Material SS')
-                    ->titleAttribute('spk_marketing_id')
-                    ->getOptionLabelFromRecordUsing(fn($record) => $record->spk?->no_spk ?? 'SPK Tidak Ditemukan'),
-                Type::make(PengecekanMaterialElectrical::class)
-                    ->label('Pengecekan Material Elektrikal')
-                    ->titleAttribute('spk_marketing_id')
-                    ->getOptionLabelFromRecordUsing(fn($record) => $record->spk?->no_spk ?? 'SPK Tidak Ditemukan'),
-            ])
-            ->reactive()
-            ->columnSpanFull()
-            ->required()
-            ->afterStateUpdated(function ($state, callable $set, $get) {
-                if (! is_array($state)) return;
+                ->types([
+                    Type::make(PengecekanMaterialSS::class)
+                        ->label('Pengecekan Material SS')
+                        ->titleAttribute('spk_marketing_id')
+                        ->getOptionLabelFromRecordUsing(fn($record) => $record->spk?->no_spk ?? 'SPK Tidak Ditemukan'),
+                    Type::make(PengecekanMaterialElectrical::class)
+                        ->label('Pengecekan Material Elektrikal')
+                        ->titleAttribute('spk_marketing_id')
+                        ->getOptionLabelFromRecordUsing(fn($record) => $record->spk?->no_spk ?? 'SPK Tidak Ditemukan'),
+                ])
+                ->reactive()
+                ->columnSpanFull()
+                ->required()
+                ->afterStateUpdated(function ($state, callable $set, $get) {
+                    if (!is_array($state))
+                        return;
 
-                $modelClass = $state['defectable_type'] ?? null;
-                $modelId = $state['defectable_id'] ?? null;
+                    $modelClass = $state['defectable_type'] ?? null;
+                    $modelId = $state['defectable_id'] ?? null;
 
-                if ($modelClass) {
+                    if ($modelClass) {
 
-                    $model = $modelClass::find($modelId);
+                        $model = $modelClass::find($modelId);
 
-                    if ($model?->spk_marketing_id) {
+                        if ($model?->spk_marketing_id) {
 
-                        $set('modelClass', $modelClass);
-                        $set('spk_marketing_id', $model->spk_marketing_id);
-                        $set('no_spk', $model->spk?->no_spk);
+                            $set('modelClass', $modelClass);
+                            $set('spk_marketing_id', $model->spk_marketing_id);
+                            $set('no_spk', $model->spk?->no_spk);
 
-                        // Ambil semua details
-                        $details = $model->detail?->details ?? [];
+                            // Ambil semua details
+                            $details = $model->detail?->details ?? [];
 
-                        // Filter bagian yang result-nya "0"
-                        $filtered = collect($details)->map(function ($item) {
-                            $filteredParts = collect($item['parts'])->filter(fn($part) => $part['result'] === "0")->values()->all();
+                            // Filter bagian yang result-nya "0"
+                            $filtered = collect($details)->map(function ($item) {
+                                $filteredParts = collect($item['parts'])->filter(fn($part) => $part['result'] === "0")->values()->all();
 
-                            if (count($filteredParts)) {
-                                return [
-                                    'mainPart' => $item['mainPart'],
-                                    'parts' => $filteredParts,
-                                ];
-                            }
+                                if (count($filteredParts)) {
+                                    return [
+                                        'mainPart' => $item['mainPart'],
+                                        'parts' => $filteredParts,
+                                    ];
+                                }
 
-                            return null;
-                        })->filter()->values()->all(); // Reset key biar arraynya rapih
-
-                        // Set hasil filtered ke form
-                        $set('details', $filtered);
+                                return null;
+                            })->filter()->values()->all(); // Reset key biar arraynya rapih
+        
+                            // Set hasil filtered ke form
+                            $set('details', $filtered);
+                        }
                     }
-                }
-            });
+                });
     }
 }
