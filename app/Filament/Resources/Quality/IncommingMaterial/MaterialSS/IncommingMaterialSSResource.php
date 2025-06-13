@@ -29,7 +29,7 @@ class IncommingMaterialSSResource extends Resource
 {
     protected static ?string $model = IncommingMaterialSS::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-check-circle';
     protected static ?int $navigationSort = 16;
     protected static ?string $navigationGroup = 'Quality';
     protected static ?string $navigationLabel = 'Incoming Material SS';
