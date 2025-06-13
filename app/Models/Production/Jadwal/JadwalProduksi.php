@@ -17,6 +17,7 @@ class JadwalProduksi extends Model
         'spk_marketing_id',
         'tanggal',
         'pic_name',
+        'status_persetujuan',
     ];
 
     public function spk()
@@ -41,6 +42,15 @@ class JadwalProduksi extends Model
 
     protected static function booted()
     {
+        static::saving(function ($model) {
+            if (
+                $model->pic?->approve_signature &&
+                $model->status_persetujuan !== 'Disetujui'
+            ) {
+                $model->status_persetujuan = 'Disetujui';
+            }
+        });
+
         static::deleting(function ($model) {
             foreach ($model->details as $detail) {
                 $detail->delete();

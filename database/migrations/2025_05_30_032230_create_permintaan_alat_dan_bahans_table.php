@@ -18,6 +18,8 @@ return new class extends Migration
             $table->string('no_surat');
             $table->string('dari');
             $table->string('kepada');
+            $table->string('status')->nullable();
+            $table->string('status_penerimaan')->nullable();
             $table->timestamps();
         });
     }

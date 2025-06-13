@@ -9,9 +9,11 @@ use App\Models\Sales\SPKMarketings\SPKMarketing;
 use App\Services\SignatureUploader;
 use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Split;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -21,6 +23,8 @@ use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use GuzzleHttp\Promise\Create;
+use Icetalker\FilamentTableRepeater\Forms\Components\TableRepeater;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Saade\FilamentAutograph\Forms\Components\SignaturePad;
@@ -41,6 +45,13 @@ class SPKResource extends Resource
         return 'spk-marketing';
     }
 
+    public static function getNavigationBadge(): ?string
+    {
+        $count = SPKMarketing::where('status_persetujuan', '!=', 'Diterima')->count();
+
+        return $count > 0 ? (string) $count : null;
+    }
+
     public static function form(Form $form): Form
     {
         return $form
@@ -57,35 +68,68 @@ class SPKResource extends Resource
                                     ->displayFormat('M d Y'),
                                 self::textInput('no_spk', 'Nomor SPK')
                                     ->helperText('Format: XXX/QKS/MKT/SPK/MM/YY')
-                                    ->unique(),
-                                Select::make('spesifikasi_product_id')
-                                    ->label('Customer')
-                                    ->required()
-                                    ->options(function () {
-                                        return SpesifikasiProduct::with('urs.customer')
-                                            ->get()
-                                            ->mapWithKeys(function ($item) {
-                                                $noUrs = $item->urs->no_urs ?? '-';
-                                                $customerName = $item->urs->customer->name ?? '-';
-                                                return [$item->id => "{$noUrs} - {$customerName}"];
-                                            });
-                                    }),
+                                    ->unique(ignoreRecord: true),
+                                self::selectSpecInput(),
                                 self::textInput('dari', 'Dari'),
                                 self::textInput('no_order', 'Nomor Order')
-                                    ->unique(),
+                                    ->unique(ignoreRecord: true),
                                 self::textInput('kepada', 'Kepada'),
+                                Hidden::make('status_persetujuan')
+                                    ->default('Belum Diterima'),
+                                // Select::make('status_persetujuan')
+                                //     ->label('Status Persetujuan')
+                                //     ->options([
+                                //         'Belum Disetujui' => 'Belum Disetujui',
+                                //         'Disetujui' => 'Disetujui',
+                                //     ])
+                                //     ->default('Belum Disetujui'),
                             ]),
                     ]),
+
+                Section::make('Detail Produk Yang Dipesan')
+                    ->hiddenOn(operations: 'edit')
+                    ->collapsible()
+                    ->schema([
+                        TableRepeater::make('details')
+                            ->label('')
+                            ->schema([
+                                self::textInput('name', 'Nama Produk')
+                                    ->extraAttributes([
+                                        'readonly' => true,
+                                        'style' => 'pointer-events: none;'
+                                    ]),
+                                self::textInput('quantity', 'Jumlah Pesanan')
+                                    ->extraAttributes([
+                                        'readonly' => true,
+                                        'style' => 'pointer-events: none;'
+                                    ]),
+                                self::textInput('no_urs', 'No URS')
+                                    ->extraAttributes([
+                                        'readonly' => true,
+                                        'style' => 'pointer-events: none;'
+                                    ]),
+                            ])
+                            ->deletable(false)
+                            ->reorderable(false)
+                            ->addable(false),
+                    ]),
+
                 Section::make('Detail PIC')
                     ->collapsible()
                     ->relationship('pic')
                     ->schema([
                         Grid::make(2)
                             ->schema([
-                                self::textInput('create_name', 'PIC Pembuat'),
-                                self::textInput('receive_name', 'PIC Penerima'),
-                                self::signatureInput('create_signature', 'Dibuat Oleh'),
-                                self::signatureInput('receive_signature', 'Diterima Oleh'),
+                                Grid::make(1)
+                                    ->schema([
+                                        self::textInput('create_name', 'PIC Pembuat'),
+                                        self::signatureInput('create_signature', 'Dibuat Oleh'),
+                                    ])->hiddenOn(operations: 'edit'),
+                                Grid::make(1)
+                                    ->schema([
+                                        self::textInput('receive_name', 'PIC Penerima'),
+                                        self::signatureInput('receive_signature', 'Diterima Oleh'),
+                                    ])->hiddenOn(operations: 'create'),
                             ]),
                     ]),
             ]);
@@ -98,13 +142,22 @@ class SPKResource extends Resource
                 //
                 self::textColumn('spesifikasiProduct.urs.no_urs', 'No URS'),
                 self::textColumn('no_order', 'No Order'),
+                self::textColumn('no_order', 'No Order'),
+                TextColumn::make('status_persetujuan')
+                    ->label('Status Penerimaan')
+                    ->badge()
+                    ->color(
+                        fn($state) =>
+                        $state === 'Diterima' ? 'success' : 'danger'
+                    )
+                    ->alignCenter(),
                 ImageColumn::make('pic.create_signature')
                     ->width(150)
-                    ->label('PIC')
+                    ->label('Yang Membuat')
                     ->height(75),
                 ImageColumn::make('pic.receive_signature')
                     ->width(150)
-                    ->label('PIC')
+                    ->label('Yang Menerima')
                     ->height(75),
             ])
             ->filters([
@@ -118,7 +171,8 @@ class SPKResource extends Resource
                         ->label(_('View PDF'))
                         ->icon('heroicon-o-document')
                         ->color('success')
-                        ->url(fn($record) => self::getUrl('pdfSPK', ['record' => $record->id])),
+                        ->url(fn($record) => self::getUrl('pdfSPK', ['record' => $record->id]))
+                        ->visible(fn($record) => $record->status_persetujuan === 'Disetujui'),
                 ])
             ])
             ->bulkActions([
@@ -164,6 +218,44 @@ class SPKResource extends Resource
             ->preload()
             ->required();
     }
+
+    protected static function selectSpecInput(): Select
+    {
+        return
+            Select::make('spesifikasi_product_id')
+            ->label('Customer')
+            ->reactive()
+            ->required()
+            ->options(function () {
+                return SpesifikasiProduct::with('urs.customer')
+                    ->get()
+                    ->mapWithKeys(function ($item) {
+                        $noUrs = $item->urs->no_urs ?? '-';
+                        $customerName = $item->urs->customer->name ?? '-';
+                        return [$item->id => "{$noUrs} - {$customerName}"];
+                    });
+            })
+            ->afterStateUpdated(function ($state, callable $set) {
+                if (!$state) return;
+
+                $spesifikasi = SpesifikasiProduct::with(['urs.customer', 'details.product'])->find($state);
+                if (!$spesifikasi) return;
+
+                $noUrs = $spesifikasi->urs?->no_urs ?? '-';
+
+                // Ubah details ke bentuk array yang bisa ditangkap Repeater
+                $details = $spesifikasi->details->map(function ($detail) use ($noUrs) {
+                    return [
+                        'name' => $detail->product?->name ?? '-',
+                        'quantity' => $detail?->quantity ?? '-',
+                        'no_urs' => $noUrs,
+                    ];
+                })->toArray();
+                $set('details', $details);
+            });
+    }
+
+
 
     protected static function signatureInput(string $fieldName, string $labelName): SignaturePad
     {

@@ -16,8 +16,8 @@ return new class extends Migration
             $table->foreignId('jadwal_produksi_id')->constrained('jadwal_produksis')->onDelete('cascade');
             $table->text('create_signature');
             $table->string('create_name');
-            $table->text('approve_signature');
-            $table->string('approve_name');
+            $table->text('approve_signature')->nullable();
+            $table->string('approve_name')->nullable();
             $table->timestamps();
         });
     }
