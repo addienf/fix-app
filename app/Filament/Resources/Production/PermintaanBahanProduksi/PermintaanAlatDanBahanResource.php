@@ -35,7 +35,7 @@ class PermintaanAlatDanBahanResource extends Resource
 {
     protected static ?string $model = PermintaanAlatDanBahan::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-wrench-screwdriver';
+    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
     protected static ?int $navigationSort = 10;
     protected static ?string $navigationGroup = 'Production';
     protected static ?string $navigationLabel = 'Permintaan Alat dan Bahan';
