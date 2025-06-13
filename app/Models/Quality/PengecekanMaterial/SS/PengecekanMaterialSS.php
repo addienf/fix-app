@@ -2,7 +2,8 @@
 
 namespace App\Models\Quality\PengecekanMaterial\SS;
 
-use App\Models\Quality\Penyerahan\PenyerahanElectrical;
+use App\Models\Production\Penyerahan\PenyerahanElectrical\PenyerahanElectrical;
+
 use App\Models\Sales\SPKMarketings\SPKMarketing;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;

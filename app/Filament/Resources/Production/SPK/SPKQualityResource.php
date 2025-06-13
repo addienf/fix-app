@@ -27,7 +27,7 @@ use Saade\FilamentAutograph\Forms\Components\SignaturePad;
 class SPKQualityResource extends Resource
 {
     protected static ?string $model = SPKQuality::class;
-
+    protected static ?int $navigationSort = 13;
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
     protected static ?string $navigationGroup = 'Production';
     protected static ?string $navigationLabel = 'SPK Quality';

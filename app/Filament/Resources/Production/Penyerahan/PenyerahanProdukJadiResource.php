@@ -26,7 +26,7 @@ use Saade\FilamentAutograph\Forms\Components\SignaturePad;
 class PenyerahanProdukJadiResource extends Resource
 {
     protected static ?string $model = PenyerahanProdukJadi::class;
-
+    protected static ?int $navigationSort = 11;
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
     protected static ?string $navigationGroup = 'Production';
     protected static ?string $navigationLabel = 'Penyerahan Produk Jadi';
