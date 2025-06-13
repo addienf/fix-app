@@ -33,17 +33,18 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Str;
 use Saade\FilamentAutograph\Forms\Components\SignaturePad;
+use Wallo\FilamentSelectify\Components\ButtonGroup;
 
 class SpesifikasiProductResource extends Resource
 {
     protected static ?string $model = SpesifikasiProduct::class;
     protected static ?int $navigationSort = 1;
-    protected static ?string $slug = 'sales/spesifikasi-product';
+    protected static ?string $slug = 'sales/spesifikasi-produk';
     protected static ?string $navigationIcon = 'heroicon-o-arrow-up-circle';
     protected static ?string $navigationGroup = 'Sales';
-    protected static ?string $navigationLabel = 'Spesifikasi Product';
-    protected static ?string $pluralLabel = 'Spesifikasi Product';
-    protected static ?string $modelLabel = 'Spesifikasi Product';
+    protected static ?string $navigationLabel = 'Spesifikasi Produk';
+    protected static ?string $pluralLabel = 'Spesifikasi Produk';
+    protected static ?string $modelLabel = 'Spesifikasi Produk';
 
     public static function form(Form $form): Form
     {
@@ -51,15 +52,17 @@ class SpesifikasiProductResource extends Resource
             ->schema([
                 Section::make('Informasi Umum')
                     ->schema([
-                        self::selectInput('urs_id', 'No URS', 'urs', 'no_urs')
-                            ->required()
-                            ->createOptionForm(fn() => self::ursFormSchema()),
-                        self::textInput('delivery_address', 'Alamat Pengiriman')
-                            ->required(),
-                        self::toogleButton('is_stock', 'Untuk Stock ?')
-                            ->required()
+                        Grid::make(3)
+                            ->schema([
+                                self::selectInput('urs_id', 'No URS', 'urs', 'no_urs')
+                                    ->placeholder('Pilih Data URS')
+                                    ->createOptionForm(fn() => self::ursFormSchema()),
+                                self::textInput('delivery_address', 'Alamat Pengiriman'),
+                                self::buttonGroup('is_stock', 'Untuk Stock ?'),
+                            ]),
+
                     ])
-                    ->columns(3),
+                    ->collapsible(),
 
                 Section::make('Detail Spesifikasi Product')
                     ->schema([
@@ -97,20 +100,32 @@ class SpesifikasiProductResource extends Resource
                                             ->options(config('spec.spesifikasi'))
                                             ->columnSpan(1)
                                             ->placeholder('Pilih Jenis Spesifikasi'),
-                                        ToggleButtons::make('value_bool')
-                                            ->boolean()
-                                            ->grouped()
-                                            ->required()
-                                            ->inline()
-                                            ->inlineLabel(condition: false)
+                                        ButtonGroup::make('value_bool')
                                             ->label('')
-                                            ->visible(fn($get) => in_array($get('name'), ['Water Feeding System', 'Software']))
-                                            ->columnSpan(1),
+                                            ->required()
+                                            ->options([
+                                                '1' => 'Yes',
+                                                '0' => 'No',
+                                            ])
+                                            ->onColor('primary')
+                                            ->offColor('gray')
+                                            ->gridDirection('row')
+                                            ->default('individual')
+                                            ->visible(fn($get) => in_array($get('name'), ['Water Feeding System', 'Software', 'Tensile Test', 'Compression Test', 'Torque Test', 'Digital', 'Computerised'])),
+                                        // ToggleButtons::make('value_bool')
+                                        //     ->boolean()
+                                        //     ->grouped()
+                                        //     ->required()
+                                        //     ->inline()
+                                        //     ->inlineLabel(condition: false)
+                                        //     ->label('')
+                                        //     ->visible(fn($get) => in_array($get('name'), ['Water Feeding System', 'Software']))
+                                        //     ->columnSpan(1),
                                         TextInput::make('value_str')
                                             ->required()
                                             ->label('')
                                             ->placeholder('Masukkan Nilai')
-                                            ->visible(fn($get) => !in_array($get('name'), ['Water Feeding System', 'Software']))
+                                            ->visible(fn($get) => !in_array($get('name'), ['Water Feeding System', 'Software', 'Tensile Test', 'Compression Test', 'Torque Test', 'Digital', 'Computerised']))
                                             ->columnSpan(1),
                                     ])
                                     ->columns(2)
@@ -126,6 +141,7 @@ class SpesifikasiProductResource extends Resource
                     ]),
 
                 Section::make('Penjelasan Tambahan')
+                    ->collapsible()
                     ->schema([
                         Textarea::make('detail_specification')
                             ->label('Detail Spesifikasi')
@@ -134,6 +150,8 @@ class SpesifikasiProductResource extends Resource
                     ]),
 
                 Section::make('Detail PIC')
+                    ->hiddenOn(operations: 'edit')
+                    ->collapsible()
                     ->relationship('pic')
                     ->schema([
                         Grid::make(2)
@@ -160,11 +178,19 @@ class SpesifikasiProductResource extends Resource
                 //
                 self::textColumn('urs.no_urs', 'No URS'),
                 self::textColumn('urs.customer.name', 'Nama Customer'),
+                self::textColumn('is_stock', 'Status Stock')
+                    ->badge()
+                    ->formatStateUsing(function ($state) {
+                        return $state ? 'Stock' : 'Not Stock';
+                    })
+                    ->color(function ($state) {
+                        return $state ? 'danger' : 'success';
+                    }),
                 ImageColumn::make('pic.signature')
                     ->width(150)
-                    ->label('PIC')
+                    ->label('Tanda Tangan')
                     ->height(75),
-                self::textColumn('delivery_address', 'Alamat Pengiriman'),
+                // self::textColumn('delivery_address', 'Alamat Pengiriman'),
             ])
             ->filters([
                 //
@@ -233,13 +259,20 @@ class SpesifikasiProductResource extends Resource
             ->required();
     }
 
-    protected static function toogleButton(string $fieldName, string $label): ToggleButtons
+    protected static function buttonGroup(string $fieldName, string $label): ButtonGroup
     {
         return
-            ToggleButtons::make($fieldName)
+            ButtonGroup::make($fieldName)
             ->label($label)
-            ->boolean()
-            ->grouped();
+            ->required()
+            ->options([
+                1 => 'Yes',
+                0 => 'No',
+            ])
+            ->onColor('primary')
+            ->offColor('gray')
+            ->gridDirection('row')
+            ->default('individual');
     }
 
     protected static function signatureInput(string $fieldName): SignaturePad

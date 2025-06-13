@@ -19,4 +19,14 @@ class CreateSpesifikasiProduct extends CreateRecord
     {
         dispatch(new SendSpesifikasiProductNotif($this->record));
     }
+
+    public function getTitle(): string
+    {
+        return 'Tambah Spesifikasi Produk';
+    }
+
+    public function getBreadcrumb(): string
+    {
+        return 'Tambah';
+    }
 }

@@ -32,6 +32,7 @@ class SPKMarketing extends Model
         'no_order',
         'dari',
         'kepada',
+        'status_persetujuan',
     ];
 
     protected $casts = [
@@ -105,6 +106,15 @@ class SPKMarketing extends Model
 
     protected static function booted()
     {
+        static::saving(function ($model) {
+            if (
+                $model->pic?->receive_signature &&
+                $model->status_persetujuan !== 'Diterima'
+            ) {
+                $model->status_persetujuan = 'Diterima';
+            }
+        });
+
         static::deleting(function ($spesifikasi) {
             if ($spesifikasi->pic) {
                 $spesifikasi->pic->delete();

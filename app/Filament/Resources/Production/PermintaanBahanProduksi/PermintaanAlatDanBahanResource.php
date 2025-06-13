@@ -9,6 +9,7 @@ use App\Models\Sales\SPKMarketings\SPKMarketing;
 use App\Services\SignatureUploader;
 use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Grid;
@@ -29,6 +30,7 @@ use Icetalker\FilamentTableRepeater\Forms\Components\TableRepeater;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Saade\FilamentAutograph\Forms\Components\SignaturePad;
+use Wallo\FilamentSelectify\Components\ButtonGroup;
 
 
 class PermintaanAlatDanBahanResource extends Resource
@@ -47,14 +49,24 @@ class PermintaanAlatDanBahanResource extends Resource
         return $form
             ->schema([
                 //
-                Section::make('No SPK')
+                Hidden::make('status_penerimaan')
+                    ->default('Belum Diterima'),
+
+                Section::make('Informasi Umum')
+                    ->collapsible()
                     ->schema([
-                        self::selectInput('spk_marketing_id', 'Pilih No SPK', 'spk', 'no_spk')
+                        self::selectInput()
+                            ->label('No SPK')
                             ->columnSpanFull(),
-                        ToggleButtons::make('status')
-                            ->label('Status Stock Barang')
-                            ->boolean()
-                            ->grouped(),
+                        Hidden::make('status')
+                            ->disabledOn('edit')
+                            ->default('Belum Diproses'),
+                        self::buttonGroup('status', 'Status Stock Barang')
+                            ->hiddenOn(operations: 'create'),
+                        // ToggleButtons::make('status')
+                        //     ->label('Status Stock Barang')
+                        //     ->boolean()
+                        //     ->grouped(),
                     ]),
                 Section::make('Informasi Umum')
                     ->schema([
@@ -101,16 +113,36 @@ class PermintaanAlatDanBahanResource extends Resource
                                     ->columnSpanFull()
                             ])
                     ]),
-                Section::make('PIC')
+
+                // Section::make('PIC')
+                //     ->relationship('pic')
+                //     ->schema([
+                //         Grid::make(2)
+                //             ->schema([
+                //                 self::textInput('create_name', 'Nama Pembuat'),
+                //                 self::textInput('receive_name', 'Nama Penerima'),
+                //                 self::signatureInput('create_signature', 'Dibuat Oleh'),
+                //                 self::signatureInput('receive_signature', 'Diterima Oleh'),
+                //             ])
+                //     ]),
+
+                Section::make('Detail PIC')
+                    ->collapsible()
                     ->relationship('pic')
                     ->schema([
                         Grid::make(2)
                             ->schema([
-                                self::textInput('create_name', 'Nama Pembuat'),
-                                self::textInput('receive_name', 'Nama Penerima'),
-                                self::signatureInput('create_signature', 'Dibuat Oleh'),
-                                self::signatureInput('receive_signature', 'Diterima Oleh'),
-                            ])
+                                Grid::make(1)
+                                    ->schema([
+                                        self::textInput('create_name', 'PIC Pembuat'),
+                                        self::signatureInput('create_signature', 'Dibuat Oleh'),
+                                    ])->hiddenOn(operations: 'edit'),
+                                Grid::make(1)
+                                    ->schema([
+                                        self::textInput('receive_name', 'PIC Penerima'),
+                                        self::signatureInput('receive_signature', 'Diterima Oleh'),
+                                    ])->hiddenOn(operations: 'create'),
+                            ]),
                     ]),
             ]);
     }
@@ -123,22 +155,41 @@ class PermintaanAlatDanBahanResource extends Resource
                 self::textColumn('spk.no_spk', 'No SPK'),
                 self::textColumn('no_surat', 'Nomor Surat'),
                 self::textColumn('tanggal', 'Tanggal Dibuat')->date('d M Y'),
-                self::textColumn('status', 'Status Stock Barang')
+                // self::textColumn('status', 'Status Stock Barang')
+                //     ->badge()
+                //     ->default(null)
+                //     ->placeholder('Belum Diproses')
+                //     ->formatStateUsing(function ($state) {
+                //         if (is_null($state)) {
+                //             return 'Belum Diproses';
+                //         }
+                //         return $state ? 'Ready' : 'Not Ready';
+                //     })
+                //     ->color(function ($state) {
+                //         if (is_null($state)) {
+                //             return 'warning';
+                //         }
+                //         return $state ? 'success' : 'danger';
+                //     }),
+                TextColumn::make('status')
+                    ->label('Status Stock Barang')
                     ->badge()
-                    ->default(null)
-                    ->placeholder('Belum Diproses')
-                    ->formatStateUsing(function ($state) {
-                        if (is_null($state)) {
-                            return 'Belum Diproses';
-                        }
-                        return $state ? 'Ready' : 'Not Ready';
-                    })
                     ->color(function ($state) {
-                        if (is_null($state)) {
-                            return 'warning';
-                        }
-                        return $state ? 'success' : 'danger';
-                    }),
+                        return match ($state) {
+                            'Tersedia' => 'success',
+                            'Tidak Tersedia' => 'danger',
+                            default => 'gray',
+                        };
+                    })
+                    ->alignCenter(),
+                TextColumn::make('status_penerimaan')
+                    ->label('Status Penerimaan')
+                    ->badge()
+                    ->color(
+                        fn($state) =>
+                        $state === 'Diterima' ? 'success' : 'danger'
+                    )
+                    ->alignCenter(),
                 // self::textColumn('dari', 'Dari'),
                 // self::textColumn('kepada', 'Kepada'),
                 // ImageColumn::make('pic.create_signature')
@@ -196,74 +247,96 @@ class PermintaanAlatDanBahanResource extends Resource
             ->maxLength(255);
     }
 
-    protected static function selectInput(string $fieldName, string $label, string $relation, string $title): Select
+    protected static function selectInput(): Select
     {
         return
-            Select::make($fieldName)
-                ->relationship($relation, $title)
-                ->label($label)
-                ->native(false)
-                ->searchable()
-                ->preload()
-                ->required()
-                ->reactive()
-                ->afterStateUpdated(function ($state, callable $set) {
-                    if (!$state)
-                        return;
+            Select::make('spk_marketing_id')
+            ->label('Nomor SPK')
+            ->label('spk')
+            ->options(function () {
+                return SPKMarketing::whereHas('jadwalProduksi', function ($query) {
+                    $query->where('status_persetujuan', 'Disetujui');
+                })
+                    ->pluck('no_spk', 'id');
+            })
+            ->native(false)
+            ->searchable()
+            ->preload()
+            ->required()
+            ->reactive()
+            ->afterStateUpdated(function ($state, callable $set) {
+                if (!$state)
+                    return;
 
-                    // Ambil data SPK dan relasi yang dibutuhkan
-                    $spk = SPKMarketing::with(['jadwalProduksi.sumber'])->find($state);
-                    if (!$spk || !$spk->jadwalProduksi?->sumber)
-                        return;
+                // Ambil data SPK dan relasi yang dibutuhkan
+                $spk = SPKMarketing::with(['jadwalProduksi.sumber'])->find($state);
+                if (!$spk || !$spk->jadwalProduksi?->sumber)
+                    return;
 
-                    $bahanBaku = $spk->jadwalProduksi->sumber->bahan_baku ?? [];
+                $bahanBaku = $spk->jadwalProduksi->sumber->bahan_baku ?? [];
 
-                    // Ubah bahan baku jadi array yang bisa ditangkap Repeater
-                    $details = collect($bahanBaku)->map(function ($item) {
-                        return [
-                            'bahan_baku' => is_array($item) ? ($item['bahan_baku'] ?? '') : $item,
-                        ];
-                    })->toArray();
+                // Ubah bahan baku jadi array yang bisa ditangkap Repeater
+                $details = collect($bahanBaku)->map(function ($item) {
+                    return [
+                        'bahan_baku' => is_array($item) ? ($item['bahan_baku'] ?? '') : $item,
+                    ];
+                })->toArray();
 
-                    // Set ke form
-                    $set('dari', $spk->dari);
-                    $set('kepada', $spk->kepada);
-                    $set('details', $details);
-                });
+                // Set ke form
+                $set('dari', $spk->dari);
+                $set('kepada', $spk->kepada);
+                $set('details', $details);
+            });
+    }
+
+    protected static function buttonGroup(string $fieldName, string $label): ButtonGroup
+    {
+        return
+            ButtonGroup::make($fieldName)
+            ->label($label)
+            ->required()
+            ->options([
+                'Tersedia' => 'Tersedia',
+                'Tidak Tersedia' => 'Tidak Tersedia',
+            ])
+            ->onColor('primary')
+            ->offColor('gray')
+            ->gridDirection('row')
+            ->default('individual');
     }
 
     protected static function datePicker(string $fieldName, string $label): DatePicker
     {
         return
             DatePicker::make($fieldName)
-                ->label($label)
-                ->displayFormat('M d Y')
-                ->seconds(false);
+            ->label($label)
+            ->displayFormat('M d Y')
+            ->seconds(false);
     }
 
     protected static function signatureInput(string $fieldName, string $labelName): SignaturePad
     {
         return
             SignaturePad::make($fieldName)
-                ->label($labelName)
-                ->exportPenColor('#0118D8')
-                ->helperText('*Harap Tandatangan di tengah area yang disediakan.')
-                ->afterStateUpdated(function ($state, $set) use ($fieldName) {
-                    if (blank($state))
-                        return;
-                    $path = SignatureUploader::handle($state, 'ttd_', 'Production/PermintaanBahan/Signatures');
-                    if ($path) {
-                        $set($fieldName, $path);
-                    }
-                });
+            ->label($labelName)
+            ->exportPenColor('#0118D8')
+            ->helperText('*Harap Tandatangan di tengah area yang disediakan.')
+            ->afterStateUpdated(function ($state, $set) use ($fieldName) {
+                if (blank($state))
+                    return;
+                $path = SignatureUploader::handle($state, 'ttd_', 'Production/PermintaanBahan/Signatures');
+                if ($path) {
+                    $set($fieldName, $path);
+                }
+            });
     }
 
     protected static function textColumn(string $fieldName, string $label): TextColumn
     {
         return
             TextColumn::make($fieldName)
-                ->label($label)
-                ->searchable()
-                ->sortable();
+            ->label($label)
+            ->searchable()
+            ->sortable();
     }
 }

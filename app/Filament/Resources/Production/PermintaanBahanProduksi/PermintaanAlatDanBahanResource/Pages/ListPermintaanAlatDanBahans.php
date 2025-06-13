@@ -23,8 +23,8 @@ class ListPermintaanAlatDanBahans extends ListRecords
         return
             [
                 null => Tab::make('All'),
-                'ready' => Tab::make()->query(fn($query) => $query->where('status', 1)),
-                'not Ready' => Tab::make()->query(fn($query) => $query->where('status', 0)),
+                'Tersedia' => Tab::make()->query(fn($query) => $query->where('status', 'Tersedia')),
+                'Tidak Tersedia' => Tab::make()->query(fn($query) => $query->where('status', 'Tidak Tersedia')),
             ];
     }
 }
