@@ -14,6 +14,7 @@ class PermintaanPembelianDetail extends Model
         'permintaan_pembelian_id',
         'kode_barang',
         'nama_barang',
+        'jenis_barang',
         'jumlah',
         'keterangan',
     ];

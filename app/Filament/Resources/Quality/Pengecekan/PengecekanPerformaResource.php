@@ -34,7 +34,7 @@ class PengecekanPerformaResource extends Resource
     protected static ?string $model = PengecekanPerforma::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-    protected static ?int $navigationSort = 7;
+    protected static ?int $navigationSort = 19;
     protected static ?string $navigationGroup = 'Quality';
     protected static ?string $navigationLabel = 'Pengecekan Performa';
     protected static ?string $pluralLabel = 'Pengecekan Performa';

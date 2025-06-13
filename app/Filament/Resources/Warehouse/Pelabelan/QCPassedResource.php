@@ -28,7 +28,7 @@ class QCPassedResource extends Resource
     protected static ?string $model = QCPassed::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-    protected static ?int $navigationSort = 6;
+    protected static ?int $navigationSort = 4;
     protected static ?string $navigationGroup = 'Warehouse';
     protected static ?string $navigationLabel = 'Pelabelan QC Passed';
     protected static ?string $pluralLabel = 'Pelabelan QC Passed';

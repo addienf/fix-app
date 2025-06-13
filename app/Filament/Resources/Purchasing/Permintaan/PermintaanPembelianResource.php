@@ -55,7 +55,7 @@ class PermintaanPembelianResource extends Resource
                                 Repeater::make('details')
                                     ->relationship('details')
                                     ->schema([
-                                        Grid::make(4)
+                                        Grid::make(5)
                                             ->schema([
                                                 self::textInput('kode_barang', 'Kode Barang'),
                                                 self::textInput('nama_barang', 'Nama Barang')
@@ -63,6 +63,7 @@ class PermintaanPembelianResource extends Resource
                                                         'readonly' => true,
                                                         'style' => 'pointer-events: none;'
                                                     ]),
+                                                self::selectJenis(),
                                                 self::textInput('jumlah', 'Jumlah')->numeric()
                                                     ->extraAttributes([
                                                         'readonly' => true,
@@ -155,68 +156,81 @@ class PermintaanPembelianResource extends Resource
     {
         return
             Select::make($fieldName)
-                ->relationship($relation, $title)
-                ->label($label)
-                ->native(false)
-                ->searchable()
-                ->preload()
-                ->required()
-                ->reactive()
-                ->afterStateUpdated(function ($state, callable $set) {
-                    if (!$state)
-                        return;
+            ->relationship($relation, $title)
+            ->label($label)
+            ->native(false)
+            ->searchable()
+            ->preload()
+            ->required()
+            ->reactive()
+            ->afterStateUpdated(function ($state, callable $set) {
+                if (!$state)
+                    return;
 
-                    $pab = PermintaanBahan::with('details')->find($state);
+                $pab = PermintaanBahan::with('details')->find($state);
 
-                    if (!$pab)
-                        return;
+                if (!$pab)
+                    return;
 
-                    $detailBahan = $pab->details?->map(function ($detail) {
-                        return [
-                            'nama_barang' => $detail->bahan_baku ?? '',
-                            // 'spesifikasi' => $detail->spesifikasi ?? '',
-                            'jumlah' => $detail->jumlah ?? 0,
-                            // 'keperluan_barang' => $detail->keperluan_barang ?? '',
-                        ];
-                    })->toArray();
+                $detailBahan = $pab->details?->map(function ($detail) {
+                    return [
+                        'nama_barang' => $detail->bahan_baku ?? '',
+                        // 'spesifikasi' => $detail->spesifikasi ?? '',
+                        'jumlah' => $detail->jumlah ?? 0,
+                        // 'keperluan_barang' => $detail->keperluan_barang ?? '',
+                    ];
+                })->toArray();
 
-                    $set('details', $detailBahan);
-                })
+                $set('details', $detailBahan);
+            })
         ;
+    }
+
+    protected static function selectJenis(): Select
+    {
+        return
+            Select::make('jenis_barang')
+            ->label('Jenis Barang')
+            ->required()
+            ->placeholder('Pilih Jenis Barang')
+            ->options([
+                'ss' => 'Produk SS',
+                'non_ss' => 'Produk Non SS',
+            ]);
     }
 
     protected static function datePicker(string $fieldName, string $label): DatePicker
     {
         return
             DatePicker::make($fieldName)
-                ->label($label)
-                ->displayFormat('M d Y')
-                ->seconds(false);
+            ->label($label)
+            ->displayFormat('M d Y')
+            ->seconds(false);
     }
 
     protected static function signatureInput(string $fieldName, string $labelName): SignaturePad
     {
         return
             SignaturePad::make($fieldName)
-                ->label($labelName)
-                ->exportPenColor('#0118D8')
-                ->helperText('*Harap Tandatangan di tengah area yang disediakan.')
-                ->afterStateUpdated(function ($state, $set) use ($fieldName) {
-                    if (blank($state))
-                        return;
-                    $path = SignatureUploader::handle($state, 'ttd_', 'Purchasing/PermintaanPembelian/Signatures');
-                    if ($path) {
-                        $set($fieldName, $path);
-                    }
-                });
+            ->label($labelName)
+            ->exportPenColor('#0118D8')
+            ->helperText('*Harap Tandatangan di tengah area yang disediakan.')
+            ->afterStateUpdated(function ($state, $set) use ($fieldName) {
+                if (blank($state))
+                    return;
+                $path = SignatureUploader::handle($state, 'ttd_', 'Purchasing/PermintaanPembelian/Signatures');
+                if ($path) {
+                    $set($fieldName, $path);
+                }
+            });
     }
 
     protected static function textColumn(string $fieldName, string $label): TextColumn
     {
         return
             TextColumn::make($fieldName)
-                ->label($label)
-                ->searchable()
-                ->sortable();
+            ->label($label)
+            ->searchable()
+            ->sortable();
     }
 }

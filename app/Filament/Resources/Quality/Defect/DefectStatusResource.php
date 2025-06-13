@@ -40,7 +40,7 @@ class DefectStatusResource extends Resource
     protected static ?string $model = DefectStatus::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-check-circle';
-    protected static ?int $navigationSort = 7;
+    protected static ?int $navigationSort = 20;
     protected static ?string $navigationGroup = 'Quality';
     protected static ?string $navigationLabel = 'Defect Status';
     protected static ?string $pluralLabel = 'Defect Status';

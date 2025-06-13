@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('permintaan_pembelian_id')->constrained('permintaan_pembelians')->onDelete('cascade');
             $table->string('kode_barang');
             $table->string('nama_barang');
+            $table->string('jenis_barang');
             $table->integer('jumlah');
             $table->text('keterangan');
             $table->timestamps();
