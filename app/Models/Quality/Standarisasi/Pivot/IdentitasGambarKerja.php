@@ -16,6 +16,7 @@ class IdentitasGambarKerja extends Model
         'no_gambar',
         'tanggal_pembuatan',
         'revisi',
+        'revisi_ke',
         'nama_pembuat',
         'nama_pemeriksa',
     ];

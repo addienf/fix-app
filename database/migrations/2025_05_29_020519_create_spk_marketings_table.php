@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('no_order');
             $table->string('dari');
             $table->string('kepada');
-            $table->string('status_persetujuan');
+            $table->string('status_penerimaan');
             $table->timestamps();
         });
     }

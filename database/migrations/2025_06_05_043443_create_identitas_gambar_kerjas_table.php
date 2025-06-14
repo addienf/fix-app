@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('no_gambar');
             $table->date('tanggal_pembuatan');
             $table->boolean('revisi');
+            $table->string('revisi_ke')->nullable();
             $table->string('nama_pembuat');
             $table->string('nama_pemeriksa');
             $table->timestamps();

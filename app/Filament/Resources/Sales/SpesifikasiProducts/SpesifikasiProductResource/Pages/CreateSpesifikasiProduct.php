@@ -22,7 +22,7 @@ class CreateSpesifikasiProduct extends CreateRecord
 
     public function getTitle(): string
     {
-        return 'Tambah Spesifikasi Produk';
+        return 'Tambah Data Spesifikasi Produk';
     }
 
     public function getBreadcrumb(): string

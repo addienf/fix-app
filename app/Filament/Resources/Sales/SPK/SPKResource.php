@@ -47,7 +47,7 @@ class SPKResource extends Resource
 
     public static function getNavigationBadge(): ?string
     {
-        $count = SPKMarketing::where('status_persetujuan', '!=', 'Diterima')->count();
+        $count = SPKMarketing::where('status_penerimaan', '!=', 'Diterima')->count();
 
         return $count > 0 ? (string) $count : null;
     }

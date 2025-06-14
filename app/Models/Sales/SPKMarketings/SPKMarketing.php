@@ -32,7 +32,7 @@ class SPKMarketing extends Model
         'no_order',
         'dari',
         'kepada',
-        'status_persetujuan',
+        'status_penerimaan',
     ];
 
     protected $casts = [
