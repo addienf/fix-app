@@ -16,8 +16,8 @@ return new class extends Migration
             $table->foreignId('qc_passed_id')->constrained('qc_passeds')->onDelete('cascade');
             $table->string('created_signature');
             $table->string('created_name');
-            $table->string('approved_signature');
-            $table->string('approved_name');
+            $table->string('approved_signature')->nullable();
+            $table->string('approved_name')->nullable();
             $table->timestamps();
         });
     }

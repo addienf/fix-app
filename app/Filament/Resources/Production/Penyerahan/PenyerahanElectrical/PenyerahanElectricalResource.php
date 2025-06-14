@@ -6,10 +6,12 @@ use App\Filament\Resources\Production\Penyerahan\PenyerahanElectrical\Penyerahan
 use App\Filament\Resources\Production\Penyerahan\PenyerahanElectrical\PenyerahanElectricalResource\RelationManagers;
 use App\Models\Production\Penyerahan\PenyerahanElectrical\PenyerahanElectrical;
 use App\Models\Quality\PengecekanMaterial\SS\PengecekanMaterialSS;
+use App\Models\Sales\SPKMarketings\SPKMarketing;
 use App\Services\SignatureUploader;
 use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Split;
@@ -18,6 +20,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -35,24 +38,50 @@ class PenyerahanElectricalResource extends Resource
     protected static ?string $pluralLabel = 'Serah Terima Electrical';
     protected static ?string $modelLabel = 'Serah Terima Electrical';
 
+    public static function getNavigationBadge(): ?string
+    {
+        $count = PenyerahanElectrical::where('status_penyelesaian', '!=', 'Disetujui')->count();
+
+        return $count > 0 ? (string) $count : null;
+    }
+
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
                 //
+                Hidden::make('status_penyelesaian')
+                    ->default('Belum Diterima'),
+
                 Section::make('Informasi Produk')
                     ->schema([
                         self::selectMaterialID()
                             ->columnSpanFull(),
-                        self::textInput('nama_produk', 'Nama Produk'),
+
+                        self::textInput('nama_produk', 'Nama Produk')
+                            ->extraAttributes([
+                                'readonly' => true,
+                                'style' => 'pointer-events: none;'
+                            ]),
+
                         self::textInput('kode_produk', 'Kode Produk'),
+
                         self::textInput('no_seri', 'Nomor Batch/Seri'),
+
                         self::datePicker('tanggal_selesai', 'Tanggal Produksi Selesai')
                             ->required(),
-                        self::textInput('jumlah', 'Jumlah Unit'),
+
+                        self::textInput('jumlah', 'Jumlah Unit')
+                            ->extraAttributes([
+                                'readonly' => true,
+                                'style' => 'pointer-events: none;'
+                            ]),
+
                         self::selectKondisi(),
+
                         self::textArea('deskripsi_kondisi', 'Deskripsi Produk')
                             ->columnSpanFull(),
+
                     ])->columns(3),
 
                 Split::make([
@@ -107,6 +136,47 @@ class PenyerahanElectricalResource extends Resource
                 //                 self::signatureInput('knowing_signature', '')
                 //             ])
                 //     ]),
+
+                Section::make('Detail PIC')
+                    ->collapsible()
+                    ->relationship('pic')
+                    ->schema([
+                        Grid::make(3)
+                            ->schema([
+                                Grid::make(1)
+                                    ->schema([
+
+                                        self::textInput('submit_name', 'Submited By'),
+
+                                        self::signatureInput('submit_signature', ''),
+
+                                    ])->hiddenOn(operations: 'edit'),
+
+                                Grid::make(1)
+                                    ->schema([
+
+                                        self::textInput('receive_name', 'Received By'),
+
+                                        self::signatureInput('receive_signature', ''),
+
+                                    ])->hidden(
+                                        fn($operation, $record) =>
+                                        $operation === 'create' || filled($record?->receive_signature)
+                                    ),
+
+                                Grid::make(1)
+                                    ->schema([
+
+                                        self::textInput('knowing_name', 'Knowing By'),
+
+                                        self::signatureInput('knowing_signature', ''),
+
+                                    ])->hidden(
+                                        fn($operation, $record) =>
+                                        $operation === 'create' || blank($record?->receive_signature) || filled($record?->knowing_signature)
+                                    ),
+                            ]),
+                    ]),
             ]);
     }
 
@@ -115,7 +185,41 @@ class PenyerahanElectricalResource extends Resource
         return $table
             ->columns([
                 //
-                self::textColumn('nama_produk', 'Nama Produk')
+                self::textColumn('nama_produk', 'Nama Produk'),
+
+                TextColumn::make('status_penyelesaian')
+                    ->label('Status Penyelesaian')
+                    ->badge()
+                    ->color(function ($record) {
+                        $penyelesaian = $record->status_penyelesaian;
+                        $persetujuan = $record->status_persetujuan;
+
+                        if ($penyelesaian === 'Disetujui') {
+                            return 'success';
+                        }
+
+                        if ($penyelesaian !== 'Diterima' && $persetujuan !== 'Disetujui') {
+                            return 'danger';
+                        }
+
+                        return 'warning';
+                    })
+                    ->alignCenter(),
+
+                ImageColumn::make('pic.submit_signature')
+                    ->width(150)
+                    ->label('Submited')
+                    ->height(75),
+
+                ImageColumn::make('pic.receive_signature')
+                    ->width(150)
+                    ->label('Received')
+                    ->height(75),
+
+                ImageColumn::make('pic.knowing_signature')
+                    ->width(150)
+                    ->label('Knowing')
+                    ->height(75),
             ])
             ->filters([
                 //
@@ -173,6 +277,7 @@ class PenyerahanElectricalResource extends Resource
             Select::make('pengecekan_material_id')
             ->label('Pengecekan Material')
             ->required()
+            ->reactive()
             ->options(function () {
                 return PengecekanMaterialSS::with('spk')
                     ->get()
@@ -180,6 +285,32 @@ class PenyerahanElectricalResource extends Resource
                         $noUrs = $item->spk->no_spk ?? '-';
                         return [$item->id => "{$item->id} - {$noUrs}"];
                     });
+            })
+            ->afterStateUpdated(function ($state, callable $set) {
+                if (!$state) return;
+
+                $pengecekan = PengecekanMaterialSS::with('spk.SpesifikasiProduct.details.product')
+                    ->find($state);
+
+                $pengecekan2 = PengecekanMaterialSS::with('spk.jadwalProduksi')
+                    ->find($state);
+
+                if (!$pengecekan || !$pengecekan->spk) return;
+
+                if (!$pengecekan || !$pengecekan2->spk) return;
+
+                $spesifikasi = $pengecekan->spk->SpesifikasiProduct;
+                $selesai = $pengecekan2->spk->jadwalProduksi;
+
+                if (!$spesifikasi || !$selesai) return;
+
+                $namaProduk = $spesifikasi->details->first()?->product?->name ?? '-';
+                $jumlah = $spesifikasi->details->first()?->quantity ?? '-';
+                $tgl_selesai = $selesai->details->first()?->tanggal_selesai ?? '-';
+
+                $set('nama_produk', $namaProduk);
+                $set('jumlah', $jumlah);
+                $set('tanggal_selesai', \Carbon\Carbon::parse($tgl_selesai));
             });
     }
 

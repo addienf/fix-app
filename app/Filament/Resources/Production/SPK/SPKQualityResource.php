@@ -5,11 +5,14 @@ namespace App\Filament\Resources\Production\SPK;
 use App\Filament\Resources\Production\SPK\SPKQualityResource\Pages;
 use App\Filament\Resources\Production\SPK\SPKQualityResource\RelationManagers;
 use App\Models\Production\SPK\SPKQuality;
+use App\Models\Sales\SpesifikasiProducts\SpesifikasiProduct;
+use App\Models\Sales\SPKMarketings\SPKMarketing;
 use App\Services\SignatureUploader;
 use Filament\Actions\Action;
 use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -18,10 +21,13 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Actions\ActionGroup;
+use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Icetalker\FilamentTableRepeater\Forms\Components\TableRepeater;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Carbon;
 use Saade\FilamentAutograph\Forms\Components\SignaturePad;
 
 class SPKQualityResource extends Resource
@@ -34,37 +40,99 @@ class SPKQualityResource extends Resource
     protected static ?string $pluralLabel = 'SPK Quality';
     protected static ?string $modelLabel = 'SPK Quality';
 
+    public static function getNavigationBadge(): ?string
+    {
+        $count = SPKQuality::where('status_penerimaan', '!=', 'Diterima')->count();
+
+        return $count > 0 ? (string) $count : null;
+    }
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
                 //
+                Hidden::make('status_penerimaan')
+                    ->default('Belum Diterima'),
+
                 Section::make('Informasi Umum')
                     ->collapsible()
                     ->schema([
                         Grid::make(2)
                             ->schema([
+
                                 self::textInput('no_spk', 'Nomor SPK Quality')
-                                    ->unique()
-                                    ->helperText('Format: XXX/QKS/MKT/SPK/MM/YY'),
-                                self::selectInput('spk_marketing_id', 'No SPK Marketing', 'spk', 'no_spk')
-                                    ->required(),
-                                self::textInput('dari', 'Dari'),
-                                self::textInput('kepada', 'Kepada'),
+                                    ->unique(ignoreRecord: true)
+                                    ->helperText('Format: XXX/QKS/PRO/SPK/MM/YY'),
+
+                                self::selectInputSPK(),
+
+                                self::textInput('dari', 'Dari')
+                                    ->extraAttributes([
+                                        'readonly' => true,
+                                        'style' => 'pointer-events: none;'
+                                    ]),
+
+                                self::textInput('kepada', 'Kepada')
+                                    ->extraAttributes([
+                                        'readonly' => true,
+                                        'style' => 'pointer-events: none;'
+                                    ]),
                             ]),
                     ]),
-                // Section::make('Detail PIC')
-                //     ->collapsible()
-                //     ->relationship('pic')
-                //     ->schema([
-                //         Grid::make(2)
-                //             ->schema([
-                //                 self::textInput('create_name', 'PIC Pembuat'),
-                //                 self::textInput('receive_name', 'PIC Penerima'),
-                //                 self::signatureInput('create_signature', 'Dibuat Oleh'),
-                //                 self::signatureInput('receive_signature', 'Diterima Oleh'),
-                //             ]),
-                //     ]),
+
+                Section::make('Detail Produk Yang Dipesan')
+                    ->hiddenOn(operations: 'edit')
+                    ->collapsible()
+                    ->schema([
+                        TableRepeater::make('details')
+                            ->relationship('details')
+                            ->label('')
+                            ->schema([
+                                self::textInput('nama_produk', 'Nama Produk')
+                                    ->extraAttributes([
+                                        'readonly' => true,
+                                        'style' => 'pointer-events: none;'
+                                    ]),
+                                self::textInput('jumlah', 'Jumlah Pesanan')
+                                    ->extraAttributes([
+                                        'readonly' => true,
+                                        'style' => 'pointer-events: none;'
+                                    ]),
+                                self::textInput('no_urs', 'No URS')
+                                    ->extraAttributes([
+                                        'readonly' => true,
+                                        'style' => 'pointer-events: none;'
+                                    ]),
+
+                                self::textInput('rencana_pengiriman', 'Rencana Pengiriman')
+                                    ->extraAttributes([
+                                        'readonly' => true,
+                                        'style' => 'pointer-events: none;'
+                                    ]),
+                            ])
+                            ->deletable(false)
+                            ->reorderable(false)
+                            ->addable(false),
+                    ]),
+
+                Section::make('Detail PIC')
+                    ->collapsible()
+                    ->relationship('pic')
+                    ->schema([
+                        Grid::make(2)
+                            ->schema([
+                                Grid::make(1)
+                                    ->schema([
+                                        self::textInput('create_name', 'PIC Pembuat'),
+                                        self::signatureInput('create_signature', 'Dibuat Oleh'),
+                                    ])->hiddenOn(operations: 'edit'),
+                                Grid::make(1)
+                                    ->schema([
+                                        self::textInput('receive_name', 'PIC Penerima'),
+                                        self::signatureInput('receive_signature', 'Diterima Oleh'),
+                                    ])->hiddenOn(operations: 'create'),
+                            ]),
+                    ]),
             ]);
     }
 
@@ -77,6 +145,22 @@ class SPKQualityResource extends Resource
                 self::textColumn('no_spk', 'No SPK QUality'),
                 self::textColumn('dari', 'Dari'),
                 self::textColumn('kepada', 'Kepada'),
+                TextColumn::make('status_penerimaan')
+                    ->label('Status Penerimaan')
+                    ->badge()
+                    ->color(
+                        fn($state) =>
+                        $state === 'Diterima' ? 'success' : 'danger'
+                    )
+                    ->alignCenter(),
+                ImageColumn::make('pic.create_signature')
+                    ->width(150)
+                    ->label('Yang Membuat')
+                    ->height(75),
+                ImageColumn::make('pic.receive_signature')
+                    ->width(150)
+                    ->label('Yang Menerima')
+                    ->height(75),
             ])
             ->filters([
                 //
@@ -122,6 +206,52 @@ class SPKQualityResource extends Resource
             ->label($label)
             ->required()
             ->maxLength(255);
+    }
+
+    protected static function selectInputSPK(): Select
+    {
+        return
+            Select::make('spk_marketing_id')
+            ->label('Nomor SPK')
+            ->relationship(
+                'spk',
+                'no_spk',
+                fn($query) => $query
+                    ->whereHas('pengecekanSS.penyerahan', function ($query) {
+                        $query->where('status_penyelesaian', 'Disetujui');
+                    })->whereDoesntHave('spkQC')
+            )
+            ->native(false)
+            ->searchable()
+            ->preload()
+            ->required()
+            ->reactive()
+            ->afterStateUpdated(function ($state, callable $set) {
+                if (!$state) return;
+
+                $spk = SPKMarketing::with('spesifikasiProduct.urs', 'spesifikasiProduct.details.product')->find($state);
+                if (!$spk) return;
+
+                $spesifikasi = $spk->spesifikasiProduct;
+                $noUrs = $spesifikasi?->urs?->no_urs ?? '-';
+                $rencanaPengiriman = $spk->tanggal ? Carbon::parse($spk->tanggal)->format('d/m/Y') : '-';
+                $dari = $spk->dari ?? '-';
+                $kepada = $spk->kepada ?? '-';
+
+                $details = $spesifikasi->details->map(function ($detail) use ($noUrs, $rencanaPengiriman, $dari, $kepada) {
+                    return [
+                        'nama_produk' => $detail->product?->name ?? '-',
+                        'jumlah' => $detail?->quantity ?? '-',
+                        'no_urs' => $noUrs ?? '-',
+                        'rencana_pengiriman' => $rencanaPengiriman ?? '-',
+                    ];
+                })->toArray();
+
+                // dd($details);
+                $set('details', $details);
+                $set('dari', $dari ?? '-');
+                $set('kepada', $kepada ?? '-');
+            });
     }
 
     protected static function selectInput(string $fieldName, string $label, string $relation, string $title): Select

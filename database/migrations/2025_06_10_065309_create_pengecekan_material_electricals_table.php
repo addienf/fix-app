@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('tipe');
             $table->string('volume');
             $table->string('note');
+            $table->string('status_penyelesaian')->nullable();
             $table->timestamps();
         });
     }

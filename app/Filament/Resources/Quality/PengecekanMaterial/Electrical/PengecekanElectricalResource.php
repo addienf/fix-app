@@ -6,12 +6,15 @@ use App\Filament\Resources\Quality\PengecekanMaterial\Electrical\PengecekanElect
 use App\Filament\Resources\Quality\PengecekanMaterial\Electrical\PengecekanElectricalResource\Pages\pdfPengecekanElectrical;
 use App\Filament\Resources\Quality\PengecekanMaterial\Electrical\PengecekanElectricalResource\RelationManagers;
 use App\Models\Quality\PengecekanMaterial\Electrical\PengecekanMaterialElectrical;
+use App\Models\Sales\SPKMarketings\SPKMarketing;
 use App\Services\SignatureUploader;
 use Filament\Actions\Action;
 use Filament\Forms;
+use Filament\Forms\Components\Card;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
@@ -57,48 +60,66 @@ class PengecekanElectricalResource extends Resource
         return $form
             ->schema([
                 //
+                Hidden::make('status_penyelesaian')
+                    ->default('Belum Diterima'),
+
                 Section::make('Chamber Identification')
                     ->collapsible()
                     ->schema([
+
                         Grid::make(3)
                             ->schema([
-                                self::selectInput('spk_marketing_id', 'No SPK', 'spk', 'no_spk')
-                                    ->required(),
+
+                                //
+                                self::selectInputSPK(),
+
                                 self::textInput('tipe', 'Type/Model'),
+
                                 self::textInput('volume', 'Volume'),
+
                             ]),
+
                     ]),
+
                 Section::make('Tabel Kelengkapan Material')
                     ->collapsible()
                     ->relationship('detail')
                     ->schema([
+
                         Repeater::make('details')
                             ->default($defaultParts)
+                            ->label('')
                             ->schema([
+
                                 TextInput::make('mainPart')
                                     ->label('Main Part')
+                                    ->hidden(fn(callable $get) => blank($get('mainPart')))
                                     ->extraAttributes([
                                         'readonly' => true,
                                         'style' => 'pointer-events: none;'
                                     ]),
+
                                 TableRepeater::make('parts')
                                     ->label('')
                                     ->schema([
+
                                         TextInput::make('part')
                                             ->label('Part')
                                             ->extraAttributes([
                                                 'readonly' => true,
                                                 'style' => 'pointer-events: none;'
                                             ]),
+
                                         ButtonGroup::make('result')
                                             ->options([
-                                                '1' => 'Yes',
-                                                '0' => 'No',
+                                                1 => 'Yes',
+                                                0 => 'No',
                                             ])
                                             ->onColor('primary')
                                             ->offColor('gray')
                                             ->gridDirection('row')
                                             ->default('individual'),
+
                                         Select::make('status')
                                             ->label('Status')
                                             ->options([
@@ -107,47 +128,77 @@ class PengecekanElectricalResource extends Resource
                                                 'r' => 'Repaired',
                                             ])
                                             ->required(),
+
                                     ])
                                     ->addable(false)
                                     ->deletable(false)
                                     ->reorderable(false),
+
                             ])
                             ->addable(false)
                             ->deletable(false)
                             ->reorderable(false)
+
                     ]),
-                Fieldset::make('')
+
+                Card::make('')
                     ->schema([
+
                         Textarea::make('note')
                             ->required()
                             ->label('Note')
                             ->columnSpanFull()
+
                     ]),
-                Section::make('PIC')
-                    ->relationship('pic')
+
+                Section::make('Detail PIC')
                     ->collapsible()
+                    ->relationship('pic')
                     ->schema([
                         Grid::make(3)
                             ->schema([
-                                self::textInput('inspected_name', 'Inspected By')
-                                    ->required(),
-                                self::textInput('accepted_name', 'Accepted By')
-                                    ->required(),
-                                self::textInput('approved_name', 'Approved By')
-                                    ->required(),
-                                self::signatureInput('inspected_signature', '')
-                                    ->required(),
-                                self::signatureInput('accepted_signature', '')
-                                    ->required(),
-                                self::signatureInput('approved_signature', '')
-                                    ->required(),
-                                self::datePicker('inspected_date', '')
-                                    ->required(),
-                                self::datePicker('accepted_date', '')
-                                    ->required(),
-                                self::datePicker('approved_date', '')
-                                    ->required(),
-                            ])
+                                Grid::make(1)
+                                    ->schema([
+
+                                        self::textInput('inspected_name', 'Inspected By'),
+
+                                        self::signatureInput('inspected_signature', ''),
+
+                                        self::datePicker('inspected_date', '')
+                                            ->required(),
+
+                                    ])->hiddenOn(operations: 'edit'),
+
+                                Grid::make(1)
+                                    ->schema([
+
+                                        self::textInput('accepted_name', 'Accepted By'),
+
+                                        self::signatureInput('accepted_signature', ''),
+
+                                        self::datePicker('accepted_date', '')
+                                            ->required(),
+
+                                    ])->hidden(
+                                        fn($operation, $record) =>
+                                        $operation === 'create' || filled($record?->accepted_signature)
+                                    ),
+
+                                Grid::make(1)
+                                    ->schema([
+
+                                        self::textInput('approved_name', 'Approved By'),
+
+                                        self::signatureInput('approved_signature', ''),
+
+                                        self::datePicker('approved_date', '')
+                                            ->required(),
+
+                                    ])->hidden(
+                                        fn($operation, $record) =>
+                                        $operation === 'create' || blank($record?->accepted_signature) || filled($record?->approved_signature)
+                                    ),
+                            ]),
                     ]),
             ]);
     }
@@ -157,21 +208,46 @@ class PengecekanElectricalResource extends Resource
         return $table
             ->columns([
                 //
-                self::textColumn('spk.no_spk', 'NO SPK'),
+                self::textColumn('spk.no_spk', 'No SPK'),
+
                 self::textColumn('tipe', 'Type/Model'),
+
                 self::textColumn('volume', 'Volume'),
+
+                TextColumn::make('status_penyelesaian')
+                    ->label('Status Penyelesaian')
+                    ->badge()
+                    ->color(function ($record) {
+                        $penyelesaian = $record->status_penyelesaian;
+                        $persetujuan = $record->status_persetujuan;
+
+                        if ($penyelesaian === 'Disetujui') {
+                            return 'success';
+                        }
+
+                        if ($penyelesaian !== 'Diterima' && $persetujuan !== 'Disetujui') {
+                            return 'danger';
+                        }
+
+                        return 'warning';
+                    })
+                    ->alignCenter(),
+
                 ImageColumn::make('pic.inspected_signature')
                     ->width(150)
                     ->label('Inspected')
                     ->height(75),
+
                 ImageColumn::make('pic.accepted_signature')
                     ->width(150)
                     ->label('Accepted')
                     ->height(75),
+
                 ImageColumn::make('pic.approved_signature')
                     ->width(150)
                     ->label('Approved')
                     ->height(75),
+
             ])
             ->filters([
                 //
@@ -243,6 +319,37 @@ class PengecekanElectricalResource extends Resource
             ->preload()
             ->required()
             ->reactive();
+    }
+
+    protected static function selectInputSPK(): Select
+    {
+        return
+            Select::make('spk_marketing_id')
+            ->label('Nomor SPK')
+            ->relationship(
+                'spk',
+                'no_spk',
+                fn($query) => $query
+                    ->whereHas('kelengkapanSS', function ($query) {
+                        $query->where('status_penyelesaian', 'Disetujui');
+                    })->whereDoesntHave('pengecekanElectrical')
+            )
+            ->native(false)
+            ->searchable()
+            ->preload()
+            ->required()
+            ->reactive()
+            ->afterStateUpdated(function ($state, callable $set, callable $get) {
+                if (!$state) return;
+
+                $spk = SPKMarketing::with('kelengkapanSS')->find($state);
+
+                if (!$spk) return;
+
+                $tipe = $spk->kelengkapanSS?->tipe ?? '-';
+
+                $set('tipe', $tipe);
+            });
     }
 
     protected static function datePicker(string $fieldName, string $label): DatePicker

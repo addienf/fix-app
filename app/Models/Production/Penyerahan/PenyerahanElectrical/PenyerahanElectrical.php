@@ -22,6 +22,7 @@ class PenyerahanElectrical extends Model
         'jumlah',
         'kondisi',
         'deskripsi_kondisi',
+        'status_penyelesaian'
     ];
 
     protected $casts = [
@@ -50,6 +51,22 @@ class PenyerahanElectrical extends Model
 
     protected static function booted()
     {
+        static::saving(function ($model) {
+            if (
+                $model->pic?->receive_signature &&
+                $model->status_penyelesaian !== 'Diterima'
+            ) {
+                $model->status_penyelesaian = 'Diterima';
+            }
+
+            if (
+                $model->pic?->knowing_signature &&
+                $model->status_penyelesaian !== 'Disetujui'
+            ) {
+                $model->status_penyelesaian = 'Disetujui';
+            }
+        });
+
         static::deleting(function ($model) {
             if ($model->pic) {
                 $model->pic->delete();

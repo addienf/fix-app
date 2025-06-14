@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('tipe');
             $table->string('ref_document');
             $table->string('note');
+            $table->string('status_penyelesaian');
             $table->timestamps();
         });
     }

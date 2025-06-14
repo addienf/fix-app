@@ -21,6 +21,7 @@ return new class extends Migration
             $table->integer('jumlah');
             $table->string('kondisi');
             $table->text('deskripsi_kondisi');
+            $table->string('status_penyelesaian')->nullable();
             $table->timestamps();
         });
     }

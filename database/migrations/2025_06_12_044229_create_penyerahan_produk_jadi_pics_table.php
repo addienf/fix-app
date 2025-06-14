@@ -16,8 +16,8 @@ return new class extends Migration
             $table->foreignId('produk_jadi_id')->constrained('penyerahan_produk_jadis')->onDelete('cascade');
             $table->text('submit_signature');
             $table->string('submit_name');
-            $table->text('receive_signature');
-            $table->string('receive_name');
+            $table->text('receive_signature')->nullable();
+            $table->string('receive_name')->nullable();
             $table->timestamps();
         });
     }

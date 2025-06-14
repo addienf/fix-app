@@ -11,7 +11,7 @@ class PengecekanPerformaPIC extends Model
 {
     use HasFactory;
 
-    protected $table = 'performa_pics';
+    protected $table = 'pengecekan_performa_pics';
 
     protected $fillable = [
         'pengecekan_performa_id',

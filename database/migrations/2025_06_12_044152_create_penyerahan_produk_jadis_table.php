@@ -15,10 +15,11 @@ return new class extends Migration
             $table->id();
             $table->foreignId('spk_marketing_id')->constrained('spk_marketings')->onDelete('cascade');
             $table->string('tanggal');
-            $table->string('pic');
+            $table->string('penanggug_jawab');
             $table->string('penerima');
             $table->string('kondisi_produk');
             $table->string('catatan_tambahan');
+            $table->string('status_penerimaan')->nullable();
             $table->timestamps();
         });
     }

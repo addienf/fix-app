@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Quality\PengecekanMaterial\SS;
 use App\Filament\Resources\Quality\PengecekanMaterial\SS\PengecekanMaterialSSResource\Pages;
 use App\Filament\Resources\Quality\PengecekanMaterial\SS\PengecekanMaterialSSResource\RelationManagers;
 use App\Models\Quality\PengecekanMaterial\SS\PengecekanMaterialSS;
+use App\Models\Sales\SPKMarketings\SPKMarketing;
 use App\Services\SignatureUploader;
 use Filament\Actions\Action;
 use Filament\Forms;
@@ -62,36 +63,51 @@ class PengecekanMaterialSSResource extends Resource
                 Section::make('Chamber Identification')
                     ->collapsible()
                     ->schema([
+
                         Grid::make(3)
                             ->schema([
-                                self::selectInput('spk_marketing_id', 'No SPK', 'spk', 'no_spk')
-                                    ->required(),
-                                self::textInput('tipe', 'Type/Model'),
+
+                                self::selectInputSPK(),
+
+                                self::textInput('tipe', 'Type/Model')
+                                    ->extraAttributes([
+                                        'readonly' => true,
+                                        'style' => 'pointer-events: none;'
+                                    ]),
+
                                 self::textInput('ref_document', 'Ref Document'),
+
                             ]),
+
                     ]),
+
                 Section::make('Tabel Kelengkapan Material')
                     ->collapsible()
                     ->relationship('detail')
                     ->schema([
+
                         Repeater::make('details')
                             ->default($defaultParts)
                             ->schema([
+
                                 TextInput::make('mainPart')
                                     ->label('Main Part')
                                     ->extraAttributes([
                                         'readonly' => true,
                                         'style' => 'pointer-events: none;'
                                     ]),
+
                                 TableRepeater::make('parts')
                                     ->label('')
                                     ->schema([
+
                                         TextInput::make('part')
                                             ->label('Part')
                                             ->extraAttributes([
                                                 'readonly' => true,
                                                 'style' => 'pointer-events: none;'
                                             ]),
+
                                         ButtonGroup::make('result')
                                             ->options([
                                                 '1' => 'Yes',
@@ -101,6 +117,7 @@ class PengecekanMaterialSSResource extends Resource
                                             ->offColor('gray')
                                             ->gridDirection('row')
                                             ->default('individual'),
+
                                         Select::make('status')
                                             ->label('Status')
                                             ->options([
@@ -109,48 +126,57 @@ class PengecekanMaterialSSResource extends Resource
                                                 'r' => 'Repaired',
                                             ])
                                             ->required(),
+
                                     ])
                                     ->addable(false)
                                     ->deletable(false)
                                     ->reorderable(false),
+
                             ])
                             ->addable(false)
                             ->deletable(false)
                             ->reorderable(false)
+
                     ]),
+
                 Card::make('')
                     ->schema([
+
                         Textarea::make('note')
                             ->required()
                             ->label('Note')
                             ->columnSpanFull()
+
                     ]),
-                Section::make('PIC')
-                    ->relationship('pic')
-                    ->collapsible()
-                    ->schema([
-                        Grid::make(3)
-                            ->schema([
-                                self::textInput('inspected_name', 'Inspected By')
-                                    ->required(),
-                                self::textInput('accepted_name', 'Accepted By')
-                                    ->required(),
-                                self::textInput('approved_name', 'Approved By')
-                                    ->required(),
-                                self::signatureInput('inspected_signature', '')
-                                    ->required(),
-                                self::signatureInput('accepted_signature', '')
-                                    ->required(),
-                                self::signatureInput('approved_signature', '')
-                                    ->required(),
-                                self::datePicker('inspected_date', '')
-                                    ->required(),
-                                self::datePicker('accepted_date', '')
-                                    ->required(),
-                                self::datePicker('approved_date', '')
-                                    ->required(),
-                            ])
-                    ]),
+
+                // Section::make('PIC')
+                //     ->relationship('pic')
+                //     ->collapsible()
+                //     ->schema([
+
+                //         Grid::make(3)
+                //             ->schema([
+                //                 self::textInput('inspected_name', 'Inspected By')
+                //                     ->required(),
+                //                 self::textInput('accepted_name', 'Accepted By')
+                //                     ->required(),
+                //                 self::textInput('approved_name', 'Approved By')
+                //                     ->required(),
+                //                 self::signatureInput('inspected_signature', '')
+                //                     ->required(),
+                //                 self::signatureInput('accepted_signature', '')
+                //                     ->required(),
+                //                 self::signatureInput('approved_signature', '')
+                //                     ->required(),
+                //                 self::datePicker('inspected_date', '')
+                //                     ->required(),
+                //                 self::datePicker('accepted_date', '')
+                //                     ->required(),
+                //                 self::datePicker('approved_date', '')
+                //                     ->required(),
+                //             ])
+
+                //     ]),
             ]);
     }
 
@@ -232,6 +258,37 @@ class PengecekanMaterialSSResource extends Resource
             ->preload()
             ->required()
             ->reactive();
+    }
+
+    protected static function selectInputSPK(): Select
+    {
+        return
+            Select::make('spk_marketing_id')
+            ->label('Nomor SPK')
+            ->relationship(
+                'spk',
+                'no_spk',
+                fn($query) => $query
+                    ->whereHas('kelengkapanSS', function ($query) {
+                        $query->where('status_penyelesaian', 'Disetujui');
+                    })->whereDoesntHave('pengecekanSS')
+            )
+            ->native(false)
+            ->searchable()
+            ->preload()
+            ->required()
+            ->reactive()
+            ->afterStateUpdated(function ($state, callable $set, callable $get) {
+                if (!$state) return;
+
+                $spk = SPKMarketing::with('kelengkapanSS')->find($state);
+
+                if (!$spk) return;
+
+                $tipe = $spk->kelengkapanSS?->tipe ?? '-';
+
+                $set('tipe', $tipe);
+            });
     }
 
     protected static function selectInputOptions(string $fieldName, string $label, string $config): Select

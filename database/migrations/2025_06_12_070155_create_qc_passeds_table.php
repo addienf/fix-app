@@ -19,6 +19,7 @@ return new class extends Migration
             $table->integer('total_masuk');
             $table->integer('total_keluar');
             $table->integer('sisa_stock');
+            $table->string('status_persetujuan');
             $table->timestamps();
         });
     }

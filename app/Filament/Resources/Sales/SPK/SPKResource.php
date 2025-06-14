@@ -76,13 +76,6 @@ class SPKResource extends Resource
                                 self::textInput('kepada', 'Kepada'),
                                 Hidden::make('status_persetujuan')
                                     ->default('Belum Diterima'),
-                                // Select::make('status_persetujuan')
-                                //     ->label('Status Persetujuan')
-                                //     ->options([
-                                //         'Belum Disetujui' => 'Belum Disetujui',
-                                //         'Disetujui' => 'Disetujui',
-                                //     ])
-                                //     ->default('Belum Disetujui'),
                             ]),
                     ]),
 
