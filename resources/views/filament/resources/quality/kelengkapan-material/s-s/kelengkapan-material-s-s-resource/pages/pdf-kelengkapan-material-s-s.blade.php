@@ -97,18 +97,10 @@ $fields = [
                 @endforeach
             </tbody>
         </table>
-
-
-
-
-
-
-
-
-        
+    
         <div class="mt-4">
             <label class="block font-semibold mb-1">Remarks</label>
-            <textarea class="w-full border border-gray-300 p-2 rounded resize-none bg-gray-100 text-gray-500 cursor-not-allowed"
+            <textarea class="w-full border border-black p-2 rounded resize-none cursor-not-allowed"
                 rows="4" placeholder="Enter remarks..." readonly></textarea>
         </div>
     
