@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('no_spk');
             $table->string('dari');
             $table->string('kepada');
+            $table->string('status_penerimaan');
             $table->timestamps();
         });
     }

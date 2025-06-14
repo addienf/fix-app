@@ -12,6 +12,7 @@ use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Card;
 use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Section;
@@ -30,6 +31,7 @@ use Icetalker\FilamentTableRepeater\Forms\Components\TableRepeater;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Saade\FilamentAutograph\Forms\Components\SignaturePad;
+use Wallo\FilamentSelectify\Components\ButtonGroup;
 
 class KelengkapanMaterialSSResource extends Resource
 {
@@ -42,49 +44,65 @@ class KelengkapanMaterialSSResource extends Resource
     protected static ?string $pluralLabel = 'Kelengkapan Material Stainless Steel';
     protected static ?string $modelLabel = 'Kelengkapan Material Stainless Steel';
 
+    public static function getNavigationBadge(): ?string
+    {
+        $count = KelengkapanMaterialSS::where('status_penyelesaian', '!=', 'Disetujui')->count();
+
+        return $count > 0 ? (string) $count : null;
+    }
+
     public static function form(Form $form): Form
     {
         $defaultParts = collect(config('kelengkapanSS.parts'))
             ->map(fn($part) => ['part' => $part])
             ->toArray();
+
         return $form
             ->schema([
                 //
+                Hidden::make('status_penyelesaian')
+                    ->default('Belum Diterima'),
+
                 Section::make('Chamber Identification')
                     ->collapsible()
                     ->schema([
-                        self::selectInput('spk_marketing_id', 'No SPK', 'spk', 'no_spk')
-                            ->required(),
+                        //
+
+                        self::selectInputSPK()
+                            ->hiddenOn('edit'),
+
                         self::textInput('tipe', 'Type/Model'),
+
                         self::textInput('ref_document', 'Ref Document'),
+
+                        self::textInput('no_order_temp', 'No Order')
+                            ->columnSpanFull()
+                            ->hiddenOn('edit')
+                            ->extraAttributes([
+                                'readonly' => true,
+                                'style' => 'pointer-events: none;'
+                            ]),
+
                     ])->columns(3),
+
                 Section::make('Tabel Kelengkapan Material')
                     ->relationship('detail')
                     ->collapsible()
                     ->schema([
+
                         TableRepeater::make('details')
                             ->label('')
                             ->schema([
+
                                 TextInput::make('part')
                                     ->label('Part')
                                     ->extraAttributes([
                                         'readonly' => true,
                                         'style' => 'pointer-events: none;'
                                     ]),
-                                TextInput::make('no_order_temp')
-                                    ->label('No Order')
-                                    ->default('No Order Dari SPK')
-                                    ->disabled(),
-                                // ToggleButtons::make('result')
-                                //     ->label('Result')
-                                //     ->boolean()
-                                //     ->grouped()
-                                //     ->inline(false)
-                                //     ->required(),
-                                Radio::make('result')
-                                    ->inline()
-                                    ->boolean()
-                                    ->required(),
+
+                                self::buttonGroup('result', 'Result'),
+
                                 Select::make('select')
                                     ->label('Keterangan')
                                     ->options([
@@ -93,44 +111,73 @@ class KelengkapanMaterialSSResource extends Resource
                                         'r' => 'Repaired',
                                     ])
                                     ->required(),
+
                             ])
                             ->default($defaultParts)
                             ->columns(3)
                             ->addable(false)
+                            ->reorderable(false)
                             ->deletable(false),
                     ]),
+
                 Card::make('')
                     ->schema([
+
                         Textarea::make('note')
                             ->required()
                             ->label('Note')
                             ->columnSpanFull()
+
                     ]),
-                Section::make('PIC')
-                    ->relationship('pic')
+
+                Section::make('Detail PIC')
                     ->collapsible()
+                    ->relationship('pic')
                     ->schema([
                         Grid::make(3)
                             ->schema([
-                                self::textInput('inspected_name', 'Inspected By')
-                                    ->required(),
-                                self::textInput('accepted_name', 'Accepted By')
-                                    ->required(),
-                                self::textInput('approved_name', 'Approved By')
-                                    ->required(),
-                                self::signatureInput('inspected_signature', '')
-                                    ->required(),
-                                self::signatureInput('accepted_signature', '')
-                                    ->required(),
-                                self::signatureInput('approved_signature', '')
-                                    ->required(),
-                                self::datePicker('inspected_date', '')
-                                    ->required(),
-                                self::datePicker('accepted_date', '')
-                                    ->required(),
-                                self::datePicker('approved_date', '')
-                                    ->required(),
-                            ])
+                                Grid::make(1)
+                                    ->schema([
+
+                                        self::textInput('inspected_name', 'Inspected By'),
+
+                                        self::signatureInput('inspected_signature', ''),
+
+                                        self::datePicker('inspected_date', '')
+                                            ->required(),
+
+                                    ])->hiddenOn(operations: 'edit'),
+
+                                Grid::make(1)
+                                    ->schema([
+
+                                        self::textInput('accepted_name', 'Accepted By'),
+
+                                        self::signatureInput('accepted_signature', ''),
+
+                                        self::datePicker('accepted_date', '')
+                                            ->required(),
+
+                                    ])->hidden(
+                                        fn($operation, $record) =>
+                                        $operation === 'create' || filled($record?->accepted_signature)
+                                    ),
+
+                                Grid::make(1)
+                                    ->schema([
+
+                                        self::textInput('approved_name', 'Approved By'),
+
+                                        self::signatureInput('approved_signature', ''),
+
+                                        self::datePicker('approved_date', '')
+                                            ->required(),
+
+                                    ])->hidden(
+                                        fn($operation, $record) =>
+                                        $operation === 'create' || blank($record?->accepted_signature) || filled($record?->approved_signature)
+                                    ),
+                            ]),
                     ]),
             ]);
     }
@@ -141,16 +188,40 @@ class KelengkapanMaterialSSResource extends Resource
             ->columns([
                 //
                 self::textColumn('spk.no_spk', 'NO SPK'),
+
                 self::textColumn('tipe', 'Type/Model'),
+
                 self::textColumn('ref_document', 'Ref Document'),
+
+                TextColumn::make('status_penyelesaian')
+                    ->label('Status Penyelesaian')
+                    ->badge()
+                    ->color(function ($record) {
+                        $penyelesaian = $record->status_penyelesaian;
+                        $persetujuan = $record->status_persetujuan;
+
+                        if ($penyelesaian === 'Disetujui') {
+                            return 'success';
+                        }
+
+                        if ($penyelesaian !== 'Diterima' && $persetujuan !== 'Disetujui') {
+                            return 'danger';
+                        }
+
+                        return 'warning';
+                    })
+                    ->alignCenter(),
+
                 ImageColumn::make('pic.inspected_signature')
                     ->width(150)
                     ->label('Inspected')
                     ->height(75),
+
                 ImageColumn::make('pic.accepted_signature')
                     ->width(150)
                     ->label('Accepted')
                     ->height(75),
+
                 ImageColumn::make('pic.approved_signature')
                     ->width(150)
                     ->label('Approved')
@@ -212,43 +283,54 @@ class KelengkapanMaterialSSResource extends Resource
             ->searchable()
             ->preload()
             ->required()
+            ->reactive();
+    }
+
+    protected static function selectInputSPK(): Select
+    {
+        return
+            Select::make('spk_marketing_id')
+            ->label('Nomor SPK')
+            ->relationship(
+                'spk',
+                'no_spk',
+                fn($query) => $query
+                    ->whereHas('standarisasi', function ($query) {
+                        $query->where('status_pemeriksaan', 'Diperiksa');
+                    })->whereDoesntHave('kelengkapanSS')
+            )
+            ->native(false)
+            ->searchable()
+            ->preload()
+            ->required()
             ->reactive()
-            // ->afterStateUpdated(function ($state, callable $set) {
-            //     if (!$state) return;
+            ->afterStateUpdated(function ($state, callable $set, callable $get) {
+                if (!$state) return;
 
-            //     $spk = SPKMarketing::find($state);
+                $spk = SPKMarketing::with('kelengkapanSS')->find($state);
 
-            //     if (!$spk) return;
+                if (!$spk) return;
 
-            //     $noOrder = $spk->no_spk?->map(function ($detail) {
-            //         return [
-            //             'no_order_temp' => $detail->no_order ?? 'Nomor Order Dari SPK',
-            //         ];
-            //     })->toArray();
+                $no_order = $spk->no_order ?? '-';
 
-            //     $set('details', $noOrder);
-            // })
-        ;
-        // ->afterStateUpdated(function ($state, callable $set) {
-        //     if (!$state)
-        //         return;
+                $set('no_order_temp', $no_order);
+            });
+    }
 
-        //     $pab = PermintaanAlatDanBahan::with('details')->find($state);
-
-        //     if (!$pab)
-        //         return;
-
-        //     $detailBahan = $pab->details?->map(function ($detail) {
-        //         return [
-        //             'bahan_baku' => $detail->bahan_baku ?? '',
-        //             'spesifikasi' => $detail->spesifikasi ?? '',
-        //             'jumlah' => $detail->jumlah ?? 0,
-        //             'keperluan_barang' => $detail->keperluan_barang ?? '',
-        //         ];
-        //     })->toArray();
-
-        //     $set('details', $detailBahan);
-        // })
+    protected static function buttonGroup(string $fieldName, string $label): ButtonGroup
+    {
+        return
+            ButtonGroup::make($fieldName)
+            ->label($label)
+            ->required()
+            ->options([
+                1 => 'Ya',
+                0 => 'Tidak',
+            ])
+            ->onColor('primary')
+            ->offColor('gray')
+            ->gridDirection('row')
+            ->default('individual');
     }
 
     protected static function selectInputOptions(string $fieldName, string $label, string $config): Select

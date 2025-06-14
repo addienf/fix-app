@@ -19,6 +19,7 @@ class PengecekanMaterialSS extends Model
         'tipe',
         'ref_document',
         'note',
+        'status_penyelesaian',
     ];
 
     public function spk()
@@ -43,6 +44,22 @@ class PengecekanMaterialSS extends Model
 
     protected static function booted()
     {
+        static::saving(function ($model) {
+            if (
+                $model->pic?->accepted_signature &&
+                $model->status_penyelesaian !== 'Diterima'
+            ) {
+                $model->status_penyelesaian = 'Diterima';
+            }
+
+            if (
+                $model->pic?->approved_signature &&
+                $model->status_penyelesaian !== 'Disetujui'
+            ) {
+                $model->status_penyelesaian = 'Disetujui';
+            }
+        });
+
         static::deleting(function ($model) {
             if ($model->detail) {
                 $model->detail->delete();

@@ -19,6 +19,7 @@ class SPKQuality extends Model
         'no_spk',
         'dari',
         'kepada',
+        'status_penerimaan',
     ];
 
     public function spk()
@@ -31,13 +32,22 @@ class SPKQuality extends Model
         return $this->hasOne(SPKQualityPIC::class, 'spk_qualities_id');
     }
 
-    public function detail()
+    public function details()
     {
-        return $this->hasOne(SPKQualityDetail::class, 'spk_qualities_id');
+        return $this->hasMany(SPKQualityDetail::class, 'spk_qualities_id');
     }
 
     protected static function booted()
     {
+        static::saving(function ($model) {
+            if (
+                $model->pic?->receive_signature &&
+                $model->status_penerimaan !== 'Diterima'
+            ) {
+                $model->status_penerimaan = 'Diterima';
+            }
+        });
+
         static::deleting(function ($spesifikasi) {
             if ($spesifikasi->pic) {
                 $spesifikasi->pic->delete();

@@ -16,8 +16,8 @@ return new class extends Migration
             $table->foreignId('serah_terima_bahan_id')->constrained('serah_terima_bahans')->onDelete('cascade');
             $table->text('submit_signature');
             $table->string('submit_name');
-            $table->text('receive_signature');
-            $table->string('receive_name');
+            $table->text('receive_signature')->nullable();
+            $table->string('receive_name')->nullable();
             $table->timestamps();
         });
     }

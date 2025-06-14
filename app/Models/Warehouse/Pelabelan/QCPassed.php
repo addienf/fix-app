@@ -20,6 +20,7 @@ class QCPassed extends Model
         'total_masuk',
         'total_keluar',
         'sisa_stock',
+        'status_persetujuan',
     ];
 
     public function spk()
@@ -27,9 +28,9 @@ class QCPassed extends Model
         return $this->belongsTo(SPKMarketing::class, 'spk_marketing_id');
     }
 
-    public function detail()
+    public function details()
     {
-        return $this->hasOne(QCPassedDetail::class, 'qc_passed_id');
+        return $this->hasMany(QCPassedDetail::class, 'qc_passed_id');
     }
 
     public function pic()
@@ -37,16 +38,25 @@ class QCPassed extends Model
         return $this->hasOne(QCPassedPIC::class, 'qc_passed_id');
     }
 
-    // protected static function booted()
-    // {
-    //     static::deleting(function ($model) {
-    //         if ($model->detail) {
-    //             $model->detail->delete();
-    //         }
+    protected static function booted()
+    {
+        static::saving(function ($model) {
+            if (
+                $model->pic?->approved_signature &&
+                $model->status_persetujuan !== 'Disetujui'
+            ) {
+                $model->status_persetujuan = 'Disetujui';
+            }
+        });
 
-    //         if ($model->pic) {
-    //             $model->pic->delete();
-    //         }
-    //     });
-    // }
+        static::deleting(function ($model) {
+            if ($model->detail) {
+                $model->detail->delete();
+            }
+
+            if ($model->pic) {
+                $model->pic->delete();
+            }
+        });
+    }
 }

@@ -40,7 +40,7 @@ class SpesifikasiProductNotif extends Notification
         return (new MailMessage)
             ->subject('Spesifikasi Product Baru Dibuat')
             ->line('Ada data spesifikasi product baru yang berhasil dibuat.')
-            ->action('Lihat Data', url('/admin/sales/spesifikasi-product/' . $this->record->id . '/edit'))
+            ->action('Lihat Data', url('/admin/sales/spesifikasi-produk/' . $this->record->id . '/edit'))
             ->line('Terima kasih.');
     }
 

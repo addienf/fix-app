@@ -44,50 +44,64 @@ class PermintaanAlatDanBahanResource extends Resource
     protected static ?string $pluralLabel = 'Permintaan Alat dan Bahan';
     protected static ?string $modelLabel = 'Permintaan Alat dan Bahan';
 
+    public static function getNavigationBadge(): ?string
+    {
+        $count = PermintaanAlatDanBahan::where('status_penerimaan', '!=', 'Diterima')->count();
+
+        return $count > 0 ? (string) $count : null;
+    }
+
     public static function form(Form $form): Form
     {
+        $lastValue = PermintaanAlatDanBahan::latest('no_surat')->value('no_surat');
+
         return $form
             ->schema([
                 //
                 Hidden::make('status_penerimaan')
                     ->default('Belum Diterima'),
 
+                Hidden::make('status')
+                    ->disabledOn('edit')
+                    ->default('Belum Diproses'),
+
                 Section::make('Informasi Umum')
                     ->collapsible()
                     ->schema([
-                        self::selectInput()
-                            ->label('No SPK')
-                            ->columnSpanFull(),
-                        Hidden::make('status')
-                            ->disabledOn('edit')
-                            ->default('Belum Diproses'),
-                        self::buttonGroup('status', 'Status Stock Barang')
-                            ->hiddenOn(operations: 'create'),
-                        // ToggleButtons::make('status')
-                        //     ->label('Status Stock Barang')
-                        //     ->boolean()
-                        //     ->grouped(),
-                    ]),
-                Section::make('Informasi Umum')
-                    ->schema([
                         Grid::make(2)
                             ->schema([
-                                self::textInput('no_surat', 'No Surat'),
+                                self::selectInput()
+                                    ->label('No SPK')
+                                    ->hiddenOn('edit')
+                                    ->columnSpanFull(),
+
+                                self::textInput('no_surat', 'No Surat')
+                                    ->unique(ignoreRecord: true)
+                                    ->placeholder($lastValue ? "Data Terakhir : {$lastValue}" : 'Data Belum Tersedia')
+                                    ->hint('Format: XXX/QKS/PRO/PERMINTAAN/MM/YY'),
+
                                 self::datePicker('tanggal', 'Tanggal')
                                     ->required(),
+
                                 self::textInput('dari', 'Dari')
                                     ->extraAttributes([
                                         'readonly' => true,
                                         'style' => 'pointer-events: none;'
                                     ]),
+
                                 self::textInput('kepada', 'Kepada')
                                     ->extraAttributes([
                                         'readonly' => true,
                                         'style' => 'pointer-events: none;'
                                     ]),
+
+                                self::buttonGroup('status', 'Status Stock Barang')
+                                    ->columnSpanFull()
+                                    ->hiddenOn(operations: 'create'),
                             ])
                     ]),
                 Section::make('List Detail Bahan Baku')
+                    ->collapsible()
                     ->schema([
                         Grid::make(2)
                             ->schema([
@@ -113,18 +127,6 @@ class PermintaanAlatDanBahanResource extends Resource
                                     ->columnSpanFull()
                             ])
                     ]),
-
-                // Section::make('PIC')
-                //     ->relationship('pic')
-                //     ->schema([
-                //         Grid::make(2)
-                //             ->schema([
-                //                 self::textInput('create_name', 'Nama Pembuat'),
-                //                 self::textInput('receive_name', 'Nama Penerima'),
-                //                 self::signatureInput('create_signature', 'Dibuat Oleh'),
-                //                 self::signatureInput('receive_signature', 'Diterima Oleh'),
-                //             ])
-                //     ]),
 
                 Section::make('Detail PIC')
                     ->collapsible()
@@ -153,24 +155,11 @@ class PermintaanAlatDanBahanResource extends Resource
             ->columns([
                 //
                 self::textColumn('spk.no_spk', 'No SPK'),
+
                 self::textColumn('no_surat', 'Nomor Surat'),
+
                 self::textColumn('tanggal', 'Tanggal Dibuat')->date('d M Y'),
-                // self::textColumn('status', 'Status Stock Barang')
-                //     ->badge()
-                //     ->default(null)
-                //     ->placeholder('Belum Diproses')
-                //     ->formatStateUsing(function ($state) {
-                //         if (is_null($state)) {
-                //             return 'Belum Diproses';
-                //         }
-                //         return $state ? 'Ready' : 'Not Ready';
-                //     })
-                //     ->color(function ($state) {
-                //         if (is_null($state)) {
-                //             return 'warning';
-                //         }
-                //         return $state ? 'success' : 'danger';
-                //     }),
+
                 TextColumn::make('status')
                     ->label('Status Stock Barang')
                     ->badge()
@@ -182,6 +171,7 @@ class PermintaanAlatDanBahanResource extends Resource
                         };
                     })
                     ->alignCenter(),
+
                 TextColumn::make('status_penerimaan')
                     ->label('Status Penerimaan')
                     ->badge()
@@ -190,16 +180,7 @@ class PermintaanAlatDanBahanResource extends Resource
                         $state === 'Diterima' ? 'success' : 'danger'
                     )
                     ->alignCenter(),
-                // self::textColumn('dari', 'Dari'),
-                // self::textColumn('kepada', 'Kepada'),
-                // ImageColumn::make('pic.create_signature')
-                //     ->label('Pembuat')
-                //     ->width(150)
-                //     ->height(75),
-                // ImageColumn::make('pic.receive_signature')
-                //     ->label('Penyetuju')
-                //     ->width(150)
-                //     ->height(75),
+
             ])
             ->filters([
                 //
@@ -257,6 +238,7 @@ class PermintaanAlatDanBahanResource extends Resource
                 return SPKMarketing::whereHas('jadwalProduksi', function ($query) {
                     $query->where('status_persetujuan', 'Disetujui');
                 })
+                    ->whereDoesntHave('permintaan')
                     ->pluck('no_spk', 'id');
             })
             ->native(false)

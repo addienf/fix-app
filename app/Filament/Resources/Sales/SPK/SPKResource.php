@@ -47,7 +47,7 @@ class SPKResource extends Resource
 
     public static function getNavigationBadge(): ?string
     {
-        $count = SPKMarketing::where('status_persetujuan', '!=', 'Diterima')->count();
+        $count = SPKMarketing::where('status_penerimaan', '!=', 'Diterima')->count();
 
         return $count > 0 ? (string) $count : null;
     }
@@ -76,13 +76,6 @@ class SPKResource extends Resource
                                 self::textInput('kepada', 'Kepada'),
                                 Hidden::make('status_persetujuan')
                                     ->default('Belum Diterima'),
-                                // Select::make('status_persetujuan')
-                                //     ->label('Status Persetujuan')
-                                //     ->options([
-                                //         'Belum Disetujui' => 'Belum Disetujui',
-                                //         'Disetujui' => 'Disetujui',
-                                //     ])
-                                //     ->default('Belum Disetujui'),
                             ]),
                     ]),
 

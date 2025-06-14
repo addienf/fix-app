@@ -7,6 +7,7 @@ use App\Filament\Resources\Warehouse\SerahTerima\SerahTerimaBahanResource\Relati
 use App\Models\Production\PermintaanBahanProduksi\PermintaanAlatDanBahan;
 use App\Models\Warehouse\SerahTerima\SerahTerimaBahan;
 use App\Services\SignatureUploader;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Section;
 use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
@@ -20,6 +21,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Actions\Action;
+use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -38,28 +40,53 @@ class SerahTerimaBahanResource extends Resource
     protected static ?string $pluralLabel = 'Serah Terima Bahan';
     protected static ?string $modelLabel = 'Serah Terima Bahan';
 
+    public static function getNavigationBadge(): ?string
+    {
+        $count = SerahTerimaBahan::where('status_penerimaan', '!=', 'Diterima')->count();
+
+        return $count > 0 ? (string) $count : null;
+    }
+
+
     public static function form(Form $form): Form
     {
+        $lastValue = SerahTerimaBahan::latest('no_surat')->value('no_surat');
+
         return $form
             ->schema([
                 //
+                Hidden::make('status_penerimaan')
+                    ->default('Belum Diterima'),
+
                 Section::make('Nomor Surat')
+                    ->collapsible()
                     ->schema([
                         self::selectInput('permintaan_bahan_pro_id', 'Pilih Nomor Surat', 'permintaanBahanPro', 'no_surat')
                             ->columnSpanFull(),
                     ]),
+
                 Section::make('Informasi Umum')
+                    ->collapsible()
                     ->schema([
                         Grid::make(2)
                             ->schema([
-                                self::textInput('no_surat', 'No Surat'),
+                                self::textInput('no_surat', 'No Surat')
+                                    ->unique(ignoreRecord: true)
+                                    ->placeholder($lastValue ? "Data Terakhir : {$lastValue}" : 'Data Belum Tersedia')
+                                    ->hint('Format: XXX/QKS/WBB/SERAHTERIMA/MM/YY'),
+
                                 self::datePicker('tanggal', 'Tanggal')
                                     ->required(),
-                                self::textInput('dari', 'Dari'),
+
+                                self::textInput('dari', 'Dari')
+                                    ->placeholder('Warehouse'),
+
                                 self::textInput('kepada', 'Kepada'),
                             ])
                     ]),
+
                 Section::make('List Detail Bahan Baku')
+                    ->collapsible()
                     ->schema([
                         Grid::make(2)
                             ->schema([
@@ -97,16 +124,36 @@ class SerahTerimaBahanResource extends Resource
                                     ->columnSpanFull()
                             ])
                     ]),
-                Section::make('PIC')
+
+                // Section::make('PIC')
+                //     ->relationship('pic')
+                //     ->schema([
+                //         Grid::make(2)
+                //             ->schema([
+                //                 self::textInput('submit_name', 'Diserahkan Oleh'),
+                //                 self::textInput('receive_name', 'Diterima Oleh'),
+                //                 self::signatureInput('submit_signature', ''),
+                //                 self::signatureInput('receive_signature', ''),
+                //             ])
+                //     ]),
+
+                Section::make('Detail PIC')
+                    ->collapsible()
                     ->relationship('pic')
                     ->schema([
                         Grid::make(2)
                             ->schema([
-                                self::textInput('submit_name', 'Diserahkan Oleh'),
-                                self::textInput('receive_name', 'Diterima Oleh'),
-                                self::signatureInput('submit_signature', ''),
-                                self::signatureInput('receive_signature', ''),
-                            ])
+                                Grid::make(1)
+                                    ->schema([
+                                        self::textInput('submit_name', 'Diserahkan oleh'),
+                                        self::signatureInput('submit_signature', ''),
+                                    ])->hiddenOn(operations: 'edit'),
+                                Grid::make(1)
+                                    ->schema([
+                                        self::textInput('receive_name', 'Diterima oleh'),
+                                        self::signatureInput('receive_signature', ''),
+                                    ])->hiddenOn(operations: 'create'),
+                            ]),
                     ]),
             ]);
     }
@@ -117,16 +164,31 @@ class SerahTerimaBahanResource extends Resource
             ->columns([
                 //
                 self::textColumn('permintaanBahanPro.no_surat', 'No Surat Production'),
+
                 self::textColumn('no_surat', 'Nomor Surat Serah Terima Bahan'),
+
                 self::textColumn('tanggal', 'Tanggal Dibuat')->date('d M Y'),
+
                 self::textColumn('dari', 'Dari'),
+
                 self::textColumn('kepada', 'Kepada'),
+
+                TextColumn::make('status_penerimaan')
+                    ->label('Status Penerimaan')
+                    ->badge()
+                    ->color(
+                        fn($state) =>
+                        $state === 'Diterima' ? 'success' : 'danger'
+                    )
+                    ->alignCenter(),
+
                 ImageColumn::make('pic.submit_signature')
                     ->label('Pembuat')
                     ->width(150)
                     ->height(75),
+
                 ImageColumn::make('pic.receive_signature')
-                    ->label('Pembuat')
+                    ->label('Penerima')
                     ->width(150)
                     ->height(75),
             ])
@@ -134,13 +196,15 @@ class SerahTerimaBahanResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
-                Action::make('pdf_view')
-                    ->label(_('View PDF'))
-                    ->icon('heroicon-o-document')
-                    ->color('success')
-                    ->url(fn($record) => self::getUrl('pdfSerahTerimaBahan', ['record' => $record->id])),
+                ActionGroup::make([
+                    Tables\Actions\EditAction::make(),
+                    Tables\Actions\DeleteAction::make(),
+                    Action::make('pdf_view')
+                        ->label(_('View PDF'))
+                        ->icon('heroicon-o-document')
+                        ->color('success')
+                        ->url(fn($record) => self::getUrl('pdfSerahTerimaBahan', ['record' => $record->id])),
+                ])
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -178,38 +242,39 @@ class SerahTerimaBahanResource extends Resource
     {
         return
             Select::make($fieldName)
-                // ->relationship($relation, $title)
-                ->relationship(
-                    $relation,
-                    $title,
-                    fn($query) => $query->where('status', true)
-                )
-                ->label($label)
-                ->native(false)
-                ->searchable()
-                ->preload()
-                ->required()
-                ->reactive()
-                ->afterStateUpdated(function ($state, callable $set) {
-                    if (!$state)
-                        return;
+            // ->relationship($relation, $title)
+            ->relationship(
+                $relation,
+                $title,
+                fn($query) => $query->where('status', 'Tersedia')
+                    ->whereDoesntHave('serahTerimaBahan')
+            )
+            ->label($label)
+            ->native(false)
+            ->searchable()
+            ->preload()
+            ->required()
+            ->reactive()
+            ->afterStateUpdated(function ($state, callable $set) {
+                if (!$state)
+                    return;
 
-                    $pab = PermintaanAlatDanBahan::with('details')->find($state);
+                $pab = PermintaanAlatDanBahan::with('details')->find($state);
 
-                    if (!$pab)
-                        return;
+                if (!$pab)
+                    return;
 
-                    $detailBahan = $pab->details?->map(function ($detail) {
-                        return [
-                            'bahan_baku' => $detail->bahan_baku ?? '',
-                            'spesifikasi' => $detail->spesifikasi ?? '',
-                            'jumlah' => $detail->jumlah ?? 0,
-                            'keperluan_barang' => $detail->keperluan_barang ?? '',
-                        ];
-                    })->toArray();
+                $detailBahan = $pab->details?->map(function ($detail) {
+                    return [
+                        'bahan_baku' => $detail->bahan_baku ?? '',
+                        'spesifikasi' => $detail->spesifikasi ?? '',
+                        'jumlah' => $detail->jumlah ?? 0,
+                        'keperluan_barang' => $detail->keperluan_barang ?? '',
+                    ];
+                })->toArray();
 
-                    $set('details', $detailBahan);
-                })
+                $set('details', $detailBahan);
+            })
         ;
     }
 
@@ -217,34 +282,34 @@ class SerahTerimaBahanResource extends Resource
     {
         return
             DatePicker::make($fieldName)
-                ->label($label)
-                ->displayFormat('M d Y')
-                ->seconds(false);
+            ->label($label)
+            ->displayFormat('M d Y')
+            ->seconds(false);
     }
 
     protected static function signatureInput(string $fieldName, string $labelName): SignaturePad
     {
         return
             SignaturePad::make($fieldName)
-                ->label($labelName)
-                ->exportPenColor('#0118D8')
-                ->helperText('*Harap Tandatangan di tengah area yang disediakan.')
-                ->afterStateUpdated(function ($state, $set) use ($fieldName) {
-                    if (blank($state))
-                        return;
-                    $path = SignatureUploader::handle($state, 'ttd_', 'Warehouse/SerahTerimaBahan/Signatures');
-                    if ($path) {
-                        $set($fieldName, $path);
-                    }
-                });
+            ->label($labelName)
+            ->exportPenColor('#0118D8')
+            ->helperText('*Harap Tandatangan di tengah area yang disediakan.')
+            ->afterStateUpdated(function ($state, $set) use ($fieldName) {
+                if (blank($state))
+                    return;
+                $path = SignatureUploader::handle($state, 'ttd_', 'Warehouse/SerahTerimaBahan/Signatures');
+                if ($path) {
+                    $set($fieldName, $path);
+                }
+            });
     }
 
     protected static function textColumn(string $fieldName, string $label): TextColumn
     {
         return
             TextColumn::make($fieldName)
-                ->label($label)
-                ->searchable()
-                ->sortable();
+            ->label($label)
+            ->searchable()
+            ->sortable();
     }
 }

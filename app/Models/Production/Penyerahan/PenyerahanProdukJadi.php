@@ -15,10 +15,11 @@ class PenyerahanProdukJadi extends Model
     protected $fillable = [
         'spk_marketing_id',
         'tanggal',
-        'pic',
+        'penanggug_jawab',
         'penerima',
         'kondisi_produk',
         'catatan_tambahan',
+        'status_penerimaan',
     ];
 
     protected $casts = [
@@ -30,9 +31,9 @@ class PenyerahanProdukJadi extends Model
         return $this->belongsTo(SPKMarketing::class, 'spk_marketing_id');
     }
 
-    public function detail()
+    public function details()
     {
-        return $this->hasOne(PenyerahanProdukJadiDetail::class, 'produk_jadi_id');
+        return $this->hasMany(PenyerahanProdukJadiDetail::class, 'produk_jadi_id');
     }
 
     public function pic()
@@ -42,6 +43,15 @@ class PenyerahanProdukJadi extends Model
 
     protected static function booted()
     {
+        static::saving(function ($model) {
+            if (
+                $model->pic?->receive_signature &&
+                $model->status_penerimaan !== 'Diterima'
+            ) {
+                $model->status_penerimaan = 'Diterima';
+            }
+        });
+
         static::deleting(function ($model) {
             foreach ($model->details as $detail) {
                 $detail->delete();
@@ -49,10 +59,6 @@ class PenyerahanProdukJadi extends Model
 
             if ($model->pic) {
                 $model->pic->delete();
-            }
-
-            if ($model->permintaanBahanWBB) {
-                $model->permintaanBahanWBB->delete();
             }
         });
     }

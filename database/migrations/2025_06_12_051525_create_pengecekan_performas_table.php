@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('volume');
             $table->string('serial_number');
             $table->text('note');
+            $table->text('status_penyelesaian');
             $table->timestamps();
         });
     }

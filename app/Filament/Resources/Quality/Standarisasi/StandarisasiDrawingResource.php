@@ -5,18 +5,22 @@ namespace App\Filament\Resources\Quality\Standarisasi;
 use App\Filament\Resources\Quality\Standarisasi\StandarisasiDrawingResource\Pages;
 use App\Filament\Resources\Quality\Standarisasi\StandarisasiDrawingResource\RelationManagers;
 use App\Models\Quality\Standarisasi\StandarisasiDrawing;
+use App\Models\Sales\SPKMarketings\SPKMarketing;
 use App\Services\SignatureUploader;
+use Closure;
 use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Card;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\ToggleButtons;
 use Filament\Forms\Form;
+use Filament\Forms\Get;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Actions\Action;
@@ -27,6 +31,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Saade\FilamentAutograph\Forms\Components\SignaturePad;
+use Wallo\FilamentSelectify\Components\ButtonGroup;
 
 class StandarisasiDrawingResource extends Resource
 {
@@ -43,44 +48,58 @@ class StandarisasiDrawingResource extends Resource
         return $form
             ->schema([
                 //
-                Card::make()
+                Hidden::make('status_pemeriksaan')
+                    ->default('Belum Diperiksa'),
+
+                Section::make('Informasi Umum')
+                    ->collapsible()
                     ->schema([
                         Grid::make(2)
                             ->schema([
-                                self::selectInput('spk_marketing_id', 'No SPK', 'spk', 'no_spk')
-                                    ->required(),
-                                self::datePicker('tanggal', 'Tanggal')
-                                    ->required(),
+
+                                self::selectInputSPK(),
+
+                                self::datePicker('tanggal', 'Tanggal'),
+
                             ]),
                     ]),
+
                 Section::make('Identitas Gambar Kerja')
                     ->collapsible()
                     ->relationship('identitas')
                     ->schema([
-                        self::textInput('judul_gambar', 'Judul Gambar')
-                            ->required(),
-                        self::textInput('no_gambar', 'No Gambar')
-                            ->required(),
-                        self::datePicker('tanggal_pembuatan', 'Tanggal Pembuatan')
-                            ->required(),
-                        ToggleButtons::make('revisi')
-                            ->boolean()
-                            ->grouped()
-                            ->inline(false)
-                            ->required(),
-                        self::textInput('nama_pembuat', 'Nama Pembuat')
-                            ->required(),
-                        self::textInput('nama_pemeriksa', 'Nama Pemeriksa')
-                            ->required(),
+
+                        self::textInput('judul_gambar', 'Judul Gambar'),
+
+                        self::textInput('no_gambar', 'No Gambar'),
+
+                        self::datePicker('tanggal_pembuatan', 'Tanggal Pembuatan'),
+
+                        self::buttonGroup('revisi', 'Revisi')
+                            ->reactive()
+                            ->columnSpanFull(),
+
+                        self::textInput('revisi_ke', 'Revisi Ke')
+                            ->hidden(fn(Get $get) => $get('revisi') != 1),
+
+                        self::textInput('nama_pembuat', 'Nama Pembuat'),
+
+                        self::textInput('nama_pemeriksa', 'Nama Pemeriksa'),
+
                     ]),
+
                 Section::make('Spesifikasi Teknis')
                     ->collapsible()
                     ->schema([
+
                         self::selectInputOptions('jenis_gambar', 'Jenis Gambar', 'standarisasi.jenis_gambar')
                             ->required(),
+
                         self::selectInputOptions('format_gambar', 'Format Gambar', 'standarisasi.format_gambar')
                             ->required(),
+
                     ])->columns(2),
+
                 Section::make('Detail')
                     ->relationship('detail')
                     ->collapsible()
@@ -97,20 +116,40 @@ class StandarisasiDrawingResource extends Resource
                             ->label('Catatan atau Koreksi yang Dibutuhkan')
                             ->required(),
                     ]),
-                Section::make('PIC')
+
+                // Section::make('PIC')
+                //     ->relationship('pic')
+                //     ->schema([
+                //         Grid::make(2)
+                //             ->schema([
+                //                 self::textInput('create_name', 'Dibuat Oleh')
+                //                     ->required(),
+                //                 self::textInput('check_name', 'Diperiksa Oleh')
+                //                     ->required(),
+                //                 self::signatureInput('create_signature', '')
+                //                     ->required(),
+                //                 self::signatureInput('check_signature', '')
+                //                     ->required(),
+                //             ])
+                //     ]),
+
+                Section::make('Detail PIC')
+                    ->collapsible()
                     ->relationship('pic')
                     ->schema([
                         Grid::make(2)
                             ->schema([
-                                self::textInput('create_name', 'Dibuat Oleh')
-                                    ->required(),
-                                self::textInput('check_name', 'Diperiksa Oleh')
-                                    ->required(),
-                                self::signatureInput('create_signature', '')
-                                    ->required(),
-                                self::signatureInput('check_signature', '')
-                                    ->required(),
-                            ])
+                                Grid::make(1)
+                                    ->schema([
+                                        self::textInput('create_name', 'Dibuat Oleh'),
+                                        self::signatureInput('create_signature', ''),
+                                    ])->hiddenOn(operations: 'edit'),
+                                Grid::make(1)
+                                    ->schema([
+                                        self::textInput('check_name', 'Diperiksa Oleh'),
+                                        self::signatureInput('check_signature', ''),
+                                    ])->hiddenOn(operations: 'create'),
+                            ]),
                     ]),
             ]);
     }
@@ -123,15 +162,28 @@ class StandarisasiDrawingResource extends Resource
                 self::textColumn('spk.no_spk', 'NO SPK'),
                 self::textColumn('tanggal', 'Tanggal')
                     ->date('d - M - Y'),
+
                 self::textColumn('jenis_gambar', 'Jenis Gambar')
                     ->formatStateUsing(function (string $state): string {
                         return config('standarisasi.jenis_gambar')[$state] ?? $state;
                     }),
+
                 self::textColumn('format_gambar', 'Format Gambar'),
+
+                TextColumn::make('status_pemeriksaan')
+                    ->label('Status Pemeriksaan')
+                    ->badge()
+                    ->color(
+                        fn($state) =>
+                        $state === 'Diperiksa' ? 'success' : 'danger'
+                    )
+                    ->alignCenter(),
+
                 ImageColumn::make('pic.create_signature')
                     ->width(150)
                     ->label('PIC')
                     ->height(75),
+
                 ImageColumn::make('pic.check_signature')
                     ->width(150)
                     ->label('PIC')
@@ -183,64 +235,102 @@ class StandarisasiDrawingResource extends Resource
             ->maxLength(255);
     }
 
+    protected static function selectInputSPK(): Select
+    {
+        return
+            Select::make('spk_marketing_id')
+            ->label('Nomor SPK')
+            ->relationship(
+                'spk',
+                'no_spk',
+                fn($query) => $query
+                    ->whereHas('permintaan.serahTerimaBahan', function ($query) {
+                        $query->where('status_penerimaan', 'Diterima');
+                    })->whereDoesntHave('standarisasi')
+            )
+            ->native(false)
+            ->searchable()
+            ->preload()
+            ->required()
+            ->reactive();
+    }
+
     protected static function selectInput(string $fieldName, string $label, string $relation, string $title): Select
     {
         return
             Select::make($fieldName)
-                ->relationship($relation, $title)
-                ->label($label)
-                ->native(false)
-                ->searchable()
-                ->preload()
-                ->required()
-                ->reactive();
+            ->relationship($relation, $title)
+            ->label($label)
+            ->native(false)
+            ->searchable()
+            ->preload()
+            ->required()
+            ->reactive();
     }
 
     protected static function selectInputOptions(string $fieldName, string $label, string $config): Select
     {
         return
             Select::make($fieldName)
-                ->options(config($config))
-                ->label($label)
-                ->native(false)
-                ->searchable()
-                ->preload()
-                ->required()
-                ->reactive();
+            ->options(config($config))
+            ->label($label)
+            ->native(false)
+            ->searchable()
+            ->preload()
+            ->required()
+            ->reactive();
+    }
+
+
+    protected static function buttonGroup(string $fieldName, string $label): ButtonGroup
+    {
+        return
+            ButtonGroup::make($fieldName)
+            ->label($label)
+            ->required()
+            ->options([
+                1 => 'Ya',
+                0 => 'Tidak',
+            ])
+            ->onColor('primary')
+            ->offColor('gray')
+            ->gridDirection('row')
+            ->default('individual');
     }
 
     protected static function datePicker(string $fieldName, string $label): DatePicker
     {
         return
             DatePicker::make($fieldName)
-                ->label($label)
-                ->displayFormat('M d Y')
-                ->seconds(false);
+            ->label($label)
+            ->displayFormat('M d Y')
+            ->seconds(false)
+            ->required();
     }
 
     protected static function signatureInput(string $fieldName, string $labelName): SignaturePad
     {
         return
             SignaturePad::make($fieldName)
-                ->label($labelName)
-                ->exportPenColor('#0118D8')
-                ->helperText('*Harap Tandatangan di tengah area yang disediakan.')
-                ->afterStateUpdated(function ($state, $set) use ($fieldName) {
-                    if (blank($state))
-                        return;
-                    $path = SignatureUploader::handle($state, 'ttd_', 'Quality/StandarisasiDrawing/Signatures');
-                    if ($path) {
-                        $set($fieldName, $path);
-                    }
-                });
+            ->label($labelName)
+            ->exportPenColor('#0118D8')
+            ->helperText('*Harap Tandatangan di tengah area yang disediakan.')
+            ->afterStateUpdated(function ($state, $set) use ($fieldName) {
+                if (blank($state))
+                    return;
+                $path = SignatureUploader::handle($state, 'ttd_', 'Quality/StandarisasiDrawing/Signatures');
+                if ($path) {
+                    $set($fieldName, $path);
+                }
+            });
     }
 
     protected static function textColumn(string $fieldName, string $label): TextColumn
     {
         return
             TextColumn::make($fieldName)
-                ->label($label)
-                ->searchable()
-                ->sortable();
+            ->label($label)
+            ->searchable()
+            ->sortable();
     }
 }

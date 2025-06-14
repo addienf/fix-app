@@ -18,6 +18,7 @@ class SerahTerimaBahan extends Model
         'no_surat',
         'dari',
         'kepada',
+        'status_penerimaan'
     ];
 
     protected $casts = [
@@ -40,6 +41,15 @@ class SerahTerimaBahan extends Model
     }
     protected static function booted()
     {
+        static::saving(function ($model) {
+            if (
+                $model->pic?->receive_signature &&
+                $model->status_penerimaan !== 'Diterima'
+            ) {
+                $model->status_penerimaan = 'Diterima';
+            }
+        });
+
         static::deleting(function ($model) {
             foreach ($model->details as $detail) {
                 $detail->delete();

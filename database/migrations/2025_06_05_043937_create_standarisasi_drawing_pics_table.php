@@ -16,8 +16,8 @@ return new class extends Migration
             $table->foreignId('standarisasi_drawing_id')->constrained('standarisasi_drawings')->onDelete('cascade');
             $table->text('create_signature');
             $table->string('create_name');
-            $table->text('check_signature');
-            $table->string('check_name');
+            $table->text('check_signature')->nullable();
+            $table->string('check_name')->nullable();
             $table->timestamps();
         });
     }

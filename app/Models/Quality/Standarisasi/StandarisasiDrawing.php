@@ -18,6 +18,7 @@ class StandarisasiDrawing extends Model
         'tanggal',
         'jenis_gambar',
         'format_gambar',
+        'status_pemeriksaan',
     ];
 
     protected $casts = [
@@ -46,6 +47,15 @@ class StandarisasiDrawing extends Model
 
     protected static function booted()
     {
+        static::saving(function ($model) {
+            if (
+                $model->pic?->check_signature &&
+                $model->status_pemeriksaan !== 'Diperiksa'
+            ) {
+                $model->status_pemeriksaan = 'Diperiksa';
+            }
+        });
+
         static::deleting(function ($model) {
             if ($model->detail) {
                 $model->detail->delete();

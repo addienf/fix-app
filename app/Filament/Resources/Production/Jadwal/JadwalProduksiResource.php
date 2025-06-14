@@ -30,6 +30,7 @@ use Icetalker\FilamentTableRepeater\Forms\Components\TableRepeater;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Saade\FilamentAutograph\Forms\Components\SignaturePad;
+use Wallo\FilamentSelectify\Components\ButtonGroup;
 
 class JadwalProduksiResource extends Resource
 {
@@ -217,7 +218,7 @@ class JadwalProduksiResource extends Resource
             ->relationship(
                 $relation,
                 $title,
-                fn($query) => $query->where('status_persetujuan', 'Disetujui')
+                fn($query) => $query->where('status_penerimaan', 'Diterima')->whereDoesntHave('jadwalProduksi')
             )
             ->label($label)
             ->native(false)
