@@ -16,7 +16,7 @@
             </tr>
             <tr>
                 <td class="font-bold text-center border border-black dark:border-white dark:bg-gray-900 text-lg">
-                    Standarisasi Gambar Kerja</td>
+                    Kelengkapan Material Stainless Steel</td>
                 <td rowspan="2" class="p-0 align-top border border-black dark:border-white dark:bg-gray-900">
                     <table class="w-full text-sm" style="border-collapse: collapse;">
                         <tr>
@@ -37,112 +37,75 @@
                 </td>
             </tr>
         </table>
-
-        <!-- DETAIL FIELD -->
-        <div class="w-full max-w-4xl mx-auto pt-6 mb-6 text-sm ">
+        <div class="w-full max-w-4xl mx-auto pt-4 mb-6 grid grid-cols-1 gap-y-4">
+            @php
+$fields = [
+    ['label' => ' No SPK Produksi  :', 'value' => 'SPK-2025-001'],
+];
+                @endphp
+                @foreach ($fields as $field)
+                    <div class="flex flex-col">
+                        <label class="font-medium mb-1">{{ $field['label'] }}</label>
+                        <input type="text" readonly value="{{ $field['value'] }}"
+                            class="w-full px-3 py-2 text-black bg-white border border-gray-300 rounded-md cursor-not-allowed" />
+                    </div>
+                @endforeach
+            <h2 class="mb-2 text-xl font-bold text-start col-span-1">
+                Chamber Identification
+            </h2>
+        @php
+$fields = [
+    ['label' => ' Type Model :', 'value' => '05 Juni 2025'],
+    ['label' => ' Ref Document :', 'value' => '05 Juni 2025'],
+];
+        @endphp
+        @foreach ($fields as $field)
             <div class="flex flex-col">
-                <label class="font-medium mb-1">No. PO :</label>
-                <input type="text" readonly value="SPK-2025-001"
+                <label class="font-medium mb-1">{{ $field['label'] }}</label>
+                <input type="text" readonly value="{{ $field['value'] }}"
                     class="w-full px-3 py-2 text-black bg-white border border-gray-300 rounded-md cursor-not-allowed" />
             </div>
-            <div class="flex flex-col">
-                <label class="font-medium mb-1 pt-4">Supplier :</label>
-                <input type="text" readonly value="05 Juni 2025"
-                    class="w-full px-3 py-2 text-black bg-white border border-gray-300 rounded-md cursor-not-allowed" />
-            </div>
+        @endforeach 
+        @php
+            $fields = [
+                ['item' => 'Item A', 'spec' => 'Spec A', 'status' => 'OK', 'remark' => 'Checked'],
+                ['item' => 'Item B', 'spec' => 'Spec B', 'status' => 'Fail', 'remark' => 'Damaged'],
+                ['item' => 'Item C', 'spec' => 'Spec C', 'status' => '', 'remark' => 'Pending'],
+                ['item' => '', 'spec' => '', 'status' => '', 'remark' => ''],
+            ];
+        @endphp
+        
+        <table class="w-full text-sm border border-black border-collapse mb-6">
+            <thead class="bg-gray-100">
+                <tr>
+                    <th class="border border-black px-3 py-2 text-center w-10">No</th>
+                    <th class="border border-black px-3 py-2 text-left">Part</th>
+                    <th class="border border-black px-3 py-2 text-left">Order Number</th>
+                    <th class="border border-black px-3 py-2 text-center">Result</th>
+                    <th class="border border-black px-3 py-2 text-left">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($fields as $index => $field)
+                    <tr>
+                        <td class="border border-black px-3 py-2 text-center">{{ $index + 1 }}</td>
+                        <td class="border border-black px-3 py-2">{{ $field['item'] }}</td>
+                        <td class="border border-black px-3 py-2">{{ $field['spec'] }}</td>
+                        <td class="border border-black px-3 py-2 text-center">{{ $field['status'] }}</td>
+                        <td class="border border-black px-3 py-2">{{ $field['remark'] }}</td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+    
+        <div class="mt-4">
+            <label class="block font-semibold mb-1">Remarks</label>
+            <textarea class="w-full border border-black p-2 rounded resize-none cursor-not-allowed"
+                rows="4" placeholder="Enter remarks..." readonly></textarea>
         </div>
-
-        <!-- PROCEDURE TABLE -->
-        <div class="p-4 mb-6 max-w-4xl mx-auto">
-            <table class="w-full table-fixed border border-gray-300 text-sm">
-                <thead class="bg-blue-300 text-black">
-                    <tr>
-                        <th class="p-2 border w-1/3">Procedures</th>
-                        <th class="p-2 border w-1/3">Expected Result</th>
-                        <th class="p-2 border w-1/3">Actual Result</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td class="p-2 border align-top">
-                            <ul class="list-disc ml-4">
-                                <li>Wipe off the dust, dirt, oil and water on the surface of the material</li>
-                                <li>Make zone on the upper, middle and bottom side of the material surface to be checked
-                                </li>
-                                <li>Drop the testing liquid on the upper side of material and wait about 2–3 minutes
-                                </li>
-                            </ul>
-                        </td>
-                        <td class="p-2 border align-top">There was no color change within 3 minutes after the liquid
-                            dropped on the surface that indicating materials is genuine SUS304</td>
-                        <td class="p-2 border align-top">
-                            <textarea readonly class="w-full border border-gray-300 p-2 rounded resize-none" rows="5"
-                                placeholder="Enter actual result..."></textarea>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="p-2 border">Visual Check</td>
-                        <td class="p-2 border">No Defect and rust found</td>
-                        <td class="p-2 border">
-                            <textarea readonly class="w-full border border-gray-300 p-2 rounded resize-none" rows="2"
-                                placeholder="Enter actual result..."></textarea>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <!-- SUMMARY TABLE -->
-        <div class="p-4 mb-6 max-w-4xl mx-auto">
-            <table class="w-full table-fixed border border-gray-300 text-sm">
-                <thead class="bg-blue-300 text-black">
-                    <tr>
-                        <th class="p-2 border w-2/3">Summary</th>
-                        <th class="p-2 border w-1/3">Quantity</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td class="p-2 border">Total Received</td>
-                        <td class="p-2 border">
-                            <input type="number" readonly
-                                class="w-full border border-gray-300 p-2 rounded bg-gray-100 text-gray-500 cursor-not-allowed"
-                                placeholder="Enter quantity" />
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="p-2 border">Total Acceptable</td>
-                        <td class="p-2 border">
-                            <input type="number" readonly
-                                class="w-full border border-gray-300 p-2 rounded bg-gray-100 text-gray-500 cursor-not-allowed"
-                                placeholder="Enter quantity" />
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="p-2 border">Total Rejected</td>
-                        <td class="p-2 border">
-                            <input type="number" readonly
-                                class="w-full border border-gray-300 p-2 rounded bg-gray-100 text-gray-500 cursor-not-allowed"
-                                placeholder="Enter quantity" />
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="p-2 border">Return to Supplier</td>
-                        <td class="p-2 border">
-                            <input type="number" readonly
-                                class="w-full border border-gray-300 p-2 rounded bg-gray-100 text-gray-500 cursor-not-allowed"
-                                placeholder="Enter quantity" />
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <!-- Remarks -->
-            <div class="mt-4">
-                <label class="block font-semibold mb-1">Remarks</label>
-                <textarea class="w-full border border-gray-300 p-2 rounded resize-none bg-gray-100 text-gray-500 cursor-not-allowed"
-                    rows="4" placeholder="Enter remarks..." readonly></textarea>      
-            </div>
+    
+    </div>
+           
 
         <!-- SIGNATURE SECTION -->
         <div class="p-4 mb-6 max-w-4xl mx-auto">

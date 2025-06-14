@@ -85,13 +85,13 @@ $fields = [
         <table class="w-full max-w-4xl mx-auto text-sm border border-black mb-3"
             style="border-collapse: collapse; table-layout: fixed;">
             <thead>
-                <tr>
+                <tr class="bg-gray-100">
                     <th class="border border-black px-2 py-1 text-center" style="width: 40px;">No</th>
                     <th class="border border-black px-2 py-1 text-center w-1/3">Part</th>
                     <th colspan="2" class="border border-black px-2 py-1 text-center w-1/4">Result</th>
                     <th class="border border-black px-2 py-1 text-center w-1/6">Status</th>
                 </tr>
-                <tr>
+                <tr class="bg-gray-100">
                     <th></th>
                     <th class="border border-black px-2 py-1 text-center font-bold">Body Chamber Welding</th>
                     <th class="border border-black px-2 py-1 text-center">Yes</th>
@@ -99,17 +99,19 @@ $fields = [
                     <th></th>
                 </tr>
             </thead>
+        
             @php
-$rows = [
-    'Right outer side of wall',
-    'Left outer side of wall',
-    'Rear outer side of wall',
-    'Rear hole for Humidifier',
-    'Right door of Chamber',
-    'Middle door of chamber',
-    'Left door of chamber',
-];
+                $rows = [
+                    'Right outer side of wall',
+                    'Left outer side of wall',
+                    'Rear outer side of wall',
+                    'Rear hole for Humidifier',
+                    'Right door of Chamber',
+                    'Middle door of chamber',
+                    'Left door of chamber',
+                ];
             @endphp
+        
             <tbody>
                 @foreach ($rows as $index => $part)
                     <tr>
@@ -128,7 +130,7 @@ $rows = [
                 @endforeach
             </tbody>
         </table>
-        
+
         <div class="w-full max-w-4xl mx-auto mb-6">
             <label for="note" class="block text-sm font-medium text-gray-700 mb-1">Note:</label>
             <textarea id="note" name="note" rows="4"
