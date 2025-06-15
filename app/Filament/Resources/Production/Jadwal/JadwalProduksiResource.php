@@ -8,6 +8,7 @@ use App\Models\Production\Jadwal\JadwalProduksi as JadwalJadwalProduksi;
 use App\Models\Production\JadwalProduksi;
 use App\Models\Sales\SPKMarketings\SPKMarketing;
 use App\Services\SignatureUploader;
+use Filament\Actions\ActionGroup;
 use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Fieldset;
@@ -23,6 +24,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Actions\Action;
+use Filament\Tables\Actions\ActionGroup as ActionsActionGroup;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -60,53 +62,75 @@ class JadwalProduksiResource extends Resource
 
                 Section::make('Informasi Umum')
                     ->schema([
+
                         Grid::make(2)
                             ->schema([
+
                                 self::textInput('pic_name', 'Penanggung Jawab'),
+
                                 self::datePicker('tanggal', 'Tanggal')
                                     ->required(),
+
                             ])
+
                     ]),
 
                 Section::make('Detail Jadwal Produksi')
                     ->schema([
+
                         self::selectInput('spk_marketing_id', 'No SPK', 'spk', 'no_spk')
+                            ->hiddenOn('edit')
+                            ->placeholder('Pilih Nomor SPK')
                             ->columnSpanFull(),
+
                         Repeater::make('details')
                             ->relationship('details')
                             ->label('')
                             ->schema([
+
                                 Grid::make(6)
                                     ->schema([
+
                                         self::textInput('nama_produk', 'Nama Produk')
                                             ->extraAttributes([
                                                 'readonly' => true,
                                                 'style' => 'pointer-events: none;'
                                             ]),
+
                                         self::textInput('tipe', 'Tipe/Model'),
+
                                         self::textInput('volume', 'Volume'),
+
                                         self::textInput('jumlah', 'Jumlah')
                                             ->extraAttributes([
                                                 'readonly' => true,
                                                 'style' => 'pointer-events: none;'
                                             ]),
+
                                         self::datePicker('tanggal_mulai', 'Tanggal Mulai')
                                             ->required(),
+
                                         self::datePicker('tanggal_selesai', 'Tanggal Selesai')
                                             ->required()
+
                                     ])
+
                             ])
                             ->deletable(false)
                             ->reorderable(false)
                             ->addable(false)
                             ->columnSpanFull(),
+
                     ]),
 
                 Section::make('Sumber Daya Yang Digunakan')
                     ->relationship('sumber')
                     ->schema([
+
                         self::textInput('mesin_yang_digunakan', 'Mesin Yang Digunakan'),
+
                         self::textInput('tenaga_kerja', 'Tenaga Kerja'),
+
                         TableRepeater::make('bahan_baku')
                             ->label('')
                             ->schema([
@@ -121,24 +145,36 @@ class JadwalProduksiResource extends Resource
                             ->defaultItems(1)
                     ]),
 
-                Section::make('Detail PIC')
+                Section::make('PIC')
                     ->collapsible()
                     ->relationship('pic')
                     ->schema([
+
                         Grid::make(2)
                             ->schema([
+
                                 Grid::make(1)
                                     ->schema([
-                                        self::textInput('create_name', 'PIC Pembuat'),
-                                        self::signatureInput('create_signature', 'Dibuat Oleh'),
+
+                                        self::textInput('create_name', 'Dibuat Oleh'),
+
+                                        self::signatureInput('create_signature', ''),
+
                                     ])->hiddenOn(operations: 'edit'),
+
                                 Grid::make(1)
                                     ->schema([
-                                        self::textInput('approve_name', 'PIC Penerima'),
-                                        self::signatureInput('approve_signature', 'Diterima Oleh'),
+
+                                        self::textInput('approve_name', 'Disetujui Oleh'),
+
+                                        self::signatureInput('approve_signature', ''),
+
                                     ])->hiddenOn(operations: 'create'),
+
                             ]),
+
                     ]),
+
             ]);
     }
 
@@ -148,8 +184,11 @@ class JadwalProduksiResource extends Resource
             ->columns([
                 //
                 self::textColumn('spk.no_spk', 'No SPK'),
+
                 self::textColumn('pic_name', 'Nama PIC'),
+
                 self::textColumn('tanggal', 'Tanggal Dibuat'),
+
                 TextColumn::make('status_persetujuan')
                     ->label('Status Persetujuan')
                     ->badge()
@@ -158,26 +197,32 @@ class JadwalProduksiResource extends Resource
                         $state === 'Disetujui' ? 'success' : 'danger'
                     )
                     ->alignCenter(),
+
                 ImageColumn::make('pic.create_signature')
                     ->label('Pembuat')
                     ->width(150)
                     ->height(75),
+
                 ImageColumn::make('pic.approve_signature')
                     ->label('Penyetuju')
                     ->width(150)
                     ->height(75),
+
             ])
             ->filters([
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
-                Action::make('pdf_view')
-                    ->label(_('View PDF'))
-                    ->icon('heroicon-o-document')
-                    ->color('success')
-                    ->url(fn($record) => self::getUrl('pdfJadwalProduksi', ['record' => $record->id])),
+                ActionsActionGroup::make([
+                    Tables\Actions\EditAction::make(),
+                    Tables\Actions\DeleteAction::make(),
+                    Action::make('pdf_view')
+                        ->label(_('View PDF'))
+                        ->icon('heroicon-o-document')
+                        ->color('success')
+                        ->visible(fn($record) => $record->status_persetujuan === 'Disetujui')
+                        ->url(fn($record) => self::getUrl('pdfJadwalProduksi', ['record' => $record->id])),
+                ])
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

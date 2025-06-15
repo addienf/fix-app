@@ -26,4 +26,14 @@ class CreatePengecekanMaterialSS extends CreateRecord
                 ->action(fn() => $this->form->fill()),
         ];
     }
+
+    public function getTitle(): string
+    {
+        return 'Tambah Data Pengecekan Material';
+    }
+
+    public function getBreadcrumb(): string
+    {
+        return 'Tambah';
+    }
 }

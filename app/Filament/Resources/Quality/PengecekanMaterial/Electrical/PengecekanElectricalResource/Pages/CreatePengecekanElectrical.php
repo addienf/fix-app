@@ -16,4 +16,14 @@ class CreatePengecekanElectrical extends CreateRecord
     {
         return $this->getResource()::getUrl('index');
     }
+
+    public function getTitle(): string
+    {
+        return 'Tambah Data Pengecekan Material Electrical';
+    }
+
+    public function getBreadcrumb(): string
+    {
+        return 'Tambah';
+    }
 }

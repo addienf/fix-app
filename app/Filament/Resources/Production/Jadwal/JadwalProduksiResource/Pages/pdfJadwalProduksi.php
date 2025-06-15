@@ -24,4 +24,9 @@ class pdfJadwalProduksi extends Page
         $this->record = $record;
         $this->jadwal = JadwalJadwalProduksi::with(['spk', 'details', 'pic', 'sumber'])->find($record);
     }
+
+    public function getBreadcrumb(): string
+    {
+        return 'Lihat PDF';
+    }
 }

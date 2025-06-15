@@ -13,7 +13,12 @@ class ListPengecekanPerformas extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+            Actions\CreateAction::make()->label('Tambah Data Pengecekan Performa'),
         ];
+    }
+
+    public function getBreadcrumb(): string
+    {
+        return 'Daftar';
     }
 }

@@ -13,7 +13,12 @@ class ListKelengkapanMaterialSS extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+            Actions\CreateAction::make()->label('Tambah Data Kelengkapan Material'),
         ];
+    }
+
+    public function getBreadcrumb(): string
+    {
+        return 'Daftar';
     }
 }

@@ -4,8 +4,8 @@ return [
         'mainPart' => 'Body Chamber Welding',
         'parts' => [
             'Right Outer Side of Wall',
-            // 'Left Outer Side of Wall',
-            // 'Rear Outer Side of Wall',
+            'Left Outer Side of Wall',
+            'Rear Outer Side of Wall',
             // 'Rear Hole for Humidifier',
             // 'Right Door of Chamber',
             // 'Middle Door of Chamber',
@@ -18,8 +18,8 @@ return [
         'mainPart' => 'Body Chamber Hole',
         'parts' => [
             'Cibration Hole',
-            // 'Humidifier System Hole',
-            // 'Box Level Switch Pipe Hole',
+            'Humidifier System Hole',
+            'Box Level Switch Pipe Hole',
             // 'Level Switch Cable Hole',
             // 'RJ45 Hole',
             // 'USB Hole',
@@ -38,8 +38,8 @@ return [
         'mainPart' => 'Chamber Door & Glass Door Installation',
         'parts' => [
             'Right Chamber Door',
-            // 'Hinge',
-            // 'Handle',
+            'Hinge',
+            'Handle',
             // 'Key',
             // 'Rubber',
             // 'Middle Chamber Door',

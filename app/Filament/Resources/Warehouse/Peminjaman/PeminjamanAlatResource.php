@@ -6,6 +6,7 @@ use App\Filament\Resources\Warehouse\Peminjaman\PeminjamanAlatResource\Pages;
 use App\Filament\Resources\Warehouse\Peminjaman\PeminjamanAlatResource\RelationManagers;
 use App\Models\Warehouse\Peminjaman\PeminjamanAlat;
 use App\Services\SignatureUploader;
+use Filament\Actions\Action;
 use Filament\Forms\Components\Section;
 use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
@@ -17,6 +18,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -34,6 +36,7 @@ class PeminjamanAlatResource extends Resource
     protected static ?string $navigationLabel = 'Peminjaman Alat';
     protected static ?string $pluralLabel = 'Peminjaman Alat';
     protected static ?string $modelLabel = 'Peminjaman Alat';
+    protected static ?string $slug = 'warehouse/peminjaman-alat';
 
     public static function form(Form $form): Form
     {
@@ -101,7 +104,15 @@ class PeminjamanAlatResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                ActionGroup::make([
+                    Tables\Actions\EditAction::make(),
+                    Tables\Actions\DeleteAction::make(),
+                    // Action::make('pdf_view')
+                    //     ->label(_('View PDF'))
+                    //     ->icon('heroicon-o-document')
+                    //     ->color('success')
+                    //     ->url(fn($record) => self::getUrl('pdfPermintaanAlatdanBahan', ['record' => $record->id])),
+                ])
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -138,34 +149,34 @@ class PeminjamanAlatResource extends Resource
     {
         return
             DatePicker::make($fieldName)
-                ->label($label)
-                ->displayFormat('M d Y')
-                ->seconds(false);
+            ->label($label)
+            ->displayFormat('M d Y')
+            ->seconds(false);
     }
 
     protected static function signatureInput(string $fieldName, string $labelName): SignaturePad
     {
         return
             SignaturePad::make($fieldName)
-                ->label($labelName)
-                ->exportPenColor('#0118D8')
-                ->helperText('*Harap Tandatangan di tengah area yang disediakan.')
-                ->afterStateUpdated(function ($state, $set) use ($fieldName) {
-                    if (blank($state))
-                        return;
-                    $path = SignatureUploader::handle($state, 'ttd_', 'Warehouse/PeminjamanAlat/Signatures');
-                    if ($path) {
-                        $set($fieldName, $path);
-                    }
-                });
+            ->label($labelName)
+            ->exportPenColor('#0118D8')
+            ->helperText('*Harap Tandatangan di tengah area yang disediakan.')
+            ->afterStateUpdated(function ($state, $set) use ($fieldName) {
+                if (blank($state))
+                    return;
+                $path = SignatureUploader::handle($state, 'ttd_', 'Warehouse/PeminjamanAlat/Signatures');
+                if ($path) {
+                    $set($fieldName, $path);
+                }
+            });
     }
 
     protected static function textColumn(string $fieldName, string $label): TextColumn
     {
         return
             TextColumn::make($fieldName)
-                ->label($label)
-                ->searchable()
-                ->sortable();
+            ->label($label)
+            ->searchable()
+            ->sortable();
     }
 }

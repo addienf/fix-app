@@ -23,4 +23,9 @@ class pdfPermintaanAlatdanBahan extends Page
         $this->record = $record;
         $this->permintaan_alat_bahan = PermintaanAlatDanBahan::with(['spk', 'details', 'pic'])->find($record);
     }
+
+    public function getBreadcrumb(): string
+    {
+        return 'Lihat PDF';
+    }
 }

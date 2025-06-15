@@ -36,14 +36,19 @@ use Wallo\FilamentSelectify\Components\ButtonGroup;
 class PengecekanElectricalResource extends Resource
 {
     protected static ?string $model = PengecekanMaterialElectrical::class;
-
     protected static ?string $navigationIcon = 'heroicon-o-check-circle';
     protected static ?int $navigationSort = 17;
     protected static ?string $navigationGroup = 'Quality';
     protected static ?string $navigationLabel = 'Pengecekan Material Electrical';
     protected static ?string $pluralLabel = 'Pengecekan Material Electrical';
     protected static ?string $modelLabel = 'Pengecekan Material Electrical';
+    protected static ?string $slug = 'quality/pengecekan-material-electrical';
+    public static function getNavigationBadge(): ?string
+    {
+        $count = PengecekanMaterialElectrical::where('status_penyelesaian', '!=', 'Disetujui')->count();
 
+        return $count > 0 ? (string) $count : null;
+    }
     public static function form(Form $form): Form
     {
         $defaultParts = collect(config('pengecekanElectrical'))
@@ -71,11 +76,20 @@ class PengecekanElectricalResource extends Resource
                             ->schema([
 
                                 //
-                                self::selectInputSPK(),
+                                self::selectInputSPK()
+                                    ->placeholder('Pilih No SPK'),
 
-                                self::textInput('tipe', 'Type/Model'),
+                                self::textInput('tipe', 'Type/Model')
+                                    ->extraAttributes([
+                                        'readonly' => true,
+                                        'style' => 'pointer-events: none;'
+                                    ]),
 
-                                self::textInput('volume', 'Volume'),
+                                self::textInput('volume', 'Volume')
+                                    ->extraAttributes([
+                                        'readonly' => true,
+                                        'style' => 'pointer-events: none;'
+                                    ]),
 
                             ]),
 
@@ -260,6 +274,7 @@ class PengecekanElectricalResource extends Resource
                         ->label(_('View PDF'))
                         ->icon('heroicon-o-document')
                         ->color('success')
+                        ->visible(fn($record) => $record->status_penyelesaian === 'Disetujui')
                         ->url(fn($record) => self::getUrl('pdfPengecekanElectrical', ['record' => $record->id])),
                 ])
             ])
@@ -330,8 +345,8 @@ class PengecekanElectricalResource extends Resource
                 'spk',
                 'no_spk',
                 fn($query) => $query
-                    ->whereHas('kelengkapanSS', function ($query) {
-                        $query->where('status_penyelesaian', 'Disetujui');
+                    ->whereHas('spkQC', function ($query) {
+                        $query->where('status_penerimaan', 'Diterima');
                     })->whereDoesntHave('pengecekanElectrical')
             )
             ->native(false)
@@ -342,13 +357,15 @@ class PengecekanElectricalResource extends Resource
             ->afterStateUpdated(function ($state, callable $set, callable $get) {
                 if (!$state) return;
 
-                $spk = SPKMarketing::with('kelengkapanSS')->find($state);
+                $spk = SPKMarketing::with('jadwalProduksi')->find($state);
 
                 if (!$spk) return;
 
-                $tipe = $spk->kelengkapanSS?->tipe ?? '-';
+                $tipe = $spk?->jadwalProduksi?->details->first()->tipe;
+                $volume = $spk?->jadwalProduksi?->details->first()->volume;
 
                 $set('tipe', $tipe);
+                $set('volume', $volume);
             });
     }
 

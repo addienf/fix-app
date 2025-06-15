@@ -13,7 +13,12 @@ class ListPeminjamanAlats extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+            Actions\CreateAction::make()->label('Tambah Data Peminjaman Alat'),
         ];
+    }
+
+    public function getBreadcrumb(): string
+    {
+        return 'Daftar';
     }
 }

@@ -39,6 +39,8 @@ class SPKQualityResource extends Resource
     protected static ?string $navigationLabel = 'SPK Quality';
     protected static ?string $pluralLabel = 'SPK Quality';
     protected static ?string $modelLabel = 'SPK Quality';
+    protected static ?string $slug = 'production/spk-quality';
+
 
     public static function getNavigationBadge(): ?string
     {
@@ -48,6 +50,8 @@ class SPKQualityResource extends Resource
     }
     public static function form(Form $form): Form
     {
+        $lastValue = SPKQuality::latest('no_spk')->value('no_spk');
+
         return $form
             ->schema([
                 //
@@ -61,10 +65,12 @@ class SPKQualityResource extends Resource
                             ->schema([
 
                                 self::textInput('no_spk', 'Nomor SPK Quality')
+                                    ->placeholder($lastValue ? "Data Terakhir : {$lastValue}" : 'Data Belum Tersedia')
                                     ->unique(ignoreRecord: true)
-                                    ->helperText('Format: XXX/QKS/PRO/SPK/MM/YY'),
+                                    ->hint('Format: XXX/QKS/PRO/SPK/MM/YY'),
 
-                                self::selectInputSPK(),
+                                self::selectInputSPK()
+                                    ->placeholder('Pilih Nomor SPK'),
 
                                 self::textInput('dari', 'Dari')
                                     ->extraAttributes([
@@ -81,7 +87,7 @@ class SPKQualityResource extends Resource
                     ]),
 
                 Section::make('Detail Produk Yang Dipesan')
-                    ->hiddenOn(operations: 'edit')
+                    // ->hiddenOn(operations: 'edit')
                     ->collapsible()
                     ->schema([
                         TableRepeater::make('details')
@@ -115,24 +121,38 @@ class SPKQualityResource extends Resource
                             ->addable(false),
                     ]),
 
-                Section::make('Detail PIC')
+                Section::make('PIC')
                     ->collapsible()
                     ->relationship('pic')
                     ->schema([
+
                         Grid::make(2)
                             ->schema([
+
                                 Grid::make(1)
                                     ->schema([
-                                        self::textInput('create_name', 'PIC Pembuat'),
-                                        self::signatureInput('create_signature', 'Dibuat Oleh'),
+
+                                        self::textInput('create_name', 'Yang Membuat')
+                                            ->placeholder('Produksi'),
+
+                                        self::signatureInput('create_signature', ''),
+
                                     ])->hiddenOn(operations: 'edit'),
+
                                 Grid::make(1)
                                     ->schema([
-                                        self::textInput('receive_name', 'PIC Penerima'),
-                                        self::signatureInput('receive_signature', 'Diterima Oleh'),
+
+                                        self::textInput('receive_name', 'Yang Menerima')
+                                            ->placeholder('Quality'),
+
+                                        self::signatureInput('receive_signature', ''),
+
                                     ])->hiddenOn(operations: 'create'),
+
                             ]),
+
                     ]),
+
             ]);
     }
 
@@ -142,9 +162,13 @@ class SPKQualityResource extends Resource
             ->columns([
                 //
                 self::textColumn('spk.no_spk', 'No SPK Marketing'),
+
                 self::textColumn('no_spk', 'No SPK QUality'),
+
                 self::textColumn('dari', 'Dari'),
+
                 self::textColumn('kepada', 'Kepada'),
+
                 TextColumn::make('status_penerimaan')
                     ->label('Status Penerimaan')
                     ->badge()
@@ -173,6 +197,7 @@ class SPKQualityResource extends Resource
                         ->label(_('View PDF'))
                         ->icon('heroicon-o-document')
                         ->color('success')
+                        ->visible(fn($record) => $record->status_penerimaan === 'Diterima')
                         ->url(fn($record) => self::getUrl('pdfSPKQuality', ['record' => $record->id])),
                 ])
             ])

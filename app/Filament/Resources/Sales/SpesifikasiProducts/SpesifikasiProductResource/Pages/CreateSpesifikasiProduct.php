@@ -4,6 +4,8 @@ namespace App\Filament\Resources\Sales\SpesifikasiProducts\SpesifikasiProductRes
 
 use App\Filament\Resources\Sales\SpesifikasiProducts\SpesifikasiProductResource;
 use App\Jobs\Sales\SendSpesifikasiProductNotif;
+use Filament\Actions\Action;
+use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\CreateRecord;
 
 class CreateSpesifikasiProduct extends CreateRecord

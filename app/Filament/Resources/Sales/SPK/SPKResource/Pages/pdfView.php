@@ -13,12 +13,19 @@ class pdfView extends Page
     protected static string $view = 'filament.resources.sales.s-p-k.s-p-k-resource.pages.pdfSPK';
 
     protected static ?string $title = 'Spesifikasi Produk PDF';
+
     public $record;
+
     public $spk_mkt;
 
     public function mount($record)
     {
         $this->record = $record;
         $this->spk_mkt = SPKMarketing::with(['spesifikasiProduct', 'pic'])->find($record);
+    }
+
+    public function getBreadcrumb(): string
+    {
+        return 'Lihat PDF';
     }
 }

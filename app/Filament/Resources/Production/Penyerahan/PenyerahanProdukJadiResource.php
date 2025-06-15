@@ -38,6 +38,7 @@ class PenyerahanProdukJadiResource extends Resource
     protected static ?string $navigationLabel = 'Penyerahan Produk Jadi';
     protected static ?string $pluralLabel = 'Penyerahan Produk Jadi';
     protected static ?string $modelLabel = 'Penyerahan Produk Jadi';
+    protected static ?string $slug = 'produksi/penyerahan-produk-jadi';
 
     public static function getNavigationBadge(): ?string
     {
@@ -57,33 +58,52 @@ class PenyerahanProdukJadiResource extends Resource
                 Section::make('Informasi Umum')
                     ->collapsible()
                     ->schema([
+
                         Grid::make(2)
                             ->schema([
-                                self::selectInputSPK(),
+
+                                self::selectInputSPK()
+                                    ->placeholder('Pilih No SPK'),
+
                                 self::datePicker('tanggal', 'Tanggal'),
+
                                 self::textInput('penanggug_jawab', 'Penanggung Jawab'),
+
                                 self::textInput('penerima', 'Penerima'),
+
                             ]),
+
                     ]),
 
                 Section::make('Detail Jadwal Produksi')
-                    ->hiddenOn(operations: 'edit')
+                    // ->hiddenOn(operations: 'edit')
                     ->collapsible()
                     ->schema([
+
                         TableRepeater::make('details')
+                            ->relationship('details')
                             ->label('')
                             ->schema([
+
                                 self::textInput('nama_produk', 'Nama Produk')
                                     ->extraAttributes([
                                         'readonly' => true,
                                         'style' => 'pointer-events: none;'
                                     ]),
+
                                 self::textInput('tipe', 'Tipe/Model')
                                     ->extraAttributes([
                                         'readonly' => true,
                                         'style' => 'pointer-events: none;'
                                     ]),
+
                                 self::textInput('volume', 'Volume')
+                                    ->extraAttributes([
+                                        'readonly' => true,
+                                        'style' => 'pointer-events: none;'
+                                    ]),
+
+                                self::textInput('no_seri', 'No Seri')
                                     ->extraAttributes([
                                         'readonly' => true,
                                         'style' => 'pointer-events: none;'
@@ -100,44 +120,63 @@ class PenyerahanProdukJadiResource extends Resource
                                         'readonly' => true,
                                         'style' => 'pointer-events: none;'
                                     ]),
+
                             ])
                             ->deletable(false)
                             ->reorderable(false)
                             ->addable(false),
+
                     ]),
 
                 Section::make('Kondisi Produk')
                     ->collapsible()
                     ->schema([
+
                         self::selectKondisi()
+                            ->placeholder('Pilih Kondisi')
                             ->columnSpanFull()
+
                     ]),
 
                 Section::make('Catatan Tambahan')
                     ->collapsible()
                     ->schema([
+
                         self::textArea('catatan_tambahan', 'Catatan Tambahan')
                             ->columnSpanFull()
+
                     ]),
 
                 Section::make('Detail PIC')
                     ->collapsible()
                     ->relationship('pic')
                     ->schema([
+
                         Grid::make(2)
                             ->schema([
+
                                 Grid::make(1)
                                     ->schema([
+
                                         self::textInput('submit_name', 'Diserahkan Oleh'),
+
                                         self::signatureInput('submit_signature', ''),
+
                                     ])->hiddenOn(operations: 'edit'),
+
                                 Grid::make(1)
                                     ->schema([
+
                                         self::textInput('receive_name', 'Diterima Oleh'),
+
                                         self::signatureInput('receive_signature', ''),
+
                                     ])->hiddenOn(operations: 'create'),
+
                             ]),
+
                     ]),
+
             ]);
     }
 
@@ -158,11 +197,11 @@ class PenyerahanProdukJadiResource extends Resource
                     ->alignCenter(),
                 ImageColumn::make('pic.submit_signature')
                     ->width(150)
-                    ->label('Yang Membuat')
+                    ->label('Diserahkan Oleh')
                     ->height(75),
                 ImageColumn::make('pic.receive_signature')
                     ->width(150)
-                    ->label('Yang Menerima')
+                    ->label('Diterima Oleh')
                     ->height(75),
             ])
             ->filters([
@@ -176,6 +215,7 @@ class PenyerahanProdukJadiResource extends Resource
                         ->label(_('View PDF'))
                         ->icon('heroicon-o-document')
                         ->color('success')
+                        ->visible(fn($record) => $record->status_penerimaan === 'Diterima')
                         ->url(fn($record) => self::getUrl('pdfPenyerahanProdukJadi', ['record' => $record->id])),
                 ])
             ])
@@ -245,18 +285,20 @@ class PenyerahanProdukJadiResource extends Resource
             ->afterStateUpdated(function ($state, callable $set) {
                 if (!$state) return;
 
-                $spk = SPKMarketing::with('spesifikasiProduct.urs', 'spesifikasiProduct.details.product', 'pengecekanElectrical')->find($state);
+                $spk = SPKMarketing::with('spesifikasiProduct.urs', 'spesifikasiProduct.details.product', 'jadwalProduksi', 'pengecekanSS.penyerahan')->find($state);
                 if (!$spk) return;
 
                 $spesifikasi = $spk->spesifikasiProduct;
-                $no_spk = $spk->dari;
-                $tipe = $spk?->pengecekanElectrical?->tipe;
-                $volume = '-';
+                $no_spk = $spk->no_spk;
+                $tipe = $spk?->jadwalProduksi?->details->first()->tipe;
+                $volume = $spk?->jadwalProduksi?->details->first()->volume;
+                $no_seri = $spk?->pengecekanSS?->penyerahan->no_seri;
 
-                $details = $spesifikasi->details->map(function ($detail) use ($no_spk, $tipe, $volume) {
+                $details = $spesifikasi->details->map(function ($detail) use ($no_spk, $tipe, $volume, $no_seri) {
                     return [
                         'nama_produk' => $detail->product?->name ?? '-',
                         'jumlah' => $detail?->quantity ?? '-',
+                        'no_seri' => $no_seri ?? '-',
                         'no_spk' => $no_spk ?? '-',
                         'tipe' => $tipe  ?? '-',
                         'volume' => $volume  ?? '-'
@@ -315,8 +357,7 @@ class PenyerahanProdukJadiResource extends Resource
         return
             Textarea::make($fieldName)
             ->label($label)
-            ->required()
-            ->maxLength(255);
+            ->required();
     }
 
     protected static function textColumn(string $fieldName, string $label): TextColumn

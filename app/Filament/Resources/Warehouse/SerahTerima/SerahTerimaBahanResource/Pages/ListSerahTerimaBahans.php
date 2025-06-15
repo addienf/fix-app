@@ -13,7 +13,12 @@ class ListSerahTerimaBahans extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+            Actions\CreateAction::make()->label('Tambah Data Serah Terima Bahan'),
         ];
+    }
+
+    public function getBreadcrumb(): string
+    {
+        return 'Daftar';
     }
 }

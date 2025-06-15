@@ -13,7 +13,12 @@ class ListQCPasseds extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+            Actions\CreateAction::make()->label('Tambah Data Pelabelan QC'),
         ];
+    }
+
+    public function getBreadcrumb(): string
+    {
+        return 'Daftar';
     }
 }

@@ -3,7 +3,7 @@
 namespace App\Filament\Resources\Sales\SPK\SPKResource\Pages;
 
 use App\Filament\Resources\Sales\SPK\SPKResource;
-use Filament\Actions;
+use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\CreateRecord;
 
 class CreateSPK extends CreateRecord
@@ -17,7 +17,7 @@ class CreateSPK extends CreateRecord
 
     public function getTitle(): string
     {
-        return 'Tambah Data SPK Marketing';
+        return 'Tambah Data SPK';
     }
 
     public function getBreadcrumb(): string

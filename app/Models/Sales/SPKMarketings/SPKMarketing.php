@@ -109,9 +109,9 @@ class SPKMarketing extends Model
         static::saving(function ($model) {
             if (
                 $model->pic?->receive_signature &&
-                $model->status_persetujuan !== 'Diterima'
+                $model->status_penerimaan !== 'Diterima'
             ) {
-                $model->status_persetujuan = 'Diterima';
+                $model->status_penerimaan = 'Diterima';
             }
         });
 

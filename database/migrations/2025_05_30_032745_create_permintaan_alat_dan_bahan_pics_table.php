@@ -16,8 +16,8 @@ return new class extends Migration
             $table->foreignId('permintaan_bahan_id')->constrained('permintaan_alat_dan_bahans')->onDelete('cascade');
             $table->text('create_signature');
             $table->string('create_name');
-            $table->text('receive_signature');
-            $table->string('receive_name');
+            $table->text('receive_signature')->nullable();
+            $table->string('receive_name')->nullable();
             $table->timestamps();
         });
     }

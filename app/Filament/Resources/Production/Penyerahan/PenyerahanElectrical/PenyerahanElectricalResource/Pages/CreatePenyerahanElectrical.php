@@ -16,4 +16,14 @@ class CreatePenyerahanElectrical extends CreateRecord
     {
         return $this->getResource()::getUrl('index');
     }
+
+    public function getTitle(): string
+    {
+        return 'Tambah Data Serah Terima Electrical';
+    }
+
+    public function getBreadcrumb(): string
+    {
+        return 'Tambah';
+    }
 }

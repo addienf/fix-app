@@ -43,6 +43,7 @@ class KelengkapanMaterialSSResource extends Resource
     protected static ?string $navigationLabel = 'Kelengkapan Material SS';
     protected static ?string $pluralLabel = 'Kelengkapan Material Stainless Steel';
     protected static ?string $modelLabel = 'Kelengkapan Material Stainless Steel';
+    protected static ?string $slug = 'quality/kelengkapan-material';
 
     public static function getNavigationBadge(): ?string
     {
@@ -71,7 +72,11 @@ class KelengkapanMaterialSSResource extends Resource
                         self::selectInputSPK()
                             ->hiddenOn('edit'),
 
-                        self::textInput('tipe', 'Type/Model'),
+                        self::textInput('tipe', 'Type/Model')
+                            ->extraAttributes([
+                                'readonly' => true,
+                                'style' => 'pointer-events: none;'
+                            ]),
 
                         self::textInput('ref_document', 'Ref Document'),
 
@@ -130,7 +135,7 @@ class KelengkapanMaterialSSResource extends Resource
 
                     ]),
 
-                Section::make('Detail PIC')
+                Section::make('PIC')
                     ->collapsible()
                     ->relationship('pic')
                     ->schema([
@@ -238,6 +243,7 @@ class KelengkapanMaterialSSResource extends Resource
                         ->label(_('View PDF'))
                         ->icon('heroicon-o-document')
                         ->color('success')
+                        ->visible(fn($record) => $record->status_penyelesaian === 'Disetujui')
                         ->url(fn($record) => self::getUrl('pdfKelengkapanMaterialSS', ['record' => $record->id])),
                 ])
             ])
@@ -301,19 +307,22 @@ class KelengkapanMaterialSSResource extends Resource
             )
             ->native(false)
             ->searchable()
+            ->placeholder('Pilin No SPK')
             ->preload()
             ->required()
             ->reactive()
             ->afterStateUpdated(function ($state, callable $set, callable $get) {
                 if (!$state) return;
 
-                $spk = SPKMarketing::with('kelengkapanSS')->find($state);
+                $spk = SPKMarketing::with('kelengkapanSS', 'jadwalProduksi')->find($state);
 
                 if (!$spk) return;
 
                 $no_order = $spk->no_order ?? '-';
+                $tipe = $spk->jadwalProduksi->details->first()?->tipe ?? '-';
 
                 $set('no_order_temp', $no_order);
+                $set('tipe', $tipe);
             });
     }
 
