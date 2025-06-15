@@ -42,6 +42,7 @@ class PengecekanPerformaResource extends Resource
     protected static ?string $navigationLabel = 'Pengecekan Performa';
     protected static ?string $pluralLabel = 'Pengecekan Performa';
     protected static ?string $modelLabel = 'Pengecekan Performa';
+    protected static ?string $slug = 'quality/pengecekan-performa';
 
     public static function getNavigationBadge(): ?string
     {
@@ -75,7 +76,8 @@ class PengecekanPerformaResource extends Resource
                         Grid::make(2)
                             ->schema([
 
-                                self::selectInputSPK(),
+                                self::selectInputSPK()
+                                    ->placeholder('Pilin No SPK'),
 
                                 self::textInput('tipe', 'Type/Model')
                                     ->extraAttributes([
@@ -83,7 +85,11 @@ class PengecekanPerformaResource extends Resource
                                         'style' => 'pointer-events: none;'
                                     ]),
 
-                                self::textInput('volume', 'Volume'),
+                                self::textInput('volume', 'Volume')
+                                    ->extraAttributes([
+                                        'readonly' => true,
+                                        'style' => 'pointer-events: none;'
+                                    ]),
 
                                 self::textInput('serial_number', 'S/N'),
 
@@ -273,6 +279,7 @@ class PengecekanPerformaResource extends Resource
                         ->label(_('View PDF'))
                         ->icon('heroicon-o-document')
                         ->color('success')
+                        ->visible(fn($record) => $record->status_penyelesaian === 'Disetujui')
                         ->url(fn($record) => self::getUrl('pdfPengecekanPerforma', ['record' => $record->id])),
                 ])
             ])
@@ -329,15 +336,15 @@ class PengecekanPerformaResource extends Resource
             ->afterStateUpdated(function ($state, callable $set) {
                 if (!$state) return;
 
-                $spk = SPKMarketing::with('pengecekanElectrical')->find($state);
+                $spk = SPKMarketing::with('jadwalProduksi')->find($state);
+
                 if (!$spk) return;
 
-                // $spesifikasi = $spk->spesifikasiProduct;
-                $tipe = $spk?->pengecekanElectrical?->tipe ?? '-';
+                $tipe = $spk?->jadwalProduksi?->details->first()->tipe;
+                $volume = $spk?->jadwalProduksi?->details->first()->volume;
 
                 $set('tipe', $tipe);
-
-                // dd($tipe);
+                $set('volume', $volume);
             })
         ;
     }

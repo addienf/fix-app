@@ -12,6 +12,7 @@ use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Card;
 use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Section;
@@ -43,6 +44,14 @@ class PengecekanMaterialSSResource extends Resource
     protected static ?string $navigationLabel = 'Pengecekan Material SS';
     protected static ?string $pluralLabel = 'Pengecekan Material Stainless Steel';
     protected static ?string $modelLabel = 'Pengecekan Material Stainless Steel';
+    protected static ?string $slug = 'quality/pengecekan-material-stainless-steel';
+
+    public static function getNavigationBadge(): ?string
+    {
+        $count = PengecekanMaterialSS::where('status_penyelesaian', '!=', 'Disetujui')->count();
+
+        return $count > 0 ? (string) $count : null;
+    }
 
     public static function form(Form $form): Form
     {
@@ -60,6 +69,9 @@ class PengecekanMaterialSSResource extends Resource
         return $form
             ->schema([
                 //
+                Hidden::make('status_penyelesaian')
+                    ->default('Belum Diterima'),
+
                 Section::make('Chamber Identification')
                     ->collapsible()
                     ->schema([
@@ -67,7 +79,8 @@ class PengecekanMaterialSSResource extends Resource
                         Grid::make(3)
                             ->schema([
 
-                                self::selectInputSPK(),
+                                self::selectInputSPK()
+                                    ->hiddenOn('edit'),
 
                                 self::textInput('tipe', 'Type/Model')
                                     ->extraAttributes([
@@ -75,7 +88,11 @@ class PengecekanMaterialSSResource extends Resource
                                         'style' => 'pointer-events: none;'
                                     ]),
 
-                                self::textInput('ref_document', 'Ref Document'),
+                                self::textInput('ref_document', 'Ref Document')
+                                    ->extraAttributes([
+                                        'readonly' => true,
+                                        'style' => 'pointer-events: none;'
+                                    ]),
 
                             ]),
 
@@ -87,11 +104,12 @@ class PengecekanMaterialSSResource extends Resource
                     ->schema([
 
                         Repeater::make('details')
+                            ->label('')
                             ->default($defaultParts)
                             ->schema([
 
                                 TextInput::make('mainPart')
-                                    ->label('Main Part')
+                                    ->label('')
                                     ->extraAttributes([
                                         'readonly' => true,
                                         'style' => 'pointer-events: none;'
@@ -110,8 +128,8 @@ class PengecekanMaterialSSResource extends Resource
 
                                         ButtonGroup::make('result')
                                             ->options([
-                                                '1' => 'Yes',
-                                                '0' => 'No',
+                                                1 => 'Yes',
+                                                0 => 'No',
                                             ])
                                             ->onColor('primary')
                                             ->offColor('gray')
@@ -149,34 +167,56 @@ class PengecekanMaterialSSResource extends Resource
 
                     ]),
 
-                // Section::make('PIC')
-                //     ->relationship('pic')
-                //     ->collapsible()
-                //     ->schema([
+                Section::make('PIC')
+                    ->collapsible()
+                    ->relationship('pic')
+                    ->schema([
+                        Grid::make(3)
+                            ->schema([
+                                Grid::make(1)
+                                    ->schema([
 
-                //         Grid::make(3)
-                //             ->schema([
-                //                 self::textInput('inspected_name', 'Inspected By')
-                //                     ->required(),
-                //                 self::textInput('accepted_name', 'Accepted By')
-                //                     ->required(),
-                //                 self::textInput('approved_name', 'Approved By')
-                //                     ->required(),
-                //                 self::signatureInput('inspected_signature', '')
-                //                     ->required(),
-                //                 self::signatureInput('accepted_signature', '')
-                //                     ->required(),
-                //                 self::signatureInput('approved_signature', '')
-                //                     ->required(),
-                //                 self::datePicker('inspected_date', '')
-                //                     ->required(),
-                //                 self::datePicker('accepted_date', '')
-                //                     ->required(),
-                //                 self::datePicker('approved_date', '')
-                //                     ->required(),
-                //             ])
+                                        self::textInput('inspected_name', 'Inspected By'),
 
-                //     ]),
+                                        self::signatureInput('inspected_signature', ''),
+
+                                        self::datePicker('inspected_date', '')
+                                            ->required(),
+
+                                    ])->hiddenOn(operations: 'edit'),
+
+                                Grid::make(1)
+                                    ->schema([
+
+                                        self::textInput('accepted_name', 'Accepted By'),
+
+                                        self::signatureInput('accepted_signature', ''),
+
+                                        self::datePicker('accepted_date', '')
+                                            ->required(),
+
+                                    ])->hidden(
+                                        fn($operation, $record) =>
+                                        $operation === 'create' || filled($record?->accepted_signature)
+                                    ),
+
+                                Grid::make(1)
+                                    ->schema([
+
+                                        self::textInput('approved_name', 'Approved By'),
+
+                                        self::signatureInput('approved_signature', ''),
+
+                                        self::datePicker('approved_date', '')
+                                            ->required(),
+
+                                    ])->hidden(
+                                        fn($operation, $record) =>
+                                        $operation === 'create' || blank($record?->accepted_signature) || filled($record?->approved_signature)
+                                    ),
+                            ]),
+                    ]),
+
             ]);
     }
 
@@ -185,17 +225,41 @@ class PengecekanMaterialSSResource extends Resource
         return $table
             ->columns([
                 //
-                self::textColumn('spk.no_spk', 'NO SPK'),
+                self::textColumn('spk.no_spk', 'No SPK'),
+
                 self::textColumn('tipe', 'Type/Model'),
+
                 self::textColumn('ref_document', 'Ref Document'),
+
+                TextColumn::make('status_penyelesaian')
+                    ->label('Status Penyelesaian')
+                    ->badge()
+                    ->color(function ($record) {
+                        $penyelesaian = $record->status_penyelesaian;
+                        $persetujuan = $record->status_persetujuan;
+
+                        if ($penyelesaian === 'Disetujui') {
+                            return 'success';
+                        }
+
+                        if ($penyelesaian !== 'Diterima' && $persetujuan !== 'Disetujui') {
+                            return 'danger';
+                        }
+
+                        return 'warning';
+                    })
+                    ->alignCenter(),
+
                 ImageColumn::make('pic.inspected_signature')
                     ->width(150)
                     ->label('Inspected')
                     ->height(75),
+
                 ImageColumn::make('pic.accepted_signature')
                     ->width(150)
                     ->label('Accepted')
                     ->height(75),
+
                 ImageColumn::make('pic.approved_signature')
                     ->width(150)
                     ->label('Approved')
@@ -212,6 +276,7 @@ class PengecekanMaterialSSResource extends Resource
                         ->label(_('View PDF'))
                         ->icon('heroicon-o-document')
                         ->color('success')
+                        ->visible(fn($record) => $record->status_penyelesaian === 'Disetujui')
                         ->url(fn($record) => self::getUrl('pdfPengecekanMaterialSS', ['record' => $record->id])),
                 ])
             ])
@@ -273,6 +338,7 @@ class PengecekanMaterialSSResource extends Resource
                         $query->where('status_penyelesaian', 'Disetujui');
                     })->whereDoesntHave('pengecekanSS')
             )
+            ->placeholder('Pilin No SPK')
             ->native(false)
             ->searchable()
             ->preload()
@@ -286,8 +352,10 @@ class PengecekanMaterialSSResource extends Resource
                 if (!$spk) return;
 
                 $tipe = $spk->kelengkapanSS?->tipe ?? '-';
+                $ref_document = $spk->kelengkapanSS?->ref_document ?? '-';
 
                 $set('tipe', $tipe);
+                $set('ref_document', $ref_document);
             });
     }
 

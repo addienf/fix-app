@@ -14,8 +14,13 @@ class ListPermintaanAlatDanBahans extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+            Actions\CreateAction::make()->label('Tambah Data Permintaan Alat dan Bahan'),
         ];
+    }
+
+    public function getBreadcrumb(): string
+    {
+        return 'Daftar';
     }
 
     public function getTabs(): array

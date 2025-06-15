@@ -1,9 +1,12 @@
 <x-filament-panels::page>
     <x-filament::section>
+
         <h2 class="mb-3 text-xl font-bold text-center">Detail Formulir Laporan Produk Jadi Masuk dan Keluar</h2>
+
         <table
             class="w-full max-w-4xl mx-auto text-sm border border-black dark:border-white dark:bg-gray-900 dark:text-white"
             style="border-collapse: collapse;">
+
             <tr>
                 <td rowspan="3"
                     class="p-2 text-center align-middle border border-black dark:border-white w-28 h-28 dark:bg-gray-900">
@@ -13,6 +16,7 @@
                     PT. QLab Kinarya Sentosa
                 </td>
             </tr>
+
             <tr>
                 <td class="font-bold text-center border border-black dark:border-white dark:bg-gray-900"
                     style="font-size: 20px;">
@@ -37,17 +41,21 @@
                     </table>
                 </td>
             </tr>
+
         </table>
-        <div class="w-full max-w-4xl mx-auto pt-2 mb-6 text-sm grid grid-cols-1 gap-y-4">
-            <h2 class="text-xl font-bold text-start col-span-1">
+
+        <div class="grid w-full max-w-4xl grid-cols-1 pt-2 mx-auto mb-6 text-sm gap-y-4">
+
+            <h2 class="col-span-1 text-xl font-bold text-start">
                 A. Informasi Umum
             </h2>
-            <div class="w-full max-w-4xl mx-auto pt-4 space-y-2 text-sm">
+
+            <div class="w-full max-w-4xl pt-4 mx-auto space-y-2 text-sm">
                 @php
-$fields = [
-    ['label' => 'Tanggal :', 'value' => 'SPK-2025-001'],
-    ['label' => 'Penanggung Jawab :', 'value' => '05 Juni 2025'],
-];
+                    $fields = [
+                        ['label' => 'Tanggal :', 'value' => $pelabelan->spk->no_spk],
+                        ['label' => 'Penanggung Jawab :', 'value' => $pelabelan->penanggung_jawab],
+                    ];
                 @endphp
 
                 @foreach ($fields as $field)
@@ -60,12 +68,15 @@ $fields = [
             </div>
 
 
-            <h2 class="text-xl font-bold text-start col-span-1">
+            <h2 class="col-span-1 text-xl font-bold text-start">
                 B. Detail Laporan Produk
             </h2>
+
         </div>
+
         <div class="max-w-4xl mx-auto overflow-x-auto">
-            <table class="w-full text-sm text-left border border-gray-300">
+
+            {{-- <table class="w-full text-sm text-left border border-gray-300">
                 <thead class="text-black bg-gray-100">
                     <tr>
                         <th class="px-4 py-2 border">No</th>
@@ -88,17 +99,70 @@ $fields = [
                         <td class="px-4 py-2 border">Instalasi Listrik</td>
                     </tr>
                 </tbody>
-            </table>
-            <h2 class="pt-4 text-xl font-bold text-start col-span-1 mb-4">
+            </table> --}}
+
+            <div class="max-w-4xl mx-auto overflow-x-auto">
+                <table class="w-full text-sm text-left border border-gray-300 dark:border-gray-600">
+                    <thead class="text-black bg-gray-100 dark:bg-gray-800 dark:text-white">
+                        <tr>
+                            <th class="px-4 py-2 border border-gray-300 dark:border-gray-600">Nomor</th>
+                            <th class="px-4 py-2 border border-gray-300 dark:border-gray-600">Nama Produk</th>
+                            <th class="px-4 py-2 border border-gray-300 dark:border-gray-600">Model/Type</th>
+                            <th class="px-4 py-2 border border-gray-300 dark:border-gray-600">S/N</th>
+                            <th class="px-4 py-2 border border-gray-300 dark:border-gray-600">Jenis Transaksi</th>
+                            <th class="px-4 py-2 border border-gray-300 dark:border-gray-600">Jumlah</th>
+                            <th class="px-4 py-2 border border-gray-300 dark:border-gray-600">Keterangan</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-black bg-white dark:bg-gray-900 dark:text-white">
+                        @foreach ($pelabelan->details as $item)
+                            <tr>
+
+                                <td class="px-4 py-2 border border-gray-300 dark:border-gray-600">
+                                    {{ $loop->iteration }}
+                                </td>
+
+                                <td class="px-4 py-2 border border-gray-300 dark:border-gray-600">
+                                    {{ $item->nama_produk }}
+                                </td>
+
+                                <td class="px-4 py-2 border border-gray-300 dark:border-gray-600">
+                                    {{ $item->tipe }}
+                                </td>
+
+                                <td class="px-4 py-2 border border-gray-300 dark:border-gray-600">
+                                    {{ $item->serial_number }}
+                                </td>
+
+                                <td class="px-4 py-2 border border-gray-300 dark:border-gray-600">
+                                    {{ $item->jenis_transaksi }}
+                                </td>
+
+                                <td class="px-4 py-2 border border-gray-300 dark:border-gray-600">
+                                    {{ $item->jumlah }}
+                                </td>
+
+                                <td class="px-4 py-2 border border-gray-300 dark:border-gray-600">
+                                    {{ $item->keterangan }}
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+
+            <h2 class="col-span-1 pt-4 mb-4 text-xl font-bold text-start">
                 C. Syarat dan Ketentuan
             </h2>
-            <div class="w-full max-w-4xl mx-auto pt-4 space-y-2 text-sm">
+
+            <div class="w-full max-w-4xl pt-4 mx-auto space-y-2 text-sm">
+
                 @php
-$fields = [
-    ['label' => 'Total Produk Masuk :', 'value' => 'SPK-2025-001'],
-    ['label' => 'Total Produk Keluar :', 'value' => '05 Juni 2025'],
-    ['label' => 'Sisa Stock :', 'value' => '05 Juni 2025'],
-];
+                    $fields = [
+                        ['label' => 'Total Produk Masuk :', 'value' => $pelabelan->total_masuk . ' Buah'],
+                        ['label' => 'Total Produk Keluar :', 'value' => $pelabelan->total_keluar . ' Buah'],
+                        ['label' => 'Sisa Stock :', 'value' => $pelabelan->sisa_stock . ' Buah'],
+                    ];
                 @endphp
 
                 @foreach ($fields as $field)
@@ -108,8 +172,10 @@ $fields = [
                             class="flex-1 px-3 py-2 text-black bg-white border border-gray-300 rounded-md cursor-not-allowed" />
                     </div>
                 @endforeach
+
             </div>
-            <div class="max-w-4xl mx-auto mt-10 text-sm">
+
+            {{-- <div class="max-w-4xl mx-auto mt-10 text-sm">
                 <div class="flex items-start justify-between gap-4">
                     <div class="flex flex-col items-center">
                         <p class="mb-2 dark:text-white">Yang Membuat</p>
@@ -126,8 +192,34 @@ $fields = [
                         </div>
                     </div>
                 </div>
+            </div> --}}
+
+            <div class="max-w-4xl mx-auto mt-10 text-sm">
+
+                {{-- <p class="mb-4 dark:text-white">*Salinan URS Wajib diberikan kepada Departemen Produksi</p> --}}
+                <div class="flex items-start justify-between gap-4">
+
+                    <!-- Kiri -->
+                    <div class="flex flex-col items-center">
+                        <p class="mb-2 dark:text-white">Dibuat Oleh</p>
+                        <img src="{{ asset('storage/' . $pelabelan->pic->created_signature) }}" alt="Product Signature"
+                            class="h-20 w-80" />
+                        <p class="mt-1 font-semibold dark:text-white">{{ $pelabelan->pic->created_name }}</p>
+                        {{-- <p class="mt-1 font-semibold dark:text-white">Marketing</p> --}}
+                    </div>
+
+                    <!-- Kanan -->
+                    <div class="flex flex-col items-center">
+                        <p class="mb-2 dark:text-white">Disetujui Oleh</p>
+                        <img src="{{ asset('storage/' . $pelabelan->pic->approved_signature) }}"
+                            alt="Product Signature" class="h-20 w-80" />
+                        <p class="mt-1 font-semibold dark:text-white">{{ $pelabelan->pic->approved_name }}</p>
+                        {{-- <p class="mt-1 font-semibold dark:text-white">Produksi</p> --}}
+                    </div>
+
+                </div>
+
             </div>
-            
 
     </x-filament::section>
 </x-filament-panels::page>

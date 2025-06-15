@@ -72,9 +72,9 @@ class SpesifikasiProductResource extends Resource
                             ->schema([
                                 Grid::make(2)
                                     ->schema([
-                                        self::selectInput('product_id', 'Pilih Product', 'product', 'name')
+                                        self::selectInput('product_id', 'Pilih Produk', 'product', 'name')
                                             ->required(),
-                                        self::textInput('quantity', 'Banyak Product')
+                                        self::textInput('quantity', 'Banyak Produk')
                                             ->numeric()
                                             ->required(),
                                     ]),
@@ -112,15 +112,7 @@ class SpesifikasiProductResource extends Resource
                                             ->gridDirection('row')
                                             ->default('individual')
                                             ->visible(fn($get) => in_array($get('name'), ['Water Feeding System', 'Software', 'Tensile Test', 'Compression Test', 'Torque Test', 'Digital', 'Computerised'])),
-                                        // ToggleButtons::make('value_bool')
-                                        //     ->boolean()
-                                        //     ->grouped()
-                                        //     ->required()
-                                        //     ->inline()
-                                        //     ->inlineLabel(condition: false)
-                                        //     ->label('')
-                                        //     ->visible(fn($get) => in_array($get('name'), ['Water Feeding System', 'Software']))
-                                        //     ->columnSpan(1),
+
                                         TextInput::make('value_str')
                                             ->required()
                                             ->label('')
@@ -137,7 +129,7 @@ class SpesifikasiProductResource extends Resource
                             ->reorderable()
                             ->collapsible()
                             ->columnSpanFull()
-                            ->addActionLabel('Tambah Data Detail Product'),
+                            ->addActionLabel('Tambah Data Detail Produk'),
                     ]),
 
                 Section::make('Penjelasan Tambahan')
@@ -149,17 +141,17 @@ class SpesifikasiProductResource extends Resource
                             ->columnSpanFull(),
                     ]),
 
-                Section::make('Detail PIC')
+                Section::make('PIC')
                     ->hiddenOn(operations: 'edit')
                     ->collapsible()
                     ->relationship('pic')
                     ->schema([
                         Grid::make(2)
                             ->schema([
-                                self::textInput('name', 'Nama PIC')
+                                self::textInput('name', 'Nama Pembuat')
                                     ->required(),
                                 DatePicker::make('date')
-                                    ->label('Tanggal')
+                                    ->label('Tanggal Dibuat')
                                     ->required()
                                     ->displayFormat('M d Y'),
                                 self::signatureInput('signature')
@@ -190,7 +182,6 @@ class SpesifikasiProductResource extends Resource
                     ->width(150)
                     ->label('Tanda Tangan')
                     ->height(75),
-                // self::textColumn('delivery_address', 'Alamat Pengiriman'),
             ])
             ->filters([
                 //

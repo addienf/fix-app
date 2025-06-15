@@ -23,4 +23,9 @@ class pdfSerahTerimaBahan extends Page
         $this->record = $record;
         $this->serah_terima = SerahTerimaBahan::with(['permintaanBahanPro', 'details', 'pic'])->find($record);
     }
+
+    public function getBreadcrumb(): string
+    {
+        return 'Lihat PDF';
+    }
 }

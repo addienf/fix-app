@@ -39,9 +39,17 @@ class StandarisasiDrawingResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-check-circle';
     protected static ?int $navigationSort = 7;
     protected static ?string $navigationGroup = 'Quality';
-    protected static ?string $navigationLabel = 'Standarisasi Drawing';
-    protected static ?string $pluralLabel = 'Standarisasi Drawing';
-    protected static ?string $modelLabel = 'Standarisasi Drawing';
+    protected static ?string $navigationLabel = 'Standarisasi Gambar Kerja';
+    protected static ?string $pluralLabel = 'Standarisasi Gambar Kerja';
+    protected static ?string $modelLabel = 'Standarisasi Gambar Kerja';
+    protected static ?string $slug = 'quality/standarisasi-gambar-kerja';
+
+    public static function getNavigationBadge(): ?string
+    {
+        $count = StandarisasiDrawing::where('status_pemeriksaan', '!=', 'Diperiksa')->count();
+
+        return $count > 0 ? (string) $count : null;
+    }
 
     public static function form(Form $form): Form
     {
@@ -57,7 +65,8 @@ class StandarisasiDrawingResource extends Resource
                         Grid::make(2)
                             ->schema([
 
-                                self::selectInputSPK(),
+                                self::selectInputSPK()
+                                    ->hiddenOn('edit'),
 
                                 self::datePicker('tanggal', 'Tanggal'),
 
@@ -76,6 +85,7 @@ class StandarisasiDrawingResource extends Resource
                         self::datePicker('tanggal_pembuatan', 'Tanggal Pembuatan'),
 
                         self::buttonGroup('revisi', 'Revisi')
+                            ->helperText('*Jika Ya Revisi Ke ')
                             ->reactive()
                             ->columnSpanFull(),
 
@@ -93,9 +103,11 @@ class StandarisasiDrawingResource extends Resource
                     ->schema([
 
                         self::selectInputOptions('jenis_gambar', 'Jenis Gambar', 'standarisasi.jenis_gambar')
+                            ->placeholder('Pilih Jenis Gambar')
                             ->required(),
 
                         self::selectInputOptions('format_gambar', 'Format Gambar', 'standarisasi.format_gambar')
+                            ->placeholder('Pilih Format Gambar')
                             ->required(),
 
                     ])->columns(2),
@@ -104,34 +116,21 @@ class StandarisasiDrawingResource extends Resource
                     ->relationship('detail')
                     ->collapsible()
                     ->schema([
+
                         FileUpload::make('lampiran')
                             ->label('Lampiran')
                             ->directory('Quality/StandarisasiDrawing/Files')
                             ->acceptedFileTypes(['application/pdf'])
                             ->maxSize(10240)
                             ->columnSpanFull()
-                            ->helperText('Hanya file PDF yang diperbolehkan. Maksimal ukuran 10 MB.')
+                            ->helperText('*Hanya file PDF yang diperbolehkan. Maksimal ukuran 10 MB.')
                             ->required(),
+
                         Textarea::make('catatan')
                             ->label('Catatan atau Koreksi yang Dibutuhkan')
                             ->required(),
-                    ]),
 
-                // Section::make('PIC')
-                //     ->relationship('pic')
-                //     ->schema([
-                //         Grid::make(2)
-                //             ->schema([
-                //                 self::textInput('create_name', 'Dibuat Oleh')
-                //                     ->required(),
-                //                 self::textInput('check_name', 'Diperiksa Oleh')
-                //                     ->required(),
-                //                 self::signatureInput('create_signature', '')
-                //                     ->required(),
-                //                 self::signatureInput('check_signature', '')
-                //                     ->required(),
-                //             ])
-                //     ]),
+                    ]),
 
                 Section::make('Detail PIC')
                     ->collapsible()
@@ -159,7 +158,8 @@ class StandarisasiDrawingResource extends Resource
         return $table
             ->columns([
                 //
-                self::textColumn('spk.no_spk', 'NO SPK'),
+                self::textColumn('spk.no_spk', 'No SPK'),
+
                 self::textColumn('tanggal', 'Tanggal')
                     ->date('d - M - Y'),
 
@@ -181,12 +181,12 @@ class StandarisasiDrawingResource extends Resource
 
                 ImageColumn::make('pic.create_signature')
                     ->width(150)
-                    ->label('PIC')
+                    ->label('Dibuat Oleh')
                     ->height(75),
 
                 ImageColumn::make('pic.check_signature')
                     ->width(150)
-                    ->label('PIC')
+                    ->label('Diperiksa Oleh')
                     ->height(75),
             ])
             ->filters([
@@ -200,6 +200,7 @@ class StandarisasiDrawingResource extends Resource
                         ->label(_('View PDF'))
                         ->icon('heroicon-o-document')
                         ->color('success')
+                        ->visible(fn($record) => $record->status_pemeriksaan === 'Diperiksa')
                         ->url(fn($record) => self::getUrl('pdfStandarisasiDrawing', ['record' => $record->id])),
                 ])
             ])
@@ -248,6 +249,7 @@ class StandarisasiDrawingResource extends Resource
                         $query->where('status_penerimaan', 'Diterima');
                     })->whereDoesntHave('standarisasi')
             )
+            ->placeholder('Pilin No SPK')
             ->native(false)
             ->searchable()
             ->preload()

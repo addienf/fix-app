@@ -1,6 +1,5 @@
 <x-filament-panels::page>
     <x-filament::section>
-
         {{-- Judul Utama --}}
         <h2 class="mb-3 text-xl font-bold text-center">Detail Pengecekan Material Stainless Steel</h2>
 
@@ -44,16 +43,14 @@
         </table>
 
         {{-- Bagian Informasi SPK --}}
-        <div class="w-full max-w-4xl mx-auto pt-6 mb-6 text-sm grid grid-cols-1 gap-y-4">
+        <div class="grid w-full max-w-4xl grid-cols-1 pt-6 mx-auto mb-6 text-sm gap-y-4">
             @php
-$fields = [
-    ['label' => 'No SPK Produksi :', 'value' => 'SPK-2025-001'],
-];
+                $fields = [['label' => 'No SPK Produksi :', 'value' => $pengecekanSS->spk->no_spk]];
             @endphp
 
             @foreach ($fields as $field)
                 <div class="flex flex-col">
-                    <label class="font-medium mb-1">{{ $field['label'] }}</label>
+                    <label class="mb-1 font-medium">{{ $field['label'] }}</label>
                     <input type="text" readonly value="{{ $field['value'] }}"
                         class="w-full px-3 py-2 text-black bg-white border border-gray-300 rounded-md cursor-not-allowed" />
                 </div>
@@ -61,99 +58,138 @@ $fields = [
         </div>
 
         {{-- Judul Section Chamber --}}
-        <h2 class="text-xl font-bold text-start max-w-4xl mx-auto">Chamber Identification</h2>
+        <h2 class="max-w-4xl mx-auto text-xl font-bold text-start">Chamber Identification</h2>
 
         {{-- Form Chamber Identification --}}
-        <div class="w-full max-w-4xl mx-auto pt-6 mb-6 text-sm grid grid-cols-1 gap-y-4">
+        <div class="grid w-full max-w-4xl grid-cols-1 pt-6 mx-auto mb-6 text-sm gap-y-4">
             @php
-$fields = [
-    ['label' => 'Type/Model :', 'value' => 'SPK-2025-001'],
-    ['label' => 'Ref. Document :', 'value' => '05 Juni 2025'],
-];
+                $fields = [
+                    ['label' => 'Type/Model :', 'value' => $pengecekanSS->tipe],
+                    ['label' => 'Ref. Document :', 'value' => $pengecekanSS->ref_document],
+                ];
             @endphp
 
             @foreach ($fields as $field)
                 <div class="flex flex-col">
-                    <label class="font-medium mb-1">{{ $field['label'] }}</label>
+                    <label class="mb-1 font-medium">{{ $field['label'] }}</label>
                     <input type="text" readonly value="{{ $field['value'] }}"
                         class="w-full px-3 py-2 text-black bg-white border border-gray-300 rounded-md cursor-not-allowed" />
                 </div>
             @endforeach
         </div>
 
-        {{-- Tabel Body Chamber Welding --}}
-        <table class="w-full max-w-4xl mx-auto text-sm border border-black mb-3"
-            style="border-collapse: collapse; table-layout: fixed;">
-            <thead>
-                <tr class="bg-gray-100">
-                    <th class="border border-black px-2 py-1 text-center" style="width: 40px;">No</th>
-                    <th class="border border-black px-2 py-1 text-center w-1/3">Part</th>
-                    <th colspan="2" class="border border-black px-2 py-1 text-center w-1/4">Result</th>
-                    <th class="border border-black px-2 py-1 text-center w-1/6">Status</th>
-                </tr>
-                <tr class="bg-gray-100">
-                    <th></th>
-                    <th class="border border-black px-2 py-1 text-center font-bold">Body Chamber Welding</th>
-                    <th class="border border-black px-2 py-1 text-center">Yes</th>
-                    <th class="border border-black px-2 py-1 text-center">No</th>
-                    <th></th>
+        @php
+            $rawDetails = $pengecekanSS->detail->details ?? [];
+            $details = is_string($rawDetails) ? json_decode($rawDetails, true) : $rawDetails;
+
+            function statusLabel($code)
+            {
+                return match (strtolower($code)) {
+                    'ok' => 'OK',
+                    'h' => 'Hold',
+                    'r' => 'Repaired',
+                    default => ucfirst($code ?? '-'),
+                };
+            }
+        @endphp
+
+        {{-- <table class="w-full mb-6 text-sm border border-collapse border-black"> --}}
+        <table class="w-full max-w-4xl mx-auto mb-3 text-sm border border-black">
+            <thead class="bg-gray-100">
+                <tr>
+                    <th class="w-10 px-3 py-2 text-center border border-black">No</th>
+                    <th class="px-3 py-2 text-left border border-black">Part</th>
+                    <th class="px-3 py-2 text-center border border-black">Result</th>
+                    <th class="px-3 py-2 text-left border border-black">Status</th>
                 </tr>
             </thead>
-        
-            @php
-                $rows = [
-                    'Right outer side of wall',
-                    'Left outer side of wall',
-                    'Rear outer side of wall',
-                    'Rear hole for Humidifier',
-                    'Right door of Chamber',
-                    'Middle door of chamber',
-                    'Left door of chamber',
-                ];
-            @endphp
-        
+
             <tbody>
-                @foreach ($rows as $index => $part)
+                @php $rowNumber = 1; @endphp
+                @foreach ($details as $group)
                     <tr>
-                        <td class="border border-black px-2 py-1 text-center" style="width: 40px;">
-                            {{ $index + 1 }}
+                        <td colspan="4" class="px-3 py-2 font-semibold bg-gray-200 border border-black">
+                            {{ $group['mainPart'] ?? '-' }}
                         </td>
-                        <td class="border border-black px-2 py-1">{{ $part }}</td>
-                        <td class="border border-black px-2 py-1 text-center">
-                            <input type="checkbox" class="w-4 h-4" />
-                        </td>
-                        <td class="border border-black px-2 py-1 text-center">
-                            <input type="checkbox" class="w-4 h-4" />
-                        </td>
-                        <td class="border border-black px-2 py-1 text-center"></td>
                     </tr>
+                    @foreach ($group['parts'] as $part)
+                        <tr>
+                            <td class="px-3 py-2 text-center border border-black">{{ $rowNumber++ }}</td>
+                            <td class="px-3 py-2 border border-black">{{ $part['part'] ?? '-' }}</td>
+                            <td class="px-3 py-2 text-center border border-black">
+                                {{ ($part['result'] ?? '0') == '1' ? 'Yes' : 'No' }}
+                            </td>
+                            <td class="px-3 py-2 border border-black">
+                                {{ statusLabel($part['status'] ?? '-') }}
+                            </td>
+                        </tr>
+                    @endforeach
                 @endforeach
             </tbody>
         </table>
 
         <div class="w-full max-w-4xl mx-auto mb-6">
-            <label for="note" class="block text-sm font-medium text-gray-700 mb-1">Note:</label>
-            <textarea id="note" name="note" rows="4"
-                class="w-full border border-black px-3 py-2 text-sm resize-none"></textarea>  
+            <label for="note" class="block mb-1 text-sm font-medium text-gray-700">Note:</label>
+            <textarea id="note" readonly
+                class="w-full px-3 py-2 overflow-hidden text-sm leading-relaxed text-gray-800 bg-gray-100 border resize-none border-black-600">{{ trim($pengecekanSS->note) }}</textarea>
         </div>
-        
-    <div class="p-4 mb-6 max-w-4xl mx-auto">
-        <div class="grid grid-cols-3 gap-4 text-sm">
-            @foreach (['Checked By', 'Accepted By', 'Approved By'] as $role)
-                <div>
-                    <label class="font-semibold block mb-1">{{ $role }}</label>
-                    <input type="text" value="{{ $role }} User" readonly
-                        class="w-full mb-2 border border-gray-300 p-2 rounded bg-gray-100 text-gray-500 cursor-not-allowed" />
 
-                    <label class="block mb-1">Signature</label>
-                    <div class="w-full h-24 mb-2 border border-black rounded bg-white"></div>
+        @php
+            $roles = [
+                'Checked By' => [
+                    'name' => $pengecekanSS->pic->inspected_name ?? '-',
+                    'signature' => $pengecekanSS->pic->inspected_signature ?? null,
+                    'date' => $pengecekanSS->pic->inspected_date ?? null,
+                ],
+                'Accepted By' => [
+                    'name' => $pengecekanSS->pic->accepted_name ?? '-',
+                    'signature' => $pengecekanSS->pic->accepted_signature ?? null,
+                    'date' => $pengecekanSS->pic->accepted_date ?? null,
+                ],
+                'Approved By' => [
+                    'name' => $pengecekanSS->pic->approved_name ?? '-',
+                    'signature' => $pengecekanSS->pic->approved_signature ?? null,
+                    'date' => $pengecekanSS->pic->approved_date ?? null,
+                ],
+            ];
+        @endphp
 
-                    <label class="block mb-1">Date</label>
-                    <input type="date" readonly value="{{ now()->format('Y-m-d') }}"
-                        class="w-full border border-gray-300 p-2 rounded bg-gray-100 text-gray-500 cursor-not-allowed" />
-                </div>
-            @endforeach
+        <div class="max-w-4xl p-4 mx-auto mb-6">
+            <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+                @foreach ($roles as $role => $data)
+                    <div>
+                        <label class="block mb-1 font-semibold">{{ $role }}</label>
+                        <input type="text" value="{{ $data['name'] }}" readonly
+                            class="w-full p-2 mb-2 text-gray-500 bg-gray-100 border border-gray-300 rounded" />
+
+                        <label class="block mb-1">Signature</label>
+                        <div
+                            class="flex items-center justify-center w-full h-24 mb-2 bg-white border border-black rounded">
+                            @if ($data['signature'])
+                                <img src="{{ asset('storage/' . $data['signature']) }}" alt="Signature"
+                                    class="object-contain h-full" />
+                            @else
+                                <span class="text-sm text-gray-400">No Signature</span>
+                            @endif
+                        </div>
+
+                        <label class="block mb-1">Date</label>
+                        <input type="text" readonly
+                            value="{{ $data['date'] ? \Carbon\Carbon::parse($data['date'])->format('d/m/Y') : '-' }}"
+                            class="w-full p-2 text-gray-500 bg-gray-100 border border-gray-300 rounded" />
+                    </div>
+                @endforeach
+            </div>
         </div>
-    </div>
+
+        <script>
+            window.addEventListener('DOMContentLoaded', () => {
+                const note = document.getElementById('note');
+                if (note) {
+                    note.style.height = 'auto'; // reset dulu
+                    note.style.height = note.scrollHeight + 'px'; // sesuaikan isi
+                }
+            });
+        </script>
     </x-filament::section>
 </x-filament-panels::page>

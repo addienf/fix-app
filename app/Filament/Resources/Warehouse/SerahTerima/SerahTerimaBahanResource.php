@@ -39,6 +39,7 @@ class SerahTerimaBahanResource extends Resource
     protected static ?string $navigationLabel = 'Serah Terima Bahan';
     protected static ?string $pluralLabel = 'Serah Terima Bahan';
     protected static ?string $modelLabel = 'Serah Terima Bahan';
+    protected static ?string $slug = 'warehouse/serah-terima-bahan';
 
     public static function getNavigationBadge(): ?string
     {
@@ -59,9 +60,11 @@ class SerahTerimaBahanResource extends Resource
                     ->default('Belum Diterima'),
 
                 Section::make('Nomor Surat')
+                    ->hiddenOn('edit')
                     ->collapsible()
                     ->schema([
                         self::selectInput('permintaan_bahan_pro_id', 'Pilih Nomor Surat', 'permintaanBahanPro', 'no_surat')
+                            ->placeholder('Pilin No Surat Dari Permintaan Alat dan Bahan Produksi')
                             ->columnSpanFull(),
                     ]),
 
@@ -88,13 +91,18 @@ class SerahTerimaBahanResource extends Resource
                 Section::make('List Detail Bahan Baku')
                     ->collapsible()
                     ->schema([
+
                         Grid::make(2)
                             ->schema([
+
                                 Repeater::make('details')
+                                    ->label('')
                                     ->relationship('details')
                                     ->schema([
+
                                         Grid::make(4)
                                             ->schema([
+
                                                 self::textInput('bahan_baku', 'Bahan Baku')
                                                     ->extraAttributes([
                                                         'readonly' => true,
@@ -116,45 +124,49 @@ class SerahTerimaBahanResource extends Resource
                                                         'readonly' => true,
                                                         'style' => 'pointer-events: none;'
                                                     ])
+
                                             ])
+
                                     ])
                                     ->deletable(false)
                                     ->reorderable(false)
                                     ->addable(false)
                                     ->columnSpanFull()
+
                             ])
+
                     ]),
 
-                // Section::make('PIC')
-                //     ->relationship('pic')
-                //     ->schema([
-                //         Grid::make(2)
-                //             ->schema([
-                //                 self::textInput('submit_name', 'Diserahkan Oleh'),
-                //                 self::textInput('receive_name', 'Diterima Oleh'),
-                //                 self::signatureInput('submit_signature', ''),
-                //                 self::signatureInput('receive_signature', ''),
-                //             ])
-                //     ]),
-
-                Section::make('Detail PIC')
+                Section::make('PIC')
                     ->collapsible()
                     ->relationship('pic')
                     ->schema([
+
                         Grid::make(2)
                             ->schema([
+
                                 Grid::make(1)
                                     ->schema([
+
                                         self::textInput('submit_name', 'Diserahkan oleh'),
+
                                         self::signatureInput('submit_signature', ''),
+
                                     ])->hiddenOn(operations: 'edit'),
+
                                 Grid::make(1)
                                     ->schema([
+
                                         self::textInput('receive_name', 'Diterima oleh'),
+
                                         self::signatureInput('receive_signature', ''),
+
                                     ])->hiddenOn(operations: 'create'),
+
                             ]),
+
                     ]),
+
             ]);
     }
 
@@ -203,6 +215,7 @@ class SerahTerimaBahanResource extends Resource
                         ->label(_('View PDF'))
                         ->icon('heroicon-o-document')
                         ->color('success')
+                        ->visible(fn($record) => $record->status_penerimaan === 'Diterima')
                         ->url(fn($record) => self::getUrl('pdfSerahTerimaBahan', ['record' => $record->id])),
                 ])
             ])

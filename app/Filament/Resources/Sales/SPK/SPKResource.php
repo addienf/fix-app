@@ -60,71 +60,96 @@ class SPKResource extends Resource
                 Section::make('Informasi Umum')
                     ->collapsible()
                     ->schema([
+
                         Grid::make(2)
                             ->schema([
+
                                 DatePicker::make('tanggal')
                                     ->label('Rencana Pengiriman')
                                     ->required()
                                     ->displayFormat('M d Y'),
+
                                 self::textInput('no_spk', 'Nomor SPK')
-                                    ->helperText('Format: XXX/QKS/MKT/SPK/MM/YY')
+                                    ->hint('Format: XXX/QKS/MKT/SPK/MM/YY')
                                     ->unique(ignoreRecord: true),
+
                                 self::selectSpecInput(),
+
                                 self::textInput('dari', 'Dari'),
+
                                 self::textInput('no_order', 'Nomor Order')
                                     ->unique(ignoreRecord: true),
+
                                 self::textInput('kepada', 'Kepada'),
-                                Hidden::make('status_persetujuan')
+
+                                Hidden::make('status_penerimaan')
                                     ->default('Belum Diterima'),
+
                             ]),
+
                     ]),
 
                 Section::make('Detail Produk Yang Dipesan')
                     ->hiddenOn(operations: 'edit')
                     ->collapsible()
                     ->schema([
+
                         TableRepeater::make('details')
                             ->label('')
                             ->schema([
+
                                 self::textInput('name', 'Nama Produk')
                                     ->extraAttributes([
                                         'readonly' => true,
                                         'style' => 'pointer-events: none;'
                                     ]),
+
                                 self::textInput('quantity', 'Jumlah Pesanan')
                                     ->extraAttributes([
                                         'readonly' => true,
                                         'style' => 'pointer-events: none;'
                                     ]),
+
                                 self::textInput('no_urs', 'No URS')
                                     ->extraAttributes([
                                         'readonly' => true,
                                         'style' => 'pointer-events: none;'
                                     ]),
+
                             ])
                             ->deletable(false)
                             ->reorderable(false)
-                            ->addable(false),
+                            ->addable(false)
+                            ->helperText('*Salinan URS Wajib diberikan kepada Departemen Produksi'),
+
                     ]),
 
-                Section::make('Detail PIC')
+                Section::make('PIC')
                     ->collapsible()
                     ->relationship('pic')
                     ->schema([
+
                         Grid::make(2)
                             ->schema([
+
                                 Grid::make(1)
                                     ->schema([
-                                        self::textInput('create_name', 'PIC Pembuat'),
-                                        self::signatureInput('create_signature', 'Dibuat Oleh'),
+                                        self::textInput('create_name', 'Yang Membuat')
+                                            ->placeholder('Marketing'),
+                                        self::signatureInput('create_signature', ''),
                                     ])->hiddenOn(operations: 'edit'),
+
                                 Grid::make(1)
                                     ->schema([
-                                        self::textInput('receive_name', 'PIC Penerima'),
-                                        self::signatureInput('receive_signature', 'Diterima Oleh'),
+                                        self::textInput('receive_name', 'Yang Menerima')
+                                            ->placeholder('Produksi'),
+                                        self::signatureInput('receive_signature', ''),
                                     ])->hiddenOn(operations: 'create'),
+
                             ]),
+
                     ]),
+
             ]);
     }
 
@@ -134,9 +159,10 @@ class SPKResource extends Resource
             ->columns([
                 //
                 self::textColumn('spesifikasiProduct.urs.no_urs', 'No URS'),
+
                 self::textColumn('no_order', 'No Order'),
-                self::textColumn('no_order', 'No Order'),
-                TextColumn::make('status_persetujuan')
+
+                TextColumn::make('status_penerimaan')
                     ->label('Status Penerimaan')
                     ->badge()
                     ->color(
@@ -144,14 +170,17 @@ class SPKResource extends Resource
                         $state === 'Diterima' ? 'success' : 'danger'
                     )
                     ->alignCenter(),
+
                 ImageColumn::make('pic.create_signature')
                     ->width(150)
                     ->label('Yang Membuat')
                     ->height(75),
+
                 ImageColumn::make('pic.receive_signature')
                     ->width(150)
                     ->label('Yang Menerima')
                     ->height(75),
+
             ])
             ->filters([
                 //
@@ -165,7 +194,7 @@ class SPKResource extends Resource
                         ->icon('heroicon-o-document')
                         ->color('success')
                         ->url(fn($record) => self::getUrl('pdfSPK', ['record' => $record->id]))
-                        ->visible(fn($record) => $record->status_persetujuan === 'Disetujui'),
+                        ->visible(fn($record) => $record->status_penerimaan === 'Diterima'),
                 ])
             ])
             ->bulkActions([
@@ -216,11 +245,14 @@ class SPKResource extends Resource
     {
         return
             Select::make('spesifikasi_product_id')
-            ->label('Customer')
+            ->label('Nama Customer')
+            ->placeholder('Pilih Nama Customer')
             ->reactive()
             ->required()
             ->options(function () {
-                return SpesifikasiProduct::with('urs.customer')
+                return
+                    SpesifikasiProduct::with('urs.customer')
+                    ->whereDoesntHave('spk')
                     ->get()
                     ->mapWithKeys(function ($item) {
                         $noUrs = $item->urs->no_urs ?? '-';
@@ -247,8 +279,6 @@ class SPKResource extends Resource
                 $set('details', $details);
             });
     }
-
-
 
     protected static function signatureInput(string $fieldName, string $labelName): SignaturePad
     {

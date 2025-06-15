@@ -14,7 +14,9 @@ class viewPDF extends Page
     protected static string $view = 'filament.resources.sales.spesifikasi-products.spesifikasi-product-resource.pages.pdfSpecProduct';
 
     protected static ?string $title = 'Spesifikasi Produk PDF';
+
     public $record;
+
     public $spesifikasi;
 
     public function mount($record)
@@ -33,5 +35,10 @@ class viewPDF extends Page
                 ->requiresConfirmation()
                 ->url(route('pdf.specProduct', ['id' => $this->record]))
         ];
+    }
+
+    public function getBreadcrumb(): string
+    {
+        return 'Lihat PDF';
     }
 }

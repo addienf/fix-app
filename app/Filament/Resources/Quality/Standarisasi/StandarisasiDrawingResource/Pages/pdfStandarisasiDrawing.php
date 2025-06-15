@@ -12,7 +12,7 @@ class pdfStandarisasiDrawing extends Page
 
     protected static string $view = 'filament.resources.quality.standarisasi.standarisasi-drawing-resource.pages.pdf-standarisasi-drawing';
 
-    protected static ?string $title = 'Serah Terima Bahan';
+    protected static ?string $title = 'Standarisasi Gambar Kerja';
 
     public $record;
 
@@ -22,5 +22,10 @@ class pdfStandarisasiDrawing extends Page
     {
         $this->record = $record;
         $this->standarisasi = StandarisasiDrawing::with(['spk', 'identitas', 'detail', 'pic'])->find($record);
+    }
+
+    public function getBreadcrumb(): string
+    {
+        return 'Lihat PDF';
     }
 }

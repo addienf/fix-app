@@ -43,6 +43,7 @@ class PermintaanAlatDanBahanResource extends Resource
     protected static ?string $navigationLabel = 'Permintaan Alat dan Bahan';
     protected static ?string $pluralLabel = 'Permintaan Alat dan Bahan';
     protected static ?string $modelLabel = 'Permintaan Alat dan Bahan';
+    protected static ?string $slug = 'production/permintaan-alat-dan-bahan';
 
     public static function getNavigationBadge(): ?string
     {
@@ -71,6 +72,7 @@ class PermintaanAlatDanBahanResource extends Resource
                         Grid::make(2)
                             ->schema([
                                 self::selectInput()
+                                    ->placeholder('Pilih Nomor SPK')
                                     ->label('No SPK')
                                     ->hiddenOn('edit')
                                     ->columnSpanFull(),
@@ -84,12 +86,14 @@ class PermintaanAlatDanBahanResource extends Resource
                                     ->required(),
 
                                 self::textInput('dari', 'Dari')
+                                    ->placeholder('Produksi')
                                     ->extraAttributes([
                                         'readonly' => true,
                                         'style' => 'pointer-events: none;'
                                     ]),
 
                                 self::textInput('kepada', 'Kepada')
+                                    ->placeholder('Warehouse')
                                     ->extraAttributes([
                                         'readonly' => true,
                                         'style' => 'pointer-events: none;'
@@ -103,22 +107,31 @@ class PermintaanAlatDanBahanResource extends Resource
                 Section::make('List Detail Bahan Baku')
                     ->collapsible()
                     ->schema([
+
                         Grid::make(2)
                             ->schema([
+
                                 Repeater::make('details')
                                     ->relationship('details')
                                     ->schema([
+
                                         Grid::make(4)
                                             ->schema([
+
                                                 self::textInput('bahan_baku', 'Bahan Baku')
                                                     ->extraAttributes([
                                                         'readonly' => true,
                                                         'style' => 'pointer-events: none;'
                                                     ]),
+
                                                 self::textInput('spesifikasi', 'Spesifikasi'),
+
                                                 self::textInput('jumlah', 'Jumlah')->numeric(),
+
                                                 Textarea::make('keperluan_barang')
+                                                    ->required()
                                                     ->label('Keperluan Barang')
+
                                             ])
                                     ])
                                     ->deletable(false)
@@ -128,21 +141,30 @@ class PermintaanAlatDanBahanResource extends Resource
                             ])
                     ]),
 
-                Section::make('Detail PIC')
+                Section::make('PIC')
                     ->collapsible()
                     ->relationship('pic')
                     ->schema([
+
                         Grid::make(2)
                             ->schema([
+
                                 Grid::make(1)
                                     ->schema([
-                                        self::textInput('create_name', 'PIC Pembuat'),
-                                        self::signatureInput('create_signature', 'Dibuat Oleh'),
+
+                                        self::textInput('create_name', 'Dibuat Oleh'),
+
+                                        self::signatureInput('create_signature', ''),
+
                                     ])->hiddenOn(operations: 'edit'),
+
                                 Grid::make(1)
                                     ->schema([
-                                        self::textInput('receive_name', 'PIC Penerima'),
-                                        self::signatureInput('receive_signature', 'Diterima Oleh'),
+
+                                        self::textInput('receive_name', 'Diterima Oleh'),
+
+                                        self::signatureInput('receive_signature', ''),
+
                                     ])->hiddenOn(operations: 'create'),
                             ]),
                     ]),
@@ -193,6 +215,7 @@ class PermintaanAlatDanBahanResource extends Resource
                         ->label(_('View PDF'))
                         ->icon('heroicon-o-document')
                         ->color('success')
+                        ->visible(fn($record) => $record->status_penerimaan === 'Diterima')
                         ->url(fn($record) => self::getUrl('pdfPermintaanAlatdanBahan', ['record' => $record->id])),
                 ])
             ])

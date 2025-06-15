@@ -23,4 +23,9 @@ class pdfKelengkapanMaterialSS extends Page
         $this->record = $record;
         $this->kelengkapan = KelengkapanMaterialSS::with(['spk', 'pic', 'detail'])->find($record);
     }
+
+    public function getBreadcrumb(): string
+    {
+        return 'Lihat PDF';
+    }
 }

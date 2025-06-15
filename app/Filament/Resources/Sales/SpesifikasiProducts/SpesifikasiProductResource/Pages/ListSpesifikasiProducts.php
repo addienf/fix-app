@@ -17,7 +17,7 @@ class ListSpesifikasiProducts extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+            Actions\CreateAction::make()->label('Tambah Data Spesifikasi Produk'),
         ];
     }
 
@@ -29,5 +29,10 @@ class ListSpesifikasiProducts extends ListRecords
                 'stock' => Tab::make()->query(fn($query) => $query->where('is_stock', 1)),
                 'non Stock' => Tab::make()->query(fn($query) => $query->where('is_stock', 0)),
             ];
+    }
+
+    public function getBreadcrumb(): string
+    {
+        return 'Daftar';
     }
 }

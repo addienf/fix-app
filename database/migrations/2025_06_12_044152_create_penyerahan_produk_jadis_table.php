@@ -18,8 +18,8 @@ return new class extends Migration
             $table->string('penanggug_jawab');
             $table->string('penerima');
             $table->string('kondisi_produk');
-            $table->string('catatan_tambahan');
-            $table->string('status_penerimaan')->nullable();
+            $table->mediumText('catatan_tambahan');
+            $table->mediumText('status_penerimaan')->nullable();
             $table->timestamps();
         });
     }

@@ -11,7 +11,6 @@ class pdfPengecekanElectrical extends Page
     protected static string $resource = PengecekanElectricalResource::class;
 
     protected static string $view = 'filament.resources.quality.pengecekan-material.electrical.pengecekan-electrical-resource.pages.pdf-pengecekan-electrical';
-
     protected static ?string $title = 'Pengecekan Material Electrical';
 
     public $record;
@@ -22,5 +21,10 @@ class pdfPengecekanElectrical extends Page
     {
         $this->record = $record;
         $this->electrical = PengecekanMaterialElectrical::with(['spk', 'pic', 'detail'])->find($record);
+    }
+
+    public function getBreadcrumb(): string
+    {
+        return 'Lihat PDF';
     }
 }

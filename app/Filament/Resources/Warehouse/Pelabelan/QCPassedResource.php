@@ -37,6 +37,7 @@ class QCPassedResource extends Resource
     protected static ?string $navigationLabel = 'Pelabelan QC Passed';
     protected static ?string $pluralLabel = 'Pelabelan QC Passed';
     protected static ?string $modelLabel = 'Pelabelan QC Passed';
+    protected static ?string $slug = 'warehouse/pelabelan-qc-passed';
 
     public static function getNavigationBadge(): ?string
     {
@@ -57,7 +58,8 @@ class QCPassedResource extends Resource
                     ->collapsible()
                     ->schema([
 
-                        self::selectInputSPK(),
+                        self::selectInputSPK()
+                            ->placeholder('Pilih No SPK'),
 
                         self::datePicker('tanggal', 'Tanggal'),
 
@@ -91,29 +93,45 @@ class QCPassedResource extends Resource
 
                 Section::make('Syarat dan Ketentuan')
                     ->schema([
+
                         self::textInput('total_masuk', 'Total Masuk'),
+
                         self::textInput('total_keluar', 'Total Keluar'),
+
                         self::textInput('sisa_stock', 'Sisa Stock')
+
                     ])->columns(3),
 
-                Section::make('Detail PIC')
+                Section::make('PIC')
                     ->collapsible()
                     ->relationship('pic')
                     ->schema([
+
                         Grid::make(2)
                             ->schema([
+
                                 Grid::make(1)
                                     ->schema([
+
                                         self::textInput('created_name', 'Dibuat Oleh'),
+
                                         self::signatureInput('created_signature', ''),
+
                                     ])->hiddenOn(operations: 'edit'),
+
                                 Grid::make(1)
                                     ->schema([
+
                                         self::textInput('approved_name', 'Disetujui Oleh'),
+
                                         self::signatureInput('approved_signature', ''),
+
                                     ])->hiddenOn(operations: 'create'),
+
                             ]),
+
                     ]),
+
             ]);
     }
 
@@ -157,6 +175,7 @@ class QCPassedResource extends Resource
                         ->label(_('View PDF'))
                         ->icon('heroicon-o-document')
                         ->color('success')
+                        ->visible(fn($record) => $record->status_persetujuan === 'Disetujui')
                         ->url(fn($record) => self::getUrl('pdfPelabelanQCPassed', ['record' => $record->id])),
                 ])
             ])
