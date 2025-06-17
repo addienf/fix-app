@@ -42,25 +42,24 @@
             </tr>
         </table>
 
-        {{-- Bagian Informasi SPK --}}
+
         <div class="grid w-full max-w-4xl grid-cols-1 pt-6 mx-auto mb-6 text-sm gap-y-4">
             @php
-                $fields = [['label' => 'No SPK Produksi :', 'value' => $pengecekanSS->spk->no_spk]];
+$fields = [['label' => 'No SPK Produksi :', 'value' => $pengecekanSS->spk->no_spk]];
             @endphp
-
+        
             @foreach ($fields as $field)
-                <div class="flex flex-col">
-                    <label class="mb-1 font-medium">{{ $field['label'] }}</label>
+                <div class="flex items-center gap-4">
+                    <label class="w-48 font-medium">{{ $field['label'] }}</label>
                     <input type="text" readonly value="{{ $field['value'] }}"
-                        class="w-full px-3 py-2 text-black bg-white border border-gray-300 rounded-md cursor-not-allowed" />
+                        class="flex-1 px-3 py-2 text-black bg-white border border-gray-300 rounded-md cursor-not-allowed" />
                 </div>
-            @endforeach
+            @endforeach  
         </div>
 
-        {{-- Judul Section Chamber --}}
         <h2 class="max-w-4xl mx-auto text-xl font-bold text-start">Chamber Identification</h2>
 
-        {{-- Form Chamber Identification --}}
+        
         <div class="grid w-full max-w-4xl grid-cols-1 pt-6 mx-auto mb-6 text-sm gap-y-4">
             @php
                 $fields = [
@@ -68,29 +67,29 @@
                     ['label' => 'Ref. Document :', 'value' => $pengecekanSS->ref_document],
                 ];
             @endphp
-
+        
             @foreach ($fields as $field)
-                <div class="flex flex-col">
-                    <label class="mb-1 font-medium">{{ $field['label'] }}</label>
+                <div class="flex items-center gap-4">
+                    <label class="w-48 font-medium">{{ $field['label'] }}</label>
                     <input type="text" readonly value="{{ $field['value'] }}"
-                        class="w-full px-3 py-2 text-black bg-white border border-gray-300 rounded-md cursor-not-allowed" />
+                        class="flex-1 px-3 py-2 text-black bg-white border border-gray-300 rounded-md cursor-not-allowed" />
                 </div>
             @endforeach
         </div>
-
+        
         @php
-            $rawDetails = $pengecekanSS->detail->details ?? [];
-            $details = is_string($rawDetails) ? json_decode($rawDetails, true) : $rawDetails;
+$rawDetails = $pengecekanSS->detail->details ?? [];
+$details = is_string($rawDetails) ? json_decode($rawDetails, true) : $rawDetails;
 
-            function statusLabel($code)
-            {
-                return match (strtolower($code)) {
-                    'ok' => 'OK',
-                    'h' => 'Hold',
-                    'r' => 'Repaired',
-                    default => ucfirst($code ?? '-'),
-                };
-            }
+function statusLabel($code)
+{
+    return match (strtolower($code)) {
+        'ok' => 'OK',
+        'h' => 'Hold',
+        'r' => 'Repaired',
+        default => ucfirst($code ?? '-'),
+    };
+}
         @endphp
 
         {{-- <table class="w-full mb-6 text-sm border border-collapse border-black"> --}}
@@ -131,27 +130,27 @@
         <div class="w-full max-w-4xl mx-auto mb-6">
             <label for="note" class="block mb-1 text-sm font-medium text-gray-700">Note:</label>
             <textarea id="note" readonly
-                class="w-full px-3 py-2 overflow-hidden text-sm leading-relaxed text-gray-800 bg-gray-100 border resize-none border-black-600">{{ trim($pengecekanSS->note) }}</textarea>
+                class="w-full px-3 py-2 overflow-hidden text-sm leading-relaxed  border rounded-md resize-none border-black-600">{{ trim($pengecekanSS->note) }}</textarea>
         </div>
 
         @php
-            $roles = [
-                'Checked By' => [
-                    'name' => $pengecekanSS->pic->inspected_name ?? '-',
-                    'signature' => $pengecekanSS->pic->inspected_signature ?? null,
-                    'date' => $pengecekanSS->pic->inspected_date ?? null,
-                ],
-                'Accepted By' => [
-                    'name' => $pengecekanSS->pic->accepted_name ?? '-',
-                    'signature' => $pengecekanSS->pic->accepted_signature ?? null,
-                    'date' => $pengecekanSS->pic->accepted_date ?? null,
-                ],
-                'Approved By' => [
-                    'name' => $pengecekanSS->pic->approved_name ?? '-',
-                    'signature' => $pengecekanSS->pic->approved_signature ?? null,
-                    'date' => $pengecekanSS->pic->approved_date ?? null,
-                ],
-            ];
+$roles = [
+    'Checked By' => [
+        'name' => $pengecekanSS->pic->inspected_name ?? '-',
+        'signature' => $pengecekanSS->pic->inspected_signature ?? null,
+        'date' => $pengecekanSS->pic->inspected_date ?? null,
+    ],
+    'Accepted By' => [
+        'name' => $pengecekanSS->pic->accepted_name ?? '-',
+        'signature' => $pengecekanSS->pic->accepted_signature ?? null,
+        'date' => $pengecekanSS->pic->accepted_date ?? null,
+    ],
+    'Approved By' => [
+        'name' => $pengecekanSS->pic->approved_name ?? '-',
+        'signature' => $pengecekanSS->pic->approved_signature ?? null,
+        'date' => $pengecekanSS->pic->approved_date ?? null,
+    ],
+];
         @endphp
 
         <div class="max-w-4xl p-4 mx-auto mb-6">

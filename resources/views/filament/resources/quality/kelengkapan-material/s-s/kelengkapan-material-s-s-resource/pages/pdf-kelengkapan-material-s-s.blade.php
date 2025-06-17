@@ -1,95 +1,90 @@
 <x-filament-panels::page>
     <x-filament::section>
-        <h2 class="mb-3 text-xl font-bold text-center">Detail Kelengkapan Material Stainless Steel</h2>
-        <!-- HEADER TABLE -->
-        <table
-            class="w-full max-w-4xl mx-auto text-sm border border-black dark:border-white dark:bg-gray-900 dark:text-white"
-            style="border-collapse: collapse;">
-            <tr>
-                <td rowspan="3"
-                    class="p-2 text-center align-middle border border-black dark:border-white w-28 h-28 dark:bg-gray-900">
-                    <img src="{{ asset('asset/logo.png') }}" alt="Logo" class="object-contain mx-auto h-28" />
-                </td>
-                <td colspan="2" class="font-bold text-center border border-black dark:border-white dark:bg-gray-900">
-                    PT.
-                    QLab Kinarya Sentosa</td>
-            </tr>
-            <tr>
-                <td class="text-lg font-bold text-center border border-black dark:border-white dark:bg-gray-900">
-                    Kelengkapan Material Stainless Steel</td>
-                <td rowspan="2" class="p-0 align-top border border-black dark:border-white dark:bg-gray-900">
-                    <table class="w-full text-sm" style="border-collapse: collapse;">
-                        <tr>
-                            <td class="px-3 py-1 border-b border-black dark:border-white">No. Dokumen</td>
-                            <td class="px-3 py-1 font-semibold border-b border-black dark:border-white">:
-                                FO-QKS-QA-01-01</td>
-                        </tr>
-                        <tr>
-                            <td class="px-3 py-1 border-b border-black dark:border-white">Tanggal Rilis</td>
-                            <td class="px-3 py-1 font-semibold border-b border-black dark:border-white">: 12 Maret 2025
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="px-3 py-1">Revisi</td>
-                            <td class="px-3 py-1 font-semibold">: 0</td>
-                        </tr>
-                    </table>
-                </td>
-            </tr>
-        </table>
+    <!-- Header Table -->
+    <h2 class="mb-3 text-xl font-bold text-center">Detail Kelengkapan Material SS</h2>
+    
+    <!-- Header Table -->
+    <table class="w-full max-w-4xl mx-auto text-sm border border-black mb-3" style="border-collapse: collapse;">
+        <tr>
+            <td rowspan="3" class="p-2 text-center align-middle border border-black w-28 h-28">
+                <img src="{{ asset('asset/logo.png') }}" alt="Logo" class="object-contain mx-auto h-30" />
+            </td>
+            <td colspan="2" class="font-bold text-center border border-black">PT. QLab Kinarya Sentosa</td>
+        </tr>
+        <tr>
+            <td class="font-bold text-center border border-black" style="font-size: 20px;">
+                Kelengkapan Material <br> Stainless Steel
+            </td>
+            <td rowspan="2" class="p-0 align-top border border-black">
+                <table class="w-full text-sm" style="border-collapse: collapse;">
+                    <tr>
+                        <td class="px-3 py-2 border-b border-black">No. Dokumen</td>
+                        <td class="px-3 py-2 font-semibold border-b border-black"> : FO-QKS-QA-01-01</td>
+                    </tr>
+                    <tr>
+                        <td class="px-3 py-2 border-b border-black">Tanggal Rilis</td>
+                        <td class="px-3 py-2 font-semibold border-b border-black"> : 12 Maret 2025</td>
+                    </tr>
+                    <tr>
+                        <td class="px-3 py-2">Revisi</td>
+                        <td class="px-3 py-2 font-semibold"> : 0</td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
         <div class="grid w-full max-w-4xl grid-cols-1 pt-4 mx-auto mb-6 gap-y-4">
 
             @php
-                $fields = [['label' => ' No SPK Produksi  :', 'value' => $kelengkapan->spk->no_spk]];
+$fields1 = [['label' => 'No SPK Produksi :', 'value' => $kelengkapan->spk->no_spk]];
             @endphp
-
-            @foreach ($fields as $field)
-                <div class="flex flex-col">
-                    <label class="mb-1 font-medium">{{ $field['label'] }}</label>
+            
+            @foreach ($fields1 as $field)
+                <div class="flex items-center gap-2 mb-2">
+                    <label class="w-48 font-medium">{{ $field['label'] }}</label>
                     <input type="text" readonly value="{{ $field['value'] }}"
                         class="w-full px-3 py-2 text-black bg-white border border-gray-300 rounded-md cursor-not-allowed" />
                 </div>
             @endforeach
-
+            
             <h2 class="col-span-1 mb-2 text-xl font-bold text-start">
                 Chamber Identification
             </h2>
-
+            
             @php
-                $fields = [
-                    ['label' => ' Type Model :', 'value' => $kelengkapan->tipe],
-                    ['label' => ' Ref Document :', 'value' => $kelengkapan->ref_document],
-                ];
+$fields2 = [
+    ['label' => 'Type Model :', 'value' => $kelengkapan->tipe],
+    ['label' => 'Ref Document :', 'value' => $kelengkapan->ref_document],
+];
             @endphp
-
-            @foreach ($fields as $field)
-                <div class="flex flex-col">
-                    <label class="mb-1 font-medium">{{ $field['label'] }}</label>
+            
+            @foreach ($fields2 as $field)
+                <div class="flex items-center gap-2 ">
+                    <label class="w-48 font-medium">{{ $field['label'] }}</label>
                     <input type="text" readonly value="{{ $field['value'] }}"
                         class="w-full px-3 py-2 text-black bg-white border border-gray-300 rounded-md cursor-not-allowed" />
                 </div>
             @endforeach
-
             @php
-                $rawDetails = $kelengkapan->detail->details ?? [];
+$rawDetails = $kelengkapan->detail->details ?? [];
 
-                $details = is_string($rawDetails) ? json_decode($rawDetails, true) : $rawDetails;
+$details = is_string($rawDetails) ? json_decode($rawDetails, true) : $rawDetails;
 
-                $orderNumber = $kelengkapan->spk->no_order ?? '-';
+$orderNumber = $kelengkapan->spk->no_order ?? '-';
 
-                $fields = collect($details)
-                    ->map(function ($item) use ($orderNumber) {
-                        return [
-                            'item' => $item['part'] ?? '',
-                            'spec' => $orderNumber,
-                            'status' => ucfirst($item['select'] ?? ''),
-                            'remark' => ($item['result'] ?? '') == '1' ? 'Checked' : 'Pending',
-                        ];
-                    })
-                    ->toArray();
+$fields = collect($details)
+    ->map(function ($item) use ($orderNumber) {
+        return [
+            'item' => $item['part'] ?? '',
+            'spec' => $orderNumber,
+            'status' => ucfirst($item['select'] ?? ''),
+            'remark' => ($item['result'] ?? '') == '1' ? 'Checked' : 'Pending',
+        ];
+    })
+    ->toArray();
             @endphp
 
-            <table class="w-full mb-6 text-sm border border-collapse border-black">
+            <table class="w-full text-sm border border-collapse border-black">
                 <thead class="bg-gray-100">
                     <tr>
                         <th class="w-10 px-3 py-2 text-center border border-black">No</th>
@@ -115,32 +110,29 @@
 
             <div class="mt-4">
                 <label class="block mb-1 font-semibold">Note</label>
-                <textarea class="w-full p-2 border border-black rounded cursor-not-allowed resize-none" rows="4"
-                    placeholder="Enter remarks..." readonly>
-                {{ $kelengkapan->note }}
-                </textarea>
+                <textarea class="w-full p-2 border border-black rounded cursor-not-allowed resize-none"
+                    readonly>{{ $kelengkapan->note }}</textarea>
             </div>
-
         </div>
 
         @php
-            $roles = [
-                'Checked By' => [
-                    'name' => $kelengkapan->pic->inspected_name ?? '-',
-                    'signature' => $kelengkapan->pic->inspected_signature ?? null,
-                    'date' => $kelengkapan->pic->inspected_date ?? null,
-                ],
-                'Accepted By' => [
-                    'name' => $kelengkapan->pic->accepted_name ?? '-',
-                    'signature' => $kelengkapan->pic->accepted_signature ?? null,
-                    'date' => $kelengkapan->pic->accepted_date ?? null,
-                ],
-                'Approved By' => [
-                    'name' => $kelengkapan->pic->approved_name ?? '-',
-                    'signature' => $kelengkapan->pic->approved_signature ?? null,
-                    'date' => $kelengkapan->pic->approved_date ?? null,
-                ],
-            ];
+$roles = [
+    'Checked By' => [
+        'name' => $kelengkapan->pic->inspected_name ?? '-',
+        'signature' => $kelengkapan->pic->inspected_signature ?? null,
+        'date' => $kelengkapan->pic->inspected_date ?? null,
+    ],
+    'Accepted By' => [
+        'name' => $kelengkapan->pic->accepted_name ?? '-',
+        'signature' => $kelengkapan->pic->accepted_signature ?? null,
+        'date' => $kelengkapan->pic->accepted_date ?? null,
+    ],
+    'Approved By' => [
+        'name' => $kelengkapan->pic->approved_name ?? '-',
+        'signature' => $kelengkapan->pic->approved_signature ?? null,
+        'date' => $kelengkapan->pic->approved_date ?? null,
+    ],
+];
         @endphp
 
         <!-- SIGNATURE SECTION -->
@@ -154,7 +146,7 @@
 
                         <label class="block mb-1">Signature</label>
                         <div
-                            class="flex items-center justify-center w-full h-24 mb-2 bg-white border border-black rounded">
+                            class="flex items-center justify-center w-full h-24 mb-2 bg-white border border-gray rounded">
                             @if ($data['signature'])
                                 <img src="{{ asset('storage/' . $data['signature']) }}" alt="Signature"
                                     class="object-contain h-full" />
