@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('material_ss_id')->constrained('incomming_material_ss')->onDelete('cascade');
             $table->json('details');
+            $table->json('details_tambahan');
             $table->timestamps();
         });
     }

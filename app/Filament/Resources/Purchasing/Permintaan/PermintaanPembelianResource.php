@@ -7,6 +7,7 @@ use App\Filament\Resources\Purchasing\Permintaan\PermintaanPembelianResource\Rel
 use App\Models\Purchasing\Permintaan\PermintaanPembelian;
 use App\Models\Warehouse\PermintaanBahanWBB\PermintaanBahan;
 use App\Services\SignatureUploader;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Section;
 use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
@@ -20,6 +21,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Actions\Action;
+use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -30,7 +32,7 @@ use Saade\FilamentAutograph\Forms\Components\SignaturePad;
 class PermintaanPembelianResource extends Resource
 {
     protected static ?string $model = PermintaanPembelian::class;
-
+    protected static ?string $slug = 'purchasing/permintaan-pembelian';
     protected static ?string $navigationIcon = 'heroicon-o-shopping-cart';
     protected static ?int $navigationSort = 8;
     protected static ?string $navigationGroup = 'Purchasing';
@@ -43,52 +45,91 @@ class PermintaanPembelianResource extends Resource
     {
         return $form
             ->schema([
+
+                Hidden::make('status_persetujuan')
+                    ->default('Belum Disetujui'),
+
                 Section::make('Nomor Surat')
+                    ->hiddenOn('edit')
+                    ->collapsible()
                     ->schema([
+
                         self::selectInput('permintaan_bahan_wbb_id', 'Pilih Nomor Surat', 'permintaanBahanWBB', 'no_surat')
+                            ->placeholder('Pilin No Surat Dari Permintaan Bahan Pembelian')
                             ->columnSpanFull(),
+
                     ]),
+
                 Section::make('List Detail Bahan Baku')
+                    ->collapsible()
                     ->schema([
+
                         Grid::make(2)
                             ->schema([
+
                                 Repeater::make('details')
                                     ->relationship('details')
                                     ->schema([
+
                                         Grid::make(5)
                                             ->schema([
+
                                                 self::textInput('kode_barang', 'Kode Barang'),
+
                                                 self::textInput('nama_barang', 'Nama Barang')
                                                     ->extraAttributes([
                                                         'readonly' => true,
                                                         'style' => 'pointer-events: none;'
                                                     ]),
+
                                                 self::selectJenis(),
+
                                                 self::textInput('jumlah', 'Jumlah')->numeric()
                                                     ->extraAttributes([
                                                         'readonly' => true,
                                                         'style' => 'pointer-events: none;'
                                                     ]),
+
                                                 Textarea::make('keterangan')
+                                                    ->required()
                                                     ->label('Keterangan')
+
                                             ])
+
                                     ])
                                     ->deletable(false)
                                     ->reorderable(false)
                                     ->addable(false)
                                     ->columnSpanFull()
+
                             ])
+
                     ]),
+
                 Section::make('PIC')
+                    ->collapsible()
                     ->relationship('pic')
                     ->schema([
+
                         Grid::make(2)
                             ->schema([
-                                self::textInput('create_name', 'Dibuat Oleh'),
-                                self::textInput('knowing_name', 'Mengetahui'),
-                                self::signatureInput('create_signature', ''),
-                                self::signatureInput('knowing_signature', ''),
-                            ])
+
+                                Grid::make(1)
+                                    ->schema([
+                                        self::textInput('create_name', 'Dibuat Oleh'),
+                                        // ->placeholder('Marketing'),
+                                        self::signatureInput('create_signature', ''),
+                                    ])->hiddenOn(operations: 'edit'),
+
+                                Grid::make(1)
+                                    ->schema([
+                                        self::textInput('knowing_name', 'Mengetahui'),
+                                        // ->placeholder('Produksi'),
+                                        self::signatureInput('knowing_signature', ''),
+                                    ])->hiddenOn(operations: 'create'),
+
+                            ]),
+
                     ]),
             ]);
     }
@@ -99,26 +140,41 @@ class PermintaanPembelianResource extends Resource
             ->columns([
                 //
                 self::textColumn('permintaanBahanWBB.no_surat', 'No Surat WBB'),
+
+                TextColumn::make('status_persetujuan')
+                    ->label('Status Persetujuan')
+                    ->badge()
+                    ->color(
+                        fn($state) =>
+                        $state === 'Disetujui' ? 'success' : 'danger'
+                    )
+                    ->alignCenter(),
+
                 ImageColumn::make('pic.create_signature')
                     ->label('Pembuat')
                     ->width(150)
                     ->height(75),
+
                 ImageColumn::make('pic.knowing_signature')
                     ->label('Pembuat')
                     ->width(150)
                     ->height(75),
+
             ])
             ->filters([
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
-                Action::make('pdf_view')
-                    ->label(_('View PDF'))
-                    ->icon('heroicon-o-document')
-                    ->color('success')
-                    ->url(fn($record) => self::getUrl('pdfPermintaanPembelian', ['record' => $record->id])),
+                ActionGroup::make([
+                    Tables\Actions\EditAction::make(),
+                    Tables\Actions\DeleteAction::make(),
+                    Action::make('pdf_view')
+                        ->label(_('View PDF'))
+                        ->icon('heroicon-o-document')
+                        ->color('success')
+                        ->visible(fn($record) => $record->status_persetujuan === 'Disetujui')
+                        ->url(fn($record) => self::getUrl('pdfPermintaanPembelian', ['record' => $record->id])),
+                ])
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -156,7 +212,7 @@ class PermintaanPembelianResource extends Resource
     {
         return
             Select::make($fieldName)
-            ->relationship($relation, $title)
+            ->relationship($relation, $title, fn($query) => $query->whereDoesntHave('pembelian'))
             ->label($label)
             ->native(false)
             ->searchable()

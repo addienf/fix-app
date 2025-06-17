@@ -63,16 +63,20 @@ class SerahTerimaBahanResource extends Resource
                     ->hiddenOn('edit')
                     ->collapsible()
                     ->schema([
+
                         self::selectInput('permintaan_bahan_pro_id', 'Pilih Nomor Surat', 'permintaanBahanPro', 'no_surat')
                             ->placeholder('Pilin No Surat Dari Permintaan Alat dan Bahan Produksi')
                             ->columnSpanFull(),
+
                     ]),
 
                 Section::make('Informasi Umum')
                     ->collapsible()
                     ->schema([
+
                         Grid::make(2)
                             ->schema([
+
                                 self::textInput('no_surat', 'No Surat')
                                     ->unique(ignoreRecord: true)
                                     ->placeholder($lastValue ? "Data Terakhir : {$lastValue}" : 'Data Belum Tersedia')
@@ -259,7 +263,9 @@ class SerahTerimaBahanResource extends Resource
             ->relationship(
                 $relation,
                 $title,
-                fn($query) => $query->where('status', 'Tersedia')
+                fn($query) => $query
+                    ->where('status_penerimaan', 'Diterima')
+                    ->where('status', 'Tersedia')
                     ->whereDoesntHave('serahTerimaBahan')
             )
             ->label($label)

@@ -20,6 +20,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Actions\Action;
+use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -30,7 +31,7 @@ use Saade\FilamentAutograph\Forms\Components\SignaturePad;
 class PermintaanBahanResource extends Resource
 {
     protected static ?string $model = PermintaanBahan::class;
-
+    protected static ?string $slug = 'Warehouse/permintaan-pembelian-bahan-warehpuse';
     protected static ?string $navigationIcon = 'heroicon-o-cog-6-tooth';
     protected static ?int $navigationSort = 5;
     protected static ?string $navigationGroup = 'Warehouse';
@@ -46,15 +47,17 @@ class PermintaanBahanResource extends Resource
             ->schema([
                 //
                 Section::make('Nomor Surat')
+                    ->collapsible()
                     ->schema([
 
                         self::selectInput('permintaan_bahan_pro_id', 'permintaanBahanPro', 'no_surat', 'Pilih Nomor Surat')
-                            ->placeholder('Pilih Nomor Surat Permintaan Bahan')
+                            ->placeholder('Pilin No Surat Dari Permintaan Alat dan Bahan Produksi')
                             ->columnSpanFull(),
 
                     ]),
 
                 Section::make('Informasi Umum')
+                    ->collapsible()
                     ->schema([
 
                         Grid::make(2)
@@ -69,18 +72,21 @@ class PermintaanBahanResource extends Resource
                                     ->required(),
 
                                 self::textInput('dari', 'Dari')
-                                    ->placeholder('Produksi'),
+                                    ->placeholder('Warehouse'),
 
-                                self::textInput('kepada', 'Kepada'),
+                                self::textInput('kepada', 'Kepada')
+                                    ->placeholder('Purchasing'),
 
                             ])
                     ]),
 
                 Section::make('List Detail Bahan Baku')
+                    ->collapsible()
                     ->schema([
                         Grid::make(2)
                             ->schema([
                                 Repeater::make('details')
+                                    ->label('')
                                     ->relationship('details')
                                     ->schema([
                                         Grid::make(4)
@@ -115,12 +121,13 @@ class PermintaanBahanResource extends Resource
                             ])
                     ]),
                 Section::make('PIC')
+                    ->collapsible()
                     ->relationship('pic')
                     ->schema([
                         Grid::make(1)
                             ->schema([
-                                self::textInput('create_name', 'Nama Pembuat'),
-                                self::signatureInput('create_signature', 'Dibuat Oleh'),
+                                self::textInput('create_name', 'Dibuat Oleh'),
+                                self::signatureInput('create_signature', ''),
                             ])
                     ]),
             ]);
@@ -145,13 +152,15 @@ class PermintaanBahanResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
-                Action::make('pdf_view')
-                    ->label(_('View PDF'))
-                    ->icon('heroicon-o-document')
-                    ->color('success')
-                    ->url(fn($record) => self::getUrl('pdfPermintaanBahanWBB', ['record' => $record->id])),
+                ActionGroup::make([
+                    Tables\Actions\EditAction::make(),
+                    Tables\Actions\DeleteAction::make(),
+                    Action::make('pdf_view')
+                        ->label(_('View PDF'))
+                        ->icon('heroicon-o-document')
+                        ->color('success')
+                        ->url(fn($record) => self::getUrl('pdfPermintaanBahanWBB', ['record' => $record->id])),
+                ])
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -193,7 +202,10 @@ class PermintaanBahanResource extends Resource
             ->relationship(
                 $relation,
                 $title,
-                fn($query) => $query->where('status', false)
+                fn($query) => $query
+                    ->where('status_penerimaan', 'Diterima')
+                    ->where('status', 'Tidak Tersedia')
+                    ->whereDoesntHave('permintaanBahanWBB')
             )
             ->label($label)
             ->native(false)

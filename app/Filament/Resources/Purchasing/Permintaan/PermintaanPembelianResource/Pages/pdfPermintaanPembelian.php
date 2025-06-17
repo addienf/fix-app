@@ -23,4 +23,9 @@ class pdfPermintaanPembelian extends Page
         $this->record = $record;
         $this->permintaan_pembelian = PermintaanPembelian::with(['permintaanBahanWBB', 'details', 'pic'])->find($record);
     }
+
+    public function getBreadcrumb(): string
+    {
+        return 'Lihat PDF';
+    }
 }

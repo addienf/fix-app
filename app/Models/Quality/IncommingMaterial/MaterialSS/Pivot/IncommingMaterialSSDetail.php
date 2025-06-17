@@ -14,11 +14,13 @@ class IncommingMaterialSSDetail extends Model
 
     protected $fillable = [
         'material_ss_id',
-        'details',
+        'checklists',
+        'details_tambahan',
     ];
 
     protected $casts = [
-        'details' => 'array',
+        'checklists' => 'array',
+        'details_tambahan' => 'array'
     ];
 
     public function productSS()

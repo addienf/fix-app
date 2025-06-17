@@ -46,6 +46,15 @@ class IncommingMaterialNonSSResource extends Resource
             ->map(fn($part) => ['part' => $part])
             ->toArray();
 
+        // $defaultParts = collect(config('incommingMaterialSS.procedures'))
+        //     ->map(function ($item, $index) {
+        //         $expected = config('incommingMaterialSS.expected')[$index] ?? null;
+        //         return [
+        //             'procedures' => $item,
+        //             'expected' => $expected,
+        //         ];
+        //     })->toArray();
+
         return $form
             ->schema([
                 //
@@ -57,55 +66,73 @@ class IncommingMaterialNonSSResource extends Resource
                         self::textInput('supplier', 'Supplier'),
                     ]),
 
-                Fieldset::make('Tabel Kelengkapan Material')
-                    ->relationship('detail')
-                    ->schema([
-                        TableRepeater::make('details')
-                            ->label('')
-                            ->schema([
-                                self::textInput('part', 'Description')
-                                    ->extraAttributes([
-                                        'readonly' => true,
-                                        'style' => 'pointer-events: none;'
-                                    ]),
-                                ButtonGroup::make('result')
-                                    ->options([
-                                        '1' => 'Pass',
-                                        '0' => 'Fail',
-                                    ])
-                                    ->onColor('primary')
-                                    ->offColor('gray')
-                                    ->gridDirection('row')
-                                    ->default('individual'),
+                // Section::make('Tabel Kelengkapan Material')
+                //     ->collapsible()
+                //     ->relationship('detail')
+                //     ->schema([
+                //         TableRepeater::make('details')
+                //             ->label('')
+                //             ->schema([
 
-                                self::textInput('remark', 'Remark')
+                //                 self::textArea('procedures', 'Description'),
+                //                 self::textArea('expected', 'Expected'),
+                //                 self::textArea('actual_result', 'Actual Result')
 
-                            ])
-                            ->default($defaultParts)
-                            ->columns(3)
-                    ]),
 
-                Fieldset::make('Summary')
-                    ->relationship('summary')
-                    ->schema([
-                        TableRepeater::make('summary')
-                            ->label('')
-                            ->schema([
-                                self::textInput('part', 'Summary')
-                                    ->extraAttributes([
-                                        'readonly' => true,
-                                        'style' => 'pointer-events: none;'
-                                    ]),
+                //             ])
+                //             ->default($defaultParts)
+                //             ->columns(3)
+                //     ]),
 
-                                self::textInput('critical', 'Critical'),
-                                self::textInput('major', 'Major'),
-                                self::textInput('minor', 'Minor'),
-                                self::textInput('total_acc', 'Total'),
+                // Fieldset::make('Tabel Kelengkapan Material')
+                //     ->relationship('detail')
+                //     ->schema([
+                //         TableRepeater::make('details')
+                //             ->label('')
+                //             ->schema([
+                //                 self::textInput('part', 'Description')
+                //                     ->extraAttributes([
+                //                         'readonly' => true,
+                //                         'style' => 'pointer-events: none;'
+                //                     ]),
+                //                 ButtonGroup::make('result')
+                //                     ->options([
+                //                         '1' => 'Pass',
+                //                         '0' => 'Fail',
+                //                     ])
+                //                     ->onColor('primary')
+                //                     ->offColor('gray')
+                //                     ->gridDirection('row')
+                //                     ->default('individual'),
 
-                            ])
-                            ->default($summaryParts)
-                            ->columns(3)
-                    ]),
+                //                 self::textInput('remark', 'Remark')
+
+                //             ])
+                //             ->default($defaultParts)
+                //             ->columns(3)
+                //     ]),
+
+                // Fieldset::make('Summary')
+                //     ->relationship('summary')
+                //     ->schema([
+                //         TableRepeater::make('summary')
+                //             ->label('')
+                //             ->schema([
+                //                 self::textInput('part', 'Summary')
+                //                     ->extraAttributes([
+                //                         'readonly' => true,
+                //                         'style' => 'pointer-events: none;'
+                //                     ]),
+
+                //                 self::textInput('critical', 'Critical'),
+                //                 self::textInput('major', 'Major'),
+                //                 self::textInput('minor', 'Minor'),
+                //                 self::textInput('total_acc', 'Total'),
+
+                //             ])
+                //             ->default($summaryParts)
+                //             ->columns(3)
+                //     ]),
 
                 Fieldset::make('')
                     ->schema([
@@ -173,60 +200,60 @@ class IncommingMaterialNonSSResource extends Resource
     {
         return
             Select::make($fieldName)
-                ->relationship($relation, $title)
-                ->label($label)
-                ->native(false)
-                ->searchable()
-                ->preload()
-                ->required()
-                ->reactive();
+            ->relationship($relation, $title)
+            ->label($label)
+            ->native(false)
+            ->searchable()
+            ->preload()
+            ->required()
+            ->reactive();
     }
 
     protected static function selectInputOptions(string $fieldName, string $label, string $config): Select
     {
         return
             Select::make($fieldName)
-                ->options(config($config))
-                ->label($label)
-                ->native(false)
-                ->searchable()
-                ->preload()
-                ->required()
-                ->reactive();
+            ->options(config($config))
+            ->label($label)
+            ->native(false)
+            ->searchable()
+            ->preload()
+            ->required()
+            ->reactive();
     }
 
     protected static function datePicker(string $fieldName, string $label): DatePicker
     {
         return
             DatePicker::make($fieldName)
-                ->label($label)
-                ->displayFormat('M d Y')
-                ->seconds(false);
+            ->label($label)
+            ->displayFormat('M d Y')
+            ->seconds(false);
     }
 
     protected static function signatureInput(string $fieldName, string $labelName): SignaturePad
     {
         return
             SignaturePad::make($fieldName)
-                ->label($labelName)
-                ->exportPenColor('#0118D8')
-                ->helperText('*Harap Tandatangan di tengah area yang disediakan.')
-                ->afterStateUpdated(function ($state, $set) use ($fieldName) {
-                    if (blank($state))
-                        return;
-                    $path = SignatureUploader::handle($state, 'ttd_', 'Quality/IncommingMaterial/NonSS/Signatures');
-                    if ($path) {
-                        $set($fieldName, $path);
-                    }
-                });
+            ->label($labelName)
+            ->exportPenColor('#0118D8')
+            ->helperText('*Harap Tandatangan di tengah area yang disediakan.')
+            ->afterStateUpdated(function ($state, $set) use ($fieldName) {
+                if (blank($state))
+                    return;
+                $path = SignatureUploader::handle($state, 'ttd_', 'Quality/IncommingMaterial/NonSS/Signatures');
+                if ($path) {
+                    $set($fieldName, $path);
+                }
+            });
     }
 
     protected static function textColumn(string $fieldName, string $label): TextColumn
     {
         return
             TextColumn::make($fieldName)
-                ->label($label)
-                ->searchable()
-                ->sortable();
+            ->label($label)
+            ->searchable()
+            ->sortable();
     }
 }

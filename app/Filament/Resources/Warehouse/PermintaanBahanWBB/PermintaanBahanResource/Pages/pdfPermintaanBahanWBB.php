@@ -23,4 +23,9 @@ class pdfPermintaanBahanWBB extends Page
         $this->record = $record;
         $this->permintaan_bahan = PermintaanBahan::with(['permintaanBahanPro', 'details', 'pic'])->find($record);
     }
+
+    public function getBreadcrumb(): string
+    {
+        return 'Lihat PDF';
+    }
 }

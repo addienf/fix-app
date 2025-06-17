@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('no_po');
             $table->string('supplier');
             $table->string('remark');
+            $table->string('status_penyelesaian');
             $table->timestamps();
         });
     }

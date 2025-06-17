@@ -20,6 +20,7 @@ class IncommingMaterialSS extends Model
         'no_po',
         'supplier',
         'remark',
+        'status_penyelesaian',
     ];
 
     public function permintaanPembelian()
@@ -44,6 +45,22 @@ class IncommingMaterialSS extends Model
 
     protected static function booted()
     {
+        static::saving(function ($model) {
+            if (
+                $model->pic?->checked_signature &&
+                $model->status_penyelesaian !== 'Diperiksa'
+            ) {
+                $model->status_penyelesaian = 'Diperiksa';
+            }
+
+            if (
+                $model->pic?->approved_signature &&
+                $model->status_penyelesaian !== 'Disetujui'
+            ) {
+                $model->status_penyelesaian = 'Disetujui';
+            }
+        });
+
         static::deleting(function ($model) {
             if ($model->detail) {
                 $model->detail->delete();
