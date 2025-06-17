@@ -22,7 +22,7 @@
             <table class="w-full text-sm dark:bg-gray-900" style="border-collapse: collapse;">
                 <tr>
                     <td class="px-3 py-2 border-b border-black dark:border-white">No. Dokumen</td>
-                    <td class="px-3 py-2 font-semibold border-b border-black dark:border-white"> : FO-QKS-PRD-01-01</td>
+                    <td class="px-3 py-2 font-semibold border-b border-black dark:border-white"> : FO-QKS-SLS-01-01</td>
                 </tr>
                 <tr>
                     <td class="px-3 py-2 border-b border-black dark:border-white">Tanggal Rilis</td>
