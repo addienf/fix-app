@@ -17,12 +17,12 @@ return new class extends Migration
             $table->string('checked_signature');
             $table->string('checked_name');
             $table->date('checked_date');
-            $table->string('accepted_signature');
-            $table->string('accepted_name');
-            $table->date('accepted_date');
-            $table->string('approved_signature');
-            $table->string('approved_name');
-            $table->date('approved_date');
+            $table->string('accepted_signature')->nullable();
+            $table->string('accepted_name')->nullable();
+            $table->date('accepted_date')->nullable();
+            $table->string('approved_signature')->nullable();
+            $table->string('approved_name')->nullable();
+            $table->date('approved_date')->nullable();
             $table->timestamps();
         });
     }

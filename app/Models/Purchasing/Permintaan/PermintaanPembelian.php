@@ -18,6 +18,7 @@ class PermintaanPembelian extends Model
 
     protected $fillable = [
         'permintaan_bahan_wbb_id',
+        'status_persetujuan',
     ];
 
 
@@ -53,6 +54,15 @@ class PermintaanPembelian extends Model
 
     protected static function booted()
     {
+        static::saving(function ($model) {
+            if (
+                $model->pic?->knowing_signature &&
+                $model->status_persetujuan !== 'Disetujui'
+            ) {
+                $model->status_persetujuan = 'Disetujui';
+            }
+        });
+
         static::deleting(function ($model) {
             foreach ($model->details as $detail) {
                 $detail->delete();

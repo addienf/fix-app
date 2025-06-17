@@ -14,10 +14,10 @@ return new class extends Migration
         Schema::create('permintaan_pembelian_pics', function (Blueprint $table) {
             $table->id();
             $table->foreignId('permintaan_pembelian_id')->constrained('permintaan_pembelians')->onDelete('cascade');
-            $table->text('create_signature');
+            $table->string('create_signature');
             $table->string('create_name');
-            $table->text('knowing_signature');
-            $table->string('knowing_name');
+            $table->string('knowing_signature')->nullable();
+            $table->string('knowing_name')->nullable();
             $table->timestamps();
         });
     }

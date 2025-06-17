@@ -10,4 +10,11 @@ return [
         'There was no color change within 3 minutes after the liquid dropped on the surface that indicating materials is genuine SS304',
         'No defect and rust found',
     ],
+
+    'parts' => [
+        'The correct items were accepted',
+        'Items are not crushed or broken',
+        'Speceifications are as required',
+        'Function check are as required',
+    ],
 ];
