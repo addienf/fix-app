@@ -1,9 +1,8 @@
 <x-filament-panels::page>
     <x-filament::section>
-        <script src="https://raw.githack.com/eKoopmans/html2pdf/master/dist/html2pdf.bundle.min.js"></script>
+        {{-- <script src="https://raw.githack.com/eKoopmans/html2pdf/master/dist/html2pdf.bundle.min.js"></script> --}}
 
-        <div id="export-area"
-            class="p-6 bg-white rounded-lg shadow-md border border-gray-200 max-w-3xl mx-auto>
+  
             <h2 class="mb-3 text-xl font-bold text-center">Detail Permintaan Spesifikasi Produk</h2>
 
             <!-- HEADER DOKUMEN -->
@@ -31,7 +30,7 @@
                             <tr>
                                 <td class="px-3 py-2 border-b border-black dark:border-white">No. Dokumen</td>
                                 <td class="px-3 py-2 font-semibold border-b border-black dark:border-white"> :
-                                    FO-QKS-PRD-01-01</td>
+                                    FO-QKS-SLS-01-01</td>
                             </tr>
                             <tr>
                                 <td class="px-3 py-2 border-b border-black dark:border-white">Tanggal Rilis</td>
@@ -130,7 +129,6 @@
                         value="{{ \Carbon\Carbon::parse($spesifikasi->pic->date)->translatedFormat('d F Y') }}" />
                 </div>
             </div>
-        </div>
 
         <x-filament::button wire:ignore onclick="exportPDF()">Download PDF</x-filament::button>
         <script src="https://raw.githack.com/eKoopmans/html2pdf/master/dist/html2pdf.bundle.min.js"></script>
