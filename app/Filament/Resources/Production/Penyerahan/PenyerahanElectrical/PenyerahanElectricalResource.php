@@ -340,7 +340,7 @@ class PenyerahanElectricalResource extends Resource
             ->placeholder('Pilih Kondisi Produk')
             ->options([
                 'baik' => 'Baik',
-                'cukup baik' => 'Cukup Baik',
+                'cukup_baik' => 'Cukup Baik',
                 'perlu_perbaikan' => 'Perlu Perbaikan'
             ]);
     }
@@ -371,7 +371,7 @@ class PenyerahanElectricalResource extends Resource
             ->options([
                 'semua' => 'Semua Komponen Mekanin Terpasang Dengan Benar',
                 'kurang' => 'Ada Komponen Yang Kurang',
-                'perlu diganti' => 'Ada Komponen Yang Perlu Diperbaiki atau Diganti'
+                'perlu_diganti' => 'Ada Komponen Yang Perlu Diperbaiki atau Diganti'
             ]);
     }
 
@@ -383,7 +383,7 @@ class PenyerahanElectricalResource extends Resource
             ->required()
             ->placeholder('Pilih Dokumen Pendukung')
             ->options([
-                'gambar teknis' => 'Gambar Teknis',
+                'gambar_teknis' => 'Gambar Teknis',
                 'sop' => 'SOP atau Instruksi Perakitan',
                 'laporan' => 'Laporan QC (Quality Control)'
             ]);

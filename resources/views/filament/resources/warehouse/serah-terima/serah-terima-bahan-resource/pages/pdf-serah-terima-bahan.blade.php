@@ -41,15 +41,15 @@
             </tr>
         </table>
         @php
-$fields = [
-    ['label' => 'Nomor:', 'value' => $serah_terima->permintaanBahanPro->no_surat],
-    [
-        'label' => 'Tanggal :',
-        'value' => \Carbon\Carbon::parse($serah_terima->tanggal)->translatedFormat('d F Y'),
-    ],
-    ['label' => 'Dari :', 'value' => $serah_terima->dari],
-    ['label' => 'Kepada :', 'value' => $serah_terima->kepada],
-];
+            $fields = [
+                ['label' => 'Nomor:', 'value' => $serah_terima->permintaanBahanPro->no_surat],
+                [
+                    'label' => 'Tanggal :',
+                    'value' => \Carbon\Carbon::parse($serah_terima->tanggal)->translatedFormat('d M Y'),
+                ],
+                ['label' => 'Dari :', 'value' => $serah_terima->dari],
+                ['label' => 'Kepada :', 'value' => $serah_terima->kepada],
+            ];
         @endphp
 
         <div class="grid max-w-4xl grid-cols-1 pt-6 mx-auto mb-6 text-sm md:grid-cols-2 gap-x-6 gap-y-4">
@@ -66,7 +66,7 @@ $fields = [
             <p class="mb-2">Dengan hormat,</p>
             <p class="flex flex-wrap items-center gap-1">
                 <span>Berdasarkan Permintaan Barang No</span>
-                <input disabled class="w-45 px-2 py-1 text-sm align-middle bg-transparent border-none h-7"
+                <input disabled class="px-2 py-1 text-sm align-middle bg-transparent border-none w-45 h-7"
                     value="{{ $serah_terima->permintaanBahanPro->no_surat }}" />
                 <span>Dari Departemen</span>
                 <input disabled class="w-32 px-2 py-1 text-sm align-middle bg-transparent border-none h-7"
@@ -74,7 +74,7 @@ $fields = [
                 <span>mohon bantuan untuk memenuhi kebutuhan bahan untuk sparepart dengan rincian sebagai
                     berikut:</span>
             </p>
-        </div>        
+        </div>
         <div class="max-w-4xl mx-auto overflow-x-auto">
             <table class="w-full text-sm text-left border border-gray-300 dark:border-gray-600">
                 <thead class="text-black bg-gray-100 dark:bg-gray-800 dark:text-white">

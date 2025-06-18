@@ -72,35 +72,6 @@
             B. Detail Jadwal Produksi
         </h2>
 
-        {{-- <div class="max-w-4xl mx-auto mt-6 overflow-x-auto text-sm">
-            <table class="w-full text-center border border-collapse border-black">
-                <thead class="bg-gray-100">
-                    <tr>
-                        <th class="px-2 py-1 border border-black">No</th>
-                        <th class="px-2 py-1 border border-black">Nomor Produk</th>
-                        <th class="px-2 py-1 border border-black">Model/Type</th>
-                        <th class="px-2 py-1 border border-black">Volume</th>
-                        <th class="px-2 py-1 border border-black">No Seri</th>
-                        <th class="px-2 py-1 border border-black">Jumlah </th>
-                        <th class="px-2 py-1 border border-black">SPK MKT No.</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @for ($i = 1; $i <= 5; $i++)
-                        <tr>
-                            <td class="px-2 py-1 border border-black">{{ $i }}</td>
-                            <td class="px-2 py-1 border border-black">Contoh Barang {{ $i }}</td>
-                            <td class="px-2 py-1 border border-black">10</td>
-                            <td class="px-2 py-1 border border-black">pcs</td>
-                            <td class="px-2 py-1 border border-black">10.000</td>
-                            <td class="px-2 py-1 border border-black">100.000</td>
-                            <td class="px-2 py-1 border border-black">-</td>
-                        </tr>
-                    @endfor
-                </tbody>
-            </table>
-        </div> --}}
-
         <div class="w-full max-w-4xl mx-auto mt-6 overflow-x-auto text-sm">
             <table class="w-full text-sm text-left border border-gray-300 dark:border-gray-600">
                 <thead class="text-black bg-gray-100 dark:bg-gray-800 dark:text-white">

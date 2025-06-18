@@ -3,7 +3,8 @@
         <h2 class="mb-3 text-xl font-bold text-center">Detail Jadwal Produksi</h2>
 
         <!-- HEADER DOKUMEN -->
-        <table class="w-full max-w-4xl mx-auto text-sm border border-black dark:border-white dark:bg-gray-900 dark:text-white"
+        <table
+            class="w-full max-w-4xl mx-auto text-sm border border-black dark:border-white dark:bg-gray-900 dark:text-white"
             style="border-collapse: collapse;">
             <tr>
                 <td rowspan="3"
@@ -23,11 +24,13 @@
                     <table class="w-full text-sm dark:bg-gray-900 dark:text-white" style="border-collapse: collapse;">
                         <tr>
                             <td class="px-3 py-2 border-b border-black dark:border-white">No. Dokumen</td>
-                            <td class="px-3 py-2 font-semibold border-b border-black dark:border-white">: FO-QKS-PRD-01-01</td>
+                            <td class="px-3 py-2 font-semibold border-b border-black dark:border-white">:
+                                FO-QKS-PRD-01-01</td>
                         </tr>
                         <tr>
                             <td class="px-3 py-2 border-b border-black dark:border-white">Tanggal Rilis</td>
-                            <td class="px-3 py-2 font-semibold border-b border-black dark:border-white">: 12 Maret 2025</td>
+                            <td class="px-3 py-2 font-semibold border-b border-black dark:border-white">: 12 Maret 2025
+                            </td>
                         </tr>
                         <tr>
                             <td class="px-3 py-2">Revisi</td>
@@ -41,24 +44,27 @@
 
         <!-- A. Informasi Umum -->
         <div class="max-w-4xl pt-6 mx-auto mb-3 text-lg font-bold text-start">A. Informasi Umum</div>
-                    @php
+        @php
             $infoUmum = [
-                ['label' => 'Tanggal:', 'value' => $jadwal->tanggal],
+                [
+                    'label' => 'Tanggal:',
+                    'value' => \Carbon\Carbon::parse($jadwal->tanggal)->translatedFormat('d M Y'),
+                ],
                 ['label' => 'Penanggung Jawab:', 'value' => $jadwal->pic_name],
             ];
             $mesin = ['label' => 'Mesin yang Digunakan:', 'value' => $jadwal->sumber->mesin_yang_digunakan];
             $tenagaKerja = ['label' => 'Tenaga Kerja:', 'value' => $jadwal->sumber->tenaga_kerja];
-                    @endphp
+        @endphp
 
-            <div class="grid max-w-4xl grid-cols-1 pt-2 mx-auto mb-6 text-sm md:grid-cols-2 gap-x-6 gap-y-4">
-                @foreach ($infoUmum as $field)
-                    <div class="flex flex-col items-start gap-2 md:flex-row md:gap-4 md:items-center">
-                        <label class="font-medium md:w-48">{{ $field['label'] }}</label>
-                        <input type="text"
-                            class="w-[400px] px-2 py-1 text-black bg-white border border-gray-300 rounded cursor-not-allowed dark:border-gray-600 dark:bg-gray-800 dark:text-white"
-                            value="{{ $field['value'] }}" readonly />
-                    </div>
-                @endforeach
+        <div class="grid max-w-4xl grid-cols-1 pt-2 mx-auto mb-6 text-sm md:grid-cols-2 gap-x-6 gap-y-4">
+            @foreach ($infoUmum as $field)
+                <div class="flex flex-col items-start gap-2 md:flex-row md:gap-4 md:items-center">
+                    <label class="font-medium md:w-48">{{ $field['label'] }}</label>
+                    <input type="text"
+                        class="w-[400px] px-2 py-1 text-black bg-white border border-gray-300 rounded cursor-not-allowed dark:border-gray-600 dark:bg-gray-800 dark:text-white"
+                        value="{{ $field['value'] }}" readonly />
+                </div>
+            @endforeach
         </div>
 
         <!-- B. Detail Jadwal Produksi -->
@@ -86,9 +92,9 @@
                             <td class="px-4 py-2 border">{{ $produk['volume'] }}</td>
                             <td class="px-4 py-2 border">{{ $produk['jumlah'] }}</td>
                             <td class="px-4 py-2 border">
-                                {{ \Carbon\Carbon::parse($produk['tanggal_mulai'])->translatedFormat('d F Y') }}</td>
+                                {{ \Carbon\Carbon::parse($produk['tanggal_mulai'])->translatedFormat('d M Y') }}</td>
                             <td class="px-4 py-2 border">
-                                {{ \Carbon\Carbon::parse($produk['tanggal_selesai'])->translatedFormat('d F Y') }}</td>
+                                {{ \Carbon\Carbon::parse($produk['tanggal_selesai'])->translatedFormat('d M Y') }}</td>
                             <td class="px-4 py-2 border">{{ $jadwal->spk->no_spk }}</td>
                         </tr>
                     @endforeach
