@@ -16,4 +16,14 @@ class CreateIncommingMaterial extends CreateRecord
     {
         return $this->getResource()::getUrl('index');
     }
+
+    public function getTitle(): string
+    {
+        return 'Tambah Data Incoming Material';
+    }
+
+    public function getBreadcrumb(): string
+    {
+        return 'Tambah';
+    }
 }

@@ -16,4 +16,14 @@ class CreateIncommingMaterialNonSS extends CreateRecord
     {
         return $this->getResource()::getUrl('index');
     }
+
+    public function getTitle(): string
+    {
+        return 'Tambah Data Incoming Material Non Stainless Steel';
+    }
+
+    public function getBreadcrumb(): string
+    {
+        return 'Tambah';
+    }
 }

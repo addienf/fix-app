@@ -4,18 +4,25 @@ namespace App\Filament\Resources\Warehouse\Incomming;
 
 use App\Filament\Resources\Warehouse\Incomming\IncommingMaterialResource\Pages;
 use App\Filament\Resources\Warehouse\Incomming\IncommingMaterialResource\RelationManagers;
+use App\Models\Purchasing\Permintaan\PermintaanPembelian;
 use App\Models\Warehouse\Incomming\IncommingMaterial;
 use App\Services\SignatureUploader;
 use Filament\Actions\Action;
 use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Fieldset;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Actions\ActionGroup;
+use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -25,7 +32,7 @@ use Saade\FilamentAutograph\Forms\Components\SignaturePad;
 class IncommingMaterialResource extends Resource
 {
     protected static ?string $model = IncommingMaterial::class;
-
+    protected static ?string $slug = 'warehouse/incoming-material';
     protected static ?string $navigationIcon = 'heroicon-o-cog-6-tooth';
     protected static ?int $navigationSort = 3;
     protected static ?string $navigationGroup = 'Warehouse';
@@ -33,24 +40,128 @@ class IncommingMaterialResource extends Resource
     protected static ?string $pluralLabel = 'Incoming Material';
     protected static ?string $modelLabel = 'Incoming Material';
 
+    public static function getNavigationBadge(): ?string
+    {
+        $count = IncommingMaterial::where('status_penerimaan_pic', '!=', 'Diterima')->count();
+
+        return $count > 0 ? (string) $count : null;
+    }
+
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
                 //
-                Fieldset::make('')
+                Hidden::make('status_penerimaan_pic')
+                    ->default('Belum Diterima'),
+
+                Section::make('Informasi Umum')
+                    ->collapsible()
                     ->schema([
-                        self::selectInput('permintaan_pembelian_id', 'No', 'permintaanPembelian', 'id')
+
+                        self::selectInput()
+                            ->placeholder('Pilih Nomor Surat Permintaan Bahan')
+                            ->hiddenOn('edit')
                             ->required(),
-                        self::datePicker('tanggal', 'Tanggal Penerimaan'),
+
+                        self::datePicker('tanggal', 'Tanggal Penerimaan')
+                            ->required(),
+
                     ]),
 
-                Fieldset::make('')
+                Section::make('Informasi Material')
+                    ->collapsible()
                     ->schema([
-                        self::textInput('kondisi_material', 'Pemeriksaan Material'),
-                        self::textInput('status_penerimaan', 'Status Penerimaan'),
-                        self::textInput('dokumen_pendukung', 'Dokumen Pendukung'),
+
+                        Repeater::make('details')
+                            ->relationship('details')
+                            ->schema([
+
+                                Grid::make(6)
+                                    ->schema([
+
+                                        self::textInput('nama_material', 'Nama Material')
+                                            ->extraAttributes([
+                                                'readonly' => true,
+                                                'style' => 'pointer-events: none;'
+                                            ]),
+
+                                        self::textInput('batch_no', 'Batch No')
+                                            ->extraAttributes([
+                                                'readonly' => true,
+                                                'style' => 'pointer-events: none;'
+                                            ]),
+
+                                        self::textInput('jumlah', 'Jumlah Diterima')
+                                            ->numeric(),
+
+                                        self::textInput('satuan', 'Satuan'),
+
+                                        self::textInput('kondisi_material', 'Kondisi Material'),
+
+                                        self::selectStatusLabel(),
+                                    ]),
+
+                            ])
+                            ->deletable(false)
+                            ->reorderable(false)
+                            ->addable(false),
+
                     ]),
+
+                Section::make('Keterangan')
+                    ->collapsible()
+                    ->schema([
+
+                        Grid::make(3)
+                            ->schema([
+
+                                self::selectPemeriksaanMaterial()
+                                    ->helperText('Apakah material dalam kondisi baik? (Ya/Tidak)'),
+
+                                self::selectStatusPenerimaan(),
+
+                                self::selectDokumenPendukung(),
+
+                            ]),
+
+                        TextInput::make('file_upload')
+                            ->columnSpanFull()
+                            ->label('Upload Dokumen')
+                            ->visible(fn($get) => $get('dokumen_pendukung') === '1'),
+
+                    ]),
+
+                Section::make('Detail PIC')
+                    ->collapsible()
+                    ->relationship('pic')
+                    ->schema([
+
+                        Grid::make(2)
+                            ->schema([
+
+                                Grid::make(1)
+                                    ->schema([
+
+                                        self::textInput('submited_name', 'Diserahkan Oleh'),
+
+                                        self::signatureInput('submited_signature', ''),
+
+                                    ])->hiddenOn(operations: 'edit'),
+
+                                Grid::make(1)
+                                    ->schema([
+
+                                        self::textInput('received_name', 'Diterima Oleh'),
+
+                                        self::signatureInput('received_signature', ''),
+
+                                    ])->hiddenOn(operations: 'create'),
+
+                            ]),
+
+                    ]),
+
             ]);
     }
 
@@ -59,8 +170,31 @@ class IncommingMaterialResource extends Resource
         return $table
             ->columns([
                 //
-                self::textColumn('permintaan_pembelian_id', 'No'),
-                self::textColumn('tanggal', 'Tanggal Penerimaan'),
+                TextColumn::make('permintaanPembelian.permintaanBahanWBB.no_surat')
+                    ->label('No Surat Permintaan Bahan'),
+
+                self::textColumn('tanggal', 'Tanggal Penerimaan')
+                    ->formatStateUsing(fn($state) => \Carbon\Carbon::parse($state)->format('d M Y')),
+
+                TextColumn::make('status_penerimaan_pic')
+                    ->label('Status Penerimaan')
+                    ->badge()
+                    ->color(
+                        fn($state) =>
+                        $state === 'Diterima' ? 'success' : 'danger'
+                    )
+                    ->alignCenter(),
+
+                ImageColumn::make('pic.submited_signature')
+                    ->width(150)
+                    ->label('Diserahkan Oleh')
+                    ->height(75),
+
+                ImageColumn::make('pic.received_signature')
+                    ->width(150)
+                    ->label('Diterima Oleh')
+                    ->height(75),
+
             ])
             ->filters([
                 //
@@ -73,6 +207,7 @@ class IncommingMaterialResource extends Resource
                         ->label(_('View PDF'))
                         ->icon('heroicon-o-document')
                         ->color('success')
+                        ->visible(fn($record) => $record->status_penerimaan_pic === 'Diterima')
                         ->url(fn($record) => self::getUrl('pdfIncommingMaterial', ['record' => $record->id])),
                 ])
             ])
@@ -108,64 +243,157 @@ class IncommingMaterialResource extends Resource
             ->maxLength(255);
     }
 
-    protected static function selectInput(string $fieldName, string $label, string $relation, string $title): Select
+    protected static function selectInput(): Select
     {
         return
-            Select::make($fieldName)
-                ->relationship($relation, $title)
-                ->label($label)
-                ->native(false)
-                ->searchable()
-                ->preload()
-                ->required()
-                ->reactive();
+            Select::make('permintaan_pembelian_id')
+            ->label('Permintaan Pembelian')
+            ->options(function () {
+                return PermintaanPembelian::with('permintaanBahanWBB')
+                    ->whereDoesntHave('incommingMaterial')
+                    ->get()
+                    ->mapWithKeys(function ($item) {
+                        $noSurat = $item->permintaanBahanWBB->no_surat ?? '-';
+                        return [$item->id => "{$item->id} - {$noSurat}"];
+                    });
+            })
+            ->native(false)
+            ->searchable()
+            ->preload()
+            ->required()
+            ->reactive()
+            ->afterStateUpdated(function ($state, callable $set) {
+                if (!$state) return;
+
+                $pembelian = PermintaanPembelian::with(
+                    'permintaanBahanWBB',
+                    'details',
+                    'materialSS',
+                    'materialNonSS'
+                )->find($state);
+
+                // dd($pembelian->details?->first()?->nama_barang);
+
+                if (!$pembelian) return;
+
+                $nama_barang = $pembelian?->details?->first()?->nama_barang;
+                $jumlah_barang = $pembelian?->details?->first()?->jumlah;
+                $no_batch = $pembelian?->materialNonSS?->batch_no;
+
+                $details = $pembelian->details->map(function ($detail) use ($nama_barang,  $jumlah_barang, $no_batch) {
+                    return [
+                        'nama_material' => $nama_barang ?? '-',
+                        'jumlah' => $jumlah_barang ?? '-',
+                        'batch_no' => $no_batch ?? '-',
+                    ];
+                })->toArray();
+
+                // dd($details);
+                $set('details', $details);
+            });
     }
 
     protected static function selectInputOptions(string $fieldName, string $label, string $config): Select
     {
         return
             Select::make($fieldName)
-                ->options(config($config))
-                ->label($label)
-                ->native(false)
-                ->searchable()
-                ->preload()
-                ->required()
-                ->reactive();
+            ->options(config($config))
+            ->label($label)
+            ->native(false)
+            ->searchable()
+            ->preload()
+            ->required()
+            ->reactive();
+    }
+
+    protected static function selectPemeriksaanMaterial(): Select
+    {
+        return
+            Select::make('kondisi_material')
+            ->label('Pemeriksaan Material')
+            ->required()
+            ->reactive()
+            ->placeholder('Pilih Hasil Pemeriksaan Material')
+            ->options([
+                1 => 'Ya',
+                0 => 'Tidak',
+            ]);
+    }
+
+    protected static function selectStatusLabel(): Select
+    {
+        return
+            Select::make('status_qc')
+            ->label('Status Label QC')
+            ->required()
+            ->reactive()
+            ->placeholder('Pilih Status Label QC')
+            ->options([
+                1 => 'Ada',
+                0 => 'Tidak Ada',
+            ]);
+    }
+
+    protected static function selectStatusPenerimaan(): Select
+    {
+        return
+            Select::make('status_penerimaan')
+            ->label('Status Penerimaan')
+            ->required()
+            ->reactive()
+            ->placeholder('Pilih Status Penerimaan')
+            ->options([
+                1 => 'Diterima',
+                0 => 'Ditolak dan dikembalikan',
+            ]);
+    }
+
+    protected static function selectDokumenPendukung(): Select
+    {
+        return
+            Select::make('dokumen_pendukung')
+            ->label('Dokumen Pendukung')
+            ->required()
+            ->reactive()
+            ->placeholder('Tambahkan Dokumen Pendukung')
+            ->options([
+                1 => 'Ya',
+                0 => 'Tidak',
+            ]);
     }
 
     protected static function datePicker(string $fieldName, string $label): DatePicker
     {
         return
             DatePicker::make($fieldName)
-                ->label($label)
-                ->displayFormat('M d Y')
-                ->seconds(false);
+            ->label($label)
+            ->displayFormat('M d Y')
+            ->seconds(false);
     }
 
     protected static function signatureInput(string $fieldName, string $labelName): SignaturePad
     {
         return
             SignaturePad::make($fieldName)
-                ->label($labelName)
-                ->exportPenColor('#0118D8')
-                ->helperText('*Harap Tandatangan di tengah area yang disediakan.')
-                ->afterStateUpdated(function ($state, $set) use ($fieldName) {
-                    if (blank($state))
-                        return;
-                    $path = SignatureUploader::handle($state, 'ttd_', 'Warehpuse/IncommingMaterial/Signatures');
-                    if ($path) {
-                        $set($fieldName, $path);
-                    }
-                });
+            ->label($labelName)
+            ->exportPenColor('#0118D8')
+            ->helperText('*Harap Tandatangan di tengah area yang disediakan.')
+            ->afterStateUpdated(function ($state, $set) use ($fieldName) {
+                if (blank($state))
+                    return;
+                $path = SignatureUploader::handle($state, 'ttd_', 'Warehpuse/IncommingMaterial/Signatures');
+                if ($path) {
+                    $set($fieldName, $path);
+                }
+            });
     }
 
     protected static function textColumn(string $fieldName, string $label): TextColumn
     {
         return
             TextColumn::make($fieldName)
-                ->label($label)
-                ->searchable()
-                ->sortable();
+            ->label($label)
+            ->searchable()
+            ->sortable();
     }
 }

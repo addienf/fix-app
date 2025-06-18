@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('incomming_material_id')->constrained('incomming_materials')->onDelete('cascade');
             $table->string('nama_material');
+            $table->string('batch_no');
             $table->integer('jumlah');
             $table->string('satuan');
             $table->string('kondisi_material');

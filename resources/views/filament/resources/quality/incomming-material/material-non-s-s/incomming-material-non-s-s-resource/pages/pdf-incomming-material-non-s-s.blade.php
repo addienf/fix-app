@@ -1,8 +1,8 @@
 <x-filament-panels::page>
     <x-filament::section>
-    
+
         <h2 class="mb-3 text-xl font-bold text-center">Detail Formulir Incoming Material Non Stainless Steel</h2>
-    
+
         <table
             class="w-full max-w-4xl mx-auto text-sm border border-black dark:border-white dark:bg-gray-900 dark:text-white"
             style="border-collapse: collapse;">
@@ -40,14 +40,16 @@
                 </td>
             </tr>
         </table>
-        <div class="w-full max-w-4xl mx-auto pt-4 text-sm space-y-4">
+
+        <div class="w-full max-w-4xl pt-4 mx-auto space-y-4 text-sm">
+
             @php
-$fields = [
-    ['label' => 'No PO :', 'value' => 'SPK-2025-001'],
-    ['label' => 'Supplier  :', 'value' => '05 Juni 2025'],
-];
+                $fields = [
+                    ['label' => 'No PO :', 'value' => $incomingNonSS->no_po],
+                    ['label' => 'Supplier  :', 'value' => $incomingNonSS->supplier],
+                ];
             @endphp
-        
+
             @foreach ($fields as $field)
                 <div class="flex items-center">
                     <label class="w-64 font-medium">{{ $field['label'] }}</label>
@@ -55,97 +57,173 @@ $fields = [
                         class="flex-1 px-3 py-2 text-black bg-white border border-gray-300 rounded-md cursor-not-allowed" />
                 </div>
             @endforeach
-            <table class="w-full text-sm border border-black border-collapse mb-8">
+
+            @php
+                $fixedDescriptions = [
+                    'The correct items were accepted',
+                    'Items are not crushed or broken',
+                    'Specifications are as required',
+                    'Function check are as required',
+                ];
+
+                $fixedData = collect($incomingNonSS->detail->details ?? []);
+                $additionalData = $incomingNonSS->detail->details_tambahan ?? [];
+            @endphp
+
+            <table class="w-full mb-8 text-sm border border-collapse border-black">
                 <thead class="bg-gray-100">
                     <tr>
-                        <th class="border border-black px-3 py-2 w-10 text-center">No</th>
-                        <th class="border border-black px-3 py-2 text-left">Description</th>
-                        <th colspan="2" class="border border-black px-3 py-2 text-center">Condition</th>
-                        <th class="border border-black px-3 py-2 text-left">Remark</th>
+                        <th class="w-10 px-3 py-2 text-center border border-black">No</th>
+                        <th class="px-3 py-2 text-left border border-black">Description</th>
+                        <th colspan="2" class="px-3 py-2 text-center border border-black">Condition</th>
+                        <th class="px-3 py-2 text-left border border-black">Remark</th>
                     </tr>
                     <tr>
-                        <th colspan="2" class="border border-black px-3 py-2"></th>
-                        <th class="border border-black px-3 py-2 text-center">Pass</th>
-                        <th class="border border-black px-3 py-2 text-center">Fail</th>
-                        <th class="border border-black px-3 py-2"></th>
+                        <th colspan="2" class="px-3 py-2 border border-black"></th>
+                        <th class="px-3 py-2 text-center border border-black">Pass</th>
+                        <th class="px-3 py-2 text-center border border-black">Fail</th>
+                        <th class="px-3 py-2 border border-black"></th>
                     </tr>
                 </thead>
                 <tbody>
-                    @php
-$descriptions = [
-    'The correct items were accepted',
-    'Items are not crushed or broken',
-    'Specifications are as required',
-    'Function check are as required',
-    '',
-    '',
-    '',
-];
-                    @endphp
-                    @foreach ($descriptions as $i => $desc)
+                    {{-- Data Tetap --}}
+                    @foreach ($fixedDescriptions as $i => $desc)
+                        @php
+                            $row = $fixedData->firstWhere('part', $desc);
+                            $result = $row['result'] ?? null;
+                            $remark = $row['remark'] ?? '';
+                        @endphp
                         <tr>
-                            <td class="border border-black px-3 py-2 text-center">{{ $i + 1 }}</td>
-                            <td class="border border-black px-3 py-2">{{ $desc }}</td>
-                            <td class="border border-black px-3 py-2 text-center"></td>
-                            <td class="border border-black px-3 py-2 text-center"></td>
-                            <td class="border border-black px-3 py-2"></td>
+                            <td class="px-3 py-2 text-center border border-black">{{ $i + 1 }}</td>
+                            <td class="px-3 py-2 border border-black">{{ $desc }}</td>
+                            <td class="px-3 py-2 text-center border border-black">{{ $result === '1' ? '✔' : '' }}</td>
+                            <td class="px-3 py-2 text-center border border-black">{{ $result === '0' ? '✘' : '' }}</td>
+                            <td class="px-3 py-2 border border-black">{{ $remark }}</td>
+                        </tr>
+                    @endforeach
+
+                    {{-- Data Tambahan --}}
+                    @foreach ($additionalData as $j => $extra)
+                        <tr>
+                            <td class="px-3 py-2 text-center border border-black">
+                                {{ count($fixedDescriptions) + $j + 1 }}</td>
+                            <td class="px-3 py-2 border border-black">{{ $extra['part'] }}</td>
+                            <td class="px-3 py-2 text-center border border-black">
+                                {{ $extra['result'] == '1' ? '✔' : '' }}</td>
+                            <td class="px-3 py-2 text-center border border-black">
+                                {{ $extra['result'] == '0' ? '✘' : '' }}</td>
+                            <td class="px-3 py-2 border border-black">{{ $extra['remark'] }}</td>
                         </tr>
                     @endforeach
                 </tbody>
             </table>
-            <table class="w-full text-sm border border-black border-collapse">
+
+            <table class="w-full text-sm border border-collapse border-black">
+
                 <thead class="bg-gray-100">
                     <tr>
-                        <th class="border border-black px-3 py-2 text-left">Summary</th>
-                        <th class="border border-black px-3 py-2 text-center">Critical</th>
-                        <th class="border border-black px-3 py-2 text-center">Major</th>
-                        <th class="border border-black px-3 py-2 text-center">Minor</th>
+                        <th class="px-3 py-2 text-left border border-black">Summary</th>
+                        <th class="px-3 py-2 text-center border border-black">Critical</th>
+                        <th class="px-3 py-2 text-center border border-black">Major</th>
+                        <th class="px-3 py-2 text-center border border-black">Minor</th>
                     </tr>
                 </thead>
-                <tbody>
-                    @php
-$summaryRows = [
-    'Total Received Quantity',
-    'Return Quantity to Supplier',
-    'Total Rejected Quantity',
-    'Total Acceptable Quantity',
-];
-                    @endphp
-                    @foreach ($summaryRows as $row)
+
+                @foreach ($incomingNonSS->summary['summary'] as $item)
+                    <tbody>
                         <tr>
-                            <td class="border border-black px-3 py-2">{{ $row }}</td>
-                            <td class="border border-black px-3 py-2 text-center"></td>
-                            <td class="border border-black px-3 py-2 text-center"></td>
-                            <td class="border border-black px-3 py-2 text-center"></td>
+                            <td class="px-3 py-2 border border-black">Total Received Quantity</td>
+                            <td class="px-3 py-2 text-center border border-black">{{ $item['critical_1'] ?? '' }}</td>
+                            <td class="px-3 py-2 text-center border border-black">{{ $item['major_1'] ?? '' }}</td>
+                            <td class="px-3 py-2 text-center border border-black">{{ $item['minor_1'] ?? '' }}</td>
                         </tr>
-                    @endforeach
-                </tbody>
+                        <tr>
+                            <td class="px-3 py-2 border border-black">Return Quantity to Supplier</td>
+                            <td class="px-3 py-2 text-center border border-black">{{ $item['critical_2'] ?? '' }}</td>
+                            <td class="px-3 py-2 text-center border border-black">{{ $item['major_2'] ?? '' }}</td>
+                            <td class="px-3 py-2 text-center border border-black">{{ $item['minor_2'] ?? '' }}</td>
+                        </tr>
+                        <tr>
+                            <td class="px-3 py-2 border border-black">Total Rejected Quantity</td>
+                            <td class="px-3 py-2 text-center border border-black">{{ $item['critical_3'] ?? '' }}</td>
+                            <td class="px-3 py-2 text-center border border-black">{{ $item['major_3'] ?? '' }}</td>
+                            <td class="px-3 py-2 text-center border border-black">{{ $item['minor_3'] ?? '' }}</td>
+                        </tr>
+                        <tr>
+                            <td class="px-3 py-2 border border-black">Total Acceptable Quantity</td>
+                            <td colspan="3" class="px-3 py-2 text-center border border-black">
+                                {{ $item['total_acceptable_quantity'] ?? '' }}
+                            </td>
+                        </tr>
+                    </tbody>
+                @endforeach
             </table>
-            <div class="mt-4">
-                <label class="block font-semibold mb-1">Batch No.</label>
-                <textarea class="w-full border border-gray-300 p-2 rounded resize-none bg-gray-100 text-gray-500 cursor-not-allowed"
-                    rows="4" placeholder="Enter remarks..." readonly></textarea>
+
+            <div class="w-full max-w-4xl mx-auto mb-6">
+                <label for="note" class="block mb-1 text-sm font-medium text-gray-700">Batch No</label>
+                <textarea id="note" readonly
+                    class="w-full px-3 py-2 overflow-hidden text-sm leading-relaxed text-gray-800 bg-gray-100 border resize-none border-black-600">{{ trim($incomingNonSS->batch_no) }}</textarea>
             </div>
-            <div class="p-4 mb-6 max-w-4xl mx-auto">
-                <div class="grid grid-cols-3 gap-4 text-sm">
-                    @foreach (['Checked By', 'Accepted By', 'Approved By'] as $role)
+
+            @php
+                $roles = [
+                    'Checked By' => [
+                        'name' => $incomingNonSS->pic->checked_name ?? '-',
+                        'signature' => $incomingNonSS->pic->checked_signature ?? null,
+                        'date' => $incomingNonSS->pic->checked_date ?? null,
+                    ],
+                    'Accepted By' => [
+                        'name' => $incomingNonSS->pic->accepted_name ?? '-',
+                        'signature' => $incomingNonSS->pic->accepted_signature ?? null,
+                        'date' => $incomingNonSS->pic->accepted_date ?? null,
+                    ],
+                    'Approved By' => [
+                        'name' => $incomingNonSS->pic->approved_name ?? '-',
+                        'signature' => $incomingNonSS->pic->approved_signature ?? null,
+                        'date' => $incomingNonSS->pic->approved_date ?? null,
+                    ],
+                ];
+            @endphp
+
+            <div class="max-w-4xl p-4 mx-auto mb-6">
+                <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+                    @foreach ($roles as $role => $data)
                         <div>
-                            <label class="font-semibold block mb-1">{{ $role }}</label>
-                            <input type="text" value="{{ $role }} User" readonly
-                                class="w-full mb-2 border border-gray-300 p-2 rounded bg-gray-100 text-gray-500 cursor-not-allowed" />
+                            <label class="block mb-1 font-semibold">{{ $role }}</label>
+                            <input type="text" value="{{ $data['name'] }}" readonly
+                                class="w-full p-2 mb-2 text-gray-500 bg-gray-100 border border-gray-300 rounded" />
 
                             <label class="block mb-1">Signature</label>
-                            <div class="w-full h-24 mb-2 border border-black rounded bg-white"></div>
+                            <div
+                                class="flex items-center justify-center w-full h-24 mb-2 bg-white border border-black rounded">
+                                @if ($data['signature'])
+                                    <img src="{{ asset('storage/' . $data['signature']) }}" alt="Signature"
+                                        class="object-contain h-full" />
+                                @else
+                                    <span class="text-sm text-gray-400">No Signature</span>
+                                @endif
+                            </div>
 
                             <label class="block mb-1">Date</label>
-                            <input type="date" readonly value="{{ now()->format('Y-m-d') }}"
-                                class="w-full border border-gray-300 p-2 rounded bg-gray-100 text-gray-500 cursor-not-allowed" />
+                            <input type="text" readonly
+                                value="{{ $data['date'] ? \Carbon\Carbon::parse($data['date'])->format('d/m/Y') : '-' }}"
+                                class="w-full p-2 text-gray-500 bg-gray-100 border border-gray-300 rounded" />
                         </div>
                     @endforeach
                 </div>
             </div>
-        </div>
 
+            <script>
+                window.addEventListener('DOMContentLoaded', () => {
+                    const note = document.getElementById('note');
+                    if (note) {
+                        note.style.height = 'auto'; // reset dulu
+                        note.style.height = note.scrollHeight + 'px'; // sesuaikan isi
+                    }
+                });
+            </script>
+
+        </div>
 
     </x-filament::section>
 </x-filament-panels::page>
