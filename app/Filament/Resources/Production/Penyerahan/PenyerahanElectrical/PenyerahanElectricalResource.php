@@ -11,6 +11,7 @@ use App\Services\SignatureUploader;
 use Filament\Actions\Action;
 use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Section;
@@ -110,7 +111,15 @@ class PenyerahanElectricalResource extends Resource
                                     self::textArea('detail_kelengkapan_komponen', 'Detail Kelengkapan Komponen')
                                         ->visible(fn($get) => $get('kelengkapan_komponen') === 'kurang'),
                                     self::selectDokumen(),
-                                    TextInput::make('file_pendukung')
+                                    // TextInput::make('file_pendukung'),
+                                    FileUpload::make('file_pendukung')
+                                        ->label('File Pendukung')
+                                        ->directory('Production/PenyerahanElectrical/Files')
+                                        ->acceptedFileTypes(['application/pdf'])
+                                        ->maxSize(10240)
+                                        ->required()
+                                        ->columnSpanFull()
+                                        ->helperText('Hanya file PDF yang diperbolehkan. Maksimal ukuran 10 MB.'),
                                 ])
                                 ->columns(1),
                         ]),

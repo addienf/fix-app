@@ -20,10 +20,6 @@ class IncommingMaterialDetail extends Model
         'status_qc',
     ];
 
-    protected $casts = [
-        'details' => 'array',
-    ];
-
     public function incommingMaterial()
     {
         return $this->belongsTo(IncommingMaterial::class, 'incomming_material_id');

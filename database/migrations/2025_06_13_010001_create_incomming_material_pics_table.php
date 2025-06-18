@@ -16,8 +16,8 @@ return new class extends Migration
             $table->foreignId('incomming_material_id')->constrained('incomming_materials')->onDelete('cascade');
             $table->string('submited_name');
             $table->string('submited_signature');
-            $table->string('received_name');
-            $table->string('received_signature');
+            $table->string('received_name')->nullable();
+            $table->string('received_signature')->nullable();
             $table->timestamps();
         });
     }

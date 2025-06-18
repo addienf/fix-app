@@ -68,6 +68,7 @@ class IncommingMaterialSSResource extends Resource
 
                         self::selectInput('permintaan_pembelian_id', 'Permintaan Pembelian', 'permintaanPembelian', 'id')
                             ->placeholder('Pilih Nomor Permintaan Pembelian')
+                            ->hiddenOn('edit')
                             ->required(),
 
                         self::textInput('no_po', 'No. PO')
@@ -169,10 +170,9 @@ class IncommingMaterialSSResource extends Resource
                                 ->mapWithKeys(fn($label, $key) => [$label => ''])
                                 ->toArray())
                             ->afterStateHydrated(function ($component, $state) {
-                                $map = config('summarySS.fields'); // ['total_received' => 'Total Received', ...]
-                                $reverse = array_flip($map); // ['Total Received' => 'total_received']
+                                $map = config('summarySS.fields');
+                                $reverse = array_flip($map);
 
-                                // Ubah key DB ke label
                                 $component->state(
                                     collect($map)->mapWithKeys(function ($label, $key) use ($state) {
                                         return [$label => $state[$key] ?? ''];

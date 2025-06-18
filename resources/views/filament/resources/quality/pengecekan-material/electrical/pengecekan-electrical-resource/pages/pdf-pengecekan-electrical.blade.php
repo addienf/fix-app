@@ -95,10 +95,14 @@
         <table class="w-full max-w-4xl mx-auto mb-3 text-sm border border-black">
             <thead class="bg-gray-100">
                 <tr>
-                    <th class="w-10 px-3 py-2 text-center border border-black">No</th>
-                    <th class="px-3 py-2 text-left border border-black">Part</th>
-                    <th class="px-3 py-2 text-center border border-black">Result</th>
-                    <th class="px-3 py-2 text-left border border-black">Status</th>
+                    <th class="w-10 px-3 py-2 text-center border border-black" rowspan="2">No</th>
+                    <th class="px-3 py-2 text-left border border-black" rowspan="2">Part</th>
+                    <th class="px-3 py-2 text-center border border-black" colspan="2">Result</th>
+                    <th class="px-3 py-2 text-left border border-black" rowspan="2">Status</th>
+                </tr>
+                <tr>
+                    <th class="px-3 py-2 text-center border border-black">Pass</th>
+                    <th class="px-3 py-2 text-center border border-black">Fail</th>
                 </tr>
             </thead>
 
@@ -106,7 +110,7 @@
                 @php $rowNumber = 1; @endphp
                 @foreach ($details as $group)
                     <tr>
-                        <td colspan="4" class="px-3 py-2 font-semibold bg-gray-200 border border-black">
+                        <td colspan="5" class="px-3 py-2 font-semibold bg-gray-200 border border-black">
                             {{ $group['mainPart'] ?? '-' }}
                         </td>
                     </tr>
@@ -115,7 +119,10 @@
                             <td class="px-3 py-2 text-center border border-black">{{ $rowNumber++ }}</td>
                             <td class="px-3 py-2 border border-black">{{ $part['part'] ?? '-' }}</td>
                             <td class="px-3 py-2 text-center border border-black">
-                                {{ ($part['result'] ?? '0') == '1' ? 'Yes' : 'No' }}
+                                {{ ($part['result'] ?? '0') == '1' ? '✔' : '' }}
+                            </td>
+                            <td class="px-3 py-2 text-center border border-black">
+                                {{ ($part['result'] ?? '0') == '0' ? '✘' : '' }}
                             </td>
                             <td class="px-3 py-2 border border-black">
                                 {{ statusLabel($part['status'] ?? '-') }}

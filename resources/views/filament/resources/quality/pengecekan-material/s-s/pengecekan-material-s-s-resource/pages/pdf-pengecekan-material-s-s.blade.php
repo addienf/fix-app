@@ -45,29 +45,9 @@
 
         <div class="grid w-full max-w-4xl grid-cols-1 pt-6 mx-auto mb-6 text-sm gap-y-4">
             @php
-$fields = [['label' => 'No SPK Produksi :', 'value' => $pengecekanSS->spk->no_spk]];
+                $fields = [['label' => 'No SPK Produksi :', 'value' => $pengecekanSS->spk->no_spk]];
             @endphp
-        
-            @foreach ($fields as $field)
-                <div class="flex items-center gap-4">
-                    <label class="w-48 font-medium">{{ $field['label'] }}</label>
-                    <input type="text" readonly value="{{ $field['value'] }}"
-                        class="flex-1 px-3 py-2 text-black bg-white border border-gray-300 rounded-md cursor-not-allowed" />
-                </div>
-            @endforeach  
-        </div>
 
-        <h2 class="max-w-4xl mx-auto text-xl font-bold text-start">Chamber Identification</h2>
-
-        
-        <div class="grid w-full max-w-4xl grid-cols-1 pt-6 mx-auto mb-6 text-sm gap-y-4">
-            @php
-                $fields = [
-                    ['label' => 'Type/Model :', 'value' => $pengecekanSS->tipe],
-                    ['label' => 'Ref. Document :', 'value' => $pengecekanSS->ref_document],
-                ];
-            @endphp
-        
             @foreach ($fields as $field)
                 <div class="flex items-center gap-4">
                     <label class="w-48 font-medium">{{ $field['label'] }}</label>
@@ -76,30 +56,54 @@ $fields = [['label' => 'No SPK Produksi :', 'value' => $pengecekanSS->spk->no_sp
                 </div>
             @endforeach
         </div>
-        
-        @php
-$rawDetails = $pengecekanSS->detail->details ?? [];
-$details = is_string($rawDetails) ? json_decode($rawDetails, true) : $rawDetails;
 
-function statusLabel($code)
-{
-    return match (strtolower($code)) {
-        'ok' => 'OK',
-        'h' => 'Hold',
-        'r' => 'Repaired',
-        default => ucfirst($code ?? '-'),
-    };
-}
+        <h2 class="max-w-4xl mx-auto text-xl font-bold text-start">Chamber Identification</h2>
+
+
+        <div class="grid w-full max-w-4xl grid-cols-1 pt-6 mx-auto mb-6 text-sm gap-y-4">
+            @php
+                $fields = [
+                    ['label' => 'Type/Model :', 'value' => $pengecekanSS->tipe],
+                    ['label' => 'Ref. Document :', 'value' => $pengecekanSS->ref_document],
+                ];
+            @endphp
+
+            @foreach ($fields as $field)
+                <div class="flex items-center gap-4">
+                    <label class="w-48 font-medium">{{ $field['label'] }}</label>
+                    <input type="text" readonly value="{{ $field['value'] }}"
+                        class="flex-1 px-3 py-2 text-black bg-white border border-gray-300 rounded-md cursor-not-allowed" />
+                </div>
+            @endforeach
+        </div>
+
+        @php
+            $rawDetails = $pengecekanSS->detail->details ?? [];
+            $details = is_string($rawDetails) ? json_decode($rawDetails, true) : $rawDetails;
+
+            function statusLabel($code)
+            {
+                return match (strtolower($code)) {
+                    'ok' => 'OK',
+                    'h' => 'Hold',
+                    'r' => 'Repaired',
+                    default => ucfirst($code ?? '-'),
+                };
+            }
         @endphp
 
         {{-- <table class="w-full mb-6 text-sm border border-collapse border-black"> --}}
         <table class="w-full max-w-4xl mx-auto mb-3 text-sm border border-black">
             <thead class="bg-gray-100">
                 <tr>
-                    <th class="w-10 px-3 py-2 text-center border border-black">No</th>
-                    <th class="px-3 py-2 text-left border border-black">Part</th>
-                    <th class="px-3 py-2 text-center border border-black">Result</th>
-                    <th class="px-3 py-2 text-left border border-black">Status</th>
+                    <th class="w-10 px-3 py-2 text-center border border-black" rowspan="2">No</th>
+                    <th class="px-3 py-2 text-left border border-black" rowspan="2">Part</th>
+                    <th class="px-3 py-2 text-center border border-black" colspan="2">Result</th>
+                    <th class="px-3 py-2 text-left border border-black" rowspan="2">Status</th>
+                </tr>
+                <tr>
+                    <th class="px-3 py-2 text-center border border-black">Pass</th>
+                    <th class="px-3 py-2 text-center border border-black">Fail</th>
                 </tr>
             </thead>
 
@@ -107,7 +111,7 @@ function statusLabel($code)
                 @php $rowNumber = 1; @endphp
                 @foreach ($details as $group)
                     <tr>
-                        <td colspan="4" class="px-3 py-2 font-semibold bg-gray-200 border border-black">
+                        <td colspan="5" class="px-3 py-2 font-semibold bg-gray-200 border border-black">
                             {{ $group['mainPart'] ?? '-' }}
                         </td>
                     </tr>
@@ -116,7 +120,10 @@ function statusLabel($code)
                             <td class="px-3 py-2 text-center border border-black">{{ $rowNumber++ }}</td>
                             <td class="px-3 py-2 border border-black">{{ $part['part'] ?? '-' }}</td>
                             <td class="px-3 py-2 text-center border border-black">
-                                {{ ($part['result'] ?? '0') == '1' ? 'Yes' : 'No' }}
+                                {{ ($part['result'] ?? '0') == '1' ? '✔' : '' }}
+                            </td>
+                            <td class="px-3 py-2 text-center border border-black">
+                                {{ ($part['result'] ?? '0') == '0' ? '✘' : '' }}
                             </td>
                             <td class="px-3 py-2 border border-black">
                                 {{ statusLabel($part['status'] ?? '-') }}
@@ -130,27 +137,27 @@ function statusLabel($code)
         <div class="w-full max-w-4xl mx-auto mb-6">
             <label for="note" class="block mb-1 text-sm font-medium text-gray-700">Note:</label>
             <textarea id="note" readonly
-                class="w-full px-3 py-2 overflow-hidden text-sm leading-relaxed  border rounded-md resize-none border-black-600">{{ trim($pengecekanSS->note) }}</textarea>
+                class="w-full px-3 py-2 overflow-hidden text-sm leading-relaxed border rounded-md resize-none border-black-600">{{ trim($pengecekanSS->note) }}</textarea>
         </div>
 
         @php
-$roles = [
-    'Checked By' => [
-        'name' => $pengecekanSS->pic->inspected_name ?? '-',
-        'signature' => $pengecekanSS->pic->inspected_signature ?? null,
-        'date' => $pengecekanSS->pic->inspected_date ?? null,
-    ],
-    'Accepted By' => [
-        'name' => $pengecekanSS->pic->accepted_name ?? '-',
-        'signature' => $pengecekanSS->pic->accepted_signature ?? null,
-        'date' => $pengecekanSS->pic->accepted_date ?? null,
-    ],
-    'Approved By' => [
-        'name' => $pengecekanSS->pic->approved_name ?? '-',
-        'signature' => $pengecekanSS->pic->approved_signature ?? null,
-        'date' => $pengecekanSS->pic->approved_date ?? null,
-    ],
-];
+            $roles = [
+                'Checked By' => [
+                    'name' => $pengecekanSS->pic->inspected_name ?? '-',
+                    'signature' => $pengecekanSS->pic->inspected_signature ?? null,
+                    'date' => $pengecekanSS->pic->inspected_date ?? null,
+                ],
+                'Accepted By' => [
+                    'name' => $pengecekanSS->pic->accepted_name ?? '-',
+                    'signature' => $pengecekanSS->pic->accepted_signature ?? null,
+                    'date' => $pengecekanSS->pic->accepted_date ?? null,
+                ],
+                'Approved By' => [
+                    'name' => $pengecekanSS->pic->approved_name ?? '-',
+                    'signature' => $pengecekanSS->pic->approved_signature ?? null,
+                    'date' => $pengecekanSS->pic->approved_date ?? null,
+                ],
+            ];
         @endphp
 
         <div class="max-w-4xl p-4 mx-auto mb-6">

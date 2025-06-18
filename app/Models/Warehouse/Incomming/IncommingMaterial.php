@@ -18,6 +18,8 @@ class IncommingMaterial extends Model
         'kondisi_material',
         'status_penerimaan',
         'dokumen_pendukung',
+        'file_upload',
+        'status_penerimaan_pic',
     ];
 
     protected $casts = [
@@ -29,9 +31,9 @@ class IncommingMaterial extends Model
         return $this->belongsTo(PermintaanPembelian::class, 'permintaan_pembelian_id');
     }
 
-    public function detail()
+    public function details()
     {
-        return $this->hasOne(IncommingMaterialDetail::class, 'incomming_material_id');
+        return $this->hasMany(IncommingMaterialDetail::class, 'incomming_material_id');
     }
 
     public function pic()
@@ -41,6 +43,24 @@ class IncommingMaterial extends Model
 
     protected static function booted()
     {
+        static::saving(function ($model) {
+            if (
+                $model->pic?->received_signature &&
+                $model->status_penerimaan_pic !== 'Diterima'
+            ) {
+                $model->status_penerimaan_pic = 'Diterima';
+
+                $permintaanBahanPro = $model->permintaanPembelian
+                    ?->permintaanBahanWBB
+                    ?->permintaanBahanPro;
+
+                if ($permintaanBahanPro) {
+                    $permintaanBahanPro->status = 'Tersedia'; // contoh status
+                    $permintaanBahanPro->save();
+                }
+            }
+        });
+
         static::deleting(function ($model) {
             if ($model->detail) {
                 $model->detail->delete();

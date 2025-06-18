@@ -15,10 +15,12 @@ class IncommingMaterialNonSSDetail extends Model
     protected $fillable = [
         'material_non_ss_id',
         'details',
+        'details_tambahan',
     ];
 
     protected $casts = [
         'details' => 'array',
+        'details_tambahan' => 'array',
     ];
 
     public function productNonSS()

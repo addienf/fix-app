@@ -4,19 +4,27 @@ namespace App\Filament\Resources\Quality\IncommingMaterial\MaterialNonSS;
 
 use App\Filament\Resources\Quality\IncommingMaterial\MaterialNonSS\IncommingMaterialNonSSResource\Pages;
 use App\Filament\Resources\Quality\IncommingMaterial\MaterialNonSS\IncommingMaterialNonSSResource\RelationManagers;
+use App\Models\Purchasing\Permintaan\PermintaanPembelian;
 use App\Models\Quality\IncommingMaterial\MaterialNonSS\IncommingMaterialNonSS;
 use App\Services\SignatureUploader;
 use Filament\Actions\Action;
 use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Fieldset;
+use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\Placeholder;
+use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
+use Filament\Forms\Get;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Actions\ActionGroup;
+use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Icetalker\FilamentTableRepeater\Forms\Components\TableRepeater;
@@ -28,7 +36,7 @@ use Wallo\FilamentSelectify\Components\ButtonGroup;
 class IncommingMaterialNonSSResource extends Resource
 {
     protected static ?string $model = IncommingMaterialNonSS::class;
-
+    protected static ?string $slug = 'quality/incoming-material-non-stainless-steel';
     protected static ?string $navigationIcon = 'heroicon-o-check-circle';
     protected static ?int $navigationSort = 18;
     protected static ?string $navigationGroup = 'Quality';
@@ -36,108 +44,258 @@ class IncommingMaterialNonSSResource extends Resource
     protected static ?string $pluralLabel = 'Incoming Material Non Stainless Steel';
     protected static ?string $modelLabel = 'Incoming Material Non Stainless Steel';
 
+    public static function getNavigationBadge(): ?string
+    {
+        $count = IncommingMaterialNonSS::where('status_penyelesaian', '!=', 'Disetujui')->count();
+
+        return $count > 0 ? (string) $count : null;
+    }
+
     public static function form(Form $form): Form
     {
+
+        $lastValue = IncommingMaterialNonSS::latest('no_po')->value('no_po');
+
         $defaultParts = collect(config('incommingMaterialNonSS.parts'))
             ->map(fn($part) => ['part' => $part])
             ->toArray();
 
-        $summaryParts = collect(config('summary.parts'))
-            ->map(fn($part) => ['part' => $part])
-            ->toArray();
-
-        // $defaultParts = collect(config('incommingMaterialSS.procedures'))
-        //     ->map(function ($item, $index) {
-        //         $expected = config('incommingMaterialSS.expected')[$index] ?? null;
-        //         return [
-        //             'procedures' => $item,
-        //             'expected' => $expected,
-        //         ];
-        //     })->toArray();
+        // $rows = config('summaryNonSS.rows');
 
         return $form
             ->schema([
                 //
-                Fieldset::make('')
+                Hidden::make('status_penyelesaian')
+                    ->default('Belum Diperiksa'),
+
+                Section::make('Informasi Umum')
+                    ->collapsible()
                     ->schema([
+
                         self::selectInput('permintaan_pembelian_id', 'Permintaan Pembelian', 'permintaanPembelian', 'id')
+                            ->placeholder('Pilih Nomor Permintaan Pembelian')
+                            ->hiddenOn('edit')
                             ->required(),
-                        self::textInput('no_po', 'No. PO'),
+
+                        self::textInput('no_po', 'No. PO')
+                            ->placeholder($lastValue ? "Data Terakhir : {$lastValue}" : 'Data Belum Tersedia')
+                            ->hint('Format: XXX/QKS/WBB/PERMINTAAN/MM/YY'),
+
                         self::textInput('supplier', 'Supplier'),
+
                     ]),
 
-                // Section::make('Tabel Kelengkapan Material')
-                //     ->collapsible()
-                //     ->relationship('detail')
-                //     ->schema([
-                //         TableRepeater::make('details')
-                //             ->label('')
-                //             ->schema([
-
-                //                 self::textArea('procedures', 'Description'),
-                //                 self::textArea('expected', 'Expected'),
-                //                 self::textArea('actual_result', 'Actual Result')
-
-
-                //             ])
-                //             ->default($defaultParts)
-                //             ->columns(3)
-                //     ]),
-
-                // Fieldset::make('Tabel Kelengkapan Material')
-                //     ->relationship('detail')
-                //     ->schema([
-                //         TableRepeater::make('details')
-                //             ->label('')
-                //             ->schema([
-                //                 self::textInput('part', 'Description')
-                //                     ->extraAttributes([
-                //                         'readonly' => true,
-                //                         'style' => 'pointer-events: none;'
-                //                     ]),
-                //                 ButtonGroup::make('result')
-                //                     ->options([
-                //                         '1' => 'Pass',
-                //                         '0' => 'Fail',
-                //                     ])
-                //                     ->onColor('primary')
-                //                     ->offColor('gray')
-                //                     ->gridDirection('row')
-                //                     ->default('individual'),
-
-                //                 self::textInput('remark', 'Remark')
-
-                //             ])
-                //             ->default($defaultParts)
-                //             ->columns(3)
-                //     ]),
-
-                // Fieldset::make('Summary')
-                //     ->relationship('summary')
-                //     ->schema([
-                //         TableRepeater::make('summary')
-                //             ->label('')
-                //             ->schema([
-                //                 self::textInput('part', 'Summary')
-                //                     ->extraAttributes([
-                //                         'readonly' => true,
-                //                         'style' => 'pointer-events: none;'
-                //                     ]),
-
-                //                 self::textInput('critical', 'Critical'),
-                //                 self::textInput('major', 'Major'),
-                //                 self::textInput('minor', 'Minor'),
-                //                 self::textInput('total_acc', 'Total'),
-
-                //             ])
-                //             ->default($summaryParts)
-                //             ->columns(3)
-                //     ]),
-
-                Fieldset::make('')
+                Section::make('Tabel Kelengkapan Material')
+                    ->collapsible()
+                    ->relationship('detail')
                     ->schema([
-                        self::textInput('batch_no', 'Batch No'),
-                    ])
+                        TableRepeater::make('details')
+                            ->label('')
+                            ->schema([
+                                self::textInput('part', 'Description')
+                                    ->extraAttributes([
+                                        'readonly' => true,
+                                        'style' => 'pointer-events: none;'
+                                    ]),
+                                ButtonGroup::make('result')
+                                    ->options([
+                                        '1' => 'Pass',
+                                        '0' => 'Fail',
+                                    ])
+                                    ->onColor('primary')
+                                    ->offColor('gray')
+                                    ->gridDirection('row')
+                                    ->default('individual'),
+
+                                self::textInput('remark', 'Remark')
+
+                            ])
+                            ->deletable(false)
+                            ->reorderable(false)
+                            ->addable(false)
+                            ->default($defaultParts)
+                            ->columns(3),
+
+                        TableRepeater::make('details_tambahan')
+                            ->label('')
+                            ->schema([
+
+                                self::textInput('part', 'Description'),
+
+                                ButtonGroup::make('result')
+                                    ->options([
+                                        '1' => 'Pass',
+                                        '0' => 'Fail',
+                                    ])
+                                    ->onColor('primary')
+                                    ->offColor('gray')
+                                    ->gridDirection('row')
+                                    ->default('individual'),
+
+                                self::textInput('remark', 'Remark')
+
+                            ])
+                            ->columnSpanFull()
+                            ->default([])
+                            ->reorderable(false)
+                            ->addActionLabel('Tambah Checklist')
+                            ->columns(3)
+
+                    ]),
+
+                Section::make('Summary')
+                    ->relationship('summary')
+                    ->collapsible()
+                    ->schema([
+
+                        Repeater::make('summary')
+                            ->label('')
+                            ->schema([
+
+                                Grid::make(4)
+                                    ->schema([
+                                        Placeholder::make('summary_header')
+                                            ->label('')
+                                            ->content('Summary')
+                                            ->extraAttributes(['class' => 'font-semibold text-center bg-gray-100 border py-2']),
+
+                                        Placeholder::make('critical_header')
+                                            ->label('')
+                                            ->content('Critical')
+                                            ->extraAttributes(['class' => 'font-semibold text-center bg-gray-100 border py-2']),
+
+                                        Placeholder::make('major_header')
+                                            ->label('')
+                                            ->content('Major')
+                                            ->extraAttributes(['class' => 'font-semibold text-center bg-gray-100 border py-2']),
+
+                                        Placeholder::make('minor_header')
+                                            ->label('')
+                                            ->content('Minor')
+                                            ->extraAttributes(['class' => 'font-semibold text-center bg-gray-100 border py-2']),
+                                    ]),
+
+                                Grid::make(4)
+                                    ->schema([
+
+                                        Placeholder::make("summary_labels")
+                                            ->label('')
+                                            ->content("Total Received Quantity")
+                                            ->columns(1)
+                                            ->extraAttributes(['class' => 'font-semibold text-center bg-gray-100 border py-2']),
+
+                                        self::textInput('critical_1', 'Critical'),
+
+                                        self::textInput('major_1', 'Major'),
+
+                                        self::textInput('minor_1', 'Minor'),
+
+                                        Placeholder::make("summary_labels")
+                                            ->label('')
+                                            ->content("Return Quantity to Supplier")
+                                            ->columns(1)
+                                            ->extraAttributes(['class' => 'font-semibold text-center bg-gray-100 border py-2']),
+
+                                        self::textInput('critical_2', 'Critical'),
+
+                                        self::textInput('major_2', 'Major'),
+
+                                        self::textInput('minor_2', 'Minor'),
+
+                                        Placeholder::make("summary_labels")
+                                            ->label('')
+                                            ->content("Total Rejected Quantity")
+                                            ->columns(1)
+                                            ->extraAttributes(['class' => 'font-semibold text-center bg-gray-100 border py-2']),
+
+                                        self::textInput('critical_3', 'Critical'),
+
+                                        self::textInput('major_3', 'Major'),
+
+                                        self::textInput('minor_3', 'Minor'),
+                                    ]),
+
+                                Grid::make(4)
+                                    ->schema([
+
+                                        Placeholder::make("summary_labels")
+                                            ->label('')
+                                            ->content("Total Acceptable Quantity")
+                                            ->columns(1)
+                                            ->extraAttributes(['class' => 'font-semibold text-center bg-gray-100 border py-2']),
+
+                                        self::textInput('total_acceptable_quantity', '')
+                                            // ->required(false)
+                                            ->columnSpan(3),
+
+                                    ]),
+
+                            ])
+                            ->reorderable(false)
+                            ->deletable(false)
+                            ->addable(false),
+                    ]),
+
+                Section::make('Nomor Batch')
+                    ->collapsible()
+                    ->schema([
+
+                        self::textInput('batch_no', 'Batch No')
+
+                    ]),
+
+                Section::make('PIC')
+                    ->collapsible()
+                    ->relationship('pic')
+                    ->schema([
+                        Grid::make(3)
+                            ->schema([
+                                Grid::make(1)
+                                    ->schema([
+
+                                        self::textInput('checked_name', 'Checked By'),
+
+                                        self::signatureInput('checked_signature', ''),
+
+                                        self::datePicker('checked_date', '')
+                                            ->required(),
+
+                                    ])->hiddenOn(operations: 'edit'),
+
+                                Grid::make(1)
+                                    ->schema([
+
+                                        self::textInput('accepted_name', 'Accepted By'),
+
+                                        self::signatureInput('accepted_signature', ''),
+
+                                        self::datePicker('accepted_date', '')
+                                            ->required(),
+
+                                    ])->hidden(
+                                        fn($operation, $record) =>
+                                        $operation === 'create' || filled($record?->accepted_signature)
+                                    ),
+
+                                Grid::make(1)
+                                    ->schema([
+
+                                        self::textInput('approved_name', 'Approved By'),
+
+                                        self::signatureInput('approved_signature', ''),
+
+                                        self::datePicker('approved_date', '')
+                                            ->required(),
+
+                                    ])->hidden(
+                                        fn($operation, $record) =>
+                                        $operation === 'create' || blank($record?->accepted_signature) || filled($record?->approved_signature)
+                                    ),
+
+                            ]),
+
+                    ]),
+
             ]);
     }
 
@@ -147,8 +305,42 @@ class IncommingMaterialNonSSResource extends Resource
             ->columns([
                 //
                 self::textColumn('no_po', 'No PO'),
+
                 self::textColumn('supplier', 'Supplier'),
-                self::textColumn('batch_no', 'Batch No'),
+
+                TextColumn::make('status_penyelesaian')
+                    ->label('Status Penyelesaian')
+                    ->badge()
+                    ->color(function ($record) {
+                        $penyelesaian = $record->status_penyelesaian;
+                        $persetujuan = $record->status_persetujuan;
+
+                        if ($penyelesaian === 'Disetujui') {
+                            return 'success';
+                        }
+
+                        if ($penyelesaian !== 'Diperiksa' && $persetujuan !== 'Disetujui') {
+                            return 'danger';
+                        }
+
+                        return 'warning';
+                    })
+                    ->alignCenter(),
+
+                ImageColumn::make('pic.checked_signature')
+                    ->width(150)
+                    ->label('Checked')
+                    ->height(75),
+
+                ImageColumn::make('pic.accepted_signature')
+                    ->width(150)
+                    ->label('Accepted')
+                    ->height(75),
+
+                ImageColumn::make('pic.approved_signature')
+                    ->width(150)
+                    ->label('Approved')
+                    ->height(75),
             ])
             ->filters([
                 //
@@ -161,6 +353,7 @@ class IncommingMaterialNonSSResource extends Resource
                         ->label(_('View PDF'))
                         ->icon('heroicon-o-document')
                         ->color('success')
+                        ->visible(fn($record) => $record->status_penyelesaian === 'Disetujui')
                         ->url(fn($record) => self::getUrl('pdfIncommingMaterialNonSS', ['record' => $record->id])),
                 ])
             ])
@@ -196,11 +389,27 @@ class IncommingMaterialNonSSResource extends Resource
             ->maxLength(255);
     }
 
+    protected static function textArea(string $fieldName, string $label): TextInput
+    {
+        return TextInput::make($fieldName)
+            ->label($label)
+            ->required();
+    }
+
     protected static function selectInput(string $fieldName, string $label, string $relation, string $title): Select
     {
         return
             Select::make($fieldName)
             ->relationship($relation, $title)
+            ->options(function () {
+                return
+                    PermintaanPembelian::with('permintaanBahanWBB')
+                    ->whereDoesntHave('materialNonSS')
+                    ->get()
+                    ->mapWithKeys(function ($item) {
+                        return [$item->id => $item->permintaanBahanWBB->no_surat ?? 'Tanpa No Surat'];
+                    });
+            })
             ->label($label)
             ->native(false)
             ->searchable()

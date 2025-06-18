@@ -130,9 +130,6 @@
                                 {{ $item->jumlah }}</td>
                             <td class="px-4 py-2 border border-gray-300 dark:border-gray-600">
                                 {{ $item->no_spk }}</td>
-                            {{-- <td class="px-4 py-2 border border-gray-300 dark:border-gray-600">
-                                {{ \Carbon\Carbon::parse($spk_qc->spk->tanggal)->translatedFormat('d M Y') }}
-                            </td> --}}
                         </tr>
                     @endforeach
                 </tbody>
@@ -172,38 +169,9 @@
             </label>
         </div>
 
-        {{-- <div class="flex flex-col items-start w-full max-w-4xl mx-auto space-y-2 text-sm">
-            <label class="mb-1 font-medium">Kondisi</label>
-
-            <label class="inline-flex items-center space-x-2">
-                <input type="checkbox" name="kondisi" value="Baik"
-                    class="w-4 h-4 border border-gray-400 appearance-none checked:bg-blue-600 checked:border-blue-600">
-                <span>Baik</span>
-            </label>
-
-            <label class="inline-flex items-center space-x-2">
-                <input type="checkbox" name="kondisi" value="Rusak"
-                    class="w-4 h-4 border border-gray-400 appearance-none checked:bg-blue-600 checked:border-blue-600">
-                <span>Rusak</span>
-            </label>
-
-            <label class="inline-flex items-center space-x-2">
-                <input type="checkbox" name="kondisi" value="Perlu Perbaikan"
-                    class="w-4 h-4 border border-gray-400 appearance-none checked:bg-blue-600 checked:border-blue-600">
-                <span>Perlu Perbaikan</span>
-            </label>
-        </div> --}}
-
         <h2 class="w-full max-w-4xl col-span-1 pt-4 mx-auto text-xl font-bold text-start">
             C. Catatan Tambahan
         </h2>
-
-        {{-- <div class="max-w-4xl pt-4 mx-auto text-sm">
-            <label for="note" class="block mb-2 font-medium">Catatan</label>
-            <textarea id="note" rows="4"
-                class="w-full px-4 py-2 border border-gray-300 rounded-md resize-y focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-900 dark:text-white dark:border-gray-600"
-                placeholder="Tulis catatan di sini..."></textarea>
-        </div> --}}
 
         <div class="max-w-4xl pt-4 mx-auto text-sm">
             {{-- <label for="note" class="block mb-1 text-sm font-medium text-gray-700">Catatan</label> --}}
@@ -214,7 +182,6 @@
         </div>
 
         <div class="max-w-4xl mx-auto mt-10 text-sm">
-            {{-- <p class="mb-4 dark:text-white">*Salinan URS Wajib diberikan kepada Departemen Produksi</p> --}}
             <div class="flex items-start justify-between gap-4">
                 <!-- Kiri -->
                 <div class="flex flex-col items-center">
