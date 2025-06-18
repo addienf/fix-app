@@ -5,7 +5,8 @@
         </h2>
 
         <!-- HEADER DOKUMEN -->
-        <table class="w-full max-w-4xl mx-auto text-sm border border-black dark:border-white dark:bg-gray-900 dark:text-white"
+        <table
+            class="w-full max-w-4xl mx-auto text-sm border border-black dark:border-white dark:bg-gray-900 dark:text-white"
             style="border-collapse: collapse;">
             <tr>
                 <td rowspan="3"
@@ -17,7 +18,7 @@
                 </td>
             </tr>
             <tr>
-                <td class="text-lg font-bold text-center border border-black dark:border-white dark:bg-gray-900 align-middle"
+                <td class="text-lg font-bold text-center align-middle border border-black dark:border-white dark:bg-gray-900"
                     style="width: 400px;">
                     Formulir Permintaan Bahan Baku dan Alat Kerja untuk Produksi
                 </td>
@@ -25,11 +26,13 @@
                     <table class="w-full text-sm dark:bg-gray-900 dark:text-white" style="border-collapse: collapse;">
                         <tr>
                             <td class="px-3 py-2 border-b border-black dark:border-white">No. Dokumen</td>
-                            <td class="px-3 py-2 font-semibold border-b border-black dark:border-white">: FO-QKS-PRD-01-01</td>
+                            <td class="px-3 py-2 font-semibold border-b border-black dark:border-white">:
+                                FO-QKS-PRD-01-01</td>
                         </tr>
                         <tr>
                             <td class="px-3 py-2 border-b border-black dark:border-white">Tanggal Rilis</td>
-                            <td class="px-3 py-2 font-semibold border-b border-black dark:border-white">: 12 Maret 2025</td>
+                            <td class="px-3 py-2 font-semibold border-b border-black dark:border-white">: 12 Maret 2025
+                            </td>
                         </tr>
                         <tr>
                             <td class="px-3 py-2">Revisi</td>
@@ -41,33 +44,32 @@
         </table>
 
         @php
-$infoUmum = [
-    ['label' => 'Nomor Surat :', 'value' => $permintaan_alat_bahan->no_surat],
-    ['label' => 'Dari :', 'value' => $permintaan_alat_bahan->dari],
-    [
-        'label' => 'Tanggal : ',
-        'value' => \Carbon\Carbon::parse($permintaan_alat_bahan->date)->translatedFormat('d F Y'),
-    ],
-    ['label' => 'Kepada :', 'value' => $permintaan_alat_bahan->kepada],
-];
+            $infoUmum = [
+                ['label' => 'Nomor Surat :', 'value' => $permintaan_alat_bahan->no_surat],
+                ['label' => 'Dari :', 'value' => $permintaan_alat_bahan->dari],
+                [
+                    'label' => 'Tanggal : ',
+                    'value' => \Carbon\Carbon::parse($permintaan_alat_bahan->date)->translatedFormat('d M Y'),
+                ],
+                ['label' => 'Kepada :', 'value' => $permintaan_alat_bahan->kepada],
+            ];
         @endphp
-<div class="grid max-w-4xl grid-cols-1 pt-2 pt-4 mx-auto mb-6 text-sm md:grid-cols-2 gap-x-6 gap-y-4 pt-6">
-    @foreach ($infoUmum as $field)
-        <div class="flex flex-col items-start gap-2 md:flex-row md:gap-4 md:items-center">
-            <label class="font-medium md:w-48">{{ $field['label'] }}</label>
-            <input disabled
-                class="w-[400px] h-[32px] px-2 py-1 text-black bg-white border border-gray-300 rounded dark:border-gray-600 dark:bg-gray-800 dark:text-white"
-                value="{{ $field['value'] }}" />
+        <div class="grid max-w-4xl grid-cols-1 pt-2 pt-4 pt-6 mx-auto mb-6 text-sm md:grid-cols-2 gap-x-6 gap-y-4">
+            @foreach ($infoUmum as $field)
+                <div class="flex flex-col items-start gap-2 md:flex-row md:gap-4 md:items-center">
+                    <label class="font-medium md:w-48">{{ $field['label'] }}</label>
+                    <input disabled
+                        class="w-[400px] h-[32px] px-2 py-1 text-black bg-white border border-gray-300 rounded dark:border-gray-600 dark:bg-gray-800 dark:text-white"
+                        value="{{ $field['value'] }}" />
+                </div>
+            @endforeach
         </div>
-    @endforeach
-</div>
         <!-- PARAGRAF PERMINTAAN -->
         <div class="max-w-4xl mx-auto mb-6 text-sm">
             <p class="mb-2">Dengan hormat,</p>
             <p class="flex flex-wrap items-center gap-1">
                 <span>Berdasarkan SPK MKT No.</span>
-                <input disabled
-                    class="w-45 px-2 py-1 text-sm align-middle bg-transparent border-none h-7"
+                <input disabled class="px-2 py-1 text-sm align-middle bg-transparent border-none w-45 h-7"
                     value="{{ $permintaan_alat_bahan->spk->no_spk }}" />
                 <span>mohon bantuan untuk memenuhi kebutuhan bahan/sparepart dengan rincian sebagai berikut:</span>
             </p>

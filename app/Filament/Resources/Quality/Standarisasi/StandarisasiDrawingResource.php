@@ -161,7 +161,7 @@ class StandarisasiDrawingResource extends Resource
                 self::textColumn('spk.no_spk', 'No SPK'),
 
                 self::textColumn('tanggal', 'Tanggal')
-                    ->date('d - M - Y'),
+                    ->date('d M Y'),
 
                 self::textColumn('jenis_gambar', 'Jenis Gambar')
                     ->formatStateUsing(function (string $state): string {

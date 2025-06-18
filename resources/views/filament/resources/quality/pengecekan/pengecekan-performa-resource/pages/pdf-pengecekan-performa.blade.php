@@ -216,7 +216,7 @@
 
                         <label class="block mb-1">Date</label>
                         <input type="text" readonly
-                            value="{{ $data['date'] ? \Carbon\Carbon::parse($data['date'])->format('d/m/Y') : '-' }}"
+                            value="{{ $data['date'] ? \Carbon\Carbon::parse($data['date'])->format('d M Y') : '-' }}"
                             class="w-full p-2 text-gray-500 bg-gray-100 border border-gray-300 rounded" />
                     </div>
                 @endforeach

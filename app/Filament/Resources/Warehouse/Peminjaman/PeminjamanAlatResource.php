@@ -88,13 +88,19 @@ class PeminjamanAlatResource extends Resource
         return $table
             ->columns([
                 //
-                self::textColumn('tanggal_pinjam', 'Tanggal Pinjam')->date('d/m/Y'),
+                self::textColumn('tanggal_pinjam', 'Tanggal Pinjam')->date('d M Y'),
+
                 self::textColumn('pic.department', 'Department'),
+
                 self::textColumn('details.nama_sparepart', 'Nama Sparepart'),
+
                 self::textColumn('details.model', 'Model'),
+
                 self::textColumn('details.jumlah', 'Jumlah'),
-                self::textColumn('tanggal_kembali', 'Tanggal Kembali')->date('d/m/Y'),
+
+                self::textColumn('tanggal_kembali', 'Tanggal Kembali')->date('d M Y'),
                 self::textColumn('pic.nama_peminjam', 'Nama Peminjam'),
+
                 ImageColumn::make('pic.signature')
                     ->label('Tanda Tangan')
                     ->width(75)

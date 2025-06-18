@@ -2,7 +2,8 @@
     <x-filament::section>
         <h2 class="mb-3 text-xl font-bold text-center">Detail Permintaan Bahan</h2>
         <!-- HEADER DOKUMEN MIRIP EXCEL -->
-        <table class="w-full max-w-4xl mx-auto text-sm border border-black dark:border-white dark:bg-gray-900 dark:text-white"
+        <table
+            class="w-full max-w-4xl mx-auto text-sm border border-black dark:border-white dark:bg-gray-900 dark:text-white"
             style="border-collapse: collapse;">
             <tr>
                 <td rowspan="3"
@@ -40,15 +41,15 @@
         </table>
 
         @php
-$infoUmum = [
-    ['label' => 'Nomor :', 'value' => $permintaan_bahan->no_surat],
-    [
-        'label' => 'Tanggal :',
-        'value' => \Carbon\Carbon::parse($permintaan_bahan->tanggal)->translatedFormat('d F Y'),
-    ],
-    ['label' => 'Dari : ', 'value' => $permintaan_bahan->dari],
-    ['label' => 'Kepada :', 'value' => $permintaan_bahan->kepada],
-];
+            $infoUmum = [
+                ['label' => 'Nomor :', 'value' => $permintaan_bahan->no_surat],
+                [
+                    'label' => 'Tanggal :',
+                    'value' => \Carbon\Carbon::parse($permintaan_bahan->tanggal)->translatedFormat('d M Y'),
+                ],
+                ['label' => 'Dari : ', 'value' => $permintaan_bahan->dari],
+                ['label' => 'Kepada :', 'value' => $permintaan_bahan->kepada],
+            ];
         @endphp
         <div class="grid max-w-4xl grid-cols-1 pt-6 mx-auto mb-6 text-sm md:grid-cols-2 gap-x-6 gap-y-4">
             @foreach ($infoUmum as $field)
@@ -66,12 +67,10 @@ $infoUmum = [
             <p class="mb-2">Dengan hormat,</p>
             <p class="flex flex-wrap items-center gap-1">
                 <span>Berdasarkan Permintaan Barang No</span>
-                <input disabled
-                    class="w-45 px-2 py-1 text-sm align-middle bg-transparent border-none h-7"
+                <input disabled class="px-2 py-1 text-sm align-middle bg-transparent border-none w-45 h-7"
                     value="{{ $permintaan_bahan->permintaanBahanPro->no_surat }}" />
                 <span>Dari Departemen</span>
-                <input disabled
-                    class="w-32 px-2 py-1 text-sm align-middle bg-transparent border-none h-7"
+                <input disabled class="w-32 px-2 py-1 text-sm align-middle bg-transparent border-none h-7"
                     value=" {{ $permintaan_bahan->dari }}" />
                 <span>mohon bantuan untuk memenuhi kebutuhan bahan/sparepart dengan rincian sebagai berikut:</span>
             </p>
