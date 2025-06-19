@@ -104,8 +104,7 @@
                     <p class="mt-1 font-semibold dark:text-white">Produksi</p>
                 </div>
             </div>
-        </div>
-        
+        </div>        
     </div>
 
 @endsection
