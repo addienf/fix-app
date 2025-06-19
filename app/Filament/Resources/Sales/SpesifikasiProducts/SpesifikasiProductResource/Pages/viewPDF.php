@@ -33,7 +33,7 @@ class viewPDF extends Page
                 ->icon('heroicon-o-printer')
                 ->color('info')
                 ->requiresConfirmation()
-                ->url(route('pdf.specProduct', ['id' => $this->record]))
+                ->url(route('specProduct.preview', ['id' => $this->record]))
         ];
     }
 

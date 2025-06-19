@@ -1,7 +1,7 @@
 <x-filament-panels::page>
     <x-filament::section>
 
-        <h2 class="mb-3 text-xl font-bold text-center">Detail Formulir Performance Qualification</h2>
+        <h2 class="mb-3 text-xl font-bold text-center">Detail Formulir Incoming Material Stainless Steel</h2>
 
         <table
             class="w-full max-w-4xl mx-auto text-sm border border-black dark:border-white dark:bg-gray-900 dark:text-white"
@@ -18,14 +18,14 @@
             <tr>
                 <td class="font-bold text-center border border-black dark:border-white dark:bg-gray-900"
                     style="font-size: 20px;">
-                    Formulir Performance <br> Qualification
+                    Formulir Incoming Stainless Steel <br> Materials Quality Check
                 </td>
                 <td rowspan="2" class="p-0 align-top border border-black dark:border-white dark:bg-gray-900">
                     <table class="w-full text-sm dark:bg-gray-900" style="border-collapse: collapse;">
                         <tr>
                             <td class="px-3 py-2 border-b border-black dark:border-white">No. Dokumen</td>
                             <td class="px-3 py-2 font-semibold border-b border-black dark:border-white"> :
-                                FO-QKS-PRO-01-01</td>
+                                FO-QKS-QA-01-01</td>
                         </tr>
                         <tr>
                             <td class="px-3 py-2 border-b border-black dark:border-white">Tanggal Rilis</td>
@@ -42,10 +42,10 @@
         </table>
         <div class="w-full max-w-4xl pt-4 mx-auto space-y-4 text-sm">
             @php
-                $fields = [
-                    ['label' => 'No PO :', 'value' => $incomingSS->no_po],
-                    ['label' => 'Supplier  :', 'value' => $incomingSS->supplier],
-                ];
+$fields = [
+    ['label' => 'No PO :', 'value' => $incomingSS->no_po],
+    ['label' => 'Supplier  :', 'value' => $incomingSS->supplier],
+];
             @endphp
 
             @foreach ($fields as $field)
@@ -58,9 +58,9 @@
         </div>
 
         @php
-            $detail = json_decode($incomingSS->detail, true);
-            $checklist = $detail['checklists'][0] ?? ['actual_result_1' => '', 'actual_result_2' => ''];
-            $detailsTambahan = $detail['details_tambahan'] ?? [];
+$detail = json_decode($incomingSS->detail, true);
+$checklist = $detail['checklists'][0] ?? ['actual_result_1' => '', 'actual_result_2' => ''];
+$detailsTambahan = $detail['details_tambahan'] ?? [];
         @endphp
 
         <div class="max-w-4xl mx-auto my-10 space-y-10 text-sm">
@@ -157,28 +157,30 @@
 
             <div class="w-full max-w-4xl mx-auto mb-6">
                 <label for="note" class="block mb-1 text-sm font-medium text-gray-700">Remarks</label>
-                <textarea id="note" readonly
-                    class="w-full px-3 py-2 overflow-hidden text-sm leading-relaxed text-gray-800 bg-gray-100 border resize-none border-black-600">{{ trim($incomingSS->remark) }}</textarea>
+                <div id="note" readonly
+                    class="w-full min-h-[75px] px-3 py-2 text-sm leading-relaxed text-left border rounded-md text-black border-black">
+                    {{ trim($incomingSS->remark) }}
+                </div>
             </div>
 
             @php
-                $roles = [
-                    'Checked By' => [
-                        'name' => $incomingSS->pic->checked_name ?? '-',
-                        'signature' => $incomingSS->pic->checked_signature ?? null,
-                        'date' => $incomingSS->pic->checked_date ?? null,
-                    ],
-                    'Accepted By' => [
-                        'name' => $incomingSS->pic->accepted_name ?? '-',
-                        'signature' => $incomingSS->pic->accepted_signature ?? null,
-                        'date' => $incomingSS->pic->accepted_date ?? null,
-                    ],
-                    'Approved By' => [
-                        'name' => $incomingSS->pic->approved_name ?? '-',
-                        'signature' => $incomingSS->pic->approved_signature ?? null,
-                        'date' => $incomingSS->pic->approved_date ?? null,
-                    ],
-                ];
+$roles = [
+    'Checked By' => [
+        'name' => $incomingSS->pic->checked_name ?? '-',
+        'signature' => $incomingSS->pic->checked_signature ?? null,
+        'date' => $incomingSS->pic->checked_date ?? null,
+    ],
+    'Accepted By' => [
+        'name' => $incomingSS->pic->accepted_name ?? '-',
+        'signature' => $incomingSS->pic->accepted_signature ?? null,
+        'date' => $incomingSS->pic->accepted_date ?? null,
+    ],
+    'Approved By' => [
+        'name' => $incomingSS->pic->approved_name ?? '-',
+        'signature' => $incomingSS->pic->approved_signature ?? null,
+        'date' => $incomingSS->pic->approved_date ?? null,
+    ],
+];
             @endphp
 
             <div class="max-w-4xl p-4 mx-auto mb-6">
@@ -191,7 +193,7 @@
 
                             <label class="block mb-1">Signature</label>
                             <div
-                                class="flex items-center justify-center w-full h-24 mb-2 bg-white border border-black rounded">
+                                class="flex items-center justify-center w-full h-24 mb-2 bg-white border border-gray rounded">
                                 @if ($data['signature'])
                                     <img src="{{ asset('storage/' . $data['signature']) }}" alt="Signature"
                                         class="object-contain h-full" />

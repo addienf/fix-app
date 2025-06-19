@@ -184,11 +184,16 @@ class IncommingMaterialNonSSResource extends Resource
                                             ->columns(1)
                                             ->extraAttributes(['class' => 'font-semibold text-center bg-gray-100 border py-2']),
 
-                                        self::textInput('critical_1', 'Critical'),
+                                        self::textInput('critical_1', '')
+                                            ->required(false),
 
-                                        self::textInput('major_1', 'Major'),
+                                        self::textInput('major_1', '')
+                                            ->required(false),
 
-                                        self::textInput('minor_1', 'Minor'),
+
+                                        self::textInput('minor_1', '')
+                                            ->required(false),
+
 
                                         Placeholder::make("summary_labels")
                                             ->label('')
@@ -196,11 +201,17 @@ class IncommingMaterialNonSSResource extends Resource
                                             ->columns(1)
                                             ->extraAttributes(['class' => 'font-semibold text-center bg-gray-100 border py-2']),
 
-                                        self::textInput('critical_2', 'Critical'),
+                                        self::textInput('critical_2', '')
+                                            ->required(false),
 
-                                        self::textInput('major_2', 'Major'),
 
-                                        self::textInput('minor_2', 'Minor'),
+                                        self::textInput('major_2', '')
+                                            ->required(false),
+
+
+                                        self::textInput('minor_2', '')
+                                            ->required(false),
+
 
                                         Placeholder::make("summary_labels")
                                             ->label('')
@@ -208,11 +219,17 @@ class IncommingMaterialNonSSResource extends Resource
                                             ->columns(1)
                                             ->extraAttributes(['class' => 'font-semibold text-center bg-gray-100 border py-2']),
 
-                                        self::textInput('critical_3', 'Critical'),
+                                        self::textInput('critical_3', '')
+                                            ->required(false),
 
-                                        self::textInput('major_3', 'Major'),
 
-                                        self::textInput('minor_3', 'Minor'),
+                                        self::textInput('major_3', '')
+                                            ->required(false),
+
+
+                                        self::textInput('minor_3', '')
+                                            ->required(false),
+
                                     ]),
 
                                 Grid::make(4)
@@ -225,7 +242,7 @@ class IncommingMaterialNonSSResource extends Resource
                                             ->extraAttributes(['class' => 'font-semibold text-center bg-gray-100 border py-2']),
 
                                         self::textInput('total_acceptable_quantity', '')
-                                            // ->required(false)
+                                            ->required(false)
                                             ->columnSpan(3),
 
                                     ]),
@@ -400,69 +417,69 @@ class IncommingMaterialNonSSResource extends Resource
     {
         return
             Select::make($fieldName)
-            ->relationship($relation, $title)
-            ->options(function () {
-                return
-                    PermintaanPembelian::with('permintaanBahanWBB')
-                    ->whereDoesntHave('materialNonSS')
-                    ->get()
-                    ->mapWithKeys(function ($item) {
-                        return [$item->id => $item->permintaanBahanWBB->no_surat ?? 'Tanpa No Surat'];
-                    });
-            })
-            ->label($label)
-            ->native(false)
-            ->searchable()
-            ->preload()
-            ->required()
-            ->reactive();
+                ->relationship($relation, $title)
+                ->options(function () {
+                    return
+                        PermintaanPembelian::with('permintaanBahanWBB')
+                            ->whereDoesntHave('materialNonSS')
+                            ->get()
+                            ->mapWithKeys(function ($item) {
+                                return [$item->id => $item->permintaanBahanWBB->no_surat ?? 'Tanpa No Surat'];
+                            });
+                })
+                ->label($label)
+                ->native(false)
+                ->searchable()
+                ->preload()
+                ->required()
+                ->reactive();
     }
 
     protected static function selectInputOptions(string $fieldName, string $label, string $config): Select
     {
         return
             Select::make($fieldName)
-            ->options(config($config))
-            ->label($label)
-            ->native(false)
-            ->searchable()
-            ->preload()
-            ->required()
-            ->reactive();
+                ->options(config($config))
+                ->label($label)
+                ->native(false)
+                ->searchable()
+                ->preload()
+                ->required()
+                ->reactive();
     }
 
     protected static function datePicker(string $fieldName, string $label): DatePicker
     {
         return
             DatePicker::make($fieldName)
-            ->label($label)
-            ->displayFormat('M d Y')
-            ->seconds(false);
+                ->label($label)
+                ->displayFormat('M d Y')
+                ->seconds(false);
     }
 
     protected static function signatureInput(string $fieldName, string $labelName): SignaturePad
     {
         return
             SignaturePad::make($fieldName)
-            ->label($labelName)
-            ->exportPenColor('#0118D8')
-            ->helperText('*Harap Tandatangan di tengah area yang disediakan.')
-            ->afterStateUpdated(function ($state, $set) use ($fieldName) {
-                if (blank($state))
-                    return;
-                $path = SignatureUploader::handle($state, 'ttd_', 'Quality/IncommingMaterial/NonSS/Signatures');
-                if ($path) {
-                    $set($fieldName, $path);
-                }
-            });
+                ->label($labelName)
+                ->exportPenColor('#0118D8')
+                ->helperText('*Harap Tandatangan di tengah area yang disediakan.')
+                ->afterStateUpdated(function ($state, $set) use ($fieldName) {
+                    if (blank($state))
+                        return;
+                    $path = SignatureUploader::handle($state, 'ttd_', 'Quality/IncommingMaterial/NonSS/Signatures');
+                    if ($path) {
+                        $set($fieldName, $path);
+                    }
+                });
     }
 
     protected static function textColumn(string $fieldName, string $label): TextColumn
     {
         return
             TextColumn::make($fieldName)
-            ->label($label)
-            ->searchable()
-            ->sortable();
+                ->label($label)
+                ->searchable()
+                ->sortable();
     }
 }

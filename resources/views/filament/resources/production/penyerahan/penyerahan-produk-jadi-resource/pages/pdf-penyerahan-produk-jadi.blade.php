@@ -48,14 +48,14 @@
         </h2>
 
         @php
-            $fields = [
-                [
-                    'label' => 'Tanggal  :',
-                    'value' => \Carbon\Carbon::parse($produkJadi->tanggal)->translatedFormat('d M Y'),
-                ],
-                ['label' => 'Penanggung Jawab :', 'value' => $produkJadi->penanggug_jawab],
-                ['label' => 'Penerima :', 'value' => $produkJadi->penerima],
-            ];
+$fields = [
+    [
+        'label' => 'Tanggal  :',
+        'value' => \Carbon\Carbon::parse($produkJadi->tanggal)->translatedFormat('d M Y'),
+    ],
+    ['label' => 'Penanggung Jawab :', 'value' => $produkJadi->penanggug_jawab],
+    ['label' => 'Penerima :', 'value' => $produkJadi->penerima],
+];
         @endphp
 
         <div class="grid w-full max-w-4xl grid-cols-2 pt-4 mx-auto text-sm gap-x-6 gap-y-4">
@@ -76,13 +76,13 @@
             <table class="w-full text-sm text-left border border-gray-300 dark:border-gray-600">
                 <thead class="text-black bg-gray-100 dark:bg-gray-800 dark:text-white">
                     <tr>
-                        <th class="px-2 py-1 border border-black">No</th>
-                        <th class="px-2 py-1 border border-black">Nama Produk</th>
-                        <th class="px-2 py-1 border border-black">Model/Type</th>
-                        <th class="px-2 py-1 border border-black">Volume</th>
-                        <th class="px-2 py-1 border border-black">No Seri</th>
-                        <th class="px-2 py-1 border border-black">Jumlah </th>
-                        <th class="px-2 py-1 border border-black">SPK MKT No.</th>
+                        <th class="px-2 py-1 border border-gray">No</th>
+                        <th class="px-2 py-1 border border-gray">Nama Produk</th>
+                        <th class="px-2 py-1 border border-gray">Model/Type</th>
+                        <th class="px-2 py-1 border border-gray">Volume</th>
+                        <th class="px-2 py-1 border border-gray">No Seri</th>
+                        <th class="px-2 py-1 border border-gray">Jumlah </th>
+                        <th class="px-2 py-1 border border-gray">SPK MKT No.</th>
                     </tr>
                 </thead>
                 <tbody class="text-black bg-white dark:bg-gray-900 dark:text-white">
@@ -112,7 +112,7 @@
         </h2>
 
         @php
-            $kondisi = $produkJadi->kondisi_produk ?? null;
+$kondisi = $produkJadi->kondisi_produk ?? null;
         @endphp
 
         <div class="flex flex-col items-start w-full max-w-4xl mx-auto space-y-2 text-sm">
@@ -145,11 +145,11 @@
         </h2>
 
         <div class="max-w-4xl pt-4 mx-auto text-sm">
-            {{-- <label for="note" class="block mb-1 text-sm font-medium text-gray-700">Catatan</label> --}}
-            <textarea id="note" readonly
-                class="w-full px-3 py-2 overflow-hidden text-sm leading-relaxed text-gray-800 bg-gray-100 border cursor-not-allowed resize-none border-black-600">
+            <label class="block mb-1 font-semibold">Catatan</label>
+            <div
+                class="w-full min-h-[75px] px-3 py-2 text-sm leading-relaxed text-left border rounded-md text-black border-black">
                 {{ trim($produkJadi->catatan_tambahan) }}
-            </textarea>
+            </div>  
         </div>
 
         <div class="max-w-4xl mx-auto mt-10 text-sm">
