@@ -44,7 +44,7 @@
 
         <div class="w-full max-w-4xl pt-4 mx-auto space-y-4 text-sm">
             @php
-                $fields = [['label' => 'No SPK Produksi :', 'value' => $performa->spk->no_spk]];
+$fields = [['label' => 'No SPK Produksi :', 'value' => $performa->spk->no_spk]];
             @endphp
 
             @foreach ($fields as $field)
@@ -59,11 +59,11 @@
         <div class="w-full max-w-4xl pt-4 mx-auto space-y-4 text-sm">
             <h2 class="text-xl font-bold">Chamber Identification</h2>
             @php
-                $fields = [
-                    ['label' => 'Type/Model :', 'value' => $performa->tipe],
-                    ['label' => 'Volume  :', 'value' => $performa->volume],
-                    ['label' => 'S/N  :', 'value' => $performa->serial_number],
-                ];
+$fields = [
+    ['label' => 'Type/Model :', 'value' => $performa->tipe],
+    ['label' => 'Volume  :', 'value' => $performa->volume],
+    ['label' => 'S/N  :', 'value' => $performa->serial_number],
+];
             @endphp
 
             @foreach ($fields as $field)
@@ -78,18 +78,18 @@
         <div class="w-full max-w-4xl pt-4 mx-auto space-y-4 text-sm">
 
             @php
-                $rawDetails = $performa->detail->details ?? [];
-                $details = is_string($rawDetails) ? json_decode($rawDetails, true) : $rawDetails;
+$rawDetails = $performa->detail->details ?? [];
+$details = is_string($rawDetails) ? json_decode($rawDetails, true) : $rawDetails;
 
-                function statusLabel($code)
-                {
-                    return match (strtolower($code)) {
-                        'ok' => 'OK',
-                        'h' => 'Hold',
-                        'r' => 'Repaired',
-                        default => ucfirst($code ?? '-'),
-                    };
-                }
+function statusLabel($code)
+{
+    return match (strtolower($code)) {
+        'ok' => 'OK',
+        'h' => 'Hold',
+        'r' => 'Repaired',
+        default => ucfirst($code ?? '-'),
+    };
+}
             @endphp
 
             {{-- <table class="w-full max-w-4xl mx-auto mb-3 text-sm border border-black">
@@ -169,30 +169,32 @@
 
             <div class="w-full max-w-4xl mx-auto mb-6">
                 <label for="note" class="block mb-1 text-sm font-medium text-gray-700">Note:</label>
-                <textarea id="note" readonly
-                    class="w-full px-3 py-2 overflow-hidden text-sm leading-relaxed text-gray-800 bg-gray-100 border resize-none border-black-600">{{ trim($performa->note) }}</textarea>
+                <div id="note" readonly
+                    class="w-full min-h-[75px] px-3 py-2 text-sm leading-relaxed text-left border rounded-md text-black border-black">
+                    {{ trim($performa->note) }}
+                </div>
             </div>
 
         </div>
 
         @php
-            $roles = [
-                'Checked By' => [
-                    'name' => $performa->pic->inspected_name ?? '-',
-                    'signature' => $performa->pic->inspected_signature ?? null,
-                    'date' => $performa->pic->inspected_date ?? null,
-                ],
-                'Accepted By' => [
-                    'name' => $performa->pic->accepted_name ?? '-',
-                    'signature' => $performa->pic->accepted_signature ?? null,
-                    'date' => $performa->pic->accepted_date ?? null,
-                ],
-                'Approved By' => [
-                    'name' => $performa->pic->approved_name ?? '-',
-                    'signature' => $performa->pic->approved_signature ?? null,
-                    'date' => $performa->pic->approved_date ?? null,
-                ],
-            ];
+$roles = [
+    'Checked By' => [
+        'name' => $performa->pic->inspected_name ?? '-',
+        'signature' => $performa->pic->inspected_signature ?? null,
+        'date' => $performa->pic->inspected_date ?? null,
+    ],
+    'Accepted By' => [
+        'name' => $performa->pic->accepted_name ?? '-',
+        'signature' => $performa->pic->accepted_signature ?? null,
+        'date' => $performa->pic->accepted_date ?? null,
+    ],
+    'Approved By' => [
+        'name' => $performa->pic->approved_name ?? '-',
+        'signature' => $performa->pic->approved_signature ?? null,
+        'date' => $performa->pic->approved_date ?? null,
+    ],
+];
         @endphp
 
         <div class="max-w-4xl p-4 mx-auto mb-6">

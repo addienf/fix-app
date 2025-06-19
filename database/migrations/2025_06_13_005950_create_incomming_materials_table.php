@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -19,6 +18,7 @@ return new class extends Migration
             $table->string('status_penerimaan');
             $table->string('dokumen_pendukung');
             $table->string('file_upload');
+            $table->string('status_penerimaan_pic');
             $table->timestamps();
         });
     }

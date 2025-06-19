@@ -24,7 +24,7 @@
                         <tr>
                             <td class="px-3 py-2 border-b border-black dark:border-white">No. Dokumen</td>
                             <td class="px-3 py-2 font-semibold border-b border-black dark:border-white">
-                                : FO-QKS-PRD-01-01</td>
+                                : FO-QKS-WRH-01-01</td>
                         </tr>
                         <tr>
                             <td class="px-3 py-2 border-b border-black dark:border-white">Tanggal Rilis</td>
@@ -68,28 +68,28 @@
         </h2>
 
         <div class="max-w-4xl mx-auto mt-6 overflow-x-auto text-sm">
-            <table class="min-w-full text-sm text-left border border-black">
+            <table class="min-w-full text-sm text-left border border-gray">
                 <thead class="bg-gray-100">
                     <tr>
-                        <th class="px-3 py-2 border border-black">No</th>
-                        <th class="px-3 py-2 border border-black">Nama Material</th>
-                        <th class="px-3 py-2 border border-black">Batch No.</th>
-                        <th class="px-3 py-2 border border-black">Jumlah Diterima</th>
-                        <th class="px-3 py-2 border border-black">Satuan</th>
-                        <th class="px-3 py-2 border border-black">Kondisi Material</th>
-                        <th class="px-3 py-2 border border-black">Status</th>
+                        <th class="px-3 py-2 border border-gray">No</th>
+                        <th class="px-3 py-2 border border-gray">Nama Material</th>
+                        <th class="px-3 py-2 border border-gray">Batch No.</th>
+                        <th class="px-3 py-2 border border-gray">Jumlah Diterima</th>
+                        <th class="px-3 py-2 border border-gray">Satuan</th>
+                        <th class="px-3 py-2 border border-gray">Kondisi Material</th>
+                        <th class="px-3 py-2 border border-gray">Status</th>
                     </tr>
                 </thead>
                 <tbody class="text-black bg-white dark:bg-gray-900 dark:text-white">
                     @foreach ($incomingMaterial->details as $index => $item)
                         <tr>
-                            <td class="px-3 py-2 text-center border border-black">{{ $index + 1 }}</td>
-                            <td class="px-3 py-2 border border-black">{{ $item->nama_material }}</td>
-                            <td class="px-3 py-2 border border-black">{{ $item->batch_no }}</td>
-                            <td class="px-3 py-2 text-center border border-black">{{ $item->jumlah }}</td>
-                            <td class="px-3 py-2 text-center border border-black">{{ $item->satuan }}</td>
-                            <td class="px-3 py-2 border border-black">{{ $item->kondisi_material }}</td>
-                            <td class="px-3 py-2 text-center border border-black">
+                            <td class="px-3 py-2 text-center border border-gray">{{ $index + 1 }}</td>
+                            <td class="px-3 py-2 border border-gray">{{ $item->nama_material }}</td>
+                            <td class="px-3 py-2 border border-gray">{{ $item->batch_no }}</td>
+                            <td class="px-3 py-2 text-center border border-gray">{{ $item->jumlah }}</td>
+                            <td class="px-3 py-2 text-center border border-gray">{{ $item->satuan }}</td>
+                            <td class="px-3 py-2 border border-gray">{{ $item->kondisi_material }}</td>
+                            <td class="px-3 py-2 text-center border border-gray">
                                 {{ $item->status_qc == '1' ? 'Ya' : 'Tidak' }}
                             </td>
                         </tr>
@@ -112,7 +112,7 @@
                     B. Pemeriksaan Material
                 </h2>
 
-                <p class="ml-4">1 Apakah material dalam kondisi baik? (Ya/Tidak)</p>
+                <p class="ml-4">1. Apakah material dalam kondisi baik? (Ya/Tidak)</p>
 
                 <div class="mt-1 ml-8 space-x-4">
 

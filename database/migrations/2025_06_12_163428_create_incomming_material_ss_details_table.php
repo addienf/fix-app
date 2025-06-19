@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -14,7 +13,7 @@ return new class extends Migration
         Schema::create('incomming_material_ss_details', function (Blueprint $table) {
             $table->id();
             $table->foreignId('material_ss_id')->constrained('incomming_material_ss')->onDelete('cascade');
-            $table->json('details');
+            $table->json('checklists');
             $table->json('details_tambahan');
             $table->timestamps();
         });
