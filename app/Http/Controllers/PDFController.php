@@ -72,4 +72,36 @@ class PDFController extends Controller
     {
         return view('pdf.production.pdfSPKQuality');
     }
+    public function pdfDefectStatus()
+    {
+        return view('pdf.quality.pdfDefectStatus');
+    }
+    public function pdfIncomingMaterialNonSS()
+    {
+        return view('pdf.quality.pdfIncomingMaterialNonSS');
+    }
+    public function pdfIncomingMaterialSS()
+    {
+        return view('pdf.quality.pdfIncomingMaterialSS');
+    }
+    public function pdfKelengkapanMaterialSS()
+    {
+        return view('pdf.quality.pdfKelengkapanMaterialSS');
+    }
+    public function pdfPengecekanPerforma()
+    {
+        return view('pdf.quality.pdfPengecekanPerforma');
+    }
+    public function pdfPengecekanElectrical()
+    {
+        return view('pdf.quality.pdfPengecekanElectrical');
+    }
+    public function pdfPengecekanMaterialSS()
+    {
+        return view('pdf.quality.pdfPengecekanMaterialSS');
+    }
+    public function pdfStandarisasiDrawing()
+    {
+        return view('pdf.quality.pdfStandarisasiDrawing');
+    }
 }
