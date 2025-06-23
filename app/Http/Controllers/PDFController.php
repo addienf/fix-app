@@ -51,6 +51,11 @@ class PDFController extends Controller
     public function pdfSerahTerima()
     {
         return view('pdf.warehouse.pdfSerahTerima');
+
+    }
+    public function pdfPeminjamanAlat()
+    {
+        return view('pdf.warehouse.pdfPeminjamanAlat');
     }
     public function pdfJadwalProduksi()
     {
@@ -104,4 +109,5 @@ class PDFController extends Controller
     {
         return view('pdf.quality.pdfStandarisasiDrawing');
     }
+
 }
