@@ -44,3 +44,19 @@ Route::get('/production/penyerahanprodukjadi', [PDFController::class, 'pdfPenyer
 Route::get('/production/permintaanalatbahan', [PDFController::class, 'pdfPermintaanAlatBahan'])->name('pdf.permintaanAlatBahan');
 
 Route::get('/production/spkquality', [PDFController::class, 'pdfSPKQuality'])->name('pdf.spkQuality');
+
+Route::get('/quality/defectstatus', [PDFController::class, 'pdfDefectStatus'])->name('pdf.defectStatus');
+
+Route::get('/quality/incomingmaterialnonss', [PDFController::class, 'pdfIncomingMaterialNonSS'])->name('pdf.incomingMaterialNonSS');
+
+Route::get('/quality/incomingmaterialss', [PDFController::class, 'pdfIncomingMaterialSS'])->name('pdf.incomingMaterialSS');
+
+Route::get('/quality/kelengkapanmaterialss', [PDFController::class, 'pdfKelengkapanMaterialSS'])->name('pdf.kelengkapanMaterialSS');
+
+Route::get('/quality/pengecekanperforma', [PDFController::class, 'pdfPengecekanPerforma'])->name('pdf.pengecekanPerforma');
+
+Route::get('/quality/pengecekanelectrical', [PDFController::class, 'pdfPengecekanElectrical'])->name('pdf.pengecekanElectrical');
+
+Route::get('/quality/pengecekanmaterialss', [PDFController::class, 'pdfPengecekanMaterialSS'])->name('pdf.pengecekanMaterialSS');
+
+Route::get('/quality/standarisasidrawing', [PDFController::class, 'pdfStandarisasiDrawing'])->name('pdf.StandarisasiDrawing');
