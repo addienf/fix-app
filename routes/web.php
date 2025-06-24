@@ -35,6 +35,8 @@ Route::get('/warehouse/permintaanbahan', [PDFController::class, 'pdfPermintaanBa
 
 Route::get('/warehouse/serahterima', [PDFController::class, 'pdfSerahTerima'])->name('pdf.serahTerima');
 
+Route::get('/warehouse/peminjamanalat', [PDFController::class, 'pdfPeminjamanAlat'])->name('pdf.PeminjamanAlat');
+
 Route::get('/production/jadwalproduksi', [PDFController::class, 'pdfJadwalProduksi'])->name('pdf.jadwalProduksi');
 
 Route::get('/production/penyerahanelectrical', [PDFController::class, 'pdfPenyerahanElectrical'])->name('pdf.penyerahanElectrical');
