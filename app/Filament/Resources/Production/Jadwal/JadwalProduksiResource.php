@@ -199,16 +199,6 @@ class JadwalProduksiResource extends Resource
                     )
                     ->alignCenter(),
 
-                // ImageColumn::make('pic.create_signature')
-                //     ->label('Pembuat')
-                //     ->width(150)
-                //     ->height(75),
-
-                // ImageColumn::make('pic.approve_signature')
-                //     ->label('Penyetuju')
-                //     ->width(150)
-                //     ->height(75),
-
             ])
             ->filters([
                 //

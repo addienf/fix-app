@@ -4,8 +4,15 @@ namespace App\Http\Controllers;
 
 use App\Models\Production\Jadwal\JadwalProduksi;
 use App\Models\Production\PermintaanBahanProduksi\PermintaanAlatDanBahan;
+use App\Models\Purchasing\Permintaan\PermintaanPembelian;
+use App\Models\Quality\IncommingMaterial\MaterialNonSS\IncommingMaterialNonSS;
+use App\Models\Quality\IncommingMaterial\MaterialSS\IncommingMaterialSS;
+use App\Models\Quality\Standarisasi\StandarisasiDrawing;
 use App\Models\Sales\SpesifikasiProducts\SpesifikasiProduct;
 use App\Models\Sales\SPKMarketings\SPKMarketing;
+use App\Models\Warehouse\Incomming\IncommingMaterial;
+use App\Models\Warehouse\PermintaanBahanWBB\PermintaanBahan;
+use App\Models\Warehouse\SerahTerima\SerahTerimaBahan;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 
@@ -44,29 +51,61 @@ class PDFController extends Controller
         return view('pdf.production.pdfPermintaanAlatBahan', compact('permintaan_alat_bahan'));
     }
 
-    public function pdfPermintaanPembelian()
+    public function pdfPermintaanBahan($id)
     {
+        $permintaan_bahan = PermintaanBahan::with(['permintaanBahanPro', 'details', 'pic'])->findOrFail($id);
 
-
-        return view('pdf.purchasing.pdfPermintaanPembelian');
+        return view('pdf.warehouse.pdfPermintaanBahan', compact('permintaan_bahan'));
     }
 
-    public function pdfIncomingMaterial()
+    public function pdfPermintaanPembelian($id)
     {
-        return view('pdf.warehouse.pdfIncomingMaterial');
+        $permintaan_pembelian = PermintaanPembelian::with(['permintaanBahanWBB', 'details', 'pic'])->findOrFail($id);
+
+        return view('pdf.purchasing.pdfPermintaanPembelian', compact('permintaan_pembelian'));
     }
+
+    public function pdfIncomingMaterialSS($id)
+    {
+        $incomingSS = IncommingMaterialSS::with(['permintaanPembelian', 'summary', 'detail', 'pic'])->findOrFail($id);
+
+        return view('pdf.quality.pdfIncomingMaterialSS', compact('incomingSS'));
+    }
+
+    public function pdfIncomingMaterialNonSS($id)
+    {
+        $incomingNonSS = IncommingMaterialNonSS::with(['permintaanPembelian', 'summary', 'detail', 'pic'])->findOrFail($id);
+
+        return view('pdf.quality.pdfIncomingMaterialNonSS', compact('incomingNonSS'));
+    }
+
+    public function pdfIncomingMaterial($id)
+    {
+        $incomingMaterial = IncommingMaterial::with(['permintaanPembelian', 'details', 'pic'])->findOrFail($id);
+
+        return view('pdf.warehouse.pdfIncomingMaterial', compact('incomingMaterial'));
+    }
+
+    public function pdfSerahTerima($id)
+    {
+        $serah_terima = SerahTerimaBahan::with(['permintaanBahanPro', 'details', 'pic'])->findOrFail($id);
+
+        return view('pdf.warehouse.pdfSerahTerima', compact('serah_terima'));
+    }
+
+    public function pdfStandarisasiDrawing($id)
+    {
+        $standarisasi = StandarisasiDrawing::with(['spk', 'identitas', 'detail', 'pic'])->findOrFail($id);
+
+        return view('pdf.quality.pdfStandarisasiDrawing', compact('standarisasi'));
+    }
+
     public function pdfPelabelanQCPassed()
     {
         return view('pdf.warehouse.pdfPelabelanQCPassed');
     }
-    public function pdfPermintaanBahan()
-    {
-        return view('pdf.warehouse.pdfPermintaanBahan');
-    }
-    public function pdfSerahTerima()
-    {
-        return view('pdf.warehouse.pdfSerahTerima');
-    }
+
+
     public function pdfPeminjamanAlat()
     {
         return view('pdf.warehouse.pdfPeminjamanAlat');
@@ -89,14 +128,7 @@ class PDFController extends Controller
     {
         return view('pdf.quality.pdfDefectStatus');
     }
-    public function pdfIncomingMaterialNonSS()
-    {
-        return view('pdf.quality.pdfIncomingMaterialNonSS');
-    }
-    public function pdfIncomingMaterialSS()
-    {
-        return view('pdf.quality.pdfIncomingMaterialSS');
-    }
+
     public function pdfKelengkapanMaterialSS()
     {
         return view('pdf.quality.pdfKelengkapanMaterialSS');
@@ -112,9 +144,5 @@ class PDFController extends Controller
     public function pdfPengecekanMaterialSS()
     {
         return view('pdf.quality.pdfPengecekanMaterialSS');
-    }
-    public function pdfStandarisasiDrawing()
-    {
-        return view('pdf.quality.pdfStandarisasiDrawing');
     }
 }

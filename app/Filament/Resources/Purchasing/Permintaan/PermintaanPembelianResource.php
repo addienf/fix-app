@@ -71,7 +71,7 @@ class PermintaanPembelianResource extends Resource
                                     ->relationship('details')
                                     ->schema([
 
-                                        Grid::make(5)
+                                        Grid::make(4)
                                             ->schema([
 
                                                 self::textInput('kode_barang', 'Kode Barang'),
@@ -82,7 +82,7 @@ class PermintaanPembelianResource extends Resource
                                                         'style' => 'pointer-events: none;'
                                                     ]),
 
-                                                self::selectJenis(),
+                                                // self::selectJenis(),
 
                                                 self::textInput('jumlah', 'Jumlah')->numeric()
                                                     ->extraAttributes([
@@ -92,6 +92,7 @@ class PermintaanPembelianResource extends Resource
 
                                                 Textarea::make('keterangan')
                                                     ->required()
+                                                    ->rows(1)
                                                     ->label('Keterangan')
 
                                             ])
@@ -150,15 +151,15 @@ class PermintaanPembelianResource extends Resource
                     )
                     ->alignCenter(),
 
-                ImageColumn::make('pic.create_signature')
-                    ->label('Pembuat')
-                    ->width(150)
-                    ->height(75),
+                // ImageColumn::make('pic.create_signature')
+                //     ->label('Pembuat')
+                //     ->width(150)
+                //     ->height(75),
 
-                ImageColumn::make('pic.knowing_signature')
-                    ->label('Pembuat')
-                    ->width(150)
-                    ->height(75),
+                // ImageColumn::make('pic.knowing_signature')
+                //     ->label('Pembuat')
+                //     ->width(150)
+                //     ->height(75),
 
             ])
             ->filters([
@@ -173,7 +174,7 @@ class PermintaanPembelianResource extends Resource
                         ->icon('heroicon-o-document')
                         ->color('success')
                         ->visible(fn($record) => $record->status_persetujuan === 'Disetujui')
-                        ->url(fn($record) => self::getUrl('pdfPermintaanPembelian', ['record' => $record->id])),
+                        ->url(fn($record) => route('pdf.PermintaanPembelian', ['record' => $record->id])),
                 ])
             ])
             ->bulkActions([
@@ -242,18 +243,18 @@ class PermintaanPembelianResource extends Resource
         ;
     }
 
-    protected static function selectJenis(): Select
-    {
-        return
-            Select::make('jenis_barang')
-            ->label('Jenis Barang')
-            ->required()
-            ->placeholder('Pilih Jenis Barang')
-            ->options([
-                'ss' => 'Produk SS',
-                'non_ss' => 'Produk Non SS',
-            ]);
-    }
+    // protected static function selectJenis(): Select
+    // {
+    //     return
+    //         Select::make('jenis_barang')
+    //         ->label('Jenis Barang')
+    //         ->required()
+    //         ->placeholder('Pilih Jenis Barang')
+    //         ->options([
+    //             'ss' => 'Produk SS',
+    //             'non_ss' => 'Produk Non SS',
+    //         ]);
+    // }
 
     protected static function datePicker(string $fieldName, string $label): DatePicker
     {

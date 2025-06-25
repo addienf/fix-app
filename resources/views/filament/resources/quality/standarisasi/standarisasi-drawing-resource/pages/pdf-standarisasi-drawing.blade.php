@@ -3,7 +3,7 @@
         <h2 class="mb-3 text-xl font-bold text-center">Detail Standarisasi Gambar Kerja</h2>
 
         <!-- Header Table -->
-        <table class="w-full max-w-4xl mx-auto text-sm border border-black mb-3" style="border-collapse: collapse;">
+        <table class="w-full max-w-4xl mx-auto mb-3 text-sm border border-black" style="border-collapse: collapse;">
             <tr>
                 <td rowspan="3" class="p-2 text-center align-middle border border-black w-28 h-28">
                     <img src="{{ asset('asset/logo.png') }}" alt="Logo" class="object-contain mx-auto h-30" />
@@ -18,7 +18,7 @@
                     <table class="w-full text-sm" style="border-collapse: collapse;">
                         <tr>
                             <td class="px-3 py-2 border-b border-black">No. Dokumen</td>
-                            <td class="px-3 py-2 font-semibold border-b border-black"> : FO-QKS-QA-01-01</td>
+                            <td class="px-3 py-2 font-semibold border-b border-black"> : FO-QKS-QA-01-09</td>
                         </tr>
                         <tr>
                             <td class="px-3 py-2 border-b border-black">Tanggal Rilis</td>
@@ -34,12 +34,15 @@
         </table>
 
         <!-- Informasi Umum (Horizontal Layout) -->
-        <div class="flex flex-col gap-4 w-full max-w-4xl mx-auto text-sm">
+        <div class="flex flex-col w-full max-w-4xl gap-4 mx-auto text-sm">
             @php
-$fields = [
-    ['label' => 'No SPK Produksi :', 'value' => $standarisasi->spk->no_spk],
-    ['label' => 'Tanggal Pemeriksaan :', 'value' => \Carbon\Carbon::parse($standarisasi->tanggal)->format('d M Y')],
-];
+                $fields = [
+                    ['label' => 'No SPK Produksi :', 'value' => $standarisasi->spk->no_spk],
+                    [
+                        'label' => 'Tanggal Pemeriksaan :',
+                        'value' => \Carbon\Carbon::parse($standarisasi->tanggal)->format('d M Y'),
+                    ],
+                ];
             @endphp
 
             @foreach ($fields as $field)
@@ -52,27 +55,30 @@ $fields = [
         </div>
 
         <!-- Detail Standarisasi -->
-        <div class="flex flex-col gap-4 w-full max-w-4xl mx-auto pt-6 text-sm">
+        <div class="flex flex-col w-full max-w-4xl gap-4 pt-6 mx-auto text-sm">
             <h2 class="text-xl font-bold">I. Detail Standarisasi Gambar Kerja</h2>
             @php
-$fields = [
-    ['label' => 'Judul Gambar :', 'value' => $standarisasi->identitas->judul_gambar],
-    ['label' => 'Nomor Gambar :', 'value' => $standarisasi->identitas->no_gambar],
-    ['label' => 'Tanggal Pembuatan :', 'value' => \Carbon\Carbon::parse($standarisasi->identitas->tanggal_pembuatan)->format('d M Y')],
-    [
-        'label' => 'Revisi :',
-        'value' => match ($standarisasi->identitas->revisi) {
-            0 => 'Tidak Ada Revisi',
-            1 => 'Revisi',
-            default => 'Tidak Diketahui',
-        }
-    ],
-    $standarisasi->identitas->revisi === 1
-    ? ['label' => 'Revisi Ke :', 'value' => 'Tim QA']
-    : ['label' => 'Revisi Ke :', 'value' => 'Tidak Ada Revisi'],
-    ['label' => 'Nama Pembuat Gambar :', 'value' => $standarisasi->identitas->nama_pembuat],
-    ['label' => 'Nama Pemeriksa :', 'value' => $standarisasi->identitas->nama_pemeriksa],
-];
+                $fields = [
+                    ['label' => 'Judul Gambar :', 'value' => $standarisasi->identitas->judul_gambar],
+                    ['label' => 'Nomor Gambar :', 'value' => $standarisasi->identitas->no_gambar],
+                    [
+                        'label' => 'Tanggal Pembuatan :',
+                        'value' => \Carbon\Carbon::parse($standarisasi->identitas->tanggal_pembuatan)->format('d M Y'),
+                    ],
+                    [
+                        'label' => 'Revisi :',
+                        'value' => match ($standarisasi->identitas->revisi) {
+                            0 => 'Tidak Ada Revisi',
+                            1 => 'Revisi',
+                            default => 'Tidak Diketahui',
+                        },
+                    ],
+                    $standarisasi->identitas->revisi === 1
+                        ? ['label' => 'Revisi Ke :', 'value' => 'Tim QA']
+                        : ['label' => 'Revisi Ke :', 'value' => 'Tidak Ada Revisi'],
+                    ['label' => 'Nama Pembuat Gambar :', 'value' => $standarisasi->identitas->nama_pembuat],
+                    ['label' => 'Nama Pemeriksa :', 'value' => $standarisasi->identitas->nama_pemeriksa],
+                ];
             @endphp
 
             @foreach ($fields as $field)
@@ -85,13 +91,13 @@ $fields = [
         </div>
 
         <!-- Spesifikasi Teknis -->
-        <div class="flex flex-col gap-4 w-full max-w-4xl mx-auto pt-6 text-sm">
+        <div class="flex flex-col w-full max-w-4xl gap-4 pt-6 mx-auto text-sm">
             <h2 class="text-xl font-bold">II. Spesifikasi Teknis</h2>
             @php
-$fields = [
-    ['label' => 'Jenis Gambar :', 'value' => ucfirst($standarisasi->jenis_gambar)],
-    ['label' => 'Format Gambar :', 'value' => $standarisasi->format_gambar],
-];
+                $fields = [
+                    ['label' => 'Jenis Gambar :', 'value' => ucfirst($standarisasi->jenis_gambar)],
+                    ['label' => 'Format Gambar :', 'value' => $standarisasi->format_gambar],
+                ];
             @endphp
             @foreach ($fields as $field)
                 <div class="flex items-center gap-4">
@@ -116,7 +122,7 @@ $fields = [
         <div class="w-full max-w-4xl pt-6 mx-auto text-sm">
             <h2 class="mb-3 text-xl font-bold">IV. Catatan dan Koreksi yang Dibutuhkan</h2>
             <textarea readonly id="note"
-                class="w-full px-3 py-2 overflow-hidden text-sm leading-relaxed border cursor-not-allowed resize-none border-black rounded-md">
+                class="w-full px-3 py-2 overflow-hidden text-sm leading-relaxed border border-black rounded-md cursor-not-allowed resize-none">
 {{ trim($standarisasi->detail->catatan) }}</textarea>
         </div>
 

@@ -77,6 +77,16 @@
         </button>
     </div>
 
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            const note = document.getElementById('note');
+            if (note) {
+                note.style.height = 'auto'; // reset dulu
+                note.style.height = note.scrollHeight + 'px'; // sesuaikan isi
+            }
+        });
+    </script>
+
 </body>
 
 </html>
