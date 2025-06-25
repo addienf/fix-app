@@ -15,10 +15,12 @@ class PermintaanAlatDanBahanPIC extends Model
 
     protected $fillable = [
         'permintaan_bahan_id',
-        'create_signature',
-        'create_name',
-        'receive_signature',
-        'receive_name',
+        'dibuat_signature',
+        'dibuat_name',
+        'diketahui_signature',
+        'diketahui_name',
+        'diserahkan_signature',
+        'diserahkan_name',
     ];
 
     public function permintaanBahan()
@@ -30,29 +32,41 @@ class PermintaanAlatDanBahanPIC extends Model
     {
         static::updating(function ($model) {
             if (
-                $model->isDirty('create_signature') &&
-                $model->getOriginal('create_signature') &&
-                Storage::disk('public')->exists($model->getOriginal('create_signature'))
+                $model->isDirty('dibuat_signature') &&
+                $model->getOriginal('dibuat_signature') &&
+                Storage::disk('public')->exists($model->getOriginal('dibuat_signature'))
             ) {
-                Storage::disk('public')->delete($model->getOriginal('create_signature'));
+                Storage::disk('public')->delete($model->getOriginal('dibuat_signature'));
             }
 
             if (
-                $model->isDirty('receive_signature') &&
-                $model->getOriginal('receive_signature') &&
-                Storage::disk('public')->exists($model->getOriginal('receive_signature'))
+                $model->isDirty('diketahui_signature') &&
+                $model->getOriginal('diketahui_signature') &&
+                Storage::disk('public')->exists($model->getOriginal('diketahui_signature'))
             ) {
-                Storage::disk('public')->delete($model->getOriginal('receive_signature'));
+                Storage::disk('public')->delete($model->getOriginal('diketahui_signature'));
+            }
+
+            if (
+                $model->isDirty('diserahkan_signature') &&
+                $model->getOriginal('diserahkan_signature') &&
+                Storage::disk('public')->exists($model->getOriginal('diserahkan_signature'))
+            ) {
+                Storage::disk('public')->delete($model->getOriginal('diserahkan_signature'));
             }
         });
 
         static::deleting(function ($model) {
-            if ($model->create_signature && Storage::disk('public')->exists($model->create_signature)) {
-                Storage::disk('public')->delete($model->create_signature);
+            if ($model->dibuat_signature && Storage::disk('public')->exists($model->dibuat_signature)) {
+                Storage::disk('public')->delete($model->dibuat_signature);
             }
 
-            if ($model->receive_signature && Storage::disk('public')->exists($model->receive_signature)) {
-                Storage::disk('public')->delete($model->receive_signature);
+            if ($model->diketahui_signature && Storage::disk('public')->exists($model->diketahui_signature)) {
+                Storage::disk('public')->delete($model->diketahui_signature);
+            }
+
+            if ($model->diserahkan_signature && Storage::disk('public')->exists($model->diserahkan_signature)) {
+                Storage::disk('public')->delete($model->diserahkan_signature);
             }
         });
     }

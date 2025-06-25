@@ -14,10 +14,12 @@ return new class extends Migration
         Schema::create('permintaan_alat_dan_bahan_pics', function (Blueprint $table) {
             $table->id();
             $table->foreignId('permintaan_bahan_id')->constrained('permintaan_alat_dan_bahans')->onDelete('cascade');
-            $table->text('create_signature');
-            $table->string('create_name');
-            $table->text('receive_signature')->nullable();
-            $table->string('receive_name')->nullable();
+            $table->text('dibuat_signature');
+            $table->string('dibuat_name');
+            $table->text('diketahui_signature')->nullable();
+            $table->string('diketahui_name')->nullable();
+            $table->text('diserahkan_signature')->nullable();
+            $table->string('diserahkan_name')->nullable();
             $table->timestamps();
         });
     }

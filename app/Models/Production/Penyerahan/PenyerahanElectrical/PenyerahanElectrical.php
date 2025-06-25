@@ -16,8 +16,8 @@ class PenyerahanElectrical extends Model
     protected $fillable = [
         'pengecekan_material_id',
         'nama_produk',
-        'kode_produk',
-        'no_seri',
+        'tipe',
+        'no_spk',
         'tanggal_selesai',
         'jumlah',
         'kondisi',

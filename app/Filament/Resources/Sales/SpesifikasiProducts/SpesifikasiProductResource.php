@@ -203,7 +203,8 @@ class SpesifikasiProductResource extends Resource
                         ->label(_('View PDF'))
                         ->icon('heroicon-o-document')
                         ->color('success')
-                        ->url(fn($record) => self::getUrl('pdfSpecProduct', ['record' => $record->id])),
+                        ->openUrlInNewTab()
+                        ->url(fn($record) => route('specProduct.preview', ['record' => $record->id])),
                 ])
             ])
             ->bulkActions([

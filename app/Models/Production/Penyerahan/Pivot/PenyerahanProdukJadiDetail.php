@@ -15,7 +15,6 @@ class PenyerahanProdukJadiDetail extends Model
         'nama_produk',
         'tipe',
         'volume',
-        'no_seri',
         'jumlah',
         'no_spk'
     ];

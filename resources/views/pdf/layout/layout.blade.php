@@ -1,16 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>@yield('title')</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <script src="https://raw.githack.com/eKoopmans/html2pdf/master/dist/html2pdf.bundle.min.js"></script>
 </head>
+
 <body>
     @yield('content')
-    <script>
+    {{-- <script>
         function exportPDF() {
             window.scrollTo(0, 0); // pastikan posisi di atas
 
@@ -45,8 +48,11 @@
                     margin: [0.2, 0.2, 0.2, 0.2],
                     // filename: `${document_title}.pdf`,
                     filename: `${ document_name }.pdf`,
-            
-                    image: { type: "jpeg", quality: 1 },
+
+                    image: {
+                        type: "jpeg",
+                        quality: 1
+                    },
                     html2canvas: {
                         scale: 3,
                         useCORS: true,
@@ -57,17 +63,20 @@
                         format: "a4",
                         orientation: "portrait"
                     },
-                    pagebreak: { mode: ["avoid", "css"] }
+                    pagebreak: {
+                        mode: ["avoid", "css"]
+                    }
                 }).from(element).save();
             }
         }
-    </script>
+    </script> --}}
     <div class="mt-6 text-center">
         <button onclick="exportPDF()"
-            class="inline-flex items-center px-5 py-2 text-sm font-semibold text-white bg-blue-600 rounded hover:bg-blue-700 transition-all">
+            class="inline-flex items-center px-5 py-2 text-sm font-semibold text-white transition-all bg-blue-600 rounded hover:bg-blue-700">
             ⬇️ Download PDF
         </button>
     </div>
 
 </body>
+
 </html>

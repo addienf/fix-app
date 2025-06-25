@@ -17,7 +17,6 @@ return new class extends Migration
             $table->string('nama_produk');
             $table->string('tipe');
             $table->string('volume');
-            $table->string('no_seri');
             $table->string('jumlah');
             $table->string('no_spk');
             $table->timestamps();

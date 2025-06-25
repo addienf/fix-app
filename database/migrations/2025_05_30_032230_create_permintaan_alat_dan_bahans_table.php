@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('dari');
             $table->string('kepada');
             $table->string('status')->nullable();
-            $table->string('status_penerimaan')->nullable();
+            $table->string('status_penyerahan')->nullable();
             $table->timestamps();
         });
     }

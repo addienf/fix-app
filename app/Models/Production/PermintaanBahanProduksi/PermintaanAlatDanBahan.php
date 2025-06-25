@@ -21,7 +21,7 @@ class PermintaanAlatDanBahan extends Model
         'dari',
         'kepada',
         'status',
-        'status_penerimaan',
+        'status_penyerahan',
     ];
 
     protected $casts = [
@@ -57,10 +57,17 @@ class PermintaanAlatDanBahan extends Model
     {
         static::saving(function ($model) {
             if (
-                $model->pic?->receive_signature &&
-                $model->status_penerimaan !== 'Diterima'
+                $model->pic?->diketahui_signature &&
+                $model->status_penyerahan !== 'Diketahui'
             ) {
-                $model->status_penerimaan = 'Diterima';
+                $model->status_penyerahan = 'Diketahui';
+            }
+
+            if (
+                $model->pic?->diserahkan_signature &&
+                $model->status_penyerahan !== 'Diserahkan'
+            ) {
+                $model->status_penyerahan = 'Diserahkan';
             }
         });
 

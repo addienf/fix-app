@@ -1,7 +1,7 @@
 @extends ('pdf.layout.layout')
-
+@section('title', 'Permintaan Alat dan Bahan PDF')
 @section('content')
-    <div id="export-area" class="p-2 bg-white text-black">
+    <div id="export-area" class="p-2 text-black bg-white">
         <table
             class="w-full max-w-4xl mx-auto text-sm border border-black dark:border-white dark:bg-gray-900 dark:text-white"
             style="border-collapse: collapse;">
@@ -41,10 +41,13 @@
         </table>
         @php
             $infoUmum = [
-                ['label' => 'Nomor Surat :', 'value' => 'NS-001/PK/VI/2025'],
-                ['label' => 'Dari :', 'value' => 'Divisi Produksi'],
-                ['label' => 'Tanggal : ', 'value' => '19 Jun 2025'],
-                ['label' => 'Kepada :', 'value' => 'Divisi Gudang'],
+                ['label' => 'Nomor Surat :', 'value' => $permintaan_alat_bahan->no_surat],
+                ['label' => 'Dari :', 'value' => $permintaan_alat_bahan->dari],
+                [
+                    'label' => 'Tanggal : ',
+                    'value' => \Carbon\Carbon::parse($permintaan_alat_bahan->date)->translatedFormat('d M Y'),
+                ],
+                ['label' => 'Kepada :', 'value' => $permintaan_alat_bahan->kepada],
             ];
         @endphp
         <div class="grid max-w-4xl grid-cols-1 pt-2 pt-4 pt-6 mx-auto mb-6 text-sm md:grid-cols-2 gap-x-6 gap-y-4">
@@ -62,10 +65,11 @@
         <div class="max-w-4xl mx-auto mb-6 text-sm">
             <p class="mb-2">Dengan hormat,</p>
             <p class="flex flex-wrap items-center gap-1">
-                <span>Berdasarkan SPK MKT No.</span>
-                <input disabled class="px-2 py-1 text-sm align-middle bg-transparent border-none w-45 h-7"
-                    value="SPK-MKT/0123/VI/2025" />
-                <span>mohon bantuan untuk memenuhi kebutuhan bahan/sparepart dengan rincian sebagai berikut:</span>
+                <span>Berdasarkan SPK MKT No. {{ $permintaan_alat_bahan->spk->no_spk }} mohon bantuan untuk memenuhi
+                    kebutuhan bahan/sparepart dengan rincian sebagai berikut:</span>
+                {{-- <input disabled class="px-2 py-1 text-sm align-middle bg-transparent border-none w-45 h-7"
+                    value="{{ $permintaan_alat_bahan->spk->no_spk }}" /> --}}
+                {{-- <span>mohon bantuan untuk memenuhi kebutuhan bahan/sparepart dengan rincian sebagai berikut:</span> --}}
             </p>
         </div>
 
@@ -82,44 +86,73 @@
                     </tr>
                 </thead>
                 <tbody class="bg-white dark:bg-gray-900">
-                    <tr>
-                        <td class="px-4 py-2 border">1</td>
-                        <td class="px-4 py-2 border">Pipa PVC</td>
-                        <td class="px-4 py-2 border">1/2 inch, 3 meter</td>
-                        <td class="px-4 py-2 border">20</td>
-                        <td class="px-4 py-2 border">Instalasi air produksi</td>
-                    </tr>
-                    <tr>
-                        <td class="px-4 py-2 border">2</td>
-                        <td class="px-4 py-2 border">Kabel NYY</td>
-                        <td class="px-4 py-2 border">3x2.5mm</td>
-                        <td class="px-4 py-2 border">50 meter</td>
-                        <td class="px-4 py-2 border">Listrik mesin baru</td>
-                    </tr>
-                    <tr>
-                        <td class="px-4 py-2 border">3</td>
-                        <td class="px-4 py-2 border">Oli Pelumas</td>
-                        <td class="px-4 py-2 border">Shell Tellus 46</td>
-                        <td class="px-4 py-2 border">10 liter</td>
-                        <td class="px-4 py-2 border">Pemeliharaan mesin</td>
-                    </tr>
+                    @foreach ($permintaan_alat_bahan->details as $index => $produk)
+                        <tr>
+                            <td class="px-4 py-2 border">{{ $index + 1 }}</td>
+                            <td class="px-4 py-2 border">{{ $produk['bahan_baku'] }}</td>
+                            <td class="px-4 py-2 border">{{ $produk['spesifikasi'] }}</td>
+                            <td class="px-4 py-2 border">{{ $produk['jumlah'] }}</td>
+                            <td class="px-4 py-2 border">{{ $produk['keperluan_barang'] }}</td>
+                        </tr>
+                    @endforeach
                 </tbody>
             </table>
         </div>
 
         <!-- TANDA TANGAN -->
-        <div class="max-w-4xl mx-auto mt-10 text-sm">
+        {{-- <div class="max-w-4xl mx-auto mt-10 text-sm">
             <div class="flex items-start justify-between gap-4">
                 <div class="flex flex-col items-center">
                     <p class="mb-2 dark:text-white">Yang Membuat</p>
-                    <img src="{{ asset('storage/signatures/dummy-submit.png') }}" alt="Product Signature" class="h-20 w-80" />
+                    <img src="{{ asset('storage/signatures/dummy-submit.png') }}" alt="Product Signature"
+                        class="h-20 w-80" />
                     <div class="mt-2 font-medium">Rudi Hartono</div>
                 </div>
                 <div class="flex flex-col items-center">
                     <p class="mb-2 dark:text-white">Yang Menerima</p>
-                    <img src="{{ asset('storage/signatures/dummy-receive.png') }}" alt="Product Signature" class="h-20 w-80" />
+                    <img src="{{ asset('storage/signatures/dummy-receive.png') }}" alt="Product Signature"
+                        class="h-20 w-80" />
                     <div class="mt-2 font-medium">Siti Maemunah</div>
                 </div>
+            </div>
+        </div> --}}
+
+        @php
+            $roles = [
+                'Dibuat Oleh' => [
+                    'name' => $permintaan_alat_bahan->pic->dibuat_name ?? '-',
+                    'signature' => $permintaan_alat_bahan->pic->dibuat_signature ?? null,
+                ],
+                'Diketahui Oleh' => [
+                    'name' => $permintaan_alat_bahan->pic->diketahui_name ?? '-',
+                    'signature' => $permintaan_alat_bahan->pic->diketahui_signature ?? null,
+                ],
+                'Diserahkan Kepada' => [
+                    'name' => $permintaan_alat_bahan->pic->diserahkan_name ?? '-',
+                    'signature' => $permintaan_alat_bahan->pic->diserahkan_signature ?? null,
+                ],
+            ];
+        @endphp
+
+        <div class="max-w-4xl mx-auto mt-10 text-sm">
+            <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+                @foreach ($roles as $role => $data)
+                    <div>
+                        <label class="block mb-1 font-semibold">{{ $role }}</label>
+                        <input type="text" value="{{ $data['name'] }}" readonly
+                            class="w-full p-2 mb-2 text-gray-500 bg-gray-100" />
+
+                        <label class="block mb-1">Signature</label>
+                        <div class="flex items-center justify-center w-full h-24 mb-2 bg-white">
+                            @if ($data['signature'])
+                                <img src="{{ asset('storage/' . $data['signature']) }}" alt="Signature"
+                                    class="object-contain h-full" />
+                            @else
+                                <span class="text-sm text-gray-400">No Signature</span>
+                            @endif
+                        </div>
+                    </div>
+                @endforeach
             </div>
         </div>
     </div>
