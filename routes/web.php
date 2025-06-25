@@ -26,15 +26,24 @@ Route::get('/sales/spk/{record}/pdf-spk-marketing', [PDFController::class, 'pdfS
 Route::get('/produksi/jadwal-produksi/{record}/pdf-jadwal-produksi', [PDFController::class, 'pdfJadwalProduksi'])->name('pdf.jadwalProduksi');
 Route::get('/produksi/permintaan-alat-dan-bahan/{record}/pdf-permintaan-alat-dan-bahan', [PDFController::class, 'pdfPermintaanAlatBahan'])->name('pdf.permintaanAlatBahan');
 
-Route::get('/purchasing/permintaanpembelian', [PDFController::class, 'pdfPermintaanPembelian'])->name('pdf.PermintaanPembelian');
+// Warehouse
+Route::get('/warehouse/permintaan-bahan/{record}/pdf-permintaan-bahan', [PDFController::class, 'pdfPermintaanBahan'])->name('pdf.permintaanBahan');
+Route::get('/warehouse/incoming-material/{record}/pdf-incoming-material', [PDFController::class, 'pdfIncomingMaterial'])->name('pdf.IncomingMaterial');
+Route::get('/warehouse/serah-terima-bahan/{record}/pdf-serah-terima-bahan', [PDFController::class, 'pdfSerahTerima'])->name('pdf.serahTerima');
 
-Route::get('/warehouse/incomingmaterial', [PDFController::class, 'pdfIncomingMaterial'])->name('pdf.IncomingMaterial');
+// Purchasing
+Route::get('/purchasing/permintaan-pembelian/{record}/pdf-permintaan-pembelian', [PDFController::class, 'pdfPermintaanPembelian'])->name('pdf.PermintaanPembelian');
+
+// Quality
+Route::get('/quality/incoming-material-ss/{record}/pdf-incoming-material-ss', [PDFController::class, 'pdfIncomingMaterialSS'])->name('pdf.incomingMaterialSS');
+Route::get('/quality/incoming-material-non-ss/{record}/pdf-incoming-material-non-ss', [PDFController::class, 'pdfIncomingMaterialNonSS'])->name('pdf.incomingMaterialNonSS');
+Route::get('/quality/standarisasi-gambar-kerja/{record}/pdf-standarisasi-gambar-kerja', [PDFController::class, 'pdfStandarisasiDrawing'])->name('pdf.StandarisasiDrawing');
+
+
 
 Route::get('/warehouse/pelabelanqcpassed', [PDFController::class, 'pdfPelabelanQCPassed'])->name('pdf.PelabelanQCPassed');
 
-Route::get('/warehouse/permintaanbahan', [PDFController::class, 'pdfPermintaanBahan'])->name('pdf.permintaanBahan');
 
-Route::get('/warehouse/serahterima', [PDFController::class, 'pdfSerahTerima'])->name('pdf.serahTerima');
 
 Route::get('/warehouse/peminjamanalat', [PDFController::class, 'pdfPeminjamanAlat'])->name('pdf.PeminjamanAlat');
 
@@ -46,9 +55,9 @@ Route::get('/production/spkquality', [PDFController::class, 'pdfSPKQuality'])->n
 
 Route::get('/quality/defectstatus', [PDFController::class, 'pdfDefectStatus'])->name('pdf.defectStatus');
 
-Route::get('/quality/incomingmaterialnonss', [PDFController::class, 'pdfIncomingMaterialNonSS'])->name('pdf.incomingMaterialNonSS');
 
-Route::get('/quality/incomingmaterialss', [PDFController::class, 'pdfIncomingMaterialSS'])->name('pdf.incomingMaterialSS');
+
+
 
 Route::get('/quality/kelengkapanmaterialss', [PDFController::class, 'pdfKelengkapanMaterialSS'])->name('pdf.kelengkapanMaterialSS');
 
@@ -57,5 +66,3 @@ Route::get('/quality/pengecekanperforma', [PDFController::class, 'pdfPengecekanP
 Route::get('/quality/pengecekanelectrical', [PDFController::class, 'pdfPengecekanElectrical'])->name('pdf.pengecekanElectrical');
 
 Route::get('/quality/pengecekanmaterialss', [PDFController::class, 'pdfPengecekanMaterialSS'])->name('pdf.pengecekanMaterialSS');
-
-Route::get('/quality/standarisasidrawing', [PDFController::class, 'pdfStandarisasiDrawing'])->name('pdf.StandarisasiDrawing');

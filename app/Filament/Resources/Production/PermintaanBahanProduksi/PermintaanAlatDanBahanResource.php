@@ -308,14 +308,11 @@ class PermintaanAlatDanBahanResource extends Resource
     {
         return
             Select::make('spk_marketing_id')
-                ->label('Nomor SPK')
-                ->label('spk')
-                ->options(function () {
-                    return SPKMarketing::whereHas('jadwalProduksi', function ($query) {
-                        $query->where('status_persetujuan', 'Disetujui');
-                    })
-                        ->whereDoesntHave('permintaan')
-                        ->pluck('no_spk', 'id');
+            ->label('Nomor SPK')
+            ->label('spk')
+            ->options(function () {
+                return SPKMarketing::whereHas('jadwalProduksi', function ($query) {
+                    $query->where('status_persetujuan', 'Disetujui');
                 })
                     ->whereDoesntHave('permintaan')
                     ->pluck('no_spk', 'id');
@@ -343,50 +340,50 @@ class PermintaanAlatDanBahanResource extends Resource
     {
         return
             ButtonGroup::make($fieldName)
-                ->label($label)
-                ->required()
-                ->options([
-                    'Tersedia' => 'Tersedia',
-                    'Tidak Tersedia' => 'Tidak Tersedia',
-                ])
-                ->onColor('primary')
-                ->offColor('gray')
-                ->gridDirection('row')
-                ->default('individual');
+            ->label($label)
+            ->required()
+            ->options([
+                'Tersedia' => 'Tersedia',
+                'Tidak Tersedia' => 'Tidak Tersedia',
+            ])
+            ->onColor('primary')
+            ->offColor('gray')
+            ->gridDirection('row')
+            ->default('individual');
     }
 
     protected static function datePicker(string $fieldName, string $label): DatePicker
     {
         return
             DatePicker::make($fieldName)
-                ->label($label)
-                ->displayFormat('M d Y')
-                ->seconds(false);
+            ->label($label)
+            ->displayFormat('M d Y')
+            ->seconds(false);
     }
 
     protected static function signatureInput(string $fieldName, string $labelName): SignaturePad
     {
         return
             SignaturePad::make($fieldName)
-                ->label($labelName)
-                ->exportPenColor('#0118D8')
-                ->helperText('*Harap Tandatangan di tengah area yang disediakan.')
-                ->afterStateUpdated(function ($state, $set) use ($fieldName) {
-                    if (blank($state))
-                        return;
-                    $path = SignatureUploader::handle($state, 'ttd_', 'Production/PermintaanBahan/Signatures');
-                    if ($path) {
-                        $set($fieldName, $path);
-                    }
-                });
+            ->label($labelName)
+            ->exportPenColor('#0118D8')
+            ->helperText('*Harap Tandatangan di tengah area yang disediakan.')
+            ->afterStateUpdated(function ($state, $set) use ($fieldName) {
+                if (blank($state))
+                    return;
+                $path = SignatureUploader::handle($state, 'ttd_', 'Production/PermintaanBahan/Signatures');
+                if ($path) {
+                    $set($fieldName, $path);
+                }
+            });
     }
 
     protected static function textColumn(string $fieldName, string $label): TextColumn
     {
         return
             TextColumn::make($fieldName)
-                ->label($label)
-                ->searchable()
-                ->sortable();
+            ->label($label)
+            ->searchable()
+            ->sortable();
     }
 }

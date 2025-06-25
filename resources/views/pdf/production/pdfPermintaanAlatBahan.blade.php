@@ -1,5 +1,5 @@
 @extends ('pdf.layout.layout')
-@section('title', 'Permintaan Alat dan Bahan PDF')
+@section('title', 'Permintaan Bahan dan Alat Produksi PDF')
 @section('content')
     <div id="export-area" class="p-2 text-black bg-white">
         <table
@@ -24,16 +24,16 @@
                         <tr>
                             <td class="px-3 py-2 border-b border-black dark:border-white">No. Dokumen</td>
                             <td class="px-3 py-2 font-semibold border-b border-black dark:border-white"> :
-                                FO-QKS-PRD-01-01</td>
+                                FO-QKS-PRO-01-03</td>
                         </tr>
                         <tr>
                             <td class="px-3 py-2 border-b border-black dark:border-white">Tanggal Rilis</td>
-                            <td class="px-3 py-2 font-semibold border-b border-black dark:border-white"> : 12 Maret 2025
+                            <td class="px-3 py-2 font-semibold border-b border-black dark:border-white"> : 17 Juni 2025
                             </td>
                         </tr>
                         <tr>
                             <td class="px-3 py-2">Revisi</td>
-                            <td class="px-3 py-2 font-semibold"> : 0</td>
+                            <td class="px-3 py-2 font-semibold"> : 01</td>
                         </tr>
                     </table>
                 </td>
@@ -42,11 +42,12 @@
         @php
             $infoUmum = [
                 ['label' => 'Nomor Surat :', 'value' => $permintaan_alat_bahan->no_surat],
-                ['label' => 'Dari :', 'value' => $permintaan_alat_bahan->dari],
                 [
                     'label' => 'Tanggal : ',
                     'value' => \Carbon\Carbon::parse($permintaan_alat_bahan->date)->translatedFormat('d M Y'),
                 ],
+                ['label' => 'Dari :', 'value' => $permintaan_alat_bahan->dari],
+
                 ['label' => 'Kepada :', 'value' => $permintaan_alat_bahan->kepada],
             ];
         @endphp
@@ -157,3 +158,59 @@
         </div>
     </div>
 @endsection
+
+<script>
+    function exportPDF() {
+        window.scrollTo(0, 0); // pastikan posisi di atas
+
+        const element = document.getElementById("export-area");
+
+        // Pastikan semua gambar sudah termuat sebelum render
+        const images = element.getElementsByTagName("img");
+        const totalImages = images.length;
+        let loadedImages = 0;
+
+        for (let img of images) {
+            if (img.complete) {
+                loadedImages++;
+            } else {
+                img.onload = () => {
+                    loadedImages++;
+                    if (loadedImages === totalImages) renderPDF();
+                };
+            }
+        }
+
+        if (loadedImages === totalImages) {
+            renderPDF();
+        }
+
+        const today = new Date();
+        const tanggal = today.toISOString().split('T')[0]; // hasil: "2025-06-25"
+        const filename = `spesifikasi-produk-${tanggal}.pdf`;
+
+        function renderPDF() {
+            html2pdf().set({
+                margin: [0.2, 0.2, 0.2, 0.2],
+                filename: "permintaan-bahan-dan-alat-produksi.pdf",
+                image: {
+                    type: "jpeg",
+                    quality: 1
+                },
+                html2canvas: {
+                    scale: 3,
+                    useCORS: true,
+                    letterRendering: true
+                },
+                jsPDF: {
+                    unit: "in",
+                    format: "a4",
+                    orientation: "portrait"
+                },
+                pagebreak: {
+                    mode: ["avoid", "css"]
+                }
+            }).from(element).save();
+        }
+    }
+</script>

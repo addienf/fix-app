@@ -143,10 +143,6 @@ class PermintaanBahanResource extends Resource
                 self::textColumn('tanggal', 'Tanggal Dibuat')->date('d M Y'),
                 self::textColumn('dari', 'Dari'),
                 self::textColumn('kepada', 'Kepada'),
-                ImageColumn::make('pic.create_signature')
-                    ->label('Pembuat')
-                    ->width(150)
-                    ->height(75),
             ])
             ->filters([
                 //
@@ -159,7 +155,7 @@ class PermintaanBahanResource extends Resource
                         ->label(_('View PDF'))
                         ->icon('heroicon-o-document')
                         ->color('success')
-                        ->url(fn($record) => self::getUrl('pdfPermintaanBahanWBB', ['record' => $record->id])),
+                        ->url(fn($record) => route('pdf.permintaanBahan', ['record' => $record->id])),
                 ])
             ])
             ->bulkActions([
@@ -203,7 +199,7 @@ class PermintaanBahanResource extends Resource
                 $relation,
                 $title,
                 fn($query) => $query
-                    ->where('status_penerimaan', 'Diterima')
+                    ->where('status_penyerahan', 'Diserahkan')
                     ->where('status', 'Tidak Tersedia')
                     ->whereDoesntHave('permintaanBahanWBB')
             )

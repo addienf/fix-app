@@ -124,6 +124,7 @@ class SerahTerimaBahanResource extends Resource
                                                     ]),
                                                 Textarea::make('keperluan_barang')
                                                     ->label('Keperluan Barang')
+                                                    ->rows(1)
                                                     ->extraAttributes([
                                                         'readonly' => true,
                                                         'style' => 'pointer-events: none;'
@@ -185,10 +186,6 @@ class SerahTerimaBahanResource extends Resource
 
                 self::textColumn('tanggal', 'Tanggal Dibuat')->date('d M Y'),
 
-                self::textColumn('dari', 'Dari'),
-
-                self::textColumn('kepada', 'Kepada'),
-
                 TextColumn::make('status_penerimaan')
                     ->label('Status Penerimaan')
                     ->badge()
@@ -197,16 +194,6 @@ class SerahTerimaBahanResource extends Resource
                         $state === 'Diterima' ? 'success' : 'danger'
                     )
                     ->alignCenter(),
-
-                ImageColumn::make('pic.submit_signature')
-                    ->label('Pembuat')
-                    ->width(150)
-                    ->height(75),
-
-                ImageColumn::make('pic.receive_signature')
-                    ->label('Penerima')
-                    ->width(150)
-                    ->height(75),
             ])
             ->filters([
                 //
@@ -220,7 +207,7 @@ class SerahTerimaBahanResource extends Resource
                         ->icon('heroicon-o-document')
                         ->color('success')
                         ->visible(fn($record) => $record->status_penerimaan === 'Diterima')
-                        ->url(fn($record) => self::getUrl('pdfSerahTerimaBahan', ['record' => $record->id])),
+                        ->url(fn($record) => route('pdf.serahTerima', ['record' => $record->id])),
                 ])
             ])
             ->bulkActions([
@@ -264,7 +251,7 @@ class SerahTerimaBahanResource extends Resource
                 $relation,
                 $title,
                 fn($query) => $query
-                    ->where('status_penerimaan', 'Diterima')
+                    ->where('status_penyerahan', 'Diserahkan')
                     ->where('status', 'Tersedia')
                     ->whereDoesntHave('serahTerimaBahan')
             )

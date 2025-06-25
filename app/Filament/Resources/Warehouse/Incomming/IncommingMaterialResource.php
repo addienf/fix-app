@@ -208,7 +208,7 @@ class IncommingMaterialResource extends Resource
                         ->icon('heroicon-o-document')
                         ->color('success')
                         ->visible(fn($record) => $record->status_penerimaan_pic === 'Diterima')
-                        ->url(fn($record) => self::getUrl('pdfIncommingMaterial', ['record' => $record->id])),
+                        ->url(fn($record) => route('pdf.IncomingMaterial', ['record' => $record->id])),
                 ])
             ])
             ->bulkActions([
@@ -272,23 +272,23 @@ class IncommingMaterialResource extends Resource
                     'materialNonSS'
                 )->find($state);
 
-                // dd($pembelian->details?->first()?->nama_barang);
+                // $namaBarangList = $pembelian->details?->pluck('nama_barang');
+                // dd($namaBarangList);
 
                 if (!$pembelian) return;
 
-                $nama_barang = $pembelian?->details?->first()?->nama_barang;
-                $jumlah_barang = $pembelian?->details?->first()?->jumlah;
                 $no_batch = $pembelian?->materialNonSS?->batch_no;
 
-                $details = $pembelian->details->map(function ($detail) use ($nama_barang,  $jumlah_barang, $no_batch) {
+                $details = $pembelian->details->map(function ($detail) use ($no_batch) {
                     return [
-                        'nama_material' => $nama_barang ?? '-',
-                        'jumlah' => $jumlah_barang ?? '-',
+                        'nama_material' => $detail->nama_barang ?? '-',
+                        'jumlah' => $detail->jumlah ?? '-',
                         'batch_no' => $no_batch ?? '-',
                     ];
                 })->toArray();
 
                 // dd($details);
+
                 $set('details', $details);
             });
     }

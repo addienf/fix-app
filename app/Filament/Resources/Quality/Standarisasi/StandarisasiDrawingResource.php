@@ -178,16 +178,6 @@ class StandarisasiDrawingResource extends Resource
                         $state === 'Diperiksa' ? 'success' : 'danger'
                     )
                     ->alignCenter(),
-
-                ImageColumn::make('pic.create_signature')
-                    ->width(150)
-                    ->label('Dibuat Oleh')
-                    ->height(75),
-
-                ImageColumn::make('pic.check_signature')
-                    ->width(150)
-                    ->label('Diperiksa Oleh')
-                    ->height(75),
             ])
             ->filters([
                 //
@@ -201,7 +191,7 @@ class StandarisasiDrawingResource extends Resource
                         ->icon('heroicon-o-document')
                         ->color('success')
                         ->visible(fn($record) => $record->status_pemeriksaan === 'Diperiksa')
-                        ->url(fn($record) => self::getUrl('pdfStandarisasiDrawing', ['record' => $record->id])),
+                        ->url(fn($record) => route('pdf.StandarisasiDrawing', ['record' => $record->id])),
                 ])
             ])
             ->bulkActions([

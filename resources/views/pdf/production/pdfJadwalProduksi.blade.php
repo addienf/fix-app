@@ -33,7 +33,7 @@
                         </tr>
                         <tr>
                             <td class="px-3 py-2">Revisi</td>
-                            <td class="px-3 py-2 font-semibold"> : 0</td>
+                            <td class="px-3 py-2 font-semibold"> : 01</td>
                         </tr>
                     </table>
                 </td>
@@ -102,7 +102,7 @@
             <div class="flex items-start justify-between gap-4">
                 <!-- Yang Membuat -->
                 <div class="flex flex-col items-center">
-                    <p class="mb-2 dark:text-white">Yang Membuat</p>
+                    <p class="mb-2 dark:text-white">Dibuat Oleh,</p>
                     <img src="{{ asset('storage/' . $jadwal->pic->create_signature) }}" alt="Signature Pembuat"
                         class="h-20 w-80" />
                     <div class="mt-2 font-medium">
@@ -111,7 +111,7 @@
                 </div>
                 <!-- Yang Menerima -->
                 <div class="flex flex-col items-center">
-                    <p class="mb-2 dark:text-white">Yang Menerima</p>
+                    <p class="mb-2 dark:text-white">Disetujui Oleh,</p>
                     <img src="{{ asset('storage/' . $jadwal->pic->approve_signature) }}" alt="Signature Penerima"
                         class="h-20 w-80" />
                     <div class="mt-2 font-medium">

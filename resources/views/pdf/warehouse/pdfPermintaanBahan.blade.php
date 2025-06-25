@@ -1,7 +1,7 @@
 @extends ('pdf.layout.layout')
-
+@section('title', 'Permintaan Bahan Warehouse PDF')
 @section('content')
-    <div id="export-area" class="p-2 bg-white text-black">
+    <div id="export-area" class="p-2 text-black bg-white">
         <table
             class="w-full max-w-4xl mx-auto text-sm border border-black dark:border-white dark:bg-gray-900 dark:text-white"
             style="border-collapse: collapse;">
@@ -41,10 +41,13 @@
         </table>
         @php
             $infoUmum = [
-                ['label' => 'Nomor :', 'value' => 'PB-2025-001'],
-                ['label' => 'Tanggal :', 'value' => '19 Juni 2025'],
-                ['label' => 'Dari : ', 'value' => 'Departemen Produksi'],
-                ['label' => 'Kepada :', 'value' => 'Departemen Gudang'],
+                ['label' => 'Nomor :', 'value' => $permintaan_bahan->no_surat],
+                [
+                    'label' => 'Tanggal :',
+                    'value' => \Carbon\Carbon::parse($permintaan_bahan->tanggal)->translatedFormat('d M Y'),
+                ],
+                ['label' => 'Dari : ', 'value' => $permintaan_bahan->dari],
+                ['label' => 'Kepada :', 'value' => $permintaan_bahan->kepada],
             ];
         @endphp
 
@@ -65,10 +68,10 @@
             <p class="flex flex-wrap items-center gap-1">
                 <span>Berdasarkan Permintaan Barang No</span>
                 <input disabled class="px-2 py-1 text-sm align-middle bg-transparent border-none w-45 h-7"
-                    value="PRB-2025-023" />
+                    value="{{ $permintaan_bahan->permintaanBahanPro->no_surat }}" />
                 <span>Dari Departemen</span>
                 <input disabled class="w-32 px-2 py-1 text-sm align-middle bg-transparent border-none h-7"
-                    value="Produksi" />
+                    value="{{ $permintaan_bahan->dari }}" />
                 <span>mohon bantuan untuk memenuhi kebutuhan bahan/sparepart dengan rincian sebagai berikut:</span>
             </p>
         </div>
@@ -86,25 +89,20 @@
                     </tr>
                 </thead>
                 <tbody class="bg-white dark:bg-gray-900">
-                    <tr>
-                        <td class="px-4 py-2 border">1</td>
-                        <td class="px-4 py-2 border">Kabel Listrik</td>
-                        <td class="px-4 py-2 border">NYA 2.5mm, 100m</td>
-                        <td class="px-4 py-2 border">3 Roll</td>
-                        <td class="px-4 py-2 border">Instalasi Panel</td>
-                    </tr>
-                    <tr>
-                        <td class="px-4 py-2 border">2</td>
-                        <td class="px-4 py-2 border">Pipa PVC</td>
-                        <td class="px-4 py-2 border">4 inch, SDR 11</td>
-                        <td class="px-4 py-2 border">20 Batang</td>
-                        <td class="px-4 py-2 border">Saluran Limbah</td>
-                    </tr>
+                    @foreach ($permintaan_bahan->details as $index => $produk)
+                        <tr>
+                            <td class="px-4 py-2 border">{{ $index + 1 }}</td>
+                            <td class="px-4 py-2 border">{{ $produk['bahan_baku'] }}</td>
+                            <td class="px-4 py-2 border">{{ $produk['spesifikasi'] }}</td>
+                            <td class="px-4 py-2 border">{{ $produk['jumlah'] }}</td>
+                            <td class="px-4 py-2 border">{{ $produk['keperluan_barang'] }}</td>
+                        </tr>
+                    @endforeach
                 </tbody>
             </table>
         </div>
 
-        <div class="max-w-4xl mx-auto mt-10 text-sm">
+        {{-- <div class="max-w-4xl mx-auto mt-10 text-sm">
             <div class="flex items-start justify-between gap-4">
                 <div class="flex flex-col items-center">
                     <p class="mb-2 dark:text-white">Terima Kasih</p>
@@ -115,7 +113,77 @@
                     </div>
                 </div>
             </div>
+        </div> --}}
+
+        <div class="max-w-4xl mx-auto mt-10 text-sm">
+            <div class="flex items-start justify-between gap-4">
+                <div class="flex flex-col items-center">
+                    <p class="mb-2 dark:text-white">Terima Kasih</p>
+                    <p class="mb-2 dark:text-white">Dibuat Oleh</p>
+                    <img src="{{ asset('storage/' . $permintaan_bahan->pic->create_signature) }}" alt="Create Signature"
+                        class="h-20 w-80" />
+                    <div class="mt-2 font-medium">
+                        {{ $permintaan_bahan->pic->create_name }}
+                    </div>
+                </div>
+            </div>
         </div>
 
     </div>
 @endsection
+
+<script>
+    function exportPDF() {
+        window.scrollTo(0, 0); // pastikan posisi di atas
+
+        const element = document.getElementById("export-area");
+
+        // Pastikan semua gambar sudah termuat sebelum render
+        const images = element.getElementsByTagName("img");
+        const totalImages = images.length;
+        let loadedImages = 0;
+
+        for (let img of images) {
+            if (img.complete) {
+                loadedImages++;
+            } else {
+                img.onload = () => {
+                    loadedImages++;
+                    if (loadedImages === totalImages) renderPDF();
+                };
+            }
+        }
+
+        if (loadedImages === totalImages) {
+            renderPDF();
+        }
+
+        const today = new Date();
+        const tanggal = today.toISOString().split('T')[0]; // hasil: "2025-06-25"
+        const filename = `spesifikasi-produk-${tanggal}.pdf`;
+
+        function renderPDF() {
+            html2pdf().set({
+                margin: [0.2, 0.2, 0.2, 0.2],
+                filename: "permintaan-bahan-warehouse.pdf",
+                image: {
+                    type: "jpeg",
+                    quality: 1
+                },
+                html2canvas: {
+                    scale: 3,
+                    useCORS: true,
+                    letterRendering: true
+                },
+                jsPDF: {
+                    unit: "in",
+                    format: "a4",
+                    orientation: "portrait"
+                },
+                pagebreak: {
+                    mode: ["avoid", "css"]
+                }
+            }).from(element).save();
+        }
+    }
+</script>
