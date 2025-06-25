@@ -47,7 +47,7 @@ class PermintaanAlatDanBahanResource extends Resource
 
     public static function getNavigationBadge(): ?string
     {
-        $count = PermintaanAlatDanBahan::where('status_penerimaan', '!=', 'Diterima')->count();
+        $count = PermintaanAlatDanBahan::where('status_penyerahan', '!=', 'Diserahkan')->count();
 
         return $count > 0 ? (string) $count : null;
     }
@@ -59,8 +59,8 @@ class PermintaanAlatDanBahanResource extends Resource
         return $form
             ->schema([
                 //
-                Hidden::make('status_penerimaan')
-                    ->default('Belum Diterima'),
+                Hidden::make('status_penyerahan')
+                    ->default('Belum Diserahkan'),
 
                 Hidden::make('status')
                     ->disabledOn('edit')
@@ -111,61 +111,104 @@ class PermintaanAlatDanBahanResource extends Resource
                         Grid::make(2)
                             ->schema([
 
-                                Repeater::make('details')
+                                TableRepeater::make('details')
                                     ->relationship('details')
                                     ->schema([
 
-                                        Grid::make(4)
-                                            ->schema([
+                                        self::textInput('bahan_baku', 'Bahan Baku'),
 
-                                                self::textInput('bahan_baku', 'Bahan Baku')
-                                                    ->extraAttributes([
-                                                        'readonly' => true,
-                                                        'style' => 'pointer-events: none;'
-                                                    ]),
+                                        self::textInput('spesifikasi', 'Spesifikasi'),
 
-                                                self::textInput('spesifikasi', 'Spesifikasi'),
+                                        self::textInput('jumlah', 'Jumlah')->numeric(),
 
-                                                self::textInput('jumlah', 'Jumlah')->numeric(),
+                                        Textarea::make('keperluan_barang')
+                                            ->required()
+                                            ->rows(1)
+                                            ->label('Keperluan Barang')
 
-                                                Textarea::make('keperluan_barang')
-                                                    ->required()
-                                                    ->label('Keperluan Barang')
-
-                                            ])
                                     ])
-                                    ->deletable(false)
+                                    // ->deletable(false)
                                     ->reorderable(false)
-                                    ->addable(false)
+                                    // ->addable(false)
                                     ->columnSpanFull()
                             ])
                     ]),
 
-                Section::make('PIC')
+                // Section::make('PIC')
+                //     ->collapsible()
+                //     ->relationship('pic')
+                //     ->schema([
+
+                //         Grid::make(2)
+                //             ->schema([
+
+                //                 Grid::make(1)
+                //                     ->schema([
+
+                //                         self::textInput('dibuat_name', 'Dibuat Oleh'),
+
+                //                         self::signatureInput('dibuat_signature', ''),
+
+                //                     ])->hiddenOn(operations: 'edit'),
+
+                //                 Grid::make(1)
+                //                     ->schema([
+
+                //                         self::textInput('diketahui_name', 'Diketahui Oleh'),
+
+                //                         self::signatureInput('diketahui_signature', ''),
+
+                //                     ])->hiddenOn(operations: 'edit'),
+
+                //                 Grid::make(1)
+                //                     ->schema([
+
+                //                         self::textInput('diserahkan_name', 'Diserahkan Kepada'),
+
+                //                         self::signatureInput('diserahkan_signature', ''),
+
+                //                     ])->hiddenOn(operations: 'create'),
+                //             ]),
+                //     ]),
+
+                Section::make('Detail PIC')
                     ->collapsible()
                     ->relationship('pic')
                     ->schema([
-
-                        Grid::make(2)
+                        Grid::make(3)
                             ->schema([
-
                                 Grid::make(1)
                                     ->schema([
 
-                                        self::textInput('create_name', 'Dibuat Oleh'),
+                                        self::textInput('dibuat_name', 'Dibuat Oleh'),
 
-                                        self::signatureInput('create_signature', ''),
+                                        self::signatureInput('dibuat_signature', ''),
 
                                     ])->hiddenOn(operations: 'edit'),
 
                                 Grid::make(1)
                                     ->schema([
 
-                                        self::textInput('receive_name', 'Diterima Oleh'),
+                                        self::textInput('diketahui_name', 'Diketahui Oleh'),
 
-                                        self::signatureInput('receive_signature', ''),
+                                        self::signatureInput('diketahui_signature', ''),
 
-                                    ])->hiddenOn(operations: 'create'),
+                                    ])->hidden(
+                                        fn($operation, $record) =>
+                                        $operation === 'create' || filled($record?->diketahui_signature)
+                                    ),
+
+                                Grid::make(1)
+                                    ->schema([
+
+                                        self::textInput('diserahkan_name', 'Diserahkan Kepada'),
+
+                                        self::signatureInput('diserahkan_signature', ''),
+
+                                    ])->hidden(
+                                        fn($operation, $record) =>
+                                        $operation === 'create' || blank($record?->diketahui_signature) || filled($record?->diserahkan_signature)
+                                    ),
                             ]),
                     ]),
             ]);
@@ -194,13 +237,23 @@ class PermintaanAlatDanBahanResource extends Resource
                     })
                     ->alignCenter(),
 
-                TextColumn::make('status_penerimaan')
-                    ->label('Status Penerimaan')
+                TextColumn::make('status_penyerahan')
+                    ->label('Status Penyerahan')
                     ->badge()
-                    ->color(
-                        fn($state) =>
-                        $state === 'Diterima' ? 'success' : 'danger'
-                    )
+                    ->color(function ($record) {
+                        $penyelesaian = $record->status_penyerahan;
+                        $persetujuan = $record->status_persetujuan;
+
+                        if ($penyelesaian === 'Diserahkan') {
+                            return 'success';
+                        }
+
+                        if ($penyelesaian !== 'Diketahui') {
+                            return 'danger';
+                        }
+
+                        return 'warning';
+                    })
                     ->alignCenter(),
 
             ])
@@ -215,8 +268,8 @@ class PermintaanAlatDanBahanResource extends Resource
                         ->label(_('View PDF'))
                         ->icon('heroicon-o-document')
                         ->color('success')
-                        ->visible(fn($record) => $record->status_penerimaan === 'Diterima')
-                        ->url(fn($record) => self::getUrl('pdfPermintaanAlatdanBahan', ['record' => $record->id])),
+                        ->visible(fn($record) => $record->status_penyerahan === 'Diserahkan')
+                        ->url(fn($record) => route('pdf.permintaanAlatBahan', ['record' => $record->id])),
                 ])
             ])
             ->bulkActions([
@@ -264,34 +317,26 @@ class PermintaanAlatDanBahanResource extends Resource
                         ->whereDoesntHave('permintaan')
                         ->pluck('no_spk', 'id');
                 })
-                ->native(false)
-                ->searchable()
-                ->preload()
-                ->required()
-                ->reactive()
-                ->afterStateUpdated(function ($state, callable $set) {
-                    if (!$state)
-                        return;
+                    ->whereDoesntHave('permintaan')
+                    ->pluck('no_spk', 'id');
+            })
+            ->native(false)
+            ->searchable()
+            ->preload()
+            ->required()
+            ->reactive()
+            ->afterStateUpdated(function ($state, callable $set) {
+                if (!$state)
+                    return;
 
-                    // Ambil data SPK dan relasi yang dibutuhkan
-                    $spk = SPKMarketing::with(['jadwalProduksi.sumber'])->find($state);
-                    if (!$spk || !$spk->jadwalProduksi?->sumber)
-                        return;
+                // Ambil data SPK dan relasi yang dibutuhkan
+                $spk = SPKMarketing::find($state);
+                if (!$spk)
+                    return;
 
-                    $bahanBaku = $spk->jadwalProduksi->sumber->bahan_baku ?? [];
-
-                    // Ubah bahan baku jadi array yang bisa ditangkap Repeater
-                    $details = collect($bahanBaku)->map(function ($item) {
-                        return [
-                            'bahan_baku' => is_array($item) ? ($item['bahan_baku'] ?? '') : $item,
-                        ];
-                    })->toArray();
-
-                    // Set ke form
-                    $set('dari', $spk->dari);
-                    $set('kepada', $spk->kepada);
-                    $set('details', $details);
-                });
+                $set('dari', $spk->dari);
+                $set('kepada', $spk->kepada);
+            });
     }
 
     protected static function buttonGroup(string $fieldName, string $label): ButtonGroup

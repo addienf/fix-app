@@ -103,7 +103,7 @@
         </div>
 
         <!-- C. Sumber Daya yang Digunakan -->
-        <div class="max-w-4xl pt-4 mx-auto mb-3 text-lg font-bold text-start">C. Sumber Daya yang Digunakan</div>
+        {{-- <div class="max-w-4xl pt-4 mx-auto mb-3 text-lg font-bold text-start">C. Sumber Daya yang Digunakan</div>
 
         <div class="grid max-w-4xl grid-cols-1 gap-6 mx-auto mb-6 text-sm md:grid-cols-2">
             <!-- Mesin -->
@@ -142,7 +142,7 @@
                     @endforeach
                 </tbody>
             </table>
-        </div>
+        </div> --}}
 
         <!-- Signature Section -->
         <div class="max-w-4xl mx-auto mt-10 text-sm">

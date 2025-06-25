@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('pengecekan_material_id')->constrained('pengecekan_material_ss')->onDelete('cascade');
             $table->string('nama_produk');
-            $table->string('kode_produk');
-            $table->string('no_seri');
+            $table->string('tipe');
+            $table->string('no_spk');
             $table->date('tanggal_selesai');
             $table->integer('jumlah');
             $table->string('kondisi');

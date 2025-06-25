@@ -73,7 +73,8 @@ class SPKResource extends Resource
                                     ->hint('Format: XXX/QKS/MKT/SPK/MM/YY')
                                     ->unique(ignoreRecord: true),
 
-                                self::selectSpecInput(),
+                                self::selectSpecInput()
+                                    ->hiddenOn('edit'),
 
                                 self::textInput('dari', 'Dari'),
 
@@ -171,15 +172,15 @@ class SPKResource extends Resource
                     )
                     ->alignCenter(),
 
-                ImageColumn::make('pic.create_signature')
-                    ->width(150)
-                    ->label('Yang Membuat')
-                    ->height(75),
+                // ImageColumn::make('pic.create_signature')
+                //     ->width(150)
+                //     ->label('Yang Membuat')
+                //     ->height(75),
 
-                ImageColumn::make('pic.receive_signature')
-                    ->width(150)
-                    ->label('Yang Menerima')
-                    ->height(75),
+                // ImageColumn::make('pic.receive_signature')
+                //     ->width(150)
+                //     ->label('Yang Menerima')
+                //     ->height(75),
 
             ])
             ->filters([
@@ -193,7 +194,8 @@ class SPKResource extends Resource
                         ->label(_('View PDF'))
                         ->icon('heroicon-o-document')
                         ->color('success')
-                        ->url(fn($record) => self::getUrl('pdfSPK', ['record' => $record->id]))
+                        // ->url(fn($record) => self::getUrl('pdfSPK', ['record' => $record->id]))
+                        ->url(fn($record) => route('pdf.SPKMarketing', ['record' => $record->id]))
                         ->visible(fn($record) => $record->status_penerimaan === 'Diterima'),
                 ])
             ])

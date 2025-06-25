@@ -103,12 +103,6 @@ class PenyerahanProdukJadiResource extends Resource
                                         'style' => 'pointer-events: none;'
                                     ]),
 
-                                self::textInput('no_seri', 'No Seri')
-                                    ->extraAttributes([
-                                        'readonly' => true,
-                                        'style' => 'pointer-events: none;'
-                                    ]),
-
                                 self::textInput('jumlah', 'Jumlah')
                                     ->extraAttributes([
                                         'readonly' => true,
@@ -186,7 +180,9 @@ class PenyerahanProdukJadiResource extends Resource
             ->columns([
                 //
                 self::textColumn('spk.no_spk', 'No SPK'),
+
                 self::textColumn('penanggug_jawab', 'Penanggung Jawab'),
+
                 TextColumn::make('status_penerimaan')
                     ->label('Status Penerimaan')
                     ->badge()
@@ -195,14 +191,17 @@ class PenyerahanProdukJadiResource extends Resource
                         $state === 'Diterima' ? 'success' : 'danger'
                     )
                     ->alignCenter(),
-                ImageColumn::make('pic.submit_signature')
-                    ->width(150)
-                    ->label('Diserahkan Oleh')
-                    ->height(75),
-                ImageColumn::make('pic.receive_signature')
-                    ->width(150)
-                    ->label('Diterima Oleh')
-                    ->height(75),
+
+                // ImageColumn::make('pic.submit_signature')
+                //     ->width(150)
+                //     ->label('Diserahkan Oleh')
+                //     ->height(75),
+
+                // ImageColumn::make('pic.receive_signature')
+                //     ->width(150)
+                //     ->label('Diterima Oleh')
+                //     ->height(75),
+
             ])
             ->filters([
                 //
@@ -292,13 +291,11 @@ class PenyerahanProdukJadiResource extends Resource
                 $no_spk = $spk->no_spk;
                 $tipe = $spk?->jadwalProduksi?->details->first()->tipe;
                 $volume = $spk?->jadwalProduksi?->details->first()->volume;
-                $no_seri = $spk?->pengecekanSS?->penyerahan->no_seri;
 
-                $details = $spesifikasi->details->map(function ($detail) use ($no_spk, $tipe, $volume, $no_seri) {
+                $details = $spesifikasi->details->map(function ($detail) use ($no_spk, $tipe, $volume) {
                     return [
                         'nama_produk' => $detail->product?->name ?? '-',
                         'jumlah' => $detail?->quantity ?? '-',
-                        'no_seri' => $no_seri ?? '-',
                         'no_spk' => $no_spk ?? '-',
                         'tipe' => $tipe  ?? '-',
                         'volume' => $volume  ?? '-'

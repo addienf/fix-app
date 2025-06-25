@@ -123,27 +123,27 @@ class JadwalProduksiResource extends Resource
 
                     ]),
 
-                Section::make('Sumber Daya Yang Digunakan')
-                    ->relationship('sumber')
-                    ->schema([
+                // Section::make('Sumber Daya Yang Digunakan')
+                //     ->relationship('sumber')
+                //     ->schema([
 
-                        self::textInput('mesin_yang_digunakan', 'Mesin Yang Digunakan'),
+                //         self::textInput('mesin_yang_digunakan', 'Mesin Yang Digunakan'),
 
-                        self::textInput('tenaga_kerja', 'Tenaga Kerja'),
+                //         self::textInput('tenaga_kerja', 'Tenaga Kerja'),
 
-                        TableRepeater::make('bahan_baku')
-                            ->label('')
-                            ->schema([
+                //         TableRepeater::make('bahan_baku')
+                //             ->label('')
+                //             ->schema([
 
-                                self::textInput('bahan_baku', 'Masukkan Bahan Baku')
-                                    ->extraInputAttributes(['class' => 'font-normal']),
+                //                 self::textInput('bahan_baku', 'Masukkan Bahan Baku')
+                //                     ->extraInputAttributes(['class' => 'font-normal']),
 
-                            ])
-                            // ->columnSpanFull()
-                            ->addActionLabel('Tambah Bahan Baku')
-                            ->reorderable(false)
-                            ->defaultItems(1)
-                    ]),
+                //             ])
+                //             // ->columnSpanFull()
+                //             ->addActionLabel('Tambah Bahan Baku')
+                //             ->reorderable(false)
+                //             ->defaultItems(1)
+                //     ]),
 
                 Section::make('PIC')
                     ->collapsible()
@@ -199,15 +199,15 @@ class JadwalProduksiResource extends Resource
                     )
                     ->alignCenter(),
 
-                ImageColumn::make('pic.create_signature')
-                    ->label('Pembuat')
-                    ->width(150)
-                    ->height(75),
+                // ImageColumn::make('pic.create_signature')
+                //     ->label('Pembuat')
+                //     ->width(150)
+                //     ->height(75),
 
-                ImageColumn::make('pic.approve_signature')
-                    ->label('Penyetuju')
-                    ->width(150)
-                    ->height(75),
+                // ImageColumn::make('pic.approve_signature')
+                //     ->label('Penyetuju')
+                //     ->width(150)
+                //     ->height(75),
 
             ])
             ->filters([
@@ -222,7 +222,7 @@ class JadwalProduksiResource extends Resource
                         ->icon('heroicon-o-document')
                         ->color('success')
                         ->visible(fn($record) => $record->status_persetujuan === 'Disetujui')
-                        ->url(fn($record) => self::getUrl('pdfJadwalProduksi', ['record' => $record->id])),
+                        ->url(fn($record) => route('pdf.jadwalProduksi', ['record' => $record->id])),
                 ])
             ])
             ->bulkActions([

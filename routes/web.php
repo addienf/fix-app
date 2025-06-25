@@ -17,13 +17,14 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return redirect()->route('filament.admin.auth.login');
 });
-Route::get('/sales/spesifikasi-product/preview/{id}', [PDFController::class, 'previewSpesifikasiProduct'])->name('specProduct.preview');
 
+// Sales
+Route::get('/sales/spesifikasi-produk/{record}/pdf-spesifikasi-produk', [PDFController::class, 'previewSpesifikasiProduct'])->name('specProduct.preview');
+Route::get('/sales/spk/{record}/pdf-spk-marketing', [PDFController::class, 'pdfSPKMarketing'])->name('pdf.SPKMarketing');
 
-// Route::get('/sales/spesifikasi-product/print-pdf/{id}', [PDFController::class, 'pdfSpesifikasiProduct'])->name('pdf.specProduct');
-Route::get('/pdf', [PDFController::class, 'pdfSpesifikasiProduct'])->name('pdf.specProduct');
-
-Route::get('/sales/spk', [PDFController::class, 'pdfSPKMarketing'])->name('pdf.SPKMarketing');
+// Produksi
+Route::get('/produksi/jadwal-produksi/{record}/pdf-jadwal-produksi', [PDFController::class, 'pdfJadwalProduksi'])->name('pdf.jadwalProduksi');
+Route::get('/produksi/permintaan-alat-dan-bahan/{record}/pdf-permintaan-alat-dan-bahan', [PDFController::class, 'pdfPermintaanAlatBahan'])->name('pdf.permintaanAlatBahan');
 
 Route::get('/purchasing/permintaanpembelian', [PDFController::class, 'pdfPermintaanPembelian'])->name('pdf.PermintaanPembelian');
 
@@ -37,13 +38,9 @@ Route::get('/warehouse/serahterima', [PDFController::class, 'pdfSerahTerima'])->
 
 Route::get('/warehouse/peminjamanalat', [PDFController::class, 'pdfPeminjamanAlat'])->name('pdf.PeminjamanAlat');
 
-Route::get('/production/jadwalproduksi', [PDFController::class, 'pdfJadwalProduksi'])->name('pdf.jadwalProduksi');
-
 Route::get('/production/penyerahanelectrical', [PDFController::class, 'pdfPenyerahanElectrical'])->name('pdf.penyerahanElectrical');
 
 Route::get('/production/penyerahanprodukjadi', [PDFController::class, 'pdfPenyerahanProdukJadi'])->name('pdf.PenyerahanProdukJadi');
-
-Route::get('/production/permintaanalatbahan', [PDFController::class, 'pdfPermintaanAlatBahan'])->name('pdf.permintaanAlatBahan');
 
 Route::get('/production/spkquality', [PDFController::class, 'pdfSPKQuality'])->name('pdf.spkQuality');
 

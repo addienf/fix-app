@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Production\Jadwal\JadwalProduksi;
+use App\Models\Production\PermintaanBahanProduksi\PermintaanAlatDanBahan;
 use App\Models\Sales\SpesifikasiProducts\SpesifikasiProduct;
+use App\Models\Sales\SPKMarketings\SPKMarketing;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 
@@ -10,13 +13,6 @@ class PDFController extends Controller
 {
     //
 
-    // public function pdfSpesifikasiProduct($id)
-    // {
-    //     $spesifikasi = SpesifikasiProduct::with(['urs.customer', 'pic', 'details.product'])->findOrFail($id);
-
-    //     $pdf = Pdf::loadView('pdf.pdfSpecProduct', compact('spesifikasi'));
-    //     return $pdf->stream('spesifikasi-produk.pdf');
-    // }
     public function pdfSpesifikasiProduct()
     {
         return view('pdf.pdfSpecProduct');
@@ -27,12 +23,31 @@ class PDFController extends Controller
 
         return view('pdf.sales.pdfSpecProduct', compact('spesifikasi'));
     }
-    public function pdfSPKMarketing()
+    public function pdfSPKMarketing($id)
     {
-        return view('pdf.sales.pdfSPKMarketing');
+        $spk_mkt = SPKMarketing::with(['spesifikasiProduct', 'pic'])->findOrFail($id);
+
+        return view('pdf.sales.pdfSPKMarketing', compact('spk_mkt'));
     }
+
+    public function pdfJadwalProduksi($id)
+    {
+        $jadwal = JadwalProduksi::with(['spk', 'details', 'pic', 'sumber'])->findOrFail($id);
+
+        return view('pdf.production.pdfJadwalProduksi', compact('jadwal'));
+    }
+
+    public function pdfPermintaanAlatBahan($id)
+    {
+        $permintaan_alat_bahan = PermintaanAlatDanBahan::with(['spk', 'details', 'pic'])->findOrFail($id);
+
+        return view('pdf.production.pdfPermintaanAlatBahan', compact('permintaan_alat_bahan'));
+    }
+
     public function pdfPermintaanPembelian()
     {
+
+
         return view('pdf.purchasing.pdfPermintaanPembelian');
     }
 
@@ -51,16 +66,12 @@ class PDFController extends Controller
     public function pdfSerahTerima()
     {
         return view('pdf.warehouse.pdfSerahTerima');
-
     }
     public function pdfPeminjamanAlat()
     {
         return view('pdf.warehouse.pdfPeminjamanAlat');
     }
-    public function pdfJadwalProduksi()
-    {
-        return view('pdf.production.pdfJadwalProduksi');
-    }
+
     public function pdfPenyerahanElectrical()
     {
         return view('pdf.production.pdfPenyerahanElectrical');
@@ -69,10 +80,7 @@ class PDFController extends Controller
     {
         return view('pdf.production.pdfPenyerahanProdukJadi');
     }
-    public function pdfPermintaanAlatBahan()
-    {
-        return view('pdf.production.pdfPermintaanAlatBahan');
-    }
+
     public function pdfSPKQuality()
     {
         return view('pdf.production.pdfSPKQuality');
@@ -109,5 +117,4 @@ class PDFController extends Controller
     {
         return view('pdf.quality.pdfStandarisasiDrawing');
     }
-
 }

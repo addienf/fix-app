@@ -69,9 +69,9 @@ class PenyerahanElectricalResource extends Resource
                                 'style' => 'pointer-events: none;'
                             ]),
 
-                        self::textInput('kode_produk', 'Kode Produk'),
+                        self::textInput('tipe', 'Tipe/Model'),
 
-                        self::textInput('no_seri', 'Nomor Batch/Seri'),
+                        self::textInput('no_spk', 'No SPK MKT'),
 
                         self::textInput('tanggal_selesai', 'Tanggal Produksi Selesai')
                             ->formatStateUsing(function ($state) {
@@ -306,7 +306,7 @@ class PenyerahanElectricalResource extends Resource
             ->afterStateUpdated(function ($state, callable $set) {
                 if (!$state) return;
 
-                $pengecekan = PengecekanMaterialSS::with('spk.SpesifikasiProduct.details.product')
+                $pengecekan = PengecekanMaterialSS::with('spk.SpesifikasiProduct.details.product', 'spk')
                     ->find($state);
 
                 $pengecekan2 = PengecekanMaterialSS::with('spk.jadwalProduksi')
@@ -324,10 +324,14 @@ class PenyerahanElectricalResource extends Resource
                 $namaProduk = $spesifikasi->details->first()?->product?->name ?? '-';
                 $jumlah = $spesifikasi->details->first()?->quantity ?? '-';
                 $tgl_selesai = $selesai->details->first()->tanggal_selesai->format('d M Y') ?? '-';
+                $tipe = $selesai->details->first()->tipe ?? '-';
+                $spk = $spesifikasi->spk->no_spk ?? '-';
 
                 $set('nama_produk', $namaProduk);
                 $set('jumlah', $jumlah);
                 $set('tanggal_selesai', $tgl_selesai);
+                $set('tipe', $tipe);
+                $set('no_spk', $spk);
             });
     }
 
