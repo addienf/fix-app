@@ -1,6 +1,6 @@
 <?php
 return [
-    'spesifikasi_list' => [
+    'spesifikasi' => [
         'Temperature' => 'Temperature',
         'Humidity' => 'Humidity',
         'Room Dimension' => 'Room Dimension',

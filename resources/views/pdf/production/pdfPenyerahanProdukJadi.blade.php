@@ -24,7 +24,7 @@
                                 <tr>
                                     <td class="px-3 py-2 border-b border-black dark:border-white">No. Dokumen</td>
                                     <td class="px-3 py-2 font-semibold border-b border-black dark:border-white"> :
-                                        FO-QKS-PRO-01-01</td>
+                                        FO-QKS-PRO-01-02</td>
                                 </tr>
                                 <tr>
                                     <td class="px-3 py-2 border-b border-black dark:border-white">Tanggal Rilis</td>
@@ -33,7 +33,7 @@
                                 </tr>
                                 <tr>
                                     <td class="px-3 py-2">Revisi</td>
-                                    <td class="px-3 py-2 font-semibold"> : 0</td>
+                                    <td class="px-3 py-2 font-semibold"> : 01</td>
                                 </tr>
                             </table>
                         </td>

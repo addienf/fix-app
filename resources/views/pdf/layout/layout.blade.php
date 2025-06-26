@@ -70,12 +70,21 @@
             }
         }
     </script> --}}
-    <div class="mt-6 text-center">
+    <div class="mt-6 text-center mb-3">
         <button onclick="exportPDF()"
-            class="inline-flex items-center px-5 py-2 text-sm font-semibold text-white transition-all bg-blue-600 rounded hover:bg-blue-700">
-            ⬇️ Download PDF
+            class="inline-flex items-center gap-2 px-7 py-3 text-sm font-semibold border border-black text-black transition-all duration-300 rounded hover:bg-blue-600 hover:text-white hover:border-blue-600">
+    
+            <!-- Icon download SVG -->
+            <svg class="w-5 h-5 transition-colors duration-300" fill="none" stroke="currentColor" stroke-width="2"
+                viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4">
+                </path>
+            </svg>
+    
+            Download PDF
         </button>
-    </div>
+        </div>
 
     <script>
         window.addEventListener('DOMContentLoaded', () => {
