@@ -215,7 +215,7 @@ class PenyerahanProdukJadiResource extends Resource
                         ->icon('heroicon-o-document')
                         ->color('success')
                         ->visible(fn($record) => $record->status_penerimaan === 'Diterima')
-                        ->url(fn($record) => self::getUrl('pdfPenyerahanProdukJadi', ['record' => $record->id])),
+                        ->url(fn($record) => route('pdf.PenyerahanProdukJadi', ['record' => $record->id])),
                 ])
             ])
             ->bulkActions([
