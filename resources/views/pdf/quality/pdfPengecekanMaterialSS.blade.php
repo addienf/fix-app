@@ -1,7 +1,7 @@
 @extends ('pdf.layout.layout')
-
+@section('title', 'Pengecekan Material Stainless Steel PDF')
 @section('content')
-    <div id="export-area" class="p-2 bg-white text-black">
+    <div id="export-area" class="p-2 text-black bg-white">
         <table
             class="w-full max-w-4xl mx-auto text-sm border border-black dark:border-white dark:bg-gray-900 dark:text-white"
             style="border-collapse: collapse;">
@@ -39,28 +39,54 @@
                 </td>
             </tr>
         </table>
+
         <div class="grid w-full max-w-4xl grid-cols-1 pt-6 mx-auto mb-6 text-sm gap-y-4">
-            <div class="flex items-center gap-4">
-                <label class="w-48 font-medium">No SPK Produksi :</label>
-                <input type="text" readonly value="SPK-2024-001"
-                    class="flex-1 px-3 py-2 text-black bg-white border border-gray-300 rounded-md cursor-not-allowed" />
-            </div>
+            @php
+                $fields = [['label' => 'No SPK Produksi :', 'value' => $pengecekanSS->spk->no_spk]];
+            @endphp
+
+            @foreach ($fields as $field)
+                <div class="flex items-center gap-4">
+                    <label class="w-48 font-medium">{{ $field['label'] }}</label>
+                    <input type="text" readonly value="{{ $field['value'] }}"
+                        class="flex-1 px-3 py-2 text-black bg-white border border-gray-300 rounded-md cursor-not-allowed" />
+                </div>
+            @endforeach
         </div>
 
         <h2 class="max-w-4xl mx-auto mb-1 text-xl font-bold text-start">Chamber Identification</h2>
 
-        <div class="grid w-full max-w-4xl grid-cols-1 pt-2 mx-auto mb-6 text-sm gap-y-4">
-            <div class="flex items-center gap-4">
-                <label class="w-48 font-medium">Type/Model :</label>
-                <input type="text" readonly value="CHMB-200XL"
-                    class="flex-1 px-3 py-2 text-black bg-white border border-gray-300 rounded-md cursor-not-allowed" />
-            </div>
-            <div class="flex items-center gap-4">
-                <label class="w-48 font-medium">Ref. Document :</label>
-                <input type="text" readonly value="REF-0321/DOC"
-                    class="flex-1 px-3 py-2 text-black bg-white border border-gray-300 rounded-md cursor-not-allowed" />
-            </div>
+        <div class="grid w-full max-w-4xl grid-cols-1 pt-6 mx-auto mb-6 text-sm gap-y-4">
+            @php
+                $fields = [
+                    ['label' => 'Type/Model :', 'value' => $pengecekanSS->tipe],
+                    ['label' => 'Ref. Document :', 'value' => $pengecekanSS->ref_document],
+                ];
+            @endphp
+
+            @foreach ($fields as $field)
+                <div class="flex items-center gap-4">
+                    <label class="w-48 font-medium">{{ $field['label'] }}</label>
+                    <input type="text" readonly value="{{ $field['value'] }}"
+                        class="flex-1 px-3 py-2 text-black bg-white border border-gray-300 rounded-md cursor-not-allowed" />
+                </div>
+            @endforeach
         </div>
+
+        @php
+            $rawDetails = $pengecekanSS->detail->details ?? [];
+            $details = is_string($rawDetails) ? json_decode($rawDetails, true) : $rawDetails;
+
+            function statusLabel($code)
+            {
+                return match (strtolower($code)) {
+                    'ok' => 'OK',
+                    'h' => 'Hold',
+                    'r' => 'Repaired',
+                    default => ucfirst($code ?? '-'),
+                };
+            }
+        @endphp
 
         <table class="w-full max-w-4xl mx-auto mb-3 text-sm border border-black">
             <thead class="bg-gray-100">
@@ -75,72 +101,137 @@
                     <th class="px-3 py-2 text-center border border-black">Fail</th>
                 </tr>
             </thead>
+
             <tbody>
-                <tr>
-                    <td colspan="5" class="px-3 py-2 font-semibold bg-gray-200 border border-black">Power System</td>
-                </tr>
-                <tr>
-                    <td class="px-3 py-2 text-center border border-black">1</td>
-                    <td class="px-3 py-2 border border-black">Main Breaker</td>
-                    <td class="px-3 py-2 text-center border border-black">✔</td>
-                    <td class="px-3 py-2 text-center border border-black"></td>
-                    <td class="px-3 py-2 border border-black">OK</td>
-                </tr>
-                <tr>
-                    <td class="px-3 py-2 text-center border border-black">2</td>
-                    <td class="px-3 py-2 border border-black">Control Panel</td>
-                    <td class="px-3 py-2 text-center border border-black"></td>
-                    <td class="px-3 py-2 text-center border border-black">✘</td>
-                    <td class="px-3 py-2 border border-black">Hold</td>
-                </tr>
+                @php $rowNumber = 1; @endphp
+                @foreach ($details as $group)
+                    <tr>
+                        <td colspan="5" class="px-3 py-2 font-semibold bg-gray-200 border border-black">
+                            {{ $group['mainPart'] ?? '-' }}
+                        </td>
+                    </tr>
+                    @foreach ($group['parts'] as $part)
+                        <tr>
+                            <td class="px-3 py-2 text-center border border-black">{{ $rowNumber++ }}</td>
+                            <td class="px-3 py-2 border border-black">{{ $part['part'] ?? '-' }}</td>
+                            <td class="px-3 py-2 text-center border border-black">
+                                {{ ($part['result'] ?? '0') == '1' ? '✔' : '' }}
+                            </td>
+                            <td class="px-3 py-2 text-center border border-black">
+                                {{ ($part['result'] ?? '0') == '0' ? '✘' : '' }}
+                            </td>
+                            <td class="px-3 py-2 border border-black">
+                                {{ statusLabel($part['status'] ?? '-') }}
+                            </td>
+                        </tr>
+                    @endforeach
+                @endforeach
             </tbody>
         </table>
 
         <div class="w-full max-w-4xl mx-auto mb-6">
             <label for="note" class="block mb-1 text-sm font-medium text-gray-700">Note:</label>
-            <div id="note" readonly
-                class="w-full px-3 py-2 overflow-hidden text-sm leading-relaxed border rounded-md resize-none border-black">Unit mengalami masalah pada bagian kontrol, perlu perbaikan lanjutan.</div>
+            <textarea id="note" readonly
+                class="w-full px-3 py-2 overflow-hidden text-sm leading-relaxed border rounded-md resize-none border-black-600">{{ trim($pengecekanSS->note) }}</textarea>
         </div>
+
+        @php
+            $roles = [
+                'Checked By' => [
+                    'name' => $pengecekanSS->pic->inspected_name ?? '-',
+                    'signature' => $pengecekanSS->pic->inspected_signature ?? null,
+                    'date' => $pengecekanSS->pic->inspected_date ?? null,
+                ],
+                'Accepted By' => [
+                    'name' => $pengecekanSS->pic->accepted_name ?? '-',
+                    'signature' => $pengecekanSS->pic->accepted_signature ?? null,
+                    'date' => $pengecekanSS->pic->accepted_date ?? null,
+                ],
+                'Approved By' => [
+                    'name' => $pengecekanSS->pic->approved_name ?? '-',
+                    'signature' => $pengecekanSS->pic->approved_signature ?? null,
+                    'date' => $pengecekanSS->pic->approved_date ?? null,
+                ],
+            ];
+        @endphp
 
         <div class="max-w-4xl p-4 mx-auto mb-6">
             <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
-                <div>
-                    <label class="block mb-1 font-semibold">Checked By</label>
-                    <input type="text" value="Andi Saputra" readonly
-                        class="w-full p-2 mb-2 text-gray-500 bg-gray-100 border border-gray-300 rounded" />
-                    <label class="block mb-1">Signature</label>
-                    <div class="flex items-center justify-center w-full h-24 mb-2 bg-white border border-black rounded">
-                        <span class="text-sm text-gray-400">No Signature</span>
+                @foreach ($roles as $role => $data)
+                    <div>
+                        <label class="block mb-1 font-semibold">{{ $role }}</label>
+                        <input type="text" value="{{ $data['name'] }}" readonly
+                            class="w-full p-2 mb-2 text-gray-500 bg-gray-100 border border-gray-300 rounded" />
+
+                        <label class="block mb-1">Signature</label>
+                        <div class="flex items-center justify-center w-full h-24 mb-2 bg-white border border-black rounded">
+                            @if ($data['signature'])
+                                <img src="{{ asset('storage/' . $data['signature']) }}" alt="Signature"
+                                    class="object-contain h-full" />
+                            @else
+                                <span class="text-sm text-gray-400">No Signature</span>
+                            @endif
+                        </div>
+
+                        <label class="block mb-1">Date</label>
+                        <input type="text" readonly
+                            value="{{ $data['date'] ? \Carbon\Carbon::parse($data['date'])->format('d M Y') : '-' }}"
+                            class="w-full p-2 text-gray-500 bg-gray-100 border border-gray-300 rounded" />
                     </div>
-                    <label class="block mb-1">Date</label>
-                    <input type="text" readonly value="01 Jan 2025"
-                        class="w-full p-2 text-gray-500 bg-gray-100 border border-gray-300 rounded" />
-                </div>
-                <div>
-                    <label class="block mb-1 font-semibold">Accepted By</label>
-                    <input type="text" value="Rina Hartati" readonly
-                        class="w-full p-2 mb-2 text-gray-500 bg-gray-100 border border-gray-300 rounded" />
-                    <label class="block mb-1">Signature</label>
-                    <div class="flex items-center justify-center w-full h-24 mb-2 bg-white border border-black rounded">
-                        <span class="text-sm text-gray-400">No Signature</span>
-                    </div>
-                    <label class="block mb-1">Date</label>
-                    <input type="text" readonly value="02 Jan 2025"
-                        class="w-full p-2 text-gray-500 bg-gray-100 border border-gray-300 rounded" />
-                </div>
-                <div>
-                    <label class="block mb-1 font-semibold">Approved By</label>
-                    <input type="text" value="Budi Prasetyo" readonly
-                        class="w-full p-2 mb-2 text-gray-500 bg-gray-100 border border-gray-300 rounded" />
-                    <label class="block mb-1">Signature</label>
-                    <div class="flex items-center justify-center w-full h-24 mb-2 bg-white border border-black rounded">
-                        <span class="text-sm text-gray-400">No Signature</span>
-                    </div>
-                    <label class="block mb-1">Date</label>
-                    <input type="text" readonly value="03 Jan 2025"
-                        class="w-full p-2 text-gray-500 bg-gray-100 border border-gray-300 rounded" />
-                </div>
+                @endforeach
             </div>
         </div>
     </div>
 @endsection
+
+<script>
+    function exportPDF() {
+        window.scrollTo(0, 0); // pastikan posisi di atas
+
+        const element = document.getElementById("export-area");
+
+        // Pastikan semua gambar sudah termuat sebelum render
+        const images = element.getElementsByTagName("img");
+        const totalImages = images.length;
+        let loadedImages = 0;
+
+        for (let img of images) {
+            if (img.complete) {
+                loadedImages++;
+            } else {
+                img.onload = () => {
+                    loadedImages++;
+                    if (loadedImages === totalImages) renderPDF();
+                };
+            }
+        }
+
+        if (loadedImages === totalImages) {
+            renderPDF();
+        }
+
+        function renderPDF() {
+            html2pdf().set({
+                margin: [0.2, 0.2, 0.2, 0.2],
+                filename: "pengecekan-material-stainless-steel.pdf",
+                image: {
+                    type: "jpeg",
+                    quality: 1
+                },
+                html2canvas: {
+                    scale: 3,
+                    useCORS: true,
+                    letterRendering: true
+                },
+                jsPDF: {
+                    unit: "in",
+                    format: "a4",
+                    orientation: "portrait"
+                },
+                pagebreak: {
+                    mode: ["avoid", "css"]
+                }
+            }).from(element).save();
+        }
+    }
+</script>

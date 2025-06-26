@@ -48,14 +48,14 @@
         </h2>
 
         @php
-$fields = [
-    [
-        'label' => 'Tanggal  :',
-        'value' => \Carbon\Carbon::parse($produkJadi->tanggal)->translatedFormat('d M Y'),
-    ],
-    ['label' => 'Penanggung Jawab :', 'value' => $produkJadi->penanggug_jawab],
-    ['label' => 'Penerima :', 'value' => $produkJadi->penerima],
-];
+            $fields = [
+                [
+                    'label' => 'Tanggal  :',
+                    'value' => \Carbon\Carbon::parse($produkJadi->tanggal)->translatedFormat('d M Y'),
+                ],
+                ['label' => 'Penanggung Jawab :', 'value' => $produkJadi->penanggug_jawab],
+                ['label' => 'Penerima :', 'value' => $produkJadi->penerima],
+            ];
         @endphp
 
         <div class="grid w-full max-w-4xl grid-cols-2 pt-4 mx-auto text-sm gap-x-6 gap-y-4">
@@ -112,7 +112,7 @@ $fields = [
         </h2>
 
         @php
-$kondisi = $produkJadi->kondisi_produk ?? null;
+            $kondisi = $produkJadi->kondisi_produk ?? null;
         @endphp
 
         <div class="flex flex-col items-start w-full max-w-4xl mx-auto space-y-2 text-sm">
@@ -149,7 +149,7 @@ $kondisi = $produkJadi->kondisi_produk ?? null;
             <div
                 class="w-full min-h-[75px] px-3 py-2 text-sm leading-relaxed text-left border rounded-md text-black border-black">
                 {{ trim($produkJadi->catatan_tambahan) }}
-            </div>  
+            </div>
         </div>
 
         <div class="max-w-4xl mx-auto mt-10 text-sm">

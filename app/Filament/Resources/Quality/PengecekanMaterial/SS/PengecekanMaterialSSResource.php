@@ -277,7 +277,7 @@ class PengecekanMaterialSSResource extends Resource
                         ->icon('heroicon-o-document')
                         ->color('success')
                         ->visible(fn($record) => $record->status_penyelesaian === 'Disetujui')
-                        ->url(fn($record) => self::getUrl('pdfPengecekanMaterialSS', ['record' => $record->id])),
+                        ->url(fn($record) => route('pdf.pengecekanMaterialSS', ['record' => $record->id])),
                 ])
             ])
             ->bulkActions([

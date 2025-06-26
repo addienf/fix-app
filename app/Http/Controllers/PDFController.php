@@ -3,10 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Models\Production\Jadwal\JadwalProduksi;
+use App\Models\Production\Penyerahan\PenyerahanElectrical\PenyerahanElectrical;
+use App\Models\Production\Penyerahan\PenyerahanProdukJadi;
 use App\Models\Production\PermintaanBahanProduksi\PermintaanAlatDanBahan;
+use App\Models\Production\SPK\SPKQuality;
 use App\Models\Purchasing\Permintaan\PermintaanPembelian;
 use App\Models\Quality\IncommingMaterial\MaterialNonSS\IncommingMaterialNonSS;
 use App\Models\Quality\IncommingMaterial\MaterialSS\IncommingMaterialSS;
+use App\Models\Quality\KelengkapanMaterial\SS\KelengkapanMaterialSS;
+use App\Models\Quality\PengecekanMaterial\Electrical\PengecekanMaterialElectrical;
+use App\Models\Quality\PengecekanMaterial\SS\PengecekanMaterialSS;
 use App\Models\Quality\Standarisasi\StandarisasiDrawing;
 use App\Models\Sales\SpesifikasiProducts\SpesifikasiProduct;
 use App\Models\Sales\SPKMarketings\SPKMarketing;
@@ -100,6 +106,48 @@ class PDFController extends Controller
         return view('pdf.quality.pdfStandarisasiDrawing', compact('standarisasi'));
     }
 
+    public function pdfKelengkapanMaterialSS($id)
+    {
+        $kelengkapan = KelengkapanMaterialSS::with(['spk', 'pic', 'detail'])->findOrFail($id);
+
+        return view('pdf.quality.pdfKelengkapanMaterialSS', compact('kelengkapan'));
+    }
+
+    public function pdfPengecekanMaterialSS($id)
+    {
+        $pengecekanSS = PengecekanMaterialSS::with(['spk', 'pic', 'detail', 'penyerahan'])->findOrFail($id);
+
+        return view('pdf.quality.pdfPengecekanMaterialSS', compact('pengecekanSS'));
+    }
+
+    public function pdfPenyerahanElectrical($id)
+    {
+        $serahElectrical = PenyerahanElectrical::with(['pengecekanSS', 'sebelumSerahTerima', 'pic', 'penerimaElectrical'])->findOrFail($id);
+
+        return view('pdf.production.pdfPenyerahanElectrical', compact('serahElectrical'));
+    }
+
+    public function pdfSPKQuality($id)
+    {
+        $spk_qc = SPKQuality::with(['spk', 'details', 'pic'])->findOrFail($id);
+
+        return view('pdf.production.pdfSPKQuality', compact('spk_qc'));
+    }
+
+    public function pdfPengecekanElectrical($id)
+    {
+        $electrical = PengecekanMaterialElectrical::with(['spk', 'pic', 'detail'])->findOrFail($id);
+
+        return view('pdf.quality.pdfPengecekanElectrical', compact('electrical'));
+    }
+
+    public function pdfPenyerahanProdukJadi($id)
+    {
+        $produkJadi = PenyerahanProdukJadi::with(['spk', 'details', 'pic'])->findOrFail($id);
+
+        return view('pdf.production.pdfPenyerahanProdukJadi', compact('produkJadi'));
+    }
+
     public function pdfPelabelanQCPassed()
     {
         return view('pdf.warehouse.pdfPelabelanQCPassed');
@@ -111,38 +159,18 @@ class PDFController extends Controller
         return view('pdf.warehouse.pdfPeminjamanAlat');
     }
 
-    public function pdfPenyerahanElectrical()
-    {
-        return view('pdf.production.pdfPenyerahanElectrical');
-    }
-    public function pdfPenyerahanProdukJadi()
-    {
-        return view('pdf.production.pdfPenyerahanProdukJadi');
-    }
 
-    public function pdfSPKQuality()
-    {
-        return view('pdf.production.pdfSPKQuality');
-    }
+
+
+
     public function pdfDefectStatus()
     {
         return view('pdf.quality.pdfDefectStatus');
     }
 
-    public function pdfKelengkapanMaterialSS()
-    {
-        return view('pdf.quality.pdfKelengkapanMaterialSS');
-    }
+
     public function pdfPengecekanPerforma()
     {
         return view('pdf.quality.pdfPengecekanPerforma');
-    }
-    public function pdfPengecekanElectrical()
-    {
-        return view('pdf.quality.pdfPengecekanElectrical');
-    }
-    public function pdfPengecekanMaterialSS()
-    {
-        return view('pdf.quality.pdfPengecekanMaterialSS');
     }
 }
