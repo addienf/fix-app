@@ -53,11 +53,11 @@ Route::get('/production/penyerahanprodukjadi', [PDFController::class, 'pdfPenyer
 
 Route::get('/production/spkquality', [PDFController::class, 'pdfSPKQuality'])->name('pdf.spkQuality');
 
+Route::get('/production/spkvendor', [PDFController::class, 'pdfSPKVendor'])->name('pdf.spkVendor');
+
+
+
 Route::get('/quality/defectstatus', [PDFController::class, 'pdfDefectStatus'])->name('pdf.defectStatus');
-
-
-
-
 
 Route::get('/quality/kelengkapanmaterialss', [PDFController::class, 'pdfKelengkapanMaterialSS'])->name('pdf.kelengkapanMaterialSS');
 

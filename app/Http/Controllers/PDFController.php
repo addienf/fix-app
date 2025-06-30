@@ -124,6 +124,14 @@ class PDFController extends Controller
     {
         return view('pdf.production.pdfSPKQuality');
     }
+
+    public function pdfSPKVendor()
+    {
+        return view('pdf.production.pdfSPKVendor');
+    }
+
+
+
     public function pdfDefectStatus()
     {
         return view('pdf.quality.pdfDefectStatus');
@@ -145,4 +153,5 @@ class PDFController extends Controller
     {
         return view('pdf.quality.pdfPengecekanMaterialSS');
     }
+
 }
