@@ -48,12 +48,8 @@ Route::get('/quality/pengecekan-electrical/{record}/pdf-pengecekan-electrical', 
 Route::get('/quality/pengecekan-performa/{record}/pdf-pengecekan-performa', [PDFController::class, 'pdfPengecekanPerforma'])->name('pdf.pengecekanPerforma');
 
 
-
-
-
-
 Route::get('/warehouse/peminjamanalat', [PDFController::class, 'pdfPeminjamanAlat'])->name('pdf.PeminjamanAlat');
 
-
+Route::get('/production/spkvendor', [PDFController::class, 'pdfSPKVendor'])->name('pdf.spkVendor');
 
 Route::get('/quality/defectstatus', [PDFController::class, 'pdfDefectStatus'])->name('pdf.defectStatus');
