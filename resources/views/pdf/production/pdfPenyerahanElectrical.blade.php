@@ -89,17 +89,17 @@
             $alasan_status = $serahElectrical->penerimaElectrical->alasan_status ?? null;
 
             $roles = [
-                'Submit By' => [
+                'Diserahkan Oleh,' => [
                     'name' => $serahElectrical->pic->submit_name ?? '-',
                     'signature' => $serahElectrical->pic->submit_signature ?? null,
                     'date' => $serahElectrical->pic->submit_date ?? null,
                 ],
-                'Receive By' => [
+                'Diterima Oleh,' => [
                     'name' => $serahElectrical->pic->receive_name ?? '-',
                     'signature' => $serahElectrical->pic->receive_signature ?? null,
                     'date' => $serahElectrical->pic->receive_date ?? null,
                 ],
-                'Knowing By' => [
+                'Diketahhui Oleh,' => [
                     'name' => $serahElectrical->pic->knowing_name ?? '-',
                     'signature' => $serahElectrical->pic->knowing_signature ?? null,
                     'date' => $serahElectrical->pic->knowing_date ?? null,
@@ -284,7 +284,7 @@
                     <div>
                         <label class="block mb-1 font-semibold">{{ $role }}</label>
 
-                        <div class="flex items-center justify-center w-full h-24 mb-2 bg-white border rounded border-gray">
+                        <div class="flex items-center justify-center w-full h-24 mb-2 bg-white">
                             @if ($data['signature'])
                                 <img src="{{ asset('storage/' . $data['signature']) }}" alt="Signature"
                                     class="object-contain h-full" />
@@ -293,7 +293,7 @@
                             @endif
                         </div>
                         <input type="text" value="{{ $data['name'] }}" readonly
-                            class="w-full p-2 mb-2 text-gray-500 bg-gray-100 border border-gray-300 rounded" />
+                            class="w-full p-2 mb-2 text-black " />
                     </div>
                 @endforeach
             </div>
