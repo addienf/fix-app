@@ -153,16 +153,6 @@ class QCPassedResource extends Resource
                     )
                     ->alignCenter(),
 
-                ImageColumn::make('pic.created_signature')
-                    ->width(150)
-                    ->label('Yang Membuat')
-                    ->height(75),
-
-                ImageColumn::make('pic.approved_signature')
-                    ->width(150)
-                    ->label('Yang Menyetujui')
-                    ->height(75),
-
             ])
             ->filters([
                 //
@@ -176,7 +166,7 @@ class QCPassedResource extends Resource
                         ->icon('heroicon-o-document')
                         ->color('success')
                         ->visible(fn($record) => $record->status_persetujuan === 'Disetujui')
-                        ->url(fn($record) => self::getUrl('pdfPelabelanQCPassed', ['record' => $record->id])),
+                        ->url(fn($record) => route('pdf.PelabelanQCPassed', ['record' => $record->id])),
                 ])
             ])
             ->bulkActions([

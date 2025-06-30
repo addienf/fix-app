@@ -33,6 +33,7 @@ Route::get('/production/penyerahan-produk-jadi/{record}/pdf-penyerahan-produk-ja
 Route::get('/warehouse/permintaan-bahan/{record}/pdf-permintaan-bahan', [PDFController::class, 'pdfPermintaanBahan'])->name('pdf.permintaanBahan');
 Route::get('/warehouse/incoming-material/{record}/pdf-incoming-material', [PDFController::class, 'pdfIncomingMaterial'])->name('pdf.IncomingMaterial');
 Route::get('/warehouse/serah-terima-bahan/{record}/pdf-serah-terima-bahan', [PDFController::class, 'pdfSerahTerima'])->name('pdf.serahTerima');
+Route::get('/warehouse/pelabelan-qc-passed/{record}/pdf-pelabelan-qc-passed', [PDFController::class, 'pdfPelabelanQCPassed'])->name('pdf.PelabelanQCPassed');
 
 // Purchasing
 Route::get('/purchasing/permintaan-pembelian/{record}/pdf-permintaan-pembelian', [PDFController::class, 'pdfPermintaanPembelian'])->name('pdf.PermintaanPembelian');
@@ -44,10 +45,10 @@ Route::get('/quality/standarisasi-gambar-kerja/{record}/pdf-standarisasi-gambar-
 Route::get('/quality/kelengkapan-material-ss/{record}/pdf-kelengkapan-material-ss', [PDFController::class, 'pdfKelengkapanMaterialSS'])->name('pdf.kelengkapanMaterialSS');
 Route::get('/quality/pengecekan-material-ss/{record}/pdf-kelengkapan-material-ss', [PDFController::class, 'pdfPengecekanMaterialSS'])->name('pdf.pengecekanMaterialSS');
 Route::get('/quality/pengecekan-electrical/{record}/pdf-pengecekan-electrical', [PDFController::class, 'pdfPengecekanElectrical'])->name('pdf.pengecekanElectrical');
+Route::get('/quality/pengecekan-performa/{record}/pdf-pengecekan-performa', [PDFController::class, 'pdfPengecekanPerforma'])->name('pdf.pengecekanPerforma');
 
 
 
-Route::get('/warehouse/pelabelanqcpassed', [PDFController::class, 'pdfPelabelanQCPassed'])->name('pdf.PelabelanQCPassed');
 
 
 
@@ -55,16 +56,4 @@ Route::get('/warehouse/peminjamanalat', [PDFController::class, 'pdfPeminjamanAla
 
 
 
-
-
-
-
 Route::get('/quality/defectstatus', [PDFController::class, 'pdfDefectStatus'])->name('pdf.defectStatus');
-
-
-
-
-
-
-
-Route::get('/quality/pengecekanperforma', [PDFController::class, 'pdfPengecekanPerforma'])->name('pdf.pengecekanPerforma');

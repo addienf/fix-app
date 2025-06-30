@@ -24,7 +24,7 @@
                         <tr>
                             <td class="px-3 py-2 border-b border-black dark:border-white">No. Dokumen</td>
                             <td class="px-3 py-2 font-semibold border-b border-black dark:border-white"> :
-                                FO-QKS-PRD-01-01</td>
+                                FO-QKS-PUR-01-01</td>
                         </tr>
                         <tr>
                             <td class="px-3 py-2 border-b border-black dark:border-white">Tanggal Rilis</td>
@@ -42,10 +42,8 @@
         <div class="max-w-4xl pt-6 mx-auto mb-6 text-sm">
             <p class="mb-2">Dengan hormat,</p>
             <p class="flex flex-wrap items-center gap-1">
-                <span>Berdasarkan Permintaan Barang No.</span>
-                <input disabled class="px-2 py-1 text-sm align-middle bg-transparent border-none w-45 h-7"
-                    value="{{ $permintaan_pembelian->permintaanBahanWBB->no_surat }}" />
-                <span>mohon bantuan untuk memenuhi kebutuhan bahan/sparepart dengan rincian sebagai berikut:</span>
+                <span>Berdasarkan Permintaan Barang No. {{ $permintaan_pembelian->permintaanBahanWBB->no_surat }} mohon
+                    bantuan untuk memenuhi kebutuhan bahan/sparepart dengan rincian sebagai berikut:</span>
             </p>
         </div>
 
@@ -77,7 +75,7 @@
         <div class="max-w-4xl mx-auto mt-10 text-sm">
             <div class="flex items-start justify-between gap-4">
                 <div class="flex flex-col items-center">
-                    <p class="mb-2 dark:text-white">Yang Membuat</p>
+                    <p class="mb-2 dark:text-white">Dibuat Oleh</p>
                     <img src="{{ asset('storage/' . $permintaan_pembelian->pic->create_signature) }}" alt="Signature"
                         class="object-contain h-20 w-80" />
                     <div class="mt-2 font-medium dark:text-white">
@@ -85,7 +83,7 @@
                     </div>
                 </div>
                 <div class="flex flex-col items-center">
-                    <p class="mb-2 dark:text-white">Yang Menerima</p>
+                    <p class="mb-2 dark:text-white">Mengetahui</p>
                     <img src="{{ asset('storage/' . $permintaan_pembelian->pic->knowing_signature) }}" alt="Signature"
                         class="object-contain h-20 w-80" />
                     <div class="mt-2 font-medium dark:text-white">
@@ -99,11 +97,9 @@
 
 <script>
     function exportPDF() {
-        window.scrollTo(0, 0); // pastikan posisi di atas
+        window.scrollTo(0, 0);
 
         const element = document.getElementById("export-area");
-
-        // Pastikan semua gambar sudah termuat sebelum render
         const images = element.getElementsByTagName("img");
         const totalImages = images.length;
         let loadedImages = 0;
@@ -122,10 +118,6 @@
         if (loadedImages === totalImages) {
             renderPDF();
         }
-
-        const today = new Date();
-        const tanggal = today.toISOString().split('T')[0]; // hasil: "2025-06-25"
-        const filename = `spesifikasi-produk-${tanggal}.pdf`;
 
         function renderPDF() {
             html2pdf().set({

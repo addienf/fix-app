@@ -11,12 +11,14 @@ use App\Models\Purchasing\Permintaan\PermintaanPembelian;
 use App\Models\Quality\IncommingMaterial\MaterialNonSS\IncommingMaterialNonSS;
 use App\Models\Quality\IncommingMaterial\MaterialSS\IncommingMaterialSS;
 use App\Models\Quality\KelengkapanMaterial\SS\KelengkapanMaterialSS;
+use App\Models\Quality\Pengecekan\PengecekanPerforma;
 use App\Models\Quality\PengecekanMaterial\Electrical\PengecekanMaterialElectrical;
 use App\Models\Quality\PengecekanMaterial\SS\PengecekanMaterialSS;
 use App\Models\Quality\Standarisasi\StandarisasiDrawing;
 use App\Models\Sales\SpesifikasiProducts\SpesifikasiProduct;
 use App\Models\Sales\SPKMarketings\SPKMarketing;
 use App\Models\Warehouse\Incomming\IncommingMaterial;
+use App\Models\Warehouse\Pelabelan\QCPassed;
 use App\Models\Warehouse\PermintaanBahanWBB\PermintaanBahan;
 use App\Models\Warehouse\SerahTerima\SerahTerimaBahan;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -148,9 +150,18 @@ class PDFController extends Controller
         return view('pdf.production.pdfPenyerahanProdukJadi', compact('produkJadi'));
     }
 
-    public function pdfPelabelanQCPassed()
+    public function pdfPengecekanPerforma($id)
     {
-        return view('pdf.warehouse.pdfPelabelanQCPassed');
+        $performa = PengecekanPerforma::with(['spk', 'pic', 'detail'])->findOrFail($id);
+
+        return view('pdf.quality.pdfPengecekanPerforma', compact('performa'));
+    }
+
+    public function pdfPelabelanQCPassed($id)
+    {
+        $pelabelan = QCPassed::with(['spk', 'pic', 'details'])->findOrFail($id);
+
+        return view('pdf.warehouse.pdfPelabelanQCPassed', compact('pelabelan'));
     }
 
 
@@ -159,18 +170,8 @@ class PDFController extends Controller
         return view('pdf.warehouse.pdfPeminjamanAlat');
     }
 
-
-
-
-
     public function pdfDefectStatus()
     {
         return view('pdf.quality.pdfDefectStatus');
-    }
-
-
-    public function pdfPengecekanPerforma()
-    {
-        return view('pdf.quality.pdfPengecekanPerforma');
     }
 }
