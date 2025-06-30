@@ -185,16 +185,6 @@ class IncommingMaterialResource extends Resource
                     )
                     ->alignCenter(),
 
-                ImageColumn::make('pic.submited_signature')
-                    ->width(150)
-                    ->label('Diserahkan Oleh')
-                    ->height(75),
-
-                ImageColumn::make('pic.received_signature')
-                    ->width(150)
-                    ->label('Diterima Oleh')
-                    ->height(75),
-
             ])
             ->filters([
                 //
