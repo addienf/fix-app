@@ -208,21 +208,6 @@ class PenyerahanElectricalResource extends Resource
                         return 'warning';
                     })
                     ->alignCenter(),
-
-                ImageColumn::make('pic.submit_signature')
-                    ->width(150)
-                    ->label('Diserahkan Oleh')
-                    ->height(75),
-
-                ImageColumn::make('pic.receive_signature')
-                    ->width(150)
-                    ->label('Diterima Oleh')
-                    ->height(75),
-
-                ImageColumn::make('pic.knowing_signature')
-                    ->width(150)
-                    ->label('Diketahui Oleh')
-                    ->height(75),
             ])
             ->filters([
                 //

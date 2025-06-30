@@ -17,18 +17,18 @@
             <tr>
                 <td class="font-bold text-center border border-black dark:border-white dark:bg-gray-900"
                     style="font-size: 20px;">
-                    Kelengkapan Material <br> Stainless Steel
+                    Formulir Cutting & Bending <br> For Production Checklist
                 </td>
                 <td rowspan="2" class="p-0 align-top border border-black dark:border-white dark:bg-gray-900">
                     <table class="w-full text-sm dark:bg-gray-900 dark:text-white" style="border-collapse: collapse;">
                         <tr>
                             <td class="px-3 py-2 border-b border-black dark:border-white">No. Dokumen</td>
                             <td class="px-3 py-2 font-semibold border-b border-black dark:border-white"> :
-                                FO-QKS-QA-01-04</td>
+                                FO-QKS-QA-01-03</td>
                         </tr>
                         <tr>
                             <td class="px-3 py-2 border-b border-black dark:border-white">Tanggal Rilis</td>
-                            <td class="px-3 py-2 font-semibold border-b border-black dark:border-white"> : 17 Juni 2025
+                            <td class="px-3 py-2 font-semibold border-b border-black dark:border-white"> : 12 Maret 2025
                             </td>
                         </tr>
                         <tr>
@@ -186,11 +186,9 @@
 
 <script>
     function exportPDF() {
-        window.scrollTo(0, 0); // pastikan posisi di atas
+        window.scrollTo(0, 0);
 
         const element = document.getElementById("export-area");
-
-        // Pastikan semua gambar sudah termuat sebelum render
         const images = element.getElementsByTagName("img");
         const totalImages = images.length;
         let loadedImages = 0;

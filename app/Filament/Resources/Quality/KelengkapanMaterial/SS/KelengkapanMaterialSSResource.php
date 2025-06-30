@@ -216,21 +216,6 @@ class KelengkapanMaterialSSResource extends Resource
                         return 'warning';
                     })
                     ->alignCenter(),
-
-                ImageColumn::make('pic.inspected_signature')
-                    ->width(150)
-                    ->label('Inspected')
-                    ->height(75),
-
-                ImageColumn::make('pic.accepted_signature')
-                    ->width(150)
-                    ->label('Accepted')
-                    ->height(75),
-
-                ImageColumn::make('pic.approved_signature')
-                    ->width(150)
-                    ->label('Approved')
-                    ->height(75),
             ])
             ->filters([
                 //

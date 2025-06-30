@@ -17,7 +17,7 @@
             <tr>
                 <td class="font-bold text-center border border-black dark:border-white dark:bg-gray-900"
                     style="font-size: 20px;">
-                    Formulir SPK Quality
+                    Surat Perintah Kerja QC
                 </td>
                 <td rowspan="2" class="p-0 align-top border border-black dark:border-white dark:bg-gray-900">
                     <table class="w-full text-sm dark:bg-gray-900 dark:text-white" style="border-collapse: collapse;">
@@ -28,7 +28,7 @@
                         </tr>
                         <tr>
                             <td class="px-3 py-2 border-b border-black dark:border-white">Tanggal Rilis</td>
-                            <td class="px-3 py-2 font-semibold border-b border-black dark:border-white"> : 17 Juni 2025
+                            <td class="px-3 py-2 font-semibold border-b border-black dark:border-white"> : 12 Maret 2025
                             </td>
                         </tr>
                         <tr>
@@ -88,7 +88,6 @@
         </div>
 
         <div class="max-w-4xl mx-auto mt-10 text-sm">
-            <p class="mb-4 dark:text-white">*Salinan URS Wajib diberikan kepada Departemen Produksi</p>
             <div class="flex items-start justify-between gap-4">
                 <!-- Kiri -->
                 <div class="flex flex-col items-center">
@@ -96,7 +95,7 @@
                     <img src="{{ asset('storage/' . $spk_qc->pic->create_signature) }}" alt="Product Signature"
                         class="h-20 w-80" />
                     <p class="mt-1 font-semibold dark:text-white">{{ $spk_qc->dari }}</p>
-                    <p class="mt-1 font-semibold dark:text-white">Marketing</p>
+                    <p class="mt-1 font-semibold dark:text-white">Produksi</p>
                 </div>
                 <!-- Kanan -->
                 <div class="flex flex-col items-center">
@@ -104,7 +103,7 @@
                     <img src="{{ asset('storage/' . $spk_qc->pic->receive_signature) }}" alt="Product Signature"
                         class="h-20 w-80" />
                     <p class="mt-1 font-semibold dark:text-white">{{ $spk_qc->kepada }}</p>
-                    <p class="mt-1 font-semibold dark:text-white">Produksi</p>
+                    <p class="mt-1 font-semibold dark:text-white">QC</p>
                 </div>
             </div>
         </div>

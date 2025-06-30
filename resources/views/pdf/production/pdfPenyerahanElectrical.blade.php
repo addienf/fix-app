@@ -89,17 +89,17 @@
             $alasan_status = $serahElectrical->penerimaElectrical->alasan_status ?? null;
 
             $roles = [
-                'Submit By' => [
+                'Diserahkan Oleh,' => [
                     'name' => $serahElectrical->pic->submit_name ?? '-',
                     'signature' => $serahElectrical->pic->submit_signature ?? null,
                     'date' => $serahElectrical->pic->submit_date ?? null,
                 ],
-                'Receive By' => [
+                'Diterima Oleh,' => [
                     'name' => $serahElectrical->pic->receive_name ?? '-',
                     'signature' => $serahElectrical->pic->receive_signature ?? null,
                     'date' => $serahElectrical->pic->receive_date ?? null,
                 ],
-                'Knowing By' => [
+                'Diketahui Oleh,' => [
                     'name' => $serahElectrical->pic->knowing_name ?? '-',
                     'signature' => $serahElectrical->pic->knowing_signature ?? null,
                     'date' => $serahElectrical->pic->knowing_date ?? null,
@@ -305,11 +305,9 @@
 
 <script>
     function exportPDF() {
-        window.scrollTo(0, 0); // pastikan posisi di atas
+        window.scrollTo(0, 0);
 
         const element = document.getElementById("export-area");
-
-        // Pastikan semua gambar sudah termuat sebelum render
         const images = element.getElementsByTagName("img");
         const totalImages = images.length;
         let loadedImages = 0;

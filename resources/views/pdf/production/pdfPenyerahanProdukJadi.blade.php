@@ -76,7 +76,7 @@
                     <tr>
                         <th class="px-2 py-1 border border-gray">No</th>
                         <th class="px-2 py-1 border border-gray">Nama Produk</th>
-                        <th class="px-2 py-1 border border-gray">Model/Type</th>
+                        <th class="px-2 py-1 border border-gray">Tipe/Model</th>
                         <th class="px-2 py-1 border border-gray">Volume</th>
                         <th class="px-2 py-1 border border-gray">Jumlah</th>
                         <th class="px-2 py-1 border border-gray">SPK MKT No.</th>
@@ -165,11 +165,9 @@
 
 <script>
     function exportPDF() {
-        window.scrollTo(0, 0); // pastikan posisi di atas
+        window.scrollTo(0, 0);
 
         const element = document.getElementById("export-area");
-
-        // Pastikan semua gambar sudah termuat sebelum render
         const images = element.getElementsByTagName("img");
         const totalImages = images.length;
         let loadedImages = 0;
@@ -192,7 +190,7 @@
         function renderPDF() {
             html2pdf().set({
                 margin: [0.2, 0.2, 0.2, 0.2],
-                filename: "penyerahan-produ-jadi.pdf",
+                filename: "penyerahan-produk-jadi.pdf",
                 image: {
                     type: "jpeg",
                     quality: 1
