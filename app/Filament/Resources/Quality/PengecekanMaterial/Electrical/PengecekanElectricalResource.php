@@ -247,21 +247,6 @@ class PengecekanElectricalResource extends Resource
                     })
                     ->alignCenter(),
 
-                ImageColumn::make('pic.inspected_signature')
-                    ->width(150)
-                    ->label('Inspected')
-                    ->height(75),
-
-                ImageColumn::make('pic.accepted_signature')
-                    ->width(150)
-                    ->label('Accepted')
-                    ->height(75),
-
-                ImageColumn::make('pic.approved_signature')
-                    ->width(150)
-                    ->label('Approved')
-                    ->height(75),
-
             ])
             ->filters([
                 //
@@ -275,7 +260,7 @@ class PengecekanElectricalResource extends Resource
                         ->icon('heroicon-o-document')
                         ->color('success')
                         ->visible(fn($record) => $record->status_penyelesaian === 'Disetujui')
-                        ->url(fn($record) => self::getUrl('pdfPengecekanElectrical', ['record' => $record->id])),
+                        ->url(fn($record) => route('pdf.pengecekanElectrical', ['record' => $record->id])),
                 ])
             ])
             ->bulkActions([

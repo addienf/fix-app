@@ -150,17 +150,6 @@ class PermintaanPembelianResource extends Resource
                         $state === 'Disetujui' ? 'success' : 'danger'
                     )
                     ->alignCenter(),
-
-                // ImageColumn::make('pic.create_signature')
-                //     ->label('Pembuat')
-                //     ->width(150)
-                //     ->height(75),
-
-                // ImageColumn::make('pic.knowing_signature')
-                //     ->label('Pembuat')
-                //     ->width(150)
-                //     ->height(75),
-
             ])
             ->filters([
                 //

@@ -24,7 +24,7 @@
                         <tr>
                             <td class="px-3 py-2 border-b border-black dark:border-white">No. Dokumen</td>
                             <td class="px-3 py-2 font-semibold border-b border-black dark:border-white"> :
-                                FO-QKS-WRH-01-01</td>
+                                FO-QKS-WRH-03-01</td>
                         </tr>
                         <tr>
                             <td class="px-3 py-2 border-b border-black dark:border-white">Tanggal Rilis</td>
@@ -134,11 +134,9 @@
 
 <script>
     function exportPDF() {
-        window.scrollTo(0, 0); // pastikan posisi di atas
+        window.scrollTo(0, 0);
 
         const element = document.getElementById("export-area");
-
-        // Pastikan semua gambar sudah termuat sebelum render
         const images = element.getElementsByTagName("img");
         const totalImages = images.length;
         let loadedImages = 0;
@@ -157,10 +155,6 @@
         if (loadedImages === totalImages) {
             renderPDF();
         }
-
-        const today = new Date();
-        const tanggal = today.toISOString().split('T')[0]; // hasil: "2025-06-25"
-        const filename = `spesifikasi-produk-${tanggal}.pdf`;
 
         function renderPDF() {
             html2pdf().set({

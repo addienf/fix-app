@@ -236,7 +236,7 @@ class PenyerahanElectricalResource extends Resource
                         ->icon('heroicon-o-document')
                         ->color('success')
                         ->visible(fn($record) => $record->status_penyelesaian === 'Disetujui')
-                        ->url(fn($record) => self::getUrl('pdfPenyerahanElectrical', ['record' => $record->id])),
+                        ->url(fn($record) => route('pdf.penyerahanElectrical', ['record' => $record->id])),
                 ])
             ])
             ->bulkActions([

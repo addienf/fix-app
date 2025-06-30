@@ -3,14 +3,22 @@
 namespace App\Http\Controllers;
 
 use App\Models\Production\Jadwal\JadwalProduksi;
+use App\Models\Production\Penyerahan\PenyerahanElectrical\PenyerahanElectrical;
+use App\Models\Production\Penyerahan\PenyerahanProdukJadi;
 use App\Models\Production\PermintaanBahanProduksi\PermintaanAlatDanBahan;
+use App\Models\Production\SPK\SPKQuality;
 use App\Models\Purchasing\Permintaan\PermintaanPembelian;
 use App\Models\Quality\IncommingMaterial\MaterialNonSS\IncommingMaterialNonSS;
 use App\Models\Quality\IncommingMaterial\MaterialSS\IncommingMaterialSS;
+use App\Models\Quality\KelengkapanMaterial\SS\KelengkapanMaterialSS;
+use App\Models\Quality\Pengecekan\PengecekanPerforma;
+use App\Models\Quality\PengecekanMaterial\Electrical\PengecekanMaterialElectrical;
+use App\Models\Quality\PengecekanMaterial\SS\PengecekanMaterialSS;
 use App\Models\Quality\Standarisasi\StandarisasiDrawing;
 use App\Models\Sales\SpesifikasiProducts\SpesifikasiProduct;
 use App\Models\Sales\SPKMarketings\SPKMarketing;
 use App\Models\Warehouse\Incomming\IncommingMaterial;
+use App\Models\Warehouse\Pelabelan\QCPassed;
 use App\Models\Warehouse\PermintaanBahanWBB\PermintaanBahan;
 use App\Models\Warehouse\SerahTerima\SerahTerimaBahan;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -100,29 +108,61 @@ class PDFController extends Controller
         return view('pdf.quality.pdfStandarisasiDrawing', compact('standarisasi'));
     }
 
-    public function pdfPelabelanQCPassed()
+    public function pdfKelengkapanMaterialSS($id)
     {
-        return view('pdf.warehouse.pdfPelabelanQCPassed');
+        $kelengkapan = KelengkapanMaterialSS::with(['spk', 'pic', 'detail'])->findOrFail($id);
+
+        return view('pdf.quality.pdfKelengkapanMaterialSS', compact('kelengkapan'));
     }
 
-
-    public function pdfPeminjamanAlat()
+    public function pdfPengecekanMaterialSS($id)
     {
-        return view('pdf.warehouse.pdfPeminjamanAlat');
+        $pengecekanSS = PengecekanMaterialSS::with(['spk', 'pic', 'detail', 'penyerahan'])->findOrFail($id);
+
+        return view('pdf.quality.pdfPengecekanMaterialSS', compact('pengecekanSS'));
     }
 
-    public function pdfPenyerahanElectrical()
+    public function pdfPenyerahanElectrical($id)
     {
-        return view('pdf.production.pdfPenyerahanElectrical');
-    }
-    public function pdfPenyerahanProdukJadi()
-    {
-        return view('pdf.production.pdfPenyerahanProdukJadi');
+        $serahElectrical = PenyerahanElectrical::with(['pengecekanSS', 'sebelumSerahTerima', 'pic', 'penerimaElectrical'])->findOrFail($id);
+
+        return view('pdf.production.pdfPenyerahanElectrical', compact('serahElectrical'));
     }
 
-    public function pdfSPKQuality()
+    public function pdfSPKQuality($id)
     {
-        return view('pdf.production.pdfSPKQuality');
+        $spk_qc = SPKQuality::with(['spk', 'details', 'pic'])->findOrFail($id);
+
+        return view('pdf.production.pdfSPKQuality', compact('spk_qc'));
+    }
+
+    public function pdfPengecekanElectrical($id)
+    {
+        $electrical = PengecekanMaterialElectrical::with(['spk', 'pic', 'detail'])->findOrFail($id);
+
+        return view('pdf.quality.pdfPengecekanElectrical', compact('electrical'));
+    }
+  
+    public function pdfPenyerahanProdukJadi($id)
+
+    {
+        $produkJadi = PenyerahanProdukJadi::with(['spk', 'details', 'pic'])->findOrFail($id);
+
+        return view('pdf.production.pdfPenyerahanProdukJadi', compact('produkJadi'));
+    }
+
+    public function pdfPengecekanPerforma($id)
+    {
+        $performa = PengecekanPerforma::with(['spk', 'pic', 'detail'])->findOrFail($id);
+
+        return view('pdf.quality.pdfPengecekanPerforma', compact('performa'));
+    }
+
+    public function pdfPelabelanQCPassed($id)
+    {
+        $pelabelan = QCPassed::with(['spk', 'pic', 'details'])->findOrFail($id);
+
+        return view('pdf.warehouse.pdfPelabelanQCPassed', compact('pelabelan'));
     }
 
     public function pdfSPKVendor()
@@ -130,28 +170,14 @@ class PDFController extends Controller
         return view('pdf.production.pdfSPKVendor');
     }
 
-
+    public function pdfPeminjamanAlat()
+    {
+        return view('pdf.warehouse.pdfPeminjamanAlat');
+    }
 
     public function pdfDefectStatus()
     {
         return view('pdf.quality.pdfDefectStatus');
-    }
-
-    public function pdfKelengkapanMaterialSS()
-    {
-        return view('pdf.quality.pdfKelengkapanMaterialSS');
-    }
-    public function pdfPengecekanPerforma()
-    {
-        return view('pdf.quality.pdfPengecekanPerforma');
-    }
-    public function pdfPengecekanElectrical()
-    {
-        return view('pdf.quality.pdfPengecekanElectrical');
-    }
-    public function pdfPengecekanMaterialSS()
-    {
-        return view('pdf.quality.pdfPengecekanMaterialSS');
     }
 
 }

@@ -41,16 +41,16 @@
             </h2>
 
             @php
-$fields2 = [
-    ['label' => '1. Nama Produk :', 'value' => $serahElectrical->nama_produk],
-    ['label' => '2. Kode Produk :', 'value' => $serahElectrical->kode_produk],
-    ['label' => '3. Nomor Batch/Seri :', 'value' => $serahElectrical->no_seri],
-    [
-        'label' => '4. Tanggal Produksi Mekanik Selesai:',
-        'value' => \Carbon\Carbon::parse($serahElectrical->tanggal_selesai)->format('d M Y'),
-    ],
-    ['label' => '5. Jumlah Unit :', 'value' => $serahElectrical->jumlah],
-];
+                $fields2 = [
+                    ['label' => '1. Nama Produk :', 'value' => $serahElectrical->nama_produk],
+                    ['label' => '2. Kode Produk :', 'value' => $serahElectrical->kode_produk],
+                    ['label' => '3. Nomor Batch/Seri :', 'value' => $serahElectrical->no_seri],
+                    [
+                        'label' => '4. Tanggal Produksi Mekanik Selesai:',
+                        'value' => \Carbon\Carbon::parse($serahElectrical->tanggal_selesai)->format('d M Y'),
+                    ],
+                    ['label' => '5. Jumlah Unit :', 'value' => $serahElectrical->jumlah],
+                ];
             @endphp
 
             @foreach ($fields2 as $field)
@@ -64,7 +64,7 @@ $fields2 = [
             <div class="flex items-start gap-2">
 
                 @php
-$kondisi = $serahElectrical->kondisi ?? null;
+                    $kondisi = $serahElectrical->kondisi ?? null;
                 @endphp
 
                 <label class="w-48 font-medium">5. Kondisi Produk :</label>
@@ -103,7 +103,7 @@ $kondisi = $serahElectrical->kondisi ?? null;
                     {{ trim($serahElectrical->deskripsi_kondisi) }}
                 </div>
             </div>
-            
+
             <h2 class="col-span-1 mb-2 text-xl font-bold text-start">
                 B. Pengecekan Sebelum Serah Terima
             </h2>
@@ -111,7 +111,7 @@ $kondisi = $serahElectrical->kondisi ?? null;
             <div class="mb-1">
 
                 @php
-$kondisi_fisik = $serahElectrical->sebelumSerahTerima->kondisi_fisik ?? null;
+                    $kondisi_fisik = $serahElectrical->sebelumSerahTerima->kondisi_fisik ?? null;
                 @endphp
 
                 <label class="block mb-2 font-medium">1. Kondisi Fisik Produk</label>
@@ -156,7 +156,7 @@ $kondisi_fisik = $serahElectrical->sebelumSerahTerima->kondisi_fisik ?? null;
             <div class="mb-1">
 
                 @php
-$komponen = $serahElectrical->sebelumSerahTerima->kelengkapan_komponen ?? null;
+                    $komponen = $serahElectrical->sebelumSerahTerima->kelengkapan_komponen ?? null;
                 @endphp
 
                 <label class="block mb-2 font-medium">2. Kelengkapan Komponen</label>
@@ -201,7 +201,7 @@ $komponen = $serahElectrical->sebelumSerahTerima->kelengkapan_komponen ?? null;
             <div class="mb-1">
 
                 @php
-$dokumen = $serahElectrical->sebelumSerahTerima->dokumen_pendukung ?? null;
+                    $dokumen = $serahElectrical->sebelumSerahTerima->dokumen_pendukung ?? null;
                 @endphp
 
                 <label class="block mb-2 font-medium">3. Dokumen Pendukung</label>
@@ -238,22 +238,22 @@ $dokumen = $serahElectrical->sebelumSerahTerima->dokumen_pendukung ?? null;
             </h2>
 
             @php
-$fields2 = [
-    [
-        'label' => 'Tanggal Serah Terima :',
-        'value' => \Carbon\Carbon::parse($serahElectrical->penerimaElectrical->tanggal)->format(
-            'd M Y',
-        ),
-    ],
-    [
-        'label' => 'Diterima oleh (Nama & Jabatan) :',
-        'value' => $serahElectrical->penerimaElectrical->diterima_oleh,
-    ],
-    [
-        'label' => 'Catatan Tambahan :',
-        'value' => $serahElectrical->penerimaElectrical->catatan_tambahan,
-    ],
-];
+                $fields2 = [
+                    [
+                        'label' => 'Tanggal Serah Terima :',
+                        'value' => \Carbon\Carbon::parse($serahElectrical->penerimaElectrical->tanggal)->format(
+                            'd M Y',
+                        ),
+                    ],
+                    [
+                        'label' => 'Diterima oleh (Nama & Jabatan) :',
+                        'value' => $serahElectrical->penerimaElectrical->diterima_oleh,
+                    ],
+                    [
+                        'label' => 'Catatan Tambahan :',
+                        'value' => $serahElectrical->penerimaElectrical->catatan_tambahan,
+                    ],
+                ];
             @endphp
 
             @foreach ($fields2 as $field)
@@ -267,7 +267,7 @@ $fields2 = [
             <div class="mb-1">
 
                 @php
-$penerimaan = $serahElectrical->penerimaElectrical->status_penerimaan ?? null;
+                    $penerimaan = $serahElectrical->penerimaElectrical->status_penerimaan ?? null;
                 @endphp
 
                 <label class="block mb-2 font-medium">Status Penerimaan</label>
@@ -323,23 +323,23 @@ $penerimaan = $serahElectrical->penerimaElectrical->status_penerimaan ?? null;
             </h2>
 
             @php
-$roles = [
-    'Submit By' => [
-        'name' => $serahElectrical->pic->submit_name ?? '-',
-        'signature' => $serahElectrical->pic->submit_signature ?? null,
-        'date' => $serahElectrical->pic->submit_date ?? null,
-    ],
-    'Receive By' => [
-        'name' => $serahElectrical->pic->receive_name ?? '-',
-        'signature' => $serahElectrical->pic->receive_signature ?? null,
-        'date' => $serahElectrical->pic->receive_date ?? null,
-    ],
-    'Knowing By' => [
-        'name' => $serahElectrical->pic->knowing_name ?? '-',
-        'signature' => $serahElectrical->pic->knowing_signature ?? null,
-        'date' => $serahElectrical->pic->knowing_date ?? null,
-    ],
-];
+                $roles = [
+                    'Submit By' => [
+                        'name' => $serahElectrical->pic->submit_name ?? '-',
+                        'signature' => $serahElectrical->pic->submit_signature ?? null,
+                        'date' => $serahElectrical->pic->submit_date ?? null,
+                    ],
+                    'Receive By' => [
+                        'name' => $serahElectrical->pic->receive_name ?? '-',
+                        'signature' => $serahElectrical->pic->receive_signature ?? null,
+                        'date' => $serahElectrical->pic->receive_date ?? null,
+                    ],
+                    'Knowing By' => [
+                        'name' => $serahElectrical->pic->knowing_name ?? '-',
+                        'signature' => $serahElectrical->pic->knowing_signature ?? null,
+                        'date' => $serahElectrical->pic->knowing_date ?? null,
+                    ],
+                ];
             @endphp
 
             <!-- SIGNATURE SECTION -->

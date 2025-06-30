@@ -343,21 +343,6 @@ class IncommingMaterialNonSSResource extends Resource
                         return 'warning';
                     })
                     ->alignCenter(),
-
-                ImageColumn::make('pic.checked_signature')
-                    ->width(150)
-                    ->label('Checked')
-                    ->height(75),
-
-                ImageColumn::make('pic.accepted_signature')
-                    ->width(150)
-                    ->label('Accepted')
-                    ->height(75),
-
-                ImageColumn::make('pic.approved_signature')
-                    ->width(150)
-                    ->label('Approved')
-                    ->height(75),
             ])
             ->filters([
                 //

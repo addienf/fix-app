@@ -252,21 +252,6 @@ class PengecekanPerformaResource extends Resource
                         return 'warning';
                     })
                     ->alignCenter(),
-
-                ImageColumn::make('pic.inspected_signature')
-                    ->width(150)
-                    ->label('Inspected')
-                    ->height(75),
-
-                ImageColumn::make('pic.accepted_signature')
-                    ->width(150)
-                    ->label('Accepted')
-                    ->height(75),
-
-                ImageColumn::make('pic.approved_signature')
-                    ->width(150)
-                    ->label('Approved')
-                    ->height(75),
             ])
             ->filters([
                 //
@@ -280,7 +265,7 @@ class PengecekanPerformaResource extends Resource
                         ->icon('heroicon-o-document')
                         ->color('success')
                         ->visible(fn($record) => $record->status_penyelesaian === 'Disetujui')
-                        ->url(fn($record) => self::getUrl('pdfPengecekanPerforma', ['record' => $record->id])),
+                        ->url(fn($record) => route('pdf.pengecekanPerforma', ['record' => $record->id])),
                 ])
             ])
             ->bulkActions([
