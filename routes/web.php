@@ -53,3 +53,7 @@ Route::get('/warehouse/peminjamanalat', [PDFController::class, 'pdfPeminjamanAla
 Route::get('/production/spkvendor', [PDFController::class, 'pdfSPKVendor'])->name('pdf.spkVendor');
 
 Route::get('/quality/defectstatus', [PDFController::class, 'pdfDefectStatus'])->name('pdf.defectStatus');
+
+
+//Engineering
+Route::get('/engineering/spkservice', [PDFController::class, 'pdfSPKService'])->name('pdf.spkService');
