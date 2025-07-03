@@ -126,10 +126,10 @@
             <!-- Catatan -->
             <div class="w-full max-w-4xl pt-6 mx-auto text-sm">
                 <h2 class="mb-3 text-xl font-bold">IV. Catatan dan Koreksi yang Dibutuhkan</h2>
-                <textarea readonly id="note"
+                <div readonly id="note"
                     class="w-full px-3 py-2 overflow-hidden text-sm leading-relaxed border border-black rounded-md cursor-not-allowed resize-none">
                     {{ trim($standarisasi->detail->catatan) }}
-                </textarea>
+                </div>
             </div>
 
             <!-- Lampiran dan Tanda Tangan -->
