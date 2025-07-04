@@ -39,7 +39,12 @@ class PermintaanPembelianResource extends Resource
     protected static ?string $navigationLabel = 'Permintaan Pembelian';
     protected static ?string $pluralLabel = 'Permintaan Pembelian';
     protected static ?string $modelLabel = 'Permintaan Pembelian';
+    public static function getNavigationBadge(): ?string
+    {
+        $count = PermintaanPembelian::where('status_persetujuan', '!=', 'Disetujui')->count();
 
+        return $count > 0 ? (string) $count : null;
+    }
 
     public static function form(Form $form): Form
     {
