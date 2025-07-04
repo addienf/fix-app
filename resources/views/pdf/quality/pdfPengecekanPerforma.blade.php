@@ -111,75 +111,78 @@
                             </td>
                         </tr>
                         @foreach ($group['parts'] as $part)
-                            <tr>
-                                <td class="px-3 py-2 text-center border border-black">{{ $rowNumber++ }}</td>
-                                <td class="px-3 py-2 border border-black">{{ $part['part'] ?? '-' }}</td>
-                                <td class="px-3 py-2 text-center border border-black">
-                                    {{ ($part['result'] ?? '0') == '1' ? '✔' : '' }}
-                                </td>
-                                <td class="px-3 py-2 text-center border border-black">
-                                    {{ ($part['result'] ?? '0') == '0' ? '✘' : '' }}
-                                </td>
-                                <td class="px-3 py-2 border border-black">
-                                    {{ statusLabel($part['status'] ?? '-') }}
-                                </td>
-                            </tr>
-                        @endforeach
-                    @endforeach
-                </tbody>
-            </table>
+                                            <tr>
+                                                <td class="px-3 py-2 text-center border border-black">{{ $rowNumber++ }}</td>
+                                                <td class="px-3 py-2 border border-black">{{ $part['part'] ?? '-' }}</td>
+                                                <td class="px-3 py-2 text-center border border-black">
+                                                    {{ ($part['result'] ?? '0') == '1' ? '✔' : '' }}
+                                                </td>
+                                                <td class="px-3 py-2 text-center border border-black">
+                                                    {{ ($part['result'] ?? '0') == '0' ? '✘' : '' }}
+                                                </td>
+                                                <td class="px-3 py-2 border border-black">
+                                                    {{ statusLabel($part['status'] ?? '-') }}
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    @endforeach
+                                </tbody>
+                            </table>
 
-            <div class="w-full max-w-4xl mx-auto mb-6">
-                <label for="note" class="block mb-1 text-sm font-medium text-gray-700">Note:</label>
-                <div id="note" readonly
-                    class="w-full min-h-[75px] px-3 py-2 text-sm leading-relaxed text-left border rounded-md text-black border-black">
-                    {{ trim($performa->note) }}
-                </div>
-            </div>
+                            <div class="w-full max-w-4xl mx-auto mb-6">
+                                <label for="note" class="block mb-1 text-sm font-medium text-gray-700">Note:</label>
+                                <div id="note" readonly
+                                    class="w-full min-h-[75px] px-3 py-2 text-sm leading-relaxed text-left border rounded-md text-black border-black">
+                                    {{ trim($performa->note) }}
+                                </div>
+                            </div>
 
-        </div>
-
-        @php
-            $roles = [
-                'Checked By' => [
-                    'name' => $performa->pic->inspected_name ?? '-',
-                    'signature' => $performa->pic->inspected_signature ?? null,
-                    'date' => $performa->pic->inspected_date ?? null,
-                ],
-                'Accepted By' => [
-                    'name' => $performa->pic->accepted_name ?? '-',
-                    'signature' => $performa->pic->accepted_signature ?? null,
-                    'date' => $performa->pic->accepted_date ?? null,
-                ],
-                'Approved By' => [
-                    'name' => $performa->pic->approved_name ?? '-',
-                    'signature' => $performa->pic->approved_signature ?? null,
-                    'date' => $performa->pic->approved_date ?? null,
-                ],
-            ];
-        @endphp
-
-        <div class="max-w-4xl p-4 mx-auto mb-6">
-            <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
-                @foreach ($roles as $role => $data)
-                    <div>
-                        <label class="block mb-1 font-semibold">{{ $role }}</label>
-                        <input type="text" value="{{ $data['name'] }}" readonly
-                            class="w-full p-2 mb-2 text-gray-500 bg-gray-100 border border-gray-300 rounded" />
-
-                        <label class="block mb-1">Signature</label>
-                        <div class="flex items-center justify-center w-full h-24 mb-2 bg-white border border-black rounded">
-                            <span class="text-sm text-gray-400">No Signature</span>
                         </div>
 
-                        <label class="block mb-1">Date</label>
-                        <input type="text" readonly value="{{ \Carbon\Carbon::parse($data['date'])->format('d M Y') }}"
-                            class="w-full p-2 text-gray-500 bg-gray-100 border border-gray-300 rounded" />
+                        @php
+    $roles = [
+        'Checked By' => [
+            'name' => $performa->pic->inspected_name ?? '-',
+            'signature' => $performa->pic->inspected_signature ?? null,
+            'date' => $performa->pic->inspected_date ?? null,
+        ],
+        'Accepted By' => [
+            'name' => $performa->pic->accepted_name ?? '-',
+            'signature' => $performa->pic->accepted_signature ?? null,
+            'date' => $performa->pic->accepted_date ?? null,
+        ],
+        'Approved By' => [
+            'name' => $performa->pic->approved_name ?? '-',
+            'signature' => $performa->pic->approved_signature ?? null,
+            'date' => $performa->pic->approved_date ?? null,
+        ],
+    ];
+                        @endphp
+
+                        <div class="max-w-4xl p-4 mx-auto mb-6">
+                            <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+                                @foreach ($roles as $role => $data)
+                                    <div>
+                                        <label class="block mb-1 font-semibold">{{ $role }}</label>
+                                        <input type="text" value="{{ $data['name'] }}" readonly
+                                            class="w-full p-2 mb-2 text-black" />
+
+                                        <label class="block mb-1 font-semibold">Signature</label>
+                                        <div class="flex items-center justify-center w-full h-24 mb-2 bg-white">
+                                            @if ($data['signature'])
+                                                <img src="{{ asset('storage/' . $data['signature']) }}" alt="Signature" class="object-contain h-full" />
+                                            @else
+                                                <span class="text-sm text-gray-400">No Signature</span>
+                                            @endif
+                                        </div>
+                                        <label class="block mb-1 font-semibold">Date</label>
+                                        <input type="text" readonly value="{{ \Carbon\Carbon::parse($data['date'])->format('d M Y') }}"
+                                            class="w-full p-2 text-black" />
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
                     </div>
-                @endforeach
-            </div>
-        </div>
-    </div>
 @endsection
 
 <script>

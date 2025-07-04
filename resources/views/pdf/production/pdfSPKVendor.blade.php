@@ -112,12 +112,10 @@
                 </div>
                 <div class="mt-20">
                     <div class="border-t border-gray-400 w-56 mx-auto pt-2 text-sm text-gray-600">
-                        Tanda Tangan
                     </div>
                 </div>
                 <div class="mt-20">
                     <div class="border-t border-gray-400 w-56 mx-auto pt-2 text-sm text-gray-600">
-                        Tanda Tangan
                     </div>
                 </div>      
             </div>

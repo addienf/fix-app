@@ -142,9 +142,8 @@ class PDFController extends Controller
 
         return view('pdf.quality.pdfPengecekanElectrical', compact('electrical'));
     }
-  
-    public function pdfPenyerahanProdukJadi($id)
 
+    public function pdfPenyerahanProdukJadi($id)
     {
         $produkJadi = PenyerahanProdukJadi::with(['spk', 'details', 'pic'])->findOrFail($id);
 
@@ -179,5 +178,12 @@ class PDFController extends Controller
     {
         return view('pdf.quality.pdfDefectStatus');
     }
+
+    public function pdfSPKService()
+    {
+        return view('pdf.engineering.pdfSPKService');
+    }
+
+
 
 }

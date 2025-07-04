@@ -115,4 +115,29 @@
 .fi-fo-repeater{
     @apply bg-blue-400/20 text-white rounded-t-lg !important;
         border: none !important;
-} */
+} */@keyframes rainbow-glow {
+    0% {
+        box-shadow: 0 0 12px 2px red;
+    }
+
+    25% {
+        box-shadow: 0 0 12px 2px orange;
+    }
+
+    50% {
+        box-shadow: 0 0 12px 2px yellow;
+    }
+
+    75% {
+        box-shadow: 0 0 12px 2px green;
+    }
+
+    100% {
+        box-shadow: 0 0 12px 2px blue;
+    }
+}
+
+.download {
+   background-color: red;
+}
+       
