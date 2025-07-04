@@ -24,16 +24,16 @@
                         <tr>
                             <td class="px-3 py-2 border-b border-black dark:border-white">No. Dokumen</td>
                             <td class="px-3 py-2 font-semibold border-b border-black dark:border-white"> :
-                                FO-QKS-WBB-04-01</td>
+                                FO-QKS-WRH-01-01</td>
                         </tr>
                         <tr>
                             <td class="px-3 py-2 border-b border-black dark:border-white">Tanggal Rilis</td>
-                            <td class="px-3 py-2 font-semibold border-b border-black dark:border-white"> : 17 Juni 2025
+                            <td class="px-3 py-2 font-semibold border-b border-black dark:border-white"> : 12 Maret 2025
                             </td>
                         </tr>
                         <tr>
                             <td class="px-3 py-2">Revisi</td>
-                            <td class="px-3 py-2 font-semibold"> : 01</td>
+                            <td class="px-3 py-2 font-semibold"> : 0</td>
                         </tr>
                     </table>
                 </td>

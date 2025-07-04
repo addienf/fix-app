@@ -99,7 +99,7 @@
                     'signature' => $serahElectrical->pic->receive_signature ?? null,
                     'date' => $serahElectrical->pic->receive_date ?? null,
                 ],
-                'Diketahhui Oleh,' => [
+                'Diketahui Oleh,' => [
                     'name' => $serahElectrical->pic->knowing_name ?? '-',
                     'signature' => $serahElectrical->pic->knowing_signature ?? null,
                     'date' => $serahElectrical->pic->knowing_date ?? null,
@@ -305,11 +305,9 @@
 
 <script>
     function exportPDF() {
-        window.scrollTo(0, 0); // pastikan posisi di atas
+        window.scrollTo(0, 0);
 
         const element = document.getElementById("export-area");
-
-        // Pastikan semua gambar sudah termuat sebelum render
         const images = element.getElementsByTagName("img");
         const totalImages = images.length;
         let loadedImages = 0;

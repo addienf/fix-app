@@ -64,26 +64,25 @@
                     </div>
                 @endforeach
             </div>
+            
+        <h2 class="w-full max-w-4xl col-span-1 pt-4 mx-auto mb-3 text-xl font-bold text-start">
+            B. Detail Produk
+        </h2>
 
-
-            <h2 class="w-full max-w-4xl col-span-1 pt-4 mx-auto mb-3 text-xl font-bold text-start">
-                B. Detail Produk
-            </h2>
-
-            <div class="w-full max-w-4xl mx-auto mt-6 overflow-x-auto text-sm">
-                <table class="w-full text-sm text-left border border-gray-300 dark:border-gray-600">
-                    <thead class="text-black bg-gray-100 dark:bg-gray-800 dark:text-white">
-                        <tr>
-                            <th class="px-2 py-1 border border-gray">No</th>
-                            <th class="px-2 py-1 border border-gray">Nama Produk</th>
-                            <th class="px-2 py-1 border border-gray">Model/Type</th>
-                            <th class="px-2 py-1 border border-gray">Volume</th>
-                            <th class="px-2 py-1 border border-gray">Jumlah</th>
-                            <th class="px-2 py-1 border border-gray">SPK MKT No.</th>
-                        </tr>
-                    </thead>
-                    <tbody class="text-black bg-white dark:bg-gray-900 dark:text-white">
-                        @foreach ($produkJadi->details as $item)
+        <div class="w-full max-w-4xl mx-auto mt-6 overflow-x-auto text-sm">
+            <table class="w-full text-sm text-left border border-gray-300 dark:border-gray-600">
+                <thead class="text-black bg-gray-100 dark:bg-gray-800 dark:text-white">
+                    <tr>
+                        <th class="px-2 py-1 border border-gray">No</th>
+                        <th class="px-2 py-1 border border-gray">Nama Produk</th>
+                        <th class="px-2 py-1 border border-gray">Tipe/Model</th>
+                        <th class="px-2 py-1 border border-gray">Volume</th>
+                        <th class="px-2 py-1 border border-gray">Jumlah</th>
+                        <th class="px-2 py-1 border border-gray">SPK MKT No.</th>
+                    </tr>
+                </thead>
+                <tbody class="text-black bg-white dark:bg-gray-900 dark:text-white">
+                    @foreach ($produkJadi->details as $item)
                             <tr>
                                 <td class="px-4 py-2 border border-gray-300 dark:border-gray-600">{{ $loop->iteration }}
                                 </td>
@@ -165,11 +164,9 @@
 
 <script>
     function exportPDF() {
-        window.scrollTo(0, 0); // pastikan posisi di atas
+        window.scrollTo(0, 0);
 
         const element = document.getElementById("export-area");
-
-        // Pastikan semua gambar sudah termuat sebelum render
         const images = element.getElementsByTagName("img");
         const totalImages = images.length;
         let loadedImages = 0;
@@ -192,7 +189,7 @@
         function renderPDF() {
             html2pdf().set({
                 margin: [0.2, 0.2, 0.2, 0.2],
-                filename: "penyerahan-produ-jadi.pdf",
+                filename: "penyerahan-produk-jadi.pdf",
                 image: {
                     type: "jpeg",
                     quality: 1

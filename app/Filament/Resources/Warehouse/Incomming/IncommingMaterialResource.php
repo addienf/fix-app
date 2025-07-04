@@ -125,11 +125,15 @@ class IncommingMaterialResource extends Resource
 
                             ]),
 
-                        TextInput::make('file_upload')
-                            ->columnSpanFull()
+                        FileUpload::make('file_upload')
                             ->label('Upload Dokumen')
+                            ->directory('Sales/Spesifikasi/Files')
+                            ->acceptedFileTypes(['application/pdf'])
+                            ->maxSize(10240)
+                            ->required()
+                            ->columnSpanFull()
+                            ->helperText('Hanya file PDF yang diperbolehkan. Maksimal ukuran 10 MB.')
                             ->visible(fn($get) => $get('dokumen_pendukung') === '1'),
-
                     ]),
 
                 Section::make('Detail PIC')
