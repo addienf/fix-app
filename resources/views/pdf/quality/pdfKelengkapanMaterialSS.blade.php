@@ -128,9 +128,9 @@
                             @endforeach
                         </tbody>
                     </table>
-                    <div class="mt-4">
+                    <div class="pt-6 mt-4">
                         <label class="block mb-1 font-semibold">Note</label>
-                        <textarea class="w-full p-2 border border-black rounded cursor-not-allowed resize-none" readonly>{{ $kelengkapan->note }}</textarea>
+                        <div class="w-full p-2 border border-black rounded cursor-not-allowed resize-none" readonly>{{ $kelengkapan->note }}</div>
                     </div>
                 </div>
 

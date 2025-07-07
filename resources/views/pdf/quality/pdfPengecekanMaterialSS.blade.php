@@ -40,7 +40,7 @@
             </tr>
         </table>
 
-        <div class="grid w-full max-w-4xl grid-cols-1 pt-6 mx-auto mb-6 text-sm gap-y-4">
+        <div class="grid w-full max-w-4xl grid-cols-1 pt-2 mx-auto text-sm gap-y-4">
             @php
                 $fields = [['label' => 'No SPK Produksi :', 'value' => $pengecekanSS->spk->no_spk]];
             @endphp
@@ -54,9 +54,9 @@
             @endforeach
         </div>
 
-        <h2 class="max-w-4xl mx-auto mb-1 text-xl font-bold text-start">Chamber Identification</h2>
+        <h2 class="max-w-4xl mx-auto text-xl font-bold text-start">Chamber Identification</h2>
 
-        <div class="grid w-full max-w-4xl grid-cols-1 pt-6 mx-auto mb-6 text-sm gap-y-4">
+        <div class="grid w-full max-w-4xl grid-cols-1 pt-4 mx-auto mb-2 text-sm gap-y-4">
             @php
                 $fields = [
                     ['label' => 'Type/Model :', 'value' => $pengecekanSS->tipe],
@@ -88,17 +88,17 @@
             }
         @endphp
 
-        <table class="w-full max-w-4xl mx-auto mb-3 text-sm border border-black">
+        <table class="w-full max-w-4xl mx-auto text-sm border border-black">
             <thead class="bg-gray-100">
                 <tr>
-                    <th class="w-10 px-3 py-2 text-center border border-black" rowspan="2">No</th>
-                    <th class="px-3 py-2 text-left border border-black" rowspan="2">Part</th>
-                    <th class="px-3 py-2 text-center border border-black" colspan="2">Result</th>
-                    <th class="px-3 py-2 text-left border border-black" rowspan="2">Status</th>
+                    <th class="w-5 px-2 py-2 text-center border border-black" rowspan="2">No</th>
+                    <th class="px-2 py-2 text-left border border-black" rowspan="2">Part</th>
+                    <th class="px-2 py-2 text-center border border-black" colspan="2">Result</th>
+                    <th class="px-2 py-2 text-left border border-black" rowspan="2">Status</th>
                 </tr>
                 <tr>
-                    <th class="px-3 py-2 text-center border border-black">Pass</th>
-                    <th class="px-3 py-2 text-center border border-black">Fail</th>
+                    <th class="px-2 text-center border border-black">Pass</th>
+                    <th class="px-2 text-center border border-black">Fail</th>
                 </tr>
             </thead>
 
@@ -129,10 +129,10 @@
                     </tbody>
                 </table>
 
-                <div class="w-full max-w-4xl mx-auto mb-6">
+                <div class="w-full max-w-4xl mx-auto pt-4 mb-6">
                     <label for="note" class="block mb-1 text-sm font-medium text-gray-700">Note:</label>
                     <textarea id="note" readonly
-                        class="w-full px-3 py-2 overflow-hidden text-sm leading-relaxed border rounded-md resize-none border-black-600">{{ trim($pengecekanSS->note) }}</textarea>
+                        class="w-full px-3 py-2 overflow-hidden text-sm leading-relaxed border rounded-md resize-none border-black">{{ trim($pengecekanSS->note) }}</textarea>
                 </div>
 
                 @php
