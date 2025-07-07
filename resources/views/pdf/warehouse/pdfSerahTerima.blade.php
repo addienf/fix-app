@@ -63,7 +63,7 @@
             @endforeach
         </div>
 
-        <div class="max-w-4xl mx-auto mb-6 text-sm">
+        <div class="max-w-4xl mx-auto mb-2 text-sm">
             <p class="mb-2">Dengan hormat,</p>
             <p class="flex flex-wrap items-center gap-1">
                 <span>Berdasarkan Permintaan Barang No {{ $serah_terima->permintaanBahanPro->no_surat }} Dari Departemen

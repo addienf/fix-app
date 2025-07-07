@@ -107,7 +107,7 @@
             ];
         @endphp
 
-        <div class="grid w-full max-w-4xl grid-cols-1 pt-2 mx-auto gap-y-2">
+        <div class="my-2 grid w-full max-w-4xl grid-cols-1 pt-2 mx-auto gap-y-2">
             <h2 class="col-span-1 text-xl font-bold text-start">
                 Dari Divisi Mekanik ke Divisi Elektrikal
             </h2>
@@ -211,7 +211,7 @@
                 </div>
             </div>
 
-            <div class="mb-1">
+            <div class="pt-4 mb-1">
                 <label class="block mb-2 font-medium">3. Dokumen Pendukung</label>
                 <div class="flex flex-col gap-1 pl-4">
                     <label class="inline-flex items-center gap-2">

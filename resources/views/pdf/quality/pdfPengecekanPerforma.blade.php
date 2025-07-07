@@ -129,7 +129,7 @@
                                 </tbody>
                             </table>
 
-                            <div class="w-full max-w-4xl mx-auto mb-6">
+                            <div class="w-full max-w-4xl mx-auto pt-4 mb-6">
                                 <label for="note" class="block mb-1 text-sm font-medium text-gray-700">Note:</label>
                                 <div id="note" readonly
                                     class="w-full min-h-[75px] px-3 py-2 text-sm leading-relaxed text-left border rounded-md text-black border-black">
