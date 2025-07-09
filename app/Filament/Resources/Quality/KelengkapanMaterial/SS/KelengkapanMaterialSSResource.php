@@ -58,6 +58,8 @@ class KelengkapanMaterialSSResource extends Resource
             ->map(fn($part) => ['part' => $part])
             ->toArray();
 
+        $isEdit = $form->getOperation() === 'edit';
+
         return $form
             ->schema([
                 //
@@ -88,7 +90,7 @@ class KelengkapanMaterialSSResource extends Resource
                                 'style' => 'pointer-events: none;'
                             ]),
 
-                    ])->columns(3),
+                    ])->columns($isEdit ? 2 : 3),
 
                 Section::make('Tabel Kelengkapan Material')
                     ->relationship('detail')
@@ -199,7 +201,7 @@ class KelengkapanMaterialSSResource extends Resource
                 self::textColumn('ref_document', 'Ref Document'),
 
                 TextColumn::make('status_penyelesaian')
-                    ->label('Status Penyelesaian')
+                    ->label('Status')
                     ->badge()
                     ->color(function ($record) {
                         $penyelesaian = $record->status_penyelesaian;

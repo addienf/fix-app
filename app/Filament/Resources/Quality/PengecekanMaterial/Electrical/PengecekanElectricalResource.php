@@ -62,6 +62,8 @@ class PengecekanElectricalResource extends Resource
             })
             ->toArray();
 
+        $isEdit = $form->getOperation() === 'edit';
+
         return $form
             ->schema([
                 //
@@ -72,11 +74,12 @@ class PengecekanElectricalResource extends Resource
                     ->collapsible()
                     ->schema([
 
-                        Grid::make(3)
+                        Grid::make($isEdit ? 2 : 3)
                             ->schema([
 
                                 //
                                 self::selectInputSPK()
+                                    ->hiddenOn('edit')
                                     ->placeholder('Pilih No SPK'),
 
                                 self::textInput('tipe', 'Type/Model')

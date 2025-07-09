@@ -14,7 +14,8 @@ return new class extends Migration
         Schema::create('defect_status_details', function (Blueprint $table) {
             $table->id();
             $table->foreignId('defect_status_id')->constrained('defect_statuses')->onDelete('cascade');
-            $table->json('details');
+            $table->json('spesifikasi_ditolak');
+            $table->json('spesifikasi_revisi');
             $table->timestamps();
         });
     }

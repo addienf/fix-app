@@ -48,9 +48,9 @@ class IncommingMaterialSS extends Model
         static::saving(function ($model) {
             if (
                 $model->pic?->checked_signature &&
-                $model->status_penyelesaian !== 'Diperiksa'
+                $model->status_penyelesaian !== 'Diterima'
             ) {
-                $model->status_penyelesaian = 'Diperiksa';
+                $model->status_penyelesaian = 'Diterima';
             }
 
             if (

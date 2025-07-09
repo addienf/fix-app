@@ -48,6 +48,8 @@ class QCPassedResource extends Resource
 
     public static function form(Form $form): Form
     {
+        $isEdit = $form->getOperation() === 'edit';
+
         return $form
             ->schema([
                 //
@@ -59,13 +61,14 @@ class QCPassedResource extends Resource
                     ->schema([
 
                         self::selectInputSPK()
+                            ->hiddenOn('edit')
                             ->placeholder('Pilih No SPK'),
 
                         self::datePicker('tanggal', 'Tanggal'),
 
                         self::textInput('penanggung_jawab', 'Penanggung Jawab')
 
-                    ])->columns(3),
+                    ])->columns($isEdit ? 2 : 3),
 
                 Section::make('Detail Laporan Produk')
                     ->collapsible()
@@ -73,15 +76,31 @@ class QCPassedResource extends Resource
                         TableRepeater::make('details')
                             ->relationship('details')
                             ->schema([
-                                self::textInput('nama_produk', 'Nama Produk'),
+                                self::textInput('nama_produk', 'Nama Produk')
+                                    ->extraAttributes([
+                                        'readonly' => true,
+                                        'style' => 'pointer-events: none;'
+                                    ]),
 
-                                self::textInput('tipe', 'Tipe/Model'),
+                                self::textInput('tipe', 'Tipe/Model')
+                                    ->extraAttributes([
+                                        'readonly' => true,
+                                        'style' => 'pointer-events: none;'
+                                    ]),
 
-                                self::textInput('serial_number', 'S/N'),
+                                self::textInput('serial_number', 'S/N')
+                                    ->extraAttributes([
+                                        'readonly' => true,
+                                        'style' => 'pointer-events: none;'
+                                    ]),
 
                                 self::selectJenis(),
 
-                                self::textInput('jumlah', 'Jumlah'),
+                                self::textInput('jumlah', 'Jumlah')
+                                    ->extraAttributes([
+                                        'readonly' => true,
+                                        'style' => 'pointer-events: none;'
+                                    ]),
 
                                 self::textInput('keterangan', 'Keterangan')
 
@@ -92,6 +111,7 @@ class QCPassedResource extends Resource
                     ]),
 
                 Section::make('Syarat dan Ketentuan')
+                    ->collapsible()
                     ->schema([
 
                         self::textInput('total_masuk', 'Total Masuk'),

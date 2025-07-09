@@ -66,6 +66,8 @@ class PengecekanMaterialSSResource extends Resource
             })
             ->toArray();
 
+        $isEdit = $form->getOperation() === 'edit';
+
         return $form
             ->schema([
                 //
@@ -76,7 +78,7 @@ class PengecekanMaterialSSResource extends Resource
                     ->collapsible()
                     ->schema([
 
-                        Grid::make(3)
+                        Grid::make($isEdit ? 2 : 3)
                             ->schema([
 
                                 self::selectInputSPK()
@@ -232,7 +234,7 @@ class PengecekanMaterialSSResource extends Resource
                 self::textColumn('ref_document', 'Ref Document'),
 
                 TextColumn::make('status_penyelesaian')
-                    ->label('Status Penyelesaian')
+                    ->label('Status')
                     ->badge()
                     ->color(function ($record) {
                         $penyelesaian = $record->status_penyelesaian;

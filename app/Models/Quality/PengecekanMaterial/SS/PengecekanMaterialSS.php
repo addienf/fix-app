@@ -3,7 +3,7 @@
 namespace App\Models\Quality\PengecekanMaterial\SS;
 
 use App\Models\Production\Penyerahan\PenyerahanElectrical\PenyerahanElectrical;
-
+use App\Models\Quality\Defect\DefectStatus;
 use App\Models\Sales\SPKMarketings\SPKMarketing;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -21,6 +21,12 @@ class PengecekanMaterialSS extends Model
         'note',
         'status_penyelesaian',
     ];
+
+    public function defectStatus()
+    {
+        return $this->hasOne(DefectStatus::class, 'sumber_id')
+            ->where('tipe_sumber', 'stainless_steel');
+    }
 
     public function spk()
     {

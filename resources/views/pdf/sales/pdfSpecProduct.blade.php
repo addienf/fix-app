@@ -65,7 +65,7 @@
                 $chunks = $spesifikasi->details->chunk(2); // Bagi tiap 2 item
             @endphp
 
-            <div class="max-w-4xl pt-6 mx-auto space-y-4 text-sm">
+            {{-- <div class="max-w-4xl pt-6 mx-auto space-y-4 text-sm">
                 @foreach ($chunks as $chunk)
                     <div class="grid gap-4 {{ $chunk->count() == 1 ? 'grid-cols-1' : 'grid-cols-2' }}">
                         @foreach ($chunk as $detail)
@@ -98,10 +98,49 @@
                         @endforeach
                     </div>
                 @endforeach
+            </div> --}}
+
+            <div class="max-w-4xl pt-6 mx-auto space-y-4 text-sm ">
+                @foreach ($chunks as $chunk)
+                    @foreach ($chunk as $detail)
+                        {{-- Produk --}}
+                        <div>
+                            <div class="grid items-center grid-cols-4 gap-2">
+                                <label class="col-span-1 font-medium">Nama Item :</label>
+                                <input type="text" disabled
+                                    class="col-span-3 px-2 py-1 text-black bg-white border border-gray-300 rounded cursor-not-allowed dark:bg-gray-800 dark:text-white dark:border-gray-600"
+                                    value="{{ $detail->product->name }}" />
+                            </div>
+
+                            <div class="grid items-center grid-cols-4 gap-2">
+                                <label class="col-span-1 font-medium">Quantity :</label>
+                                <input type="text" disabled
+                                    class="col-span-3 px-2 py-1 text-black bg-white border border-gray-300 rounded cursor-not-allowed dark:bg-gray-800 dark:text-white dark:border-gray-600"
+                                    value="{{ $detail->quantity }}" />
+                            </div>
+                        </div>
+
+                        {{-- Spesifikasi --}}
+                        @foreach ($detail->specification as $spec)
+                            <div class="grid items-center grid-cols-4 gap-2">
+                                <label class="col-span-1 font-medium">{{ $spec['name'] }} :</label>
+                                <input type="text" disabled
+                                    class="col-span-3 px-2 py-1 text-black bg-white border border-gray-300 rounded cursor-not-allowed dark:bg-gray-800 dark:text-white dark:border-gray-600"
+                                    value="{{ in_array($spec['name'], ['Water Feeding System', 'Software'])
+                                        ? (isset($spec['value_bool']) && $spec['value_bool'] === 'yes'
+                                            ? 'Ya'
+                                            : 'Tidak')
+                                        : $spec['value_str'] ?? '-' }}" />
+                            </div>
+                        @endforeach
+                    @endforeach
+                @endforeach
             </div>
 
+
             <!-- Penanggung Jawab -->
-            <div class="max-w-4xl pt-10 mx-auto text-sm">
+            {{-- <div class="max-w-4xl pt-10 mx-auto text-sm">
+
                 <div>
                     <label class="pt-3 font-bold">Penanggung Jawab</label>
                     <div class="flex flex-col pt-3 text-sm">
@@ -112,19 +151,57 @@
                         </div>
                     </div>
                 </div>
+
                 <div class="">
                     <label class="font-bold">Tanggal: </label>
                     <input type="text" readonly disabled
                         class="px-2 py-1 text-black bg-white border border-gray-300 rounded cursor-not-allowed dark:bg-gray-800 dark:text-white dark:border-gray-600"
                         value="{{ \Carbon\Carbon::parse($spesifikasi->pic->date)->translatedFormat('d F Y') }}" />
                 </div>
+
+            </div> --}}
+            <div class="max-w-4xl pt-10 mx-auto text-sm">
+                {{-- <label class="block pt-3 mb-2 font-bold">Penanggung Jawab</label> --}}
+                <table class="w-full text-sm border border-gray-300 rounded-md table-fixed">
+                    <tr class="h-24">
+                        <td class="w-1/3 p-2 font-semibold align-top border border-gray-300 rounded-md">Signed</td>
+                        <td class="w-2/3 p-2 border border-gray-300 rounded-md">
+                            <img src="{{ asset('storage/' . $spesifikasi->pic->signature) }}" alt="Signature"
+                                class="h-20">
+                        </td>
+                    </tr>
+                    <tr class="h-10">
+                        <td class="p-2 font-semibold border border-gray-300 rounded-md">Name</td>
+                        <td class="p-2 border border-gray-300 rounded-md">{{ $spesifikasi->pic->name }}</td>
+                    </tr>
+                    <tr class="h-10">
+                        <td class="p-2 font-semibold border border-gray-300 rounded-md">Date</td>
+                        <td class="p-2 border border-gray-300 rounded-md">
+                            {{ \Carbon\Carbon::parse($spesifikasi->pic->date)->translatedFormat('d F Y') }}
+                        </td>
+                    </tr>
+                </table>
             </div>
         </div>
+    </div>
+
+    <div class="mt-6 mb-3 text-center">
+        <button onclick="exportPDF('{{ $spesifikasi->id }}')"
+            class="inline-flex items-center gap-2 py-3 text-sm font-semibold text-black text-white bg-blue-600 border rounded border-animated px-7 border-black-400 hover:bg-purple-600 hover:text-white">
+            <!-- Icon download SVG -->
+            <svg class="w-5 h-5 transition-colors duration-300" fill="none" stroke="currentColor" stroke-width="2"
+                viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4">
+                </path>
+            </svg>
+            Download PDF
+        </button>
     </div>
 @endsection
 
 <script>
-    function exportPDF() {
+    function exportPDF(id) {
         window.scrollTo(0, 0);
 
         const element = document.getElementById("export-area");
@@ -168,7 +245,11 @@
                 pagebreak: {
                     mode: ["avoid", "css"]
                 }
-            }).from(element).save();
+                // }).from(element).save();
+            }).from(element).save().then(() => {
+                window.location.href = `/sales/spesifikasi-produk/${id}/download-file`;
+                // window.location.href = `/non-electrical/download-zip/${id}`;
+            });
         }
     }
 </script>

@@ -49,6 +49,7 @@ class PenyerahanProdukJadiResource extends Resource
 
     public static function form(Form $form): Form
     {
+        $isEdit = $form->getOperation() === 'edit';
         return $form
             ->schema([
                 //
@@ -59,10 +60,11 @@ class PenyerahanProdukJadiResource extends Resource
                     ->collapsible()
                     ->schema([
 
-                        Grid::make(2)
+                        Grid::make($isEdit ? 3 : 2)
                             ->schema([
 
                                 self::selectInputSPK()
+                                    ->hiddenOn('edit')
                                     ->placeholder('Pilih No SPK'),
 
                                 self::datePicker('tanggal', 'Tanggal'),

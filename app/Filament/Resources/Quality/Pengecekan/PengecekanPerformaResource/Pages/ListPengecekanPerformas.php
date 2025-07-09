@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Quality\Pengecekan\PengecekanPerformaResource\P
 use App\Filament\Resources\Quality\Pengecekan\PengecekanPerformaResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
+use Filament\Resources\Components\Tab;
 
 class ListPengecekanPerformas extends ListRecords
 {
@@ -15,6 +16,17 @@ class ListPengecekanPerformas extends ListRecords
         return [
             Actions\CreateAction::make()->label('Tambah Data Pengecekan Performa'),
         ];
+    }
+
+    public function getTabs(): array
+    {
+        return
+            [
+                null => Tab::make('All'),
+                'Diterima' => Tab::make()->query(fn($query) => $query->where('status_penyelesaian', 'Diterima')),
+                'Belum Diterima' => Tab::make()->query(fn($query) => $query->where('status_penyelesaian', 'Belum Diterima')),
+                'Disetujui' => Tab::make()->query(fn($query) => $query->where('status_penyelesaian', 'Disetujui')),
+            ];
     }
 
     public function getBreadcrumb(): string

@@ -128,13 +128,23 @@
             <h2 class="mb-3 text-xl font-bold">IV. Catatan dan Koreksi yang Dibutuhkan</h2>
             <div readonly id="note"
                 class="w-full px-3 py-2 overflow-hidden text-sm leading-relaxed border border-black rounded-md cursor-not-allowed resize-none">
-                    {{ trim($standarisasi->detail->catatan) }}
-        </div>
+                {{ trim($standarisasi->detail->catatan) }}
+            </div>
         </div>
 
         <!-- Lampiran dan Tanda Tangan -->
-        <div class="w-full max-w-4xl pt-6 mx-auto">
+        {{-- <div class="w-full max-w-4xl pt-6 mx-auto">
             <h2 class="mb-3 text-xl font-bold">V. Lampiran</h2>
+            <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+                @foreach ($standarisasi->detail->lampiran as $gambar)
+                    <div
+                        style="width: 500px; height: 500px; border: 1px solid #ccc; padding: 5px; display: flex; align-items: center; justify-content: center;">
+                        <img src="{{ asset('storage/' . $gambar) }}"
+                            style="max-width: 100%; max-height: 100%; object-fit: contain;">
+                    </div>
+                @endforeach
+            </div>
+
             <div class="flex items-start justify-between gap-8">
                 <div class="flex flex-col items-center w-1/2">
                     <p class="mb-2">Dibuat Oleh</p>
@@ -149,12 +159,55 @@
                     <p class="mt-1 font-semibold">{{ $standarisasi->pic->check_name }}</p>
                 </div>
             </div>
+        </div> --}}
+
+        <div class="w-full max-w-4xl pt-6 mx-auto">
+            <h2 class="mb-4 text-xl font-bold">V. Lampiran</h2>
+
+            <div class="grid grid-cols-1 gap-4 mb-6 sm:grid-cols-2">
+                @foreach ($standarisasi->detail->lampiran as $gambar)
+                    <div class="border border-gray-300 rounded shadow p-2 flex items-center justify-center h-[300px]">
+                        <img src="{{ asset('storage/' . $gambar) }}" alt="Lampiran"
+                            class="object-contain max-w-full max-h-full" />
+                    </div>
+                @endforeach
+            </div>
+
+            <div class="flex flex-col justify-between gap-8 sm:flex-row">
+                <div class="flex flex-col items-center w-full sm:w-1/2">
+                    <p class="mb-2">Dibuat Oleh</p>
+                    <img src="{{ asset('storage/' . $standarisasi->pic->create_signature) }}" alt="ttd"
+                        class="object-contain w-64 h-20" />
+                    <p class="mt-1 font-semibold">{{ $standarisasi->pic->create_name }}</p>
+                </div>
+                <div class="flex flex-col items-center w-full sm:w-1/2">
+                    <p class="mb-2">Diperiksa Oleh</p>
+                    <img src="{{ asset('storage/' . $standarisasi->pic->check_signature) }}" alt="ttd"
+                        class="object-contain w-64 h-20" />
+                    <p class="mt-1 font-semibold">{{ $standarisasi->pic->check_name }}</p>
+                </div>
+            </div>
         </div>
+
+    </div>
+
+    <div class="mt-6 mb-3 text-center">
+        <button onclick="exportPDF('{{ $standarisasi->id }}')"
+            class="inline-flex items-center gap-2 py-3 text-sm font-semibold text-black text-white bg-blue-600 border rounded border-animated px-7 border-black-400 hover:bg-purple-600 hover:text-white">
+            <!-- Icon download SVG -->
+            <svg class="w-5 h-5 transition-colors duration-300" fill="none" stroke="currentColor" stroke-width="2"
+                viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4">
+                </path>
+            </svg>
+            Download PDF
+        </button>
     </div>
 @endsection
 
 <script>
-    function exportPDF() {
+    function exportPDF(id) {
         window.scrollTo(0, 0);
 
         const element = document.getElementById("export-area");
@@ -198,7 +251,10 @@
                 pagebreak: {
                     mode: ["avoid", "css"]
                 }
-            }).from(element).save();
+            }).from(element).save().then(() => {
+                // window.location.href = `/sales/spesifikasi-produk/${id}/download-file`;
+                window.location.href = `/quality/standarisasi-gambar-kerja/${id}/download-zip`;
+            });
         }
     }
 </script>

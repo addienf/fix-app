@@ -58,6 +58,7 @@ class PenyerahanElectricalResource extends Resource
                     ->default('Belum Diterima'),
 
                 Section::make('Informasi Produk')
+                    ->collapsible()
                     ->schema([
                         self::selectMaterialID()
                             ->hiddenOn('edit')
@@ -69,9 +70,17 @@ class PenyerahanElectricalResource extends Resource
                                 'style' => 'pointer-events: none;'
                             ]),
 
-                        self::textInput('tipe', 'Tipe/Model'),
+                        self::textInput('tipe', 'Tipe/Model')
+                            ->extraAttributes([
+                                'readonly' => true,
+                                'style' => 'pointer-events: none;'
+                            ]),
 
-                        self::textInput('no_spk', 'No SPK MKT'),
+                        self::textInput('no_spk', 'No SPK MKT')
+                            ->extraAttributes([
+                                'readonly' => true,
+                                'style' => 'pointer-events: none;'
+                            ]),
 
                         self::textInput('tanggal_selesai', 'Tanggal Produksi Selesai')
                             ->formatStateUsing(function ($state) {
@@ -101,6 +110,7 @@ class PenyerahanElectricalResource extends Resource
                 Split::make([
                     Section::make('Pengecekan Sebelum Serah Terima')
                         ->relationship('sebelumSerahTerima')
+                        ->collapsible()
                         ->schema([
                             Grid::make(1)
                                 ->schema([
@@ -128,6 +138,7 @@ class PenyerahanElectricalResource extends Resource
                 Split::make([
                     Section::make('Penerimaan Oleh Produksi Elektrikal')
                         ->relationship('penerimaElectrical')
+                        ->collapsible()
                         ->schema([
                             Grid::make(1)
                                 ->schema([
@@ -191,7 +202,7 @@ class PenyerahanElectricalResource extends Resource
                 self::textColumn('nama_produk', 'Nama Produk'),
 
                 TextColumn::make('status_penyelesaian')
-                    ->label('Status Penyelesaian')
+                    ->label('Status')
                     ->badge()
                     ->color(function ($record) {
                         $penyelesaian = $record->status_penyelesaian;
@@ -397,6 +408,7 @@ class PenyerahanElectricalResource extends Resource
         return
             DatePicker::make($fieldName)
             ->label($label)
+            ->required()
             ->displayFormat('M d Y')
             ->seconds(false);
     }

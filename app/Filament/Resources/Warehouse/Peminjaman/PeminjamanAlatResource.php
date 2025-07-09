@@ -22,6 +22,7 @@ use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Icetalker\FilamentTableRepeater\Forms\Components\TableRepeater;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Saade\FilamentAutograph\Forms\Components\SignaturePad;
@@ -51,17 +52,15 @@ class PeminjamanAlatResource extends Resource
                                     ->required(),
                                 self::datePicker('tanggal_kembali', 'Tanggal Kembali')
                                     ->required(),
-                                Repeater::make('details')
+                                TableRepeater::make('details')
                                     ->relationship('details')
                                     ->label('Barang')
                                     ->schema([
-                                        Grid::make(3)
-                                            ->schema([
-                                                self::textInput('nama_sparepart', 'Nama Sparepart'),
-                                                self::textInput('model', 'Model'),
-                                                self::textInput('jumlah', 'Jumlah')->numeric(),
-                                            ])
+                                        self::textInput('nama_sparepart', 'Nama Sparepart'),
+                                        self::textInput('model', 'Model'),
+                                        self::textInput('jumlah', 'Jumlah')->numeric(),
                                     ])
+                                    ->columns(3)
                                     ->defaultItems(1)
                                     ->addActionLabel('Tambah Barang')
                                     ->columnSpanFull(),
@@ -99,12 +98,8 @@ class PeminjamanAlatResource extends Resource
                 self::textColumn('details.jumlah', 'Jumlah'),
 
                 self::textColumn('tanggal_kembali', 'Tanggal Kembali')->date('d M Y'),
-                self::textColumn('pic.nama_peminjam', 'Nama Peminjam'),
 
-                ImageColumn::make('pic.signature')
-                    ->label('Tanda Tangan')
-                    ->width(75)
-                    ->height(37.5),
+                self::textColumn('pic.nama_peminjam', 'Nama Peminjam'),
             ])
             ->filters([
                 //

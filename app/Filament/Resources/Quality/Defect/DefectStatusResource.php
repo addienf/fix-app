@@ -9,15 +9,18 @@ use App\Models\Quality\Defect\DefectStatus;
 use App\Models\Quality\KelengkapanMaterial\SS\KelengkapanMaterialSS;
 use App\Models\Quality\PengecekanMaterial\Electrical\PengecekanMaterialElectrical;
 use App\Models\Quality\PengecekanMaterial\SS\PengecekanMaterialSS;
+use App\Models\Sales\SPKMarketings\SPKMarketing;
 use App\Services\SignatureUploader;
 use Filament\Actions\Action;
 use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Card;
 use Filament\Forms\Components\Fieldset;
+use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\MorphToSelect;
 use Filament\Forms\Components\MorphToSelect\Type;
+use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
@@ -32,6 +35,7 @@ use Filament\Tables\Table;
 use Icetalker\FilamentTableRepeater\Forms\Components\TableRepeater;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Str;
 use Saade\FilamentAutograph\Forms\Components\SignaturePad;
 use Wallo\FilamentSelectify\Components\ButtonGroup;
 
@@ -46,72 +50,89 @@ class DefectStatusResource extends Resource
     protected static ?string $pluralLabel = 'Defect Status';
     protected static ?string $modelLabel = 'Defect Status';
 
+    public static function getNavigationBadge(): ?string
+    {
+        $count = DefectStatus::where('status_penyelesaian', '!=', 'Disetujui')->count();
+
+        return $count > 0 ? (string) $count : null;
+    }
+
     public static function form(Form $form): Form
     {
+        $isCreate = $form->getOperation() === 'create';
+        $isEdit = $form->getOperation() === 'edit';
         return $form
             ->schema([
                 //
-                self::Morp(),
+                Hidden::make('status_penyelesaian')
+                    ->default('Belum Diterima'),
+
                 Section::make('Chamber Identification')
                     ->collapsible()
                     ->schema([
-                        self::textInput('no_spk', 'No SPK')->disabled(),
-                        self::textInput('spk_marketing_id', 'ID SPK')
-                            ->dehydrated()
+                        self::pilihModel()
+                            ->hiddenOn('edit'),
+
+                        self::pilihId()
+                            ->hiddenOn('edit'),
+
+                        self::textInput('tipe', 'Type/Model')
                             ->extraAttributes([
                                 'readonly' => true,
                                 'style' => 'pointer-events: none;'
                             ]),
-                        self::textInput('tipe', 'Type/Model'),
-                        self::textInput('volume', 'Volume'),
+
+                        self::textInput('volume', 'Volume')
+                            ->extraAttributes([
+                                'readonly' => true,
+                                'style' => 'pointer-events: none;'
+                            ]),
+
                         self::textInput('serial_number', 'S/N'),
-                    ])->columns(6),
-                // Fieldset::make('')
-                //     // ->relationship('detail')
-                //     ->schema([
-                //         Repeater::make('details')
-                //             ->schema([
-                //                 self::textInput('mainPart', 'Main Part')
-                //                     ->required(false)
-                //                     ->extraAttributes([
-                //                         'readonly' => true,
-                //                         'style' => 'pointer-events: none;'
-                //                     ]),
-                //                 TableRepeater::make('parts')
-                //                     ->label('')
-                //                     ->schema([
-                //                         self::textInput('part', 'Part')
-                //                             ->extraAttributes([
-                //                                 'readonly' => true,
-                //                                 'style' => 'pointer-events: none;'
-                //                             ]),
-                //                         ButtonGroup::make('result')
-                //                             ->options([
-                //                                 '1' => 'Yes',
-                //                                 '0' => 'No',
-                //                             ])
-                //                             ->onColor('primary')
-                //                             ->offColor('gray')
-                //                             ->gridDirection('row')
-                //                             ->default('individual'),
-                //                         Select::make('status')
-                //                             ->label('Status')
-                //                             ->options([
-                //                                 'ok' => 'OK',
-                //                                 'h' => 'Hold',
-                //                                 'r' => 'Repaired',
-                //                             ])
-                //                             ->required(),
-                //                     ])
-                //                     ->addable(false)
-                //                     ->deletable(false)
-                //                     ->reorderable(false),
-                //             ])
-                //             ->columnSpanFull()
-                //             ->addable(false)
-                //             ->deletable(false)
-                //             ->reorderable(false)
-                //     ]),
+
+                        Hidden::make('spk_marketing_id'),
+
+                    ])->columns($isEdit ? 3 : 5),
+
+
+                Section::make('Tabel Checklist Ditolak')
+                    ->collapsible()
+                    ->schema([
+                        Repeater::make('details')
+                            // ->relationship('details')
+                            ->label('')
+                            ->schema([
+                                self::spesifikasiDitolak()
+                                    ->hiddenOn('create'),
+                            ])
+                            ->addable(false)
+                            ->deletable(false)
+                            ->columnSpanFull()
+                            ->when(
+                                $isCreate,
+                                fn($component) => $component->relationship('details'),
+                            )
+                    ])
+                    ->hiddenOn('create'),
+
+                Section::make('Tabel Checklist Revisi')
+                    ->collapsible()
+                    ->schema([
+                        Repeater::make('details')
+                            ->relationship('details')
+                            ->label('')
+                            ->schema([
+
+                                Hidden::make('spesifikasi_ditolak'),
+
+                                self::spesifikasiRevisi(),
+
+                            ])
+                            ->addable(false)
+                            ->deletable(false)
+                            ->columnSpanFull()
+                    ]),
+
                 Fieldset::make('')
                     ->schema([
                         Textarea::make('note')
@@ -119,6 +140,56 @@ class DefectStatusResource extends Resource
                             ->label('Note')
                             ->columnSpanFull()
                     ]),
+
+                // Section::make('PIC')
+                //     ->collapsible()
+                //     ->relationship('pic')
+                //     ->schema([
+                //         Grid::make(3)
+                //             ->schema([
+                //                 Grid::make(1)
+                //                     ->schema([
+
+                //                         self::textInput('inspected_name', 'Inspected By'),
+
+                //                         self::signatureInput('inspected_signature', ''),
+
+                //                         self::datePicker('inspected_date', '')
+                //                             ->required(),
+
+                //                     ])->hiddenOn(operations: 'edit'),
+
+                //                 Grid::make(1)
+                //                     ->schema([
+
+                //                         self::textInput('accepted_name', 'Accepted By'),
+
+                //                         self::signatureInput('accepted_signature', ''),
+
+                //                         self::datePicker('accepted_date', '')
+                //                             ->required(),
+
+                //                     ])->hidden(
+                //                         fn($operation, $record) =>
+                //                         $operation === 'create' || filled($record?->accepted_signature)
+                //                     ),
+
+                //                 Grid::make(1)
+                //                     ->schema([
+
+                //                         self::textInput('approved_name', 'Approved By'),
+
+                //                         self::signatureInput('approved_signature', ''),
+
+                //                         self::datePicker('approved_date', '')
+                //                             ->required(),
+
+                //                     ])->hidden(
+                //                         fn($operation, $record) =>
+                //                         $operation === 'create' || blank($record?->accepted_signature) || filled($record?->approved_signature)
+                //                     ),
+                //             ]),
+                //     ]),
             ]);
     }
 
@@ -128,17 +199,39 @@ class DefectStatusResource extends Resource
             ->columns([
                 //
                 self::textColumn('spk.no_spk', 'No SPK'),
-                self::textColumn('defectable_type', 'Jenis')
-                    ->getStateUsing(function ($record) {
-                        if ($record->defectable_type == 'App\Models\Quality\PengecekanMaterial\SS\PengecekanMaterialSS') {
-                            return 'Material Stanless Steel';
-                        } else {
-                            return 'Material Electrical';
-                        }
-                    }),
+
+                TextColumn::make('tipe_sumber')
+                    ->label('Jenis')
+                    ->formatStateUsing(
+                        fn($state) =>
+                        $state === 'electrical' ? 'Pengecekan Material Electrical' : 'Pengecekan Stainless Steel'
+                    ),
+
                 self::textColumn('tipe', 'Tipe'),
+
                 self::textColumn('volume', 'Volume'),
+
                 self::textColumn('serial_number', 'S/N'),
+
+                TextColumn::make('status_penyelesaian')
+                    ->label('Status')
+                    ->badge()
+                    ->color(function ($record) {
+                        $penyelesaian = $record->status_penyelesaian;
+                        $persetujuan = $record->status_persetujuan;
+
+                        if ($penyelesaian === 'Disetujui') {
+                            return 'success';
+                        }
+
+                        if ($penyelesaian !== 'Diterima' && $persetujuan !== 'Disetujui') {
+                            return 'danger';
+                        }
+
+                        return 'warning';
+                    })
+                    ->alignCenter(),
+
             ])
             ->filters([
                 //
@@ -190,118 +283,267 @@ class DefectStatusResource extends Resource
     {
         return
             Select::make($fieldName)
-                ->relationship($relation, $title)
-                ->label($label)
-                ->native(false)
-                ->searchable()
-                ->preload()
-                ->required()
-                ->reactive();
+            ->relationship($relation, $title)
+            ->label($label)
+            ->native(false)
+            ->searchable()
+            ->preload()
+            ->required()
+            ->reactive();
     }
 
     protected static function selectInputOptions(string $fieldName, string $label, string $config): Select
     {
         return
             Select::make($fieldName)
-                ->options(config($config))
-                ->label($label)
-                ->native(false)
-                ->searchable()
-                ->preload()
-                ->required()
-                ->reactive();
+            ->options(config($config))
+            ->label($label)
+            ->native(false)
+            ->searchable()
+            ->preload()
+            ->required()
+            ->reactive();
     }
 
     protected static function datePicker(string $fieldName, string $label): DatePicker
     {
         return
             DatePicker::make($fieldName)
-                ->label($label)
-                ->displayFormat('M d Y')
-                ->seconds(false);
+            ->label($label)
+            ->displayFormat('M d Y')
+            ->seconds(false);
     }
 
     protected static function signatureInput(string $fieldName, string $labelName): SignaturePad
     {
         return
             SignaturePad::make($fieldName)
-                ->label($labelName)
-                ->exportPenColor('#0118D8')
-                ->helperText('*Harap Tandatangan di tengah area yang disediakan.')
-                ->afterStateUpdated(function ($state, $set) use ($fieldName) {
-                    if (blank($state))
-                        return;
-                    $path = SignatureUploader::handle($state, 'ttd_', 'Quality/DefectStatus/Signatures');
-                    if ($path) {
-                        $set($fieldName, $path);
-                    }
-                });
+            ->label($labelName)
+            ->exportPenColor('#0118D8')
+            ->helperText('*Harap Tandatangan di tengah area yang disediakan.')
+            ->afterStateUpdated(function ($state, $set) use ($fieldName) {
+                if (blank($state))
+                    return;
+                $path = SignatureUploader::handle($state, 'ttd_', 'Quality/DefectStatus/Signatures');
+                if ($path) {
+                    $set($fieldName, $path);
+                }
+            });
     }
 
     protected static function textColumn(string $fieldName, string $label): TextColumn
     {
         return
             TextColumn::make($fieldName)
-                ->label($label)
-                ->searchable()
-                ->sortable();
+            ->label($label)
+            ->searchable()
+            ->sortable();
     }
 
-    protected static function Morp(): MorphToSelect
+    protected static function pilihModel(): Select
     {
         return
-            MorphToSelect::make('defectable')
-                ->types([
-                    Type::make(PengecekanMaterialSS::class)
-                        ->label('Pengecekan Material SS')
-                        ->titleAttribute('spk_marketing_id')
-                        ->getOptionLabelFromRecordUsing(fn($record) => $record->spk?->no_spk ?? 'SPK Tidak Ditemukan'),
-                    Type::make(PengecekanMaterialElectrical::class)
-                        ->label('Pengecekan Material Elektrikal')
-                        ->titleAttribute('spk_marketing_id')
-                        ->getOptionLabelFromRecordUsing(fn($record) => $record->spk?->no_spk ?? 'SPK Tidak Ditemukan'),
-                ])
-                ->reactive()
-                ->columnSpanFull()
-                ->required()
-                ->afterStateUpdated(function ($state, callable $set, $get) {
-                    if (!is_array($state))
-                        return;
+            Select::make('tipe_sumber')
+            ->label('Jenis Pengecekan')
+            ->options([
+                'electrical' => 'Pengecekan Electrical',
+                'stainless_steel' => 'Pengecekan Stainless Steel',
+            ])
+            ->reactive()
+            ->required()
+            ->disabledOn('edit');
+    }
 
-                    $modelClass = $state['defectable_type'] ?? null;
-                    $modelId = $state['defectable_id'] ?? null;
+    protected static function pilihId(): Select
+    {
+        return
+            Select::make('sumber_id')
+            ->label('Data Pengecekan')
+            ->options(function (callable $get) {
+                $tipe = $get('tipe_sumber');
 
-                    if ($modelClass) {
+                return match ($tipe) {
+                    'electrical' => PengecekanMaterialElectrical::whereDoesntHave('defectStatus')->get()
+                        ->mapWithKeys(fn($item) => [$item->id => $item->spk->no_spk]),
 
-                        $model = $modelClass::find($modelId);
+                    'stainless_steel' => PengecekanMaterialSS::whereDoesntHave('defectStatus')->get()
+                        ->mapWithKeys(fn($item) => [$item->id => $item->spk->no_spk]),
 
-                        if ($model?->spk_marketing_id) {
+                    default => [],
+                };
+            })
+            ->afterStateUpdated(function ($state, callable $get, callable $set) {
+                // $sumberId  = $get('sumber_id');
+                $tipe = $get('tipe_sumber');
 
-                            $set('modelClass', $modelClass);
-                            $set('spk_marketing_id', $model->spk_marketing_id);
-                            $set('no_spk', $model->spk?->no_spk);
+                $model = match ($tipe) {
+                    'electrical' => PengecekanMaterialElectrical::find($state),
+                    'stainless_steel' => PengecekanMaterialSS::find($state),
+                    default => null,
+                };
 
-                            // Ambil semua details
-                            $details = $model->detail?->details ?? [];
+                if (!$model || !is_array($model->detail->details)) {
+                    $set('details', []);
+                    return;
+                }
 
-                            // Filter bagian yang result-nya "0"
-                            $filtered = collect($details)->map(function ($item) {
-                                $filteredParts = collect($item['parts'])->filter(fn($part) => $part['result'] === "0")->values()->all();
+                $no_spk = $model->spk_marketing_id;
 
-                                if (count($filteredParts)) {
-                                    return [
-                                        'mainPart' => $item['mainPart'],
-                                        'parts' => $filteredParts,
-                                    ];
-                                }
+                $spk = SPKMarketing::with('jadwalProduksi')->find($no_spk);
 
-                                return null;
-                            })->filter()->values()->all(); // Reset key biar arraynya rapih
-        
-                            // Set hasil filtered ke form
-                            $set('details', $filtered);
-                        }
-                    }
-                });
+                $tipeProduk = $spk?->jadwalProduksi?->details->first()->tipe;
+                $volume = $spk?->jadwalProduksi?->details->first()->volume;
+
+                $ditolak = collect($model->detail->details)
+                    ->map(function ($item) {
+                        $filteredParts = collect($item['parts'])
+                            ->filter(fn($part) => $part['result'] === "0")
+                            ->map(fn($part) => [
+                                'part' => $part['part'] ?? '',
+                                'result' => $part['result'],
+                                'status' => $part['status'],
+                            ])
+                            ->values()
+                            ->toArray();
+
+                        return [
+                            'mainPart' => $item['mainPart'] ?? '',
+                            'parts' => $filteredParts,
+                        ];
+                    })
+                    ->filter(fn($item) => count($item['parts']) > 0)
+                    ->values()
+                    ->toArray();
+
+                $set('details', [
+                    [
+                        'spesifikasi_ditolak' => $ditolak,
+                        'spesifikasi_revisi' => $ditolak,
+                    ]
+                ]);
+
+                $set('spk_marketing_id', $no_spk);
+                $set('tipe', $tipeProduk);
+                $set('volume', $volume);
+            })
+            ->reactive()
+            ->required()
+            ->visible(fn(callable $get) => filled($get('tipe_sumber')))
+            ->disabledOn('edit');
+    }
+
+    protected static function spesifikasiDitolak(): Repeater
+    {
+        return
+            Repeater::make('spesifikasi_ditolak')
+            ->label('')
+            ->schema([
+
+                TextInput::make('mainPart')
+                    ->label('Main Parts')
+                    ->extraAttributes([
+                        'readonly' => true,
+                        'style' => 'pointer-events: none;'
+                    ]),
+
+                TableRepeater::make('parts')
+                    ->label('')
+                    ->schema([
+
+                        TextInput::make('part')
+                            ->label('Part')
+                            ->extraAttributes([
+                                'readonly' => true,
+                                'style' => 'pointer-events: none;'
+                            ]),
+
+                        ButtonGroup::make('result')
+                            ->options([
+                                1 => 'Yes',
+                                0 => 'No',
+                            ])
+                            ->onColor('primary')
+                            ->offColor('gray')
+                            ->gridDirection('row')
+                            ->disabledOn('edit'),
+
+                        Select::make('status')
+                            ->label('Status')
+                            ->options([
+                                'ok' => 'OK',
+                                'h' => 'Hold',
+                                'r' => 'Repaired',
+                            ])
+                            ->required()
+                            ->extraAttributes([
+                                'readonly' => true,
+                                'style' => 'pointer-events: none;'
+                            ]),
+
+                    ])
+                    ->addable(false)
+                    ->deletable(false)
+                    ->reorderable(false),
+
+            ])
+            ->addable(false)
+            ->deletable(false)
+            ->reorderable(false)
+            ->columnSpanFull();
+    }
+
+    protected static function spesifikasiRevisi(): Repeater
+    {
+        return
+            Repeater::make('spesifikasi_revisi')
+            ->label('')
+            ->schema([
+
+                TextInput::make('mainPart')
+                    ->label('Main Parts')
+                    ->extraAttributes([
+                        'readonly' => true,
+                        'style' => 'pointer-events: none;'
+                    ]),
+
+                TableRepeater::make('parts')
+                    ->label('')
+                    ->schema([
+
+                        TextInput::make('part')
+                            ->label('Part')
+                            ->extraAttributes([
+                                'readonly' => true,
+                                'style' => 'pointer-events: none;'
+                            ]),
+
+                        ButtonGroup::make('result')
+                            ->options([
+                                1 => 'Yes',
+                                0 => 'No',
+                            ])
+                            ->onColor('primary')
+                            ->offColor('gray')
+                            ->gridDirection('row'),
+
+                        Select::make('status')
+                            ->label('Status')
+                            ->options([
+                                'ok' => 'OK',
+                                'h' => 'Hold',
+                                'r' => 'Repaired',
+                            ])
+                            ->required(),
+
+                    ])
+                    ->addable(false)
+                    ->deletable(false)
+                    ->reorderable(false),
+
+            ])
+            ->addable(false)
+            ->deletable(false)
+            ->reorderable(false)
+            ->columnSpanFull();
     }
 }

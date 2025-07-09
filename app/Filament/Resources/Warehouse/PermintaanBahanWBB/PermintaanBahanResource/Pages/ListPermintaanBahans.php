@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Warehouse\PermintaanBahanWBB\PermintaanBahanRes
 use App\Filament\Resources\Warehouse\PermintaanBahanWBB\PermintaanBahanResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
+use Filament\Resources\Components\Tab;
 
 class ListPermintaanBahans extends ListRecords
 {
