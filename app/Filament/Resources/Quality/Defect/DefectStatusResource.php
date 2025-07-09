@@ -96,14 +96,14 @@ class DefectStatusResource extends Resource
 
 
                 Section::make('Tabel Checklist Ditolak')
+                    ->collapsed($isEdit ? true : false)
                     ->collapsible()
                     ->schema([
                         Repeater::make('details')
                             // ->relationship('details')
                             ->label('')
                             ->schema([
-                                self::spesifikasiDitolak()
-                                    ->hiddenOn('create'),
+                                self::spesifikasiDitolak(),
                             ])
                             ->addable(false)
                             ->deletable(false)
@@ -116,6 +116,7 @@ class DefectStatusResource extends Resource
                     ->hiddenOn('create'),
 
                 Section::make('Tabel Checklist Revisi')
+                    ->collapsed($isEdit ? true : false)
                     ->collapsible()
                     ->schema([
                         Repeater::make('details')
@@ -123,9 +124,10 @@ class DefectStatusResource extends Resource
                             ->label('')
                             ->schema([
 
-                                Hidden::make('spesifikasi_ditolak'),
-
                                 self::spesifikasiRevisi(),
+
+                                Hidden::make('spesifikasi_ditolak')
+                                    ->disabledOn('edit'),
 
                             ])
                             ->addable(false)
@@ -141,55 +143,55 @@ class DefectStatusResource extends Resource
                             ->columnSpanFull()
                     ]),
 
-                // Section::make('PIC')
-                //     ->collapsible()
-                //     ->relationship('pic')
-                //     ->schema([
-                //         Grid::make(3)
-                //             ->schema([
-                //                 Grid::make(1)
-                //                     ->schema([
+                Section::make('PIC')
+                    ->collapsible()
+                    ->relationship('pic')
+                    ->schema([
+                        Grid::make(3)
+                            ->schema([
+                                Grid::make(1)
+                                    ->schema([
 
-                //                         self::textInput('inspected_name', 'Inspected By'),
+                                        self::textInput('inspected_name', 'Inspected By'),
 
-                //                         self::signatureInput('inspected_signature', ''),
+                                        self::signatureInput('inspected_signature', ''),
 
-                //                         self::datePicker('inspected_date', '')
-                //                             ->required(),
+                                        self::datePicker('inspected_date', '')
+                                            ->required(),
 
-                //                     ])->hiddenOn(operations: 'edit'),
+                                    ])->hiddenOn(operations: 'edit'),
 
-                //                 Grid::make(1)
-                //                     ->schema([
+                                Grid::make(1)
+                                    ->schema([
 
-                //                         self::textInput('accepted_name', 'Accepted By'),
+                                        self::textInput('accepted_name', 'Accepted By'),
 
-                //                         self::signatureInput('accepted_signature', ''),
+                                        self::signatureInput('accepted_signature', ''),
 
-                //                         self::datePicker('accepted_date', '')
-                //                             ->required(),
+                                        self::datePicker('accepted_date', '')
+                                            ->required(),
 
-                //                     ])->hidden(
-                //                         fn($operation, $record) =>
-                //                         $operation === 'create' || filled($record?->accepted_signature)
-                //                     ),
+                                    ])->hidden(
+                                        fn($operation, $record) =>
+                                        $operation === 'create' || filled($record?->accepted_signature)
+                                    ),
 
-                //                 Grid::make(1)
-                //                     ->schema([
+                                Grid::make(1)
+                                    ->schema([
 
-                //                         self::textInput('approved_name', 'Approved By'),
+                                        self::textInput('approved_name', 'Approved By'),
 
-                //                         self::signatureInput('approved_signature', ''),
+                                        self::signatureInput('approved_signature', ''),
 
-                //                         self::datePicker('approved_date', '')
-                //                             ->required(),
+                                        self::datePicker('approved_date', '')
+                                            ->required(),
 
-                //                     ])->hidden(
-                //                         fn($operation, $record) =>
-                //                         $operation === 'create' || blank($record?->accepted_signature) || filled($record?->approved_signature)
-                //                     ),
-                //             ]),
-                //     ]),
+                                    ])->hidden(
+                                        fn($operation, $record) =>
+                                        $operation === 'create' || blank($record?->accepted_signature) || filled($record?->approved_signature)
+                                    ),
+                            ]),
+                    ]),
             ]);
     }
 
@@ -464,8 +466,7 @@ class DefectStatusResource extends Resource
                             ])
                             ->onColor('primary')
                             ->offColor('gray')
-                            ->gridDirection('row')
-                            ->disabledOn('edit'),
+                            ->gridDirection('row'),
 
                         Select::make('status')
                             ->label('Status')
