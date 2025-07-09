@@ -53,6 +53,8 @@ class StandarisasiDrawingResource extends Resource
 
     public static function form(Form $form): Form
     {
+        $isEdit = $form->getOperation() === 'edit';
+
         return $form
             ->schema([
                 //
@@ -62,7 +64,7 @@ class StandarisasiDrawingResource extends Resource
                 Section::make('Informasi Umum')
                     ->collapsible()
                     ->schema([
-                        Grid::make(2)
+                        Grid::make($isEdit ? 1 : 2)
                             ->schema([
 
                                 self::selectInputSPK()
@@ -120,11 +122,24 @@ class StandarisasiDrawingResource extends Resource
                         FileUpload::make('lampiran')
                             ->label('Lampiran')
                             ->directory('Quality/StandarisasiDrawing/Files')
-                            ->acceptedFileTypes(['application/pdf'])
+                            ->acceptedFileTypes(['image/png', 'image/jpeg'])
+                            ->helperText('*Hanya file gambar (PNG, JPG, JPEG) yang diperbolehkan. Maksimal ukuran 10 MB.')
+                            ->multiple()
+                            ->image()
+                            ->downloadable()
+                            ->reorderable()
                             ->maxSize(10240)
                             ->columnSpanFull()
-                            ->helperText('*Hanya file PDF yang diperbolehkan. Maksimal ukuran 10 MB.')
                             ->required(),
+
+                        // FileUpload::make('gambar_lain')
+                        //     ->label('Gambar Tambahan')
+                        //     ->multiple()
+                        //     ->directory('ProdukElectrical/Gambar')
+                        //     ->image()
+                        //     ->preserveFilenames()
+                        //     ->downloadable()
+                        //     ->reorderable(),
 
                         Textarea::make('catatan')
                             ->label('Catatan atau Koreksi yang Dibutuhkan')

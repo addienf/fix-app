@@ -54,6 +54,8 @@ class SPKResource extends Resource
 
     public static function form(Form $form): Form
     {
+        $lastValue = SPKMarketing::latest('no_spk')->value('no_spk');
+
         return $form
             ->schema([
                 //
@@ -71,6 +73,8 @@ class SPKResource extends Resource
 
                                 self::textInput('no_spk', 'Nomor SPK')
                                     ->hint('Format: XXX/QKS/MKT/SPK/MM/YY')
+                                    ->placeholder($lastValue ? "Data Terakhir : {$lastValue}" : 'Data Belum Tersedia')
+                                    ->hiddenOn('edit')
                                     ->unique(ignoreRecord: true),
 
                                 self::selectSpecInput()

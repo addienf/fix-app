@@ -25,6 +25,7 @@ use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Icetalker\FilamentTableRepeater\Forms\Components\TableRepeater;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Saade\FilamentAutograph\Forms\Components\SignaturePad;
@@ -99,40 +100,36 @@ class SerahTerimaBahanResource extends Resource
                         Grid::make(2)
                             ->schema([
 
-                                Repeater::make('details')
+                                TableRepeater::make('details')
                                     ->label('')
                                     ->relationship('details')
                                     ->schema([
 
-                                        Grid::make(4)
-                                            ->schema([
-
-                                                self::textInput('bahan_baku', 'Bahan Baku')
-                                                    ->extraAttributes([
-                                                        'readonly' => true,
-                                                        'style' => 'pointer-events: none;'
-                                                    ]),
-                                                self::textInput('spesifikasi', 'Spesifikasi')
-                                                    ->extraAttributes([
-                                                        'readonly' => true,
-                                                        'style' => 'pointer-events: none;'
-                                                    ]),
-                                                self::textInput('jumlah', 'Jumlah')->numeric()
-                                                    ->extraAttributes([
-                                                        'readonly' => true,
-                                                        'style' => 'pointer-events: none;'
-                                                    ]),
-                                                Textarea::make('keperluan_barang')
-                                                    ->label('Keperluan Barang')
-                                                    ->rows(1)
-                                                    ->extraAttributes([
-                                                        'readonly' => true,
-                                                        'style' => 'pointer-events: none;'
-                                                    ])
-
+                                        self::textInput('bahan_baku', 'Bahan Baku')
+                                            ->extraAttributes([
+                                                'readonly' => true,
+                                                'style' => 'pointer-events: none;'
+                                            ]),
+                                        self::textInput('spesifikasi', 'Spesifikasi')
+                                            ->extraAttributes([
+                                                'readonly' => true,
+                                                'style' => 'pointer-events: none;'
+                                            ]),
+                                        self::textInput('jumlah', 'Jumlah')->numeric()
+                                            ->extraAttributes([
+                                                'readonly' => true,
+                                                'style' => 'pointer-events: none;'
+                                            ]),
+                                        Textarea::make('keperluan_barang')
+                                            ->label('Keperluan Barang')
+                                            ->rows(1)
+                                            ->extraAttributes([
+                                                'readonly' => true,
+                                                'style' => 'pointer-events: none;'
                                             ])
 
                                     ])
+                                    ->columns(4)
                                     ->deletable(false)
                                     ->reorderable(false)
                                     ->addable(false)
@@ -289,6 +286,7 @@ class SerahTerimaBahanResource extends Resource
         return
             DatePicker::make($fieldName)
             ->label($label)
+            ->required()
             ->displayFormat('M d Y')
             ->seconds(false);
     }

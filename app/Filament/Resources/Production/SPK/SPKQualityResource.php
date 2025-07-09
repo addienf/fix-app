@@ -51,7 +51,7 @@ class SPKQualityResource extends Resource
     public static function form(Form $form): Form
     {
         $lastValue = SPKQuality::latest('no_spk')->value('no_spk');
-
+        $isEdit = $form->getOperation() === 'edit';
         return $form
             ->schema([
                 //
@@ -67,10 +67,12 @@ class SPKQualityResource extends Resource
                                 self::textInput('no_spk', 'Nomor SPK Quality')
                                     ->placeholder($lastValue ? "Data Terakhir : {$lastValue}" : 'Data Belum Tersedia')
                                     ->unique(ignoreRecord: true)
+                                    ->columnSpan($isEdit ? 'full' : 1)
                                     ->hint('Format: XXX/QKS/PRO/SPK/MM/YY'),
 
                                 self::selectInputSPK()
-                                    ->placeholder('Pilih Nomor SPK'),
+                                    ->placeholder('Pilih Nomor SPK')
+                                    ->hiddenOn('edit'),
 
                                 self::textInput('dari', 'Dari')
                                     ->extraAttributes([

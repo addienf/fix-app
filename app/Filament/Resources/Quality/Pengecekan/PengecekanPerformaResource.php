@@ -64,6 +64,8 @@ class PengecekanPerformaResource extends Resource
             })
             ->toArray();
 
+        $isEdit = $form->getOperation() === 'edit';
+
         return $form
             ->schema([
                 //
@@ -73,10 +75,11 @@ class PengecekanPerformaResource extends Resource
 
                 Section::make('Chamber Identification')
                     ->schema([
-                        Grid::make(2)
+                        Grid::make($isEdit ? 3 : 2)
                             ->schema([
 
                                 self::selectInputSPK()
+                                    ->hiddenOn('edit')
                                     ->placeholder('Pilin No SPK'),
 
                                 self::textInput('tipe', 'Type/Model')
@@ -91,7 +94,11 @@ class PengecekanPerformaResource extends Resource
                                         'style' => 'pointer-events: none;'
                                     ]),
 
-                                self::textInput('serial_number', 'S/N'),
+                                self::textInput('serial_number', 'S/N')
+                                    ->extraAttributes([
+                                        'readonly' => true,
+                                        'style' => 'pointer-events: none;'
+                                    ]),
 
                             ]),
                     ]),
@@ -321,15 +328,17 @@ class PengecekanPerformaResource extends Resource
             ->afterStateUpdated(function ($state, callable $set) {
                 if (!$state) return;
 
-                $spk = SPKMarketing::with('jadwalProduksi')->find($state);
+                $spk = SPKMarketing::with('jadwalProduksi', 'defect')->find($state);
 
                 if (!$spk) return;
 
                 $tipe = $spk?->jadwalProduksi?->details->first()->tipe;
                 $volume = $spk?->jadwalProduksi?->details->first()->volume;
+                $s_n = $spk?->serial_number;
 
                 $set('tipe', $tipe);
                 $set('volume', $volume);
+                $set('serial_number', $s_n);
             })
         ;
     }

@@ -23,6 +23,8 @@ use App\Models\Warehouse\PermintaanBahanWBB\PermintaanBahan;
 use App\Models\Warehouse\SerahTerima\SerahTerimaBahan;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use ZipArchive;
 
 class PDFController extends Controller
 {
@@ -32,12 +34,27 @@ class PDFController extends Controller
     {
         return view('pdf.pdfSpecProduct');
     }
+
     public function previewSpesifikasiProduct($id)
     {
-        $spesifikasi = SpesifikasiProduct::with(['urs.customer', 'pic', 'details.product'])->findOrFail($id);
+        $spesifikasi = SpesifikasiProduct::with(['urs.customer', 'pic', 'details.product', 'details.file'])->findOrFail($id);
 
         return view('pdf.sales.pdfSpecProduct', compact('spesifikasi'));
     }
+
+    public function downloadFileSpesifikasiProduct($id)
+    {
+        $spesifikasi = SpesifikasiProduct::with(['details.file'])->findOrFail($id);
+
+        $detail = $spesifikasi->details->first();
+
+        $filePath = $detail->file->file_path;
+
+        $fullPath = storage_path('app/public/' . $filePath);
+
+        return response()->download($fullPath);
+    }
+
     public function pdfSPKMarketing($id)
     {
         $spk_mkt = SPKMarketing::with(['spesifikasiProduct', 'pic'])->findOrFail($id);
@@ -94,6 +111,24 @@ class PDFController extends Controller
         return view('pdf.warehouse.pdfIncomingMaterial', compact('incomingMaterial'));
     }
 
+    public function downloadIncomingMaterial($id)
+    {
+        $incomingMaterial = IncommingMaterial::findOrFail($id);
+
+        $filePath = $incomingMaterial->file_upload;
+
+        if (!$filePath || !Storage::disk('public')->exists($filePath)) {
+            // Respon JSON kalau file tidak ditemukan
+            return response()->json(['message' => 'File not found'], 404);
+        }
+
+        return response()->download(storage_path('app/public/' . $filePath));
+
+        // $fullPath = storage_path('app/public/' . $filePath);
+
+        // return response()->download($fullPath);
+    }
+
     public function pdfSerahTerima($id)
     {
         $serah_terima = SerahTerimaBahan::with(['permintaanBahanPro', 'details', 'pic'])->findOrFail($id);
@@ -106,6 +141,34 @@ class PDFController extends Controller
         $standarisasi = StandarisasiDrawing::with(['spk', 'identitas', 'detail', 'pic'])->findOrFail($id);
 
         return view('pdf.quality.pdfStandarisasiDrawing', compact('standarisasi'));
+    }
+
+    public function downloadZipStandarisasiDrawing($id)
+    {
+        $standarisasi = StandarisasiDrawing::with(['detail'])->findOrFail($id);
+
+        $zipFileName = 'gambar-produk-' . $standarisasi->id . '.zip';
+        $zipPath = storage_path('app/temp/' . $zipFileName);
+
+        if (!file_exists(storage_path('app/temp'))) {
+            mkdir(storage_path('app/temp'), 0755, true);
+        }
+
+        $zip = new ZipArchive;
+        if ($zip->open($zipPath, ZipArchive::CREATE | ZipArchive::OVERWRITE)) {
+
+            // Tambahkan hanya gambar dari gambar_lain
+            foreach ($standarisasi->detail->lampiran ?? [] as $gambarPath) {
+                $fullPath = storage_path('app/public/' . $gambarPath);
+                if (file_exists($fullPath)) {
+                    $zip->addFile($fullPath, basename($gambarPath));
+                }
+            }
+
+            $zip->close();
+        }
+
+        return response()->download($zipPath)->deleteFileAfterSend(true);
     }
 
     public function pdfKelengkapanMaterialSS($id)
@@ -127,6 +190,17 @@ class PDFController extends Controller
         $serahElectrical = PenyerahanElectrical::with(['pengecekanSS', 'sebelumSerahTerima', 'pic', 'penerimaElectrical'])->findOrFail($id);
 
         return view('pdf.production.pdfPenyerahanElectrical', compact('serahElectrical'));
+    }
+
+    public function downloadPenyerahanElectrical($id)
+    {
+        $spesifikasi = PenyerahanElectrical::with(['sebelumSerahTerima'])->findOrFail($id);
+
+        $filePath = $spesifikasi->sebelumSerahTerima->file_pendukung;
+
+        $fullPath = storage_path('app/public/' . $filePath);
+
+        return response()->download($fullPath);
     }
 
     public function pdfSPKQuality($id)
@@ -183,7 +257,4 @@ class PDFController extends Controller
     {
         return view('pdf.engineering.pdfSPKService');
     }
-
-
-
 }

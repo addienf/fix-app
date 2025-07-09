@@ -17,6 +17,10 @@ class StandarisasiDrawingDetail extends Model
         'catatan'
     ];
 
+    protected $casts = [
+        'lampiran' => 'array',
+    ];
+
     public function standarisasi()
     {
         return $this->belongsTo(StandarisasiDrawing::class, 'standarisasi_drawing_id');

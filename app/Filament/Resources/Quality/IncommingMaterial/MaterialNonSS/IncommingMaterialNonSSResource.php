@@ -66,7 +66,7 @@ class IncommingMaterialNonSSResource extends Resource
             ->schema([
                 //
                 Hidden::make('status_penyelesaian')
-                    ->default('Belum Diperiksa'),
+                    ->default('Belum Diterima'),
 
                 Section::make('Informasi Umum')
                     ->collapsible()
@@ -336,7 +336,7 @@ class IncommingMaterialNonSSResource extends Resource
                             return 'success';
                         }
 
-                        if ($penyelesaian !== 'Diperiksa' && $persetujuan !== 'Disetujui') {
+                        if ($penyelesaian !== 'Diterima' && $persetujuan !== 'Disetujui') {
                             return 'danger';
                         }
 

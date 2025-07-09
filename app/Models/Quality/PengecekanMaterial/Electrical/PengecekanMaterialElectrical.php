@@ -2,6 +2,7 @@
 
 namespace App\Models\Quality\PengecekanMaterial\Electrical;
 
+use App\Models\Quality\Defect\DefectStatus;
 use App\Models\Quality\PengecekanMaterial\Electrical\Pivot\PengecekanMaterialElectricalDetail;
 use App\Models\Quality\PengecekanMaterial\Electrical\Pivot\PengecekanMaterialElectricalPIC;
 use App\Models\Sales\SPKMarketings\SPKMarketing;
@@ -21,6 +22,12 @@ class PengecekanMaterialElectrical extends Model
         'note',
         'status_penyelesaian',
     ];
+
+    public function defectStatus()
+    {
+        return $this->hasOne(DefectStatus::class, 'sumber_id')
+            ->where('tipe_sumber', 'electrical');
+    }
 
     public function spk()
     {

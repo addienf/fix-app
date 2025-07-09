@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Production\Penyerahan\PenyerahanElectrical\Peny
 use App\Filament\Resources\Production\Penyerahan\PenyerahanElectrical\PenyerahanElectricalResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
+use Filament\Resources\Components\Tab;
 
 class ListPenyerahanElectricals extends ListRecords
 {
@@ -15,6 +16,17 @@ class ListPenyerahanElectricals extends ListRecords
         return [
             Actions\CreateAction::make()->label('Tambah Data Serah Terima Electrical'),
         ];
+    }
+
+    public function getTabs(): array
+    {
+        return
+            [
+                null => Tab::make('All'),
+                'Diterima' => Tab::make()->query(fn($query) => $query->where('status_penyelesaian', 'Diterima')),
+                'Belum Diterima' => Tab::make()->query(fn($query) => $query->where('status_penyelesaian', 'Belum Diterima')),
+                'Disetujui' => Tab::make()->query(fn($query) => $query->where('status_penyelesaian', 'Disetujui')),
+            ];
     }
 
     public function getBreadcrumb(): string

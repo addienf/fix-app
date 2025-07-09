@@ -123,28 +123,6 @@ class JadwalProduksiResource extends Resource
 
                     ]),
 
-                // Section::make('Sumber Daya Yang Digunakan')
-                //     ->relationship('sumber')
-                //     ->schema([
-
-                //         self::textInput('mesin_yang_digunakan', 'Mesin Yang Digunakan'),
-
-                //         self::textInput('tenaga_kerja', 'Tenaga Kerja'),
-
-                //         TableRepeater::make('bahan_baku')
-                //             ->label('')
-                //             ->schema([
-
-                //                 self::textInput('bahan_baku', 'Masukkan Bahan Baku')
-                //                     ->extraInputAttributes(['class' => 'font-normal']),
-
-                //             ])
-                //             // ->columnSpanFull()
-                //             ->addActionLabel('Tambah Bahan Baku')
-                //             ->reorderable(false)
-                //             ->defaultItems(1)
-                //     ]),
-
                 Section::make('PIC')
                     ->collapsible()
                     ->relationship('pic')

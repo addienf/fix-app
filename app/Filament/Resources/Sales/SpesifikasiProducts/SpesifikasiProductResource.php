@@ -48,20 +48,21 @@ class SpesifikasiProductResource extends Resource
 
     public static function form(Form $form): Form
     {
-        return $form
+        $isEdit = $form->getOperation() === 'edit';
+
+        return
+            $form
             ->schema([
                 Section::make('Informasi Umum')
                     ->schema([
-                        Grid::make(3)
-                            ->schema([
-                                self::selectInput('urs_id', 'No URS', 'urs', 'no_urs')
-                                    ->placeholder('Pilih Data URS')
-                                    ->createOptionForm(fn() => self::ursFormSchema()),
-                                self::textInput('delivery_address', 'Alamat Pengiriman'),
-                                self::buttonGroup('is_stock', 'Untuk Stock ?'),
-                            ]),
-
+                        self::selectInput('urs_id', 'No URS', 'urs', 'no_urs')
+                            ->placeholder('Pilih Data URS')
+                            ->hiddenOn('edit')
+                            ->createOptionForm(fn() => self::ursFormSchema()),
+                        self::textInput('delivery_address', 'Alamat Pengiriman'),
+                        self::buttonGroup('is_stock', 'Untuk Stock ?'),
                     ])
+                    ->columns($isEdit ? 2 : 3)
                     ->collapsible(),
 
                 Section::make('Detail Spesifikasi Product')
