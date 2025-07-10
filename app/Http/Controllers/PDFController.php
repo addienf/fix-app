@@ -257,4 +257,14 @@ class PDFController extends Controller
     {
         return view('pdf.engineering.pdfSPKService');
     }
+
+    public function pdfSparepartAlatKerja()
+    {
+        return view('pdf.engineering.pdfSparepartAlatKerja');
+    }
+
+    public function pdfBeritaAcara()
+    {
+        return view('pdf.engineering.pdfBeritaAcara');
+    }
 }

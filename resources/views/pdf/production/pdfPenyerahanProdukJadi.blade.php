@@ -91,8 +91,8 @@
                                     <td class="px-4 py-2 border border-gray-300 dark:border-gray-600">{{ $item->tipe }}</td>
                                     <td class="px-4 py-2 border border-gray-300 dark:border-gray-600">
                                         {{ $item->volume }}</td>
-                                    <td class="px-4 py-2 border border-gray-300 dark:border-gray-600">
-                                        {{ $item->no_seri }}</td>
+                                    {{-- <td class="px-4 py-2 border border-gray-300 dark:border-gray-600">
+                                        {{ $item->no_seri }}</td> --}}
                                     <td class="px-4 py-2 border border-gray-300 dark:border-gray-600">
                                         {{ $item->jumlah }}</td>
                                     <td class="px-4 py-2 border border-gray-300 dark:border-gray-600">
