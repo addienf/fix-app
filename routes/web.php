@@ -30,6 +30,7 @@ Route::get('/produksi/penyerahan-electrical/{record}/pdf-penyerahan-electrical',
 Route::get('/produksi/penyerahan-electrical/{record}/download-file', [PDFController::class, 'downloadPenyerahanElectrical'])->name('penyerahanElectrical.file-download');
 Route::get('/produksi/spk-quality/{record}/pdf-spk-quality', [PDFController::class, 'pdfSPKQuality'])->name('pdf.spkQuality');
 Route::get('/produksi/penyerahan-produk-jadi/{record}/pdf-penyerahan-produk-jadi', [PDFController::class, 'pdfPenyerahanProdukJadi'])->name('pdf.PenyerahanProdukJadi');
+Route::get('/production/spk-vendor/{record}/pdf-spk-vendor', [PDFController::class, 'pdfSPKVendor'])->name('pdf.spkVendor');
 
 // Warehouse
 Route::get('/warehouse/permintaan-bahan/{record}/pdf-permintaan-bahan', [PDFController::class, 'pdfPermintaanBahan'])->name('pdf.permintaanBahan');
@@ -37,6 +38,7 @@ Route::get('/warehouse/incoming-material/{record}/pdf-incoming-material', [PDFCo
 Route::get('/warehouse/incoming-material/{record}/download-file', [PDFController::class, 'downloadIncomingMaterial'])->name('IncomingMaterial.file-download');
 Route::get('/warehouse/serah-terima-bahan/{record}/pdf-serah-terima-bahan', [PDFController::class, 'pdfSerahTerima'])->name('pdf.serahTerima');
 Route::get('/warehouse/pelabelan-qc-passed/{record}/pdf-pelabelan-qc-passed', [PDFController::class, 'pdfPelabelanQCPassed'])->name('pdf.PelabelanQCPassed');
+Route::get('/warehouse/peminjaman-alat/{record}/pdf-peminjaman-alat', [PDFController::class, 'pdfPeminjamanAlat'])->name('pdf.PeminjamanAlat');
 
 // Purchasing
 Route::get('/purchasing/permintaan-pembelian/{record}/pdf-permintaan-pembelian', [PDFController::class, 'pdfPermintaanPembelian'])->name('pdf.PermintaanPembelian');
@@ -50,14 +52,7 @@ Route::get('/quality/kelengkapan-material-ss/{record}/pdf-kelengkapan-material-s
 Route::get('/quality/pengecekan-material-ss/{record}/pdf-kelengkapan-material-ss', [PDFController::class, 'pdfPengecekanMaterialSS'])->name('pdf.pengecekanMaterialSS');
 Route::get('/quality/pengecekan-electrical/{record}/pdf-pengecekan-electrical', [PDFController::class, 'pdfPengecekanElectrical'])->name('pdf.pengecekanElectrical');
 Route::get('/quality/pengecekan-performa/{record}/pdf-pengecekan-performa', [PDFController::class, 'pdfPengecekanPerforma'])->name('pdf.pengecekanPerforma');
-
-
-Route::get('/warehouse/peminjamanalat', [PDFController::class, 'pdfPeminjamanAlat'])->name('pdf.PeminjamanAlat');
-
-Route::get('/production/spkvendor', [PDFController::class, 'pdfSPKVendor'])->name('pdf.spkVendor');
-
-Route::get('/quality/defectstatus', [PDFController::class, 'pdfDefectStatus'])->name('pdf.defectStatus');
-
+Route::get('/quality/defect-status/{record}/pdf-defect-status', [PDFController::class, 'pdfDefectStatus'])->name('pdf.defectStatus');
 
 //Engineering
 Route::get('/engineering/spkservice', [PDFController::class, 'pdfSPKService'])->name('pdf.spkService');

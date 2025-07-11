@@ -108,11 +108,12 @@ class PeminjamanAlatResource extends Resource
                 ActionGroup::make([
                     Tables\Actions\EditAction::make(),
                     Tables\Actions\DeleteAction::make(),
-                    // Action::make('pdf_view')
-                    //     ->label(_('View PDF'))
-                    //     ->icon('heroicon-o-document')
-                    //     ->color('success')
-                    //     ->url(fn($record) => self::getUrl('pdfPermintaanAlatdanBahan', ['record' => $record->id])),
+                    Action::make('pdf_view')
+                        ->label(_('View PDF'))
+                        ->icon('heroicon-o-document')
+                        ->color('success')
+                        // ->url(fn($record) => route('pdf.PeminjamanAlat')),
+                        ->url(fn($record) => route('pdf.PeminjamanAlat', ['record' => $record->id])),
                 ])
             ])
             ->bulkActions([

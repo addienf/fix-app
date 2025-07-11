@@ -7,7 +7,9 @@ use App\Models\Production\Penyerahan\PenyerahanElectrical\PenyerahanElectrical;
 use App\Models\Production\Penyerahan\PenyerahanProdukJadi;
 use App\Models\Production\PermintaanBahanProduksi\PermintaanAlatDanBahan;
 use App\Models\Production\SPK\SPKQuality;
+use App\Models\Production\SPK\SPKVendor;
 use App\Models\Purchasing\Permintaan\PermintaanPembelian;
+use App\Models\Quality\Defect\DefectStatus;
 use App\Models\Quality\IncommingMaterial\MaterialNonSS\IncommingMaterialNonSS;
 use App\Models\Quality\IncommingMaterial\MaterialSS\IncommingMaterialSS;
 use App\Models\Quality\KelengkapanMaterial\SS\KelengkapanMaterialSS;
@@ -19,6 +21,7 @@ use App\Models\Sales\SpesifikasiProducts\SpesifikasiProduct;
 use App\Models\Sales\SPKMarketings\SPKMarketing;
 use App\Models\Warehouse\Incomming\IncommingMaterial;
 use App\Models\Warehouse\Pelabelan\QCPassed;
+use App\Models\Warehouse\Peminjaman\PeminjamanAlat;
 use App\Models\Warehouse\PermintaanBahanWBB\PermintaanBahan;
 use App\Models\Warehouse\SerahTerima\SerahTerimaBahan;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -238,19 +241,25 @@ class PDFController extends Controller
         return view('pdf.warehouse.pdfPelabelanQCPassed', compact('pelabelan'));
     }
 
-    public function pdfSPKVendor()
+    public function pdfPeminjamanAlat($id)
     {
-        return view('pdf.production.pdfSPKVendor');
+        $peminjaman = PeminjamanAlat::with(['details', 'pic'])->findOrFail($id);
+
+        return view('pdf.warehouse.pdfPeminjamanAlat', compact('peminjaman'));
     }
 
-    public function pdfPeminjamanAlat()
+    public function pdfDefectStatus($id)
     {
-        return view('pdf.warehouse.pdfPeminjamanAlat');
+        $defect = DefectStatus::with(['spk', 'details', 'pic'])->findOrFail($id);
+
+        return view('pdf.quality.pdfDefectStatus', compact('defect'));
     }
 
-    public function pdfDefectStatus()
+    public function pdfSPKVendor($id)
     {
-        return view('pdf.quality.pdfDefectStatus');
+        $vendor = SPKVendor::findOrFail($id);
+
+        return view('pdf.production.pdfSPKVendor', compact('vendor'));
     }
 
     public function pdfSPKService()

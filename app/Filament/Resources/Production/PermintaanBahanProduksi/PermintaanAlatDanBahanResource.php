@@ -134,43 +134,6 @@ class PermintaanAlatDanBahanResource extends Resource
                             ])
                     ]),
 
-                // Section::make('PIC')
-                //     ->collapsible()
-                //     ->relationship('pic')
-                //     ->schema([
-
-                //         Grid::make(2)
-                //             ->schema([
-
-                //                 Grid::make(1)
-                //                     ->schema([
-
-                //                         self::textInput('dibuat_name', 'Dibuat Oleh'),
-
-                //                         self::signatureInput('dibuat_signature', ''),
-
-                //                     ])->hiddenOn(operations: 'edit'),
-
-                //                 Grid::make(1)
-                //                     ->schema([
-
-                //                         self::textInput('diketahui_name', 'Diketahui Oleh'),
-
-                //                         self::signatureInput('diketahui_signature', ''),
-
-                //                     ])->hiddenOn(operations: 'edit'),
-
-                //                 Grid::make(1)
-                //                     ->schema([
-
-                //                         self::textInput('diserahkan_name', 'Diserahkan Kepada'),
-
-                //                         self::signatureInput('diserahkan_signature', ''),
-
-                //                     ])->hiddenOn(operations: 'create'),
-                //             ]),
-                //     ]),
-
                 Section::make('Detail PIC')
                     ->collapsible()
                     ->relationship('pic')
