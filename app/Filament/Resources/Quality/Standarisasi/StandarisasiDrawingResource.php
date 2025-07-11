@@ -132,15 +132,6 @@ class StandarisasiDrawingResource extends Resource
                             ->columnSpanFull()
                             ->required(),
 
-                        // FileUpload::make('gambar_lain')
-                        //     ->label('Gambar Tambahan')
-                        //     ->multiple()
-                        //     ->directory('ProdukElectrical/Gambar')
-                        //     ->image()
-                        //     ->preserveFilenames()
-                        //     ->downloadable()
-                        //     ->reorderable(),
-
                         Textarea::make('catatan')
                             ->label('Catatan atau Koreksi yang Dibutuhkan')
                             ->required(),

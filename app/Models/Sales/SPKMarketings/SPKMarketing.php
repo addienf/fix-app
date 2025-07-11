@@ -7,6 +7,7 @@ use App\Models\Production\JadwalProduksi;
 use App\Models\Production\Penyerahan\PenyerahanProdukJadi;
 use App\Models\Production\PermintaanBahanProduksi\PermintaanAlatDanBahan;
 use App\Models\Production\SPK\SPKQuality;
+use App\Models\Production\SPK\SPKVendor;
 use App\Models\Quality\Defect\DefectStatus;
 use App\Models\Quality\KelengkapanMaterial\SS\KelengkapanMaterialSS;
 use App\Models\Quality\Pengecekan\PengecekanPerforma;
@@ -102,6 +103,11 @@ class SPKMarketing extends Model
     public function qc()
     {
         return $this->hasOne(QCPassed::class, 'spk_marketing_id');
+    }
+
+    public function spkVendor()
+    {
+        return $this->hasOne(SPKVendor::class, 'spk_marketing_id');
     }
 
     protected static function booted()

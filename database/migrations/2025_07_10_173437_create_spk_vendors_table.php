@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('spk_vendors', function (Blueprint $table) {
             $table->id();
-            $table->string('no_spk_vendor');
+            $table->foreignId('spk_marketing_id')->constrained('spk_marketings')->cascadeOnDelete();
             $table->string('nama_perusahaan');
             $table->timestamps();
         });

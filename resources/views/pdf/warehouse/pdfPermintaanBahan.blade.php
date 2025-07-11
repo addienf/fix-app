@@ -103,19 +103,6 @@
             </table>
         </div>
 
-        {{-- <div class="max-w-4xl mx-auto mt-10 text-sm">
-                <div class="flex items-start justify-between gap-4">
-                    <div class="flex flex-col items-center">
-                        <p class="mb-2 dark:text-white">Terima Kasih</p>
-                        <p class="mb-2 dark:text-white">Dibuat Oleh</p>
-                        <img src="{{ asset('asset/tanda-tangan-dummy1.png') }}" alt="Create Signature" class="h-20 w-80" />
-                        <div class="mt-2 font-medium">
-                            Budi Prasetyo
-                        </div>
-                    </div>
-                </div>
-            </div> --}}
-
         <div class="max-w-4xl mx-auto mt-10 text-sm">
             <div class="flex items-start justify-between gap-4">
                 <div class="flex flex-col items-center">

@@ -111,7 +111,6 @@ class SpesifikasiProductResource extends Resource
                                             ->onColor('primary')
                                             ->offColor('gray')
                                             ->gridDirection('row')
-                                            ->default('individual')
                                             ->visible(fn($get) => in_array($get('name'), ['Water Feeding System', 'Software', 'Tensile Test', 'Compression Test', 'Torque Test', 'Digital', 'Computerised'])),
 
                                         TextInput::make('value_str')
@@ -179,10 +178,6 @@ class SpesifikasiProductResource extends Resource
                     ->color(function ($state) {
                         return $state ? 'danger' : 'success';
                     }),
-                ImageColumn::make('pic.signature')
-                    ->width(150)
-                    ->label('Tanda Tangan')
-                    ->height(75),
             ])
             ->filters([
                 //

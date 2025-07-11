@@ -175,17 +175,6 @@ class SPKResource extends Resource
                         $state === 'Diterima' ? 'success' : 'danger'
                     )
                     ->alignCenter(),
-
-                // ImageColumn::make('pic.create_signature')
-                //     ->width(150)
-                //     ->label('Yang Membuat')
-                //     ->height(75),
-
-                // ImageColumn::make('pic.receive_signature')
-                //     ->width(150)
-                //     ->label('Yang Menerima')
-                //     ->height(75),
-
             ])
             ->filters([
                 //
