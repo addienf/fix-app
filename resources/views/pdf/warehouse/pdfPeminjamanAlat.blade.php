@@ -55,19 +55,39 @@
                     </tr>
                 </thead>
                 <tbody class="bg-white dark:bg-gray-900">
-                    <tr>
-                        <td class="px-4 py-2 border">1</td>
-                        <td class="px-4 py-2 border">Kabel Listrik</td>
-                        <td class="px-4 py-2 border">NYA 2.5mm, 100m</td>
-                        <td class="px-4 py-2 border">3 Roll</td>
-                        <td class="px-4 py-2 border">Instalasi Panel</td>
-                        <td class="px-4 py-2 border">Instalasi Panel</td>
-                        <td class="px-4 py-2 border">Instalasi Panel</td>
-                        <td class="px-4 py-2 border">Instalasi Panel</td>
-                    </tr>
+                    @foreach ($peminjaman->details as $index => $produk)
+                        <tr>
+                            <td class="px-4 py-2 border">{{ $index + 1 }}</td>
+                            <td class="px-4 py-2 border">
+                                {{ \Carbon\Carbon::parse($peminjaman->tanggal_pinjam)->translatedFormat('d M Y') }}</td>
+                            <td class="px-4 py-2 border">{{ $peminjaman->pic->department }}</td>
+                            <td class="px-4 py-2 border">{{ $produk['nama_sparepart'] }}</td>
+                            <td class="px-4 py-2 border">{{ $produk['model'] }}</td>
+                            <td class="px-4 py-2 border">{{ $produk['jumlah'] }}</td>
+                            <td class="px-4 py-2 border">
+                                {{ \Carbon\Carbon::parse($peminjaman->tanggal_kembali)->translatedFormat('d M Y') }}</td>
+                            <td class="px-4 py-2 border">{{ $peminjaman->pic->nama_peminjam }}</td>
+                            <td class="px-4 py-2 border"><img src="{{ asset('storage/' . $peminjaman->pic->signature) }}"
+                                    alt="Create Signature" class="h-20 w-80" /></td>
+                        </tr>
+                    @endforeach
                 </tbody>
             </table>
         </div>
+    </div>
+
+    <div class="mt-6 mb-3 text-center">
+        <button onclick="exportPDF()"
+            class="inline-flex items-center gap-2 py-3 text-sm font-semibold text-black text-white bg-blue-600 border rounded border-animated px-7 border-black-400 hover:bg-purple-600 hover:text-white">
+            <!-- Icon download SVG -->
+            <svg class="w-5 h-5 transition-colors duration-300" fill="none" stroke="currentColor" stroke-width="2"
+                viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4">
+                </path>
+            </svg>
+            Download PDF
+        </button>
     </div>
 @endsection
 

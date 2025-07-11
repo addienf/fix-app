@@ -6,7 +6,6 @@ use App\Filament\Resources\Quality\Defect\DefectStatusResource\Pages;
 use App\Filament\Resources\Quality\Defect\DefectStatusResource\Pages\pdfDefectStatus;
 use App\Filament\Resources\Quality\Defect\DefectStatusResource\RelationManagers;
 use App\Models\Quality\Defect\DefectStatus;
-use App\Models\Quality\KelengkapanMaterial\SS\KelengkapanMaterialSS;
 use App\Models\Quality\PengecekanMaterial\Electrical\PengecekanMaterialElectrical;
 use App\Models\Quality\PengecekanMaterial\SS\PengecekanMaterialSS;
 use App\Models\Sales\SPKMarketings\SPKMarketing;
@@ -18,9 +17,6 @@ use Filament\Forms\Components\Card;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Hidden;
-use Filament\Forms\Components\MorphToSelect;
-use Filament\Forms\Components\MorphToSelect\Type;
-use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
@@ -246,7 +242,8 @@ class DefectStatusResource extends Resource
                         ->label(_('View PDF'))
                         ->icon('heroicon-o-document')
                         ->color('success')
-                        ->url(fn($record) => self::getUrl('pdfDefectStatus', ['record' => $record->id])),
+                        // ->url(fn($record) => route('pdf.defectStatus')),
+                        ->url(fn($record) => route('pdf.defectStatus', ['record' => $record->id])),
                 ])
             ])
             ->bulkActions([

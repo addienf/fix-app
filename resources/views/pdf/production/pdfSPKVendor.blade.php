@@ -1,7 +1,7 @@
 @extends ('pdf.layout.layout')
-
+@section('title', 'SPK vendor PDF')
 @section('content')
-    <div id="export-area" class="p-2 bg-white text-black">
+    <div id="export-area" class="p-2 text-black bg-white">
         <table
             class="w-full max-w-4xl mx-auto text-sm border border-black dark:border-white dark:bg-gray-900 dark:text-white"
             style="border-collapse: collapse;">
@@ -41,39 +41,29 @@
         </table>
 
         <div class="w-full max-w-4xl mx-auto text-justify text-black">
-            <div class="pt-4 text-center font-bold text-lg mb-1">SURAT PERINTAH KERJA (SPK)</div>
-            <div class="text-center mb-6">Nomor: 001/QKS/PRO/SV/I/25</div>
+            <div class="pt-4 mb-1 text-lg font-bold text-center">SURAT PERINTAH KERJA (SPK)</div>
+            <div class="mb-6 text-center">Nomor: 001/QKS/PRO/SV/I/25</div>
 
             <div class="mb-6">
                 <p class="mb-1">Kepada Yth,</p>
                 <div class="flex items-center space-x-2">
-                    <label class="whitespace-nowrap">PT:</label>
-                    <div class=" px-3 py-1 w-80 ">
-                        ..
-                    </div>
-                </div>      
+                    <label class="whitespace-nowrap">PT. {{ $vendor->nama_perusahaan }}</label>
+                </div>
             </div>
 
             <p class="mb-4">Dengan hormat,</p>
 
-            <div class="mb-6 text-justify leading-relaxed">
+            <div class="mb-6 leading-relaxed text-justify">
                 <span>
-                    Sehubungan dengan kebutuhan produksi kami untuk pembuatan Climatic Chamber, bersama ini kami memberikan Surat
-                    Perintah Kerja kepada pihak PT
-                </span>
-
-                <div class="inline-flex items-center">
-                    <div class="px-3 py-1 w-64 rounded-md">
-                        ...
-                    </div>
-                </div>
-                <span>
-                    untuk melakukan pekerjaan Cutting dan Bending dengan ketentuan sebagai berikut:
+                    Sehubungan dengan kebutuhan produksi kami untuk pembuatan Climatic Chamber, bersama ini kami memberikan
+                    Surat
+                    Perintah Kerja kepada pihak PT. {{ $vendor->nama_perusahaan }} untuk melakukan pekerjaan Cutting dan
+                    Bending dengan ketentuan sebagai berikut:
                 </span>
             </div>
 
 
-            <ol class="list-decimal pl-5 mb-4 space-y-2">
+            <ol class="pl-5 mb-4 space-y-2 list-decimal">
                 <li>
                     <strong>Deskripsi Pekerjaan</strong><br>
                     Melakukan proses cutting dan bending terhadap material sesuai dengan gambar teknik dan
@@ -111,16 +101,31 @@
                     Pihak Vendor
                 </div>
                 <div class="mt-20">
-                    <div class="border-t border-gray-400 w-56 mx-auto pt-2 text-sm text-gray-600">
+                    <div class="w-56 pt-2 mx-auto text-sm text-gray-600 border-t border-gray-400">
                     </div>
                 </div>
                 <div class="mt-20">
-                    <div class="border-t border-gray-400 w-56 mx-auto pt-2 text-sm text-gray-600">
+                    <div class="w-56 pt-2 mx-auto text-sm text-gray-600 border-t border-gray-400">
                     </div>
-                </div>      
+                </div>
             </div>
         </div>
     </div>
+
+    <div class="mt-6 mb-3 text-center">
+        <button onclick="exportPDF()"
+            class="inline-flex items-center gap-2 py-3 text-sm font-semibold text-black text-white bg-blue-600 border rounded border-animated px-7 border-black-400 hover:bg-purple-600 hover:text-white">
+            <!-- Icon download SVG -->
+            <svg class="w-5 h-5 transition-colors duration-300" fill="none" stroke="currentColor" stroke-width="2"
+                viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4">
+                </path>
+            </svg>
+            Download PDF
+        </button>
+    </div>
+
 @endsection
 
 
@@ -150,14 +155,10 @@
             renderPDF();
         }
 
-        const today = new Date();
-        const tanggal = today.toISOString().split('T')[0]; // hasil: "2025-06-25"
-        const filename = `spesifikasi-produk-${tanggal}.pdf`;
-
         function renderPDF() {
             html2pdf().set({
                 margin: [0.2, 0.2, 0.2, 0.2],
-                filename: "permintaan-bahan-dan-alat-produksi.pdf",
+                filename: "spk-vendor.pdf",
                 image: {
                     type: "jpeg",
                     quality: 1
