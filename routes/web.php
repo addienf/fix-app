@@ -58,3 +58,4 @@ Route::get('/quality/defect-status/{record}/pdf-defect-status', [PDFController::
 Route::get('/engineering/spkservice', [PDFController::class, 'pdfSPKService'])->name('pdf.spkService');
 Route::get('/engineering/sparepartalatkerja', [PDFController::class, 'pdfSparepartAlatKerja'])->name('pdf.sparepartAlatKerja');
 Route::get('/engineering/beritaacara', [PDFController::class, 'pdfBeritaAcara'])->name('pdf.beritaAcara');
+Route::get('/engineering/maintenancechamberg2', [PDFController::class, 'pdfMaintenanceChamberG2'])->name('pdf.maintenanceChamberG2');

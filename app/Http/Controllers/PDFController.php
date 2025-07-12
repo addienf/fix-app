@@ -276,4 +276,9 @@ class PDFController extends Controller
     {
         return view('pdf.engineering.pdfBeritaAcara');
     }
+
+    public function pdfMaintenanceChamberG2()
+    {
+        return view('pdf.engineering.pdfMaintenanceChamberG2');
+    }
 }
