@@ -2,6 +2,7 @@
 
 namespace App\Models\Production\SPK;
 
+use App\Models\Sales\SPKMarketings\SPKMarketing;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -12,7 +13,12 @@ class SPKVendor extends Model
     protected $table = 'spk_vendors';
 
     protected $fillable = [
-        'no_spk_vendor',
+        'spk_marketing_id',
         'nama_perusahaan',
     ];
+
+    public function spk()
+    {
+        return $this->belongsTo(SPKMarketing::class, 'spk_marketing_id');
+    }
 }

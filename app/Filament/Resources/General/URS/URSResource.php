@@ -22,7 +22,6 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 class URSResource extends Resource
 {
     protected static ?string $model = URS::class;
-
     protected static ?int $navigationSort = 21;
     protected static ?string $navigationGroup = 'General';
     protected static ?string $navigationLabel = 'Penomoran URS';
