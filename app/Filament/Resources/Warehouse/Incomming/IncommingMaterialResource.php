@@ -375,7 +375,7 @@ class IncommingMaterialResource extends Resource
             ->afterStateUpdated(function ($state, $set) use ($fieldName) {
                 if (blank($state))
                     return;
-                $path = SignatureUploader::handle($state, 'ttd_', 'Warehpuse/IncommingMaterial/Signatures');
+                $path = SignatureUploader::handle($state, 'ttd_', 'Warehouse/IncommingMaterial/Signatures');
                 if ($path) {
                     $set($fieldName, $path);
                 }

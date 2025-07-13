@@ -3,6 +3,13 @@
 namespace App\Models\Engineering\SPK;
 
 use App\Models\Engineering\Berita\BeritaAcara;
+use App\Models\Engineering\Maintenance\ChamberG2\ChamberG2;
+use App\Models\Engineering\Maintenance\ChamberR2\ChamberR2;
+use App\Models\Engineering\Maintenance\ChamberWalkinG2\ChamberWalkinG2;
+use App\Models\Engineering\Maintenance\ColdRoom\ColdRoom;
+use App\Models\Engineering\Maintenance\Refrigerator\Refrigerator;
+use App\Models\Engineering\Maintenance\RissingPipette\RissingPipette;
+use App\Models\Engineering\Maintenance\WalkinChamber\WalkinChamber;
 use App\Models\Engineering\Permintaan\PermintaanSparepart;
 use App\Models\Engineering\SPK\SPKService\Pivot\PemeriksaanPersetujuan;
 use App\Models\Engineering\SPK\SPKService\Pivot\Petugas;
@@ -57,6 +64,41 @@ class SPKService extends Model
     public function permintaanSparepart()
     {
         return $this->hasOne(PermintaanSparepart::class, 'spk_service_id');
+    }
+
+    public function walkinChamber()
+    {
+        return $this->hasOne(WalkinChamber::class, 'spk_service_id');
+    }
+
+    public function chamberR2()
+    {
+        return $this->hasOne(ChamberR2::class, 'spk_service_id');
+    }
+
+    public function refrigerator()
+    {
+        return $this->hasOne(Refrigerator::class, 'spk_service_id');
+    }
+
+    public function coldRoom()
+    {
+        return $this->hasOne(ColdRoom::class, 'spk_service_id');
+    }
+
+    public function rissing()
+    {
+        return $this->hasOne(RissingPipette::class, 'spk_service_id');
+    }
+
+    public function walkinG2()
+    {
+        return $this->hasOne(ChamberWalkinG2::class, 'spk_service_id');
+    }
+
+    public function chamberG2()
+    {
+        return $this->hasOne(ChamberG2::class, 'spk_service_id');
     }
 
     protected static function booted()
