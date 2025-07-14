@@ -38,6 +38,7 @@ class ChamberWalkinG2Resource extends Resource
     protected static ?string $pluralLabel = 'Walk-in Chamber G2';
     protected static ?string $modelLabel = 'Walk-in Chamber G2';
     protected static ?string $slug = 'engineering/walkin-chamber-g2';
+    protected static ?string $navigationIcon = 'heroicon-o-wrench-screwdriver';
 
     public static function getNavigationBadge(): ?string
     {
@@ -276,16 +277,16 @@ class ChamberWalkinG2Resource extends Resource
     {
         return
             SignaturePad::make($fieldName)
-            ->label($labelName)
-            ->exportPenColor('#0118D8')
-            ->helperText('*Harap Tandatangan di tengah area yang disediakan.')
-            ->afterStateUpdated(function ($state, $set) use ($fieldName) {
-                if (blank($state))
-                    return;
-                $path = SignatureUploader::handle($state, 'ttd_', 'Engineering/Maintenance/WalkinChamberG2/Signature');
-                if ($path) {
-                    $set($fieldName, $path);
-                }
-            });
+                ->label($labelName)
+                ->exportPenColor('#0118D8')
+                ->helperText('*Harap Tandatangan di tengah area yang disediakan.')
+                ->afterStateUpdated(function ($state, $set) use ($fieldName) {
+                    if (blank($state))
+                        return;
+                    $path = SignatureUploader::handle($state, 'ttd_', 'Engineering/Maintenance/WalkinChamberG2/Signature');
+                    if ($path) {
+                        $set($fieldName, $path);
+                    }
+                });
     }
 }

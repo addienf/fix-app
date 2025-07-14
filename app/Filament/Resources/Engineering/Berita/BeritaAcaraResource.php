@@ -33,6 +33,7 @@ class BeritaAcaraResource extends Resource
     protected static ?int $navigationSort = 22;
     protected static ?string $navigationGroup = 'Engineering';
     protected static ?string $navigationLabel = 'Berita Acara';
+    protected static ?string $navigationIcon = 'heroicon-o-wrench-screwdriver';
     protected static ?string $pluralLabel = 'Berita Acara';
     protected static ?string $modelLabel = 'Berita Acara';
     protected static ?string $slug = 'engineering/berita-acara';
@@ -55,8 +56,8 @@ class BeritaAcaraResource extends Resource
                                     SPKService::whereHas('permintaanSparepart', function ($query) {
                                         $query->where('status_penyerahan', 'Diserahkan');
                                     })
-                                    ->whereDoesntHave('beritaAcara')
-                                    ->pluck('no_spk_service', 'id');
+                                        ->whereDoesntHave('beritaAcara')
+                                        ->pluck('no_spk_service', 'id');
                             })
                             ->native(false)
                             ->searchable()
@@ -66,10 +67,12 @@ class BeritaAcaraResource extends Resource
                             ->columnSpanFull()
                             ->hiddenOn(operations: 'edit')
                             ->afterStateUpdated(function ($state, callable $set) {
-                                if (!$state) return;
+                                if (!$state)
+                                    return;
 
                                 $service = SPKService::with('petugas')->find($state);
-                                if (!$service) return;
+                                if (!$service)
+                                    return;
 
                                 $namaPetugas = $service->petugas->pluck('nama_teknisi')->toArray();
                                 $nama_teknisi = implode(', ', $namaPetugas);
@@ -234,16 +237,16 @@ class BeritaAcaraResource extends Resource
     {
         return
             SignaturePad::make($fieldName)
-            ->label($labelName)
-            ->exportPenColor('#0118D8')
-            ->helperText('*Harap Tandatangan di tengah area yang disediakan.')
-            ->afterStateUpdated(function ($state, $set) use ($fieldName) {
-                if (blank($state))
-                    return;
-                $path = SignatureUploader::handle($state, 'ttd_', 'Engineering/BeritaAcara/Signatures');
-                if ($path) {
-                    $set($fieldName, $path);
-                }
-            });
+                ->label($labelName)
+                ->exportPenColor('#0118D8')
+                ->helperText('*Harap Tandatangan di tengah area yang disediakan.')
+                ->afterStateUpdated(function ($state, $set) use ($fieldName) {
+                    if (blank($state))
+                        return;
+                    $path = SignatureUploader::handle($state, 'ttd_', 'Engineering/BeritaAcara/Signatures');
+                    if ($path) {
+                        $set($fieldName, $path);
+                    }
+                });
     }
 }

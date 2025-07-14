@@ -285,4 +285,36 @@ class PDFController extends Controller
 
         return view('pdf.engineering.pdfBeritaAcara', compact('berita'));
     }
+
+    public function pdfMaintenanceChamberG2()
+    {
+        return view('pdf.engineering.pdfMaintenanceChamberG2');
+    }
+    public function pdfWalkInChamberG2()
+    {
+        return view('pdf.engineering.pdfWalkInChamberG2');
+    }
+
+    public function pdfRissingPipette()
+    {
+        return view('pdf.engineering.pdfRissingPipette');
+    }
+
+    public function pdfWalkInChamberR1()
+    {
+        return view('pdf.engineering.pdfWalkInChamberR1');
+    }
+
+    public function pdfWalkInChamberR2()
+    {
+        return view('pdf.engineering.pdfWalkInChamberR2');
+    }
+    public function pdfMaintenanceRefrigator()
+    {
+        return view('pdf.engineering.pdfMaintenanceRefrigator');
+    }
+    public function pdfMaintenanceColdRoom()
+    {
+        return view('pdf.engineering.pdfMaintenanceColdRoom');
+    }
 }

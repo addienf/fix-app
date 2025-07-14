@@ -38,6 +38,7 @@ class ColdRoomResource extends Resource
     protected static ?string $pluralLabel = 'Cold Room';
     protected static ?string $modelLabel = 'Cold Room';
     protected static ?string $slug = 'engineering/cold-room';
+    protected static ?string $navigationIcon = 'heroicon-o-wrench-screwdriver';
 
     public static function getNavigationBadge(): ?string
     {
@@ -276,16 +277,16 @@ class ColdRoomResource extends Resource
     {
         return
             SignaturePad::make($fieldName)
-            ->label($labelName)
-            ->exportPenColor('#0118D8')
-            ->helperText('*Harap Tandatangan di tengah area yang disediakan.')
-            ->afterStateUpdated(function ($state, $set) use ($fieldName) {
-                if (blank($state))
-                    return;
-                $path = SignatureUploader::handle($state, 'ttd_', 'Engineering/Maintenance/ColdRoom/Signature');
-                if ($path) {
-                    $set($fieldName, $path);
-                }
-            });
+                ->label($labelName)
+                ->exportPenColor('#0118D8')
+                ->helperText('*Harap Tandatangan di tengah area yang disediakan.')
+                ->afterStateUpdated(function ($state, $set) use ($fieldName) {
+                    if (blank($state))
+                        return;
+                    $path = SignatureUploader::handle($state, 'ttd_', 'Engineering/Maintenance/ColdRoom/Signature');
+                    if ($path) {
+                        $set($fieldName, $path);
+                    }
+                });
     }
 }
