@@ -89,34 +89,6 @@
                     'r' => 'Repaired',
                 ];
             @endphp
-
-            {{-- <table class="w-full text-sm border border-collapse border-black">
-                <thead class="bg-gray-100">
-                    <tr>
-                        <th class="w-10 px-3 py-2 text-center border border-black">No</th>
-                        <th class="px-3 py-2 text-left border border-black">Part</th>
-                        <th class="px-3 py-2 text-left border border-black">Order Number</th>
-                        <th class="px-3 py-2 text-center border border-black">Result</th>
-                        <th class="px-3 py-2 text-left border border-black">Status</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-                    @foreach ($fields as $index => $field)
-                        <tr>
-                            <td class="px-3 py-2 text-center border border-black">{{ $index + 1 }}</td>
-                            <td class="px-3 py-2 border border-black">{{ $field['item'] }}</td>
-                            <td class="px-3 py-2 border border-black">{{ $field['spec'] }}</td>
-                            <td class="px-3 py-2 text-center border border-black">
-                                {{ $field['result'] === '1' ? '✔' : '' }}</td>
-                            <td class="px-3 py-2 text-center border border-black">
-                                {{ $field['result'] === '0' ? '✘' : '' }}</td>
-                            <td class="px-3 py-2 border border-black">{{ $field['remark'] }}</td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table> --}}
-
             <table class="w-full mb-8 text-sm border border-collapse border-black">
                 <thead class="bg-gray-100">
                     <tr>

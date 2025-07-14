@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Engineering\Berita\BeritaAcara;
+use App\Models\Engineering\Permintaan\PermintaanSparepart;
+use App\Models\Engineering\SPK\SPKService;
 use App\Models\Production\Jadwal\JadwalProduksi;
 use App\Models\Production\Penyerahan\PenyerahanElectrical\PenyerahanElectrical;
 use App\Models\Production\Penyerahan\PenyerahanProdukJadi;
@@ -262,19 +265,25 @@ class PDFController extends Controller
         return view('pdf.production.pdfSPKVendor', compact('vendor'));
     }
 
-    public function pdfSPKService()
+    public function pdfSPKService($id)
     {
-        return view('pdf.engineering.pdfSPKService');
+        $service = SPKService::with(['petugas', 'pemeriksaanPersetujuan', 'pic'])->findOrFail($id);
+
+        return view('pdf.engineering.pdfSPKService', compact('service'));
     }
 
-    public function pdfSparepartAlatKerja()
+    public function pdfSparepartAlatKerja($id)
     {
-        return view('pdf.engineering.pdfSparepartAlatKerja');
+        $sparepart = PermintaanSparepart::with(['spkService', 'details', 'pic'])->findOrFail($id);
+
+        return view('pdf.engineering.pdfSparepartAlatKerja', compact('sparepart'));
     }
 
-    public function pdfBeritaAcara()
+    public function pdfBeritaAcara($id)
     {
-        return view('pdf.engineering.pdfBeritaAcara');
+        $berita = BeritaAcara::with(['spkService', 'detail', 'pic', 'pelanggan', 'penyediaJasa'])->findOrFail($id);
+
+        return view('pdf.engineering.pdfBeritaAcara', compact('berita'));
     }
 
     public function pdfMaintenanceChamberG2()

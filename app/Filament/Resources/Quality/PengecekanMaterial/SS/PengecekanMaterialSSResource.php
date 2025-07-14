@@ -37,7 +37,6 @@ use Wallo\FilamentSelectify\Components\ToggleButton;
 class PengecekanMaterialSSResource extends Resource
 {
     protected static ?string $model = PengecekanMaterialSS::class;
-
     protected static ?string $navigationIcon = 'heroicon-o-check-circle';
     protected static ?int $navigationSort = 15;
     protected static ?string $navigationGroup = 'Quality';

@@ -5,8 +5,10 @@ namespace App\Filament\Resources\Production\SPKVendor;
 use App\Filament\Resources\Production\SPKVendor\SPKVendorResource\Pages;
 use App\Filament\Resources\Production\SPKVendor\SPKVendorResource\RelationManagers;
 use App\Models\Production\SPK\SPKVendor;
+use App\Models\Sales\SPKMarketings\SPKMarketing;
 use Filament\Forms;
 use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -21,8 +23,6 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 class SPKVendorResource extends Resource
 {
     protected static ?string $model = SPKVendor::class;
-
-    // protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
     protected static ?int $navigationSort = 13;
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
     protected static ?string $navigationGroup = 'Production';
@@ -33,22 +33,13 @@ class SPKVendorResource extends Resource
 
     public static function form(Form $form): Form
     {
-        $lastValue = SPKVendor::latest('no_spk_vendor')->value('no_spk_vendor');
-        $isEdit = $form->getOperation() === 'edit';
         return $form
             ->schema([
                 //
                 Section::make('Informasi Umum')
                     ->collapsible()
                     ->schema([
-                        TextInput::make('no_spk_vendor')
-                            ->required()
-                            ->label('Nomor SPK Vendor')
-                            ->placeholder($lastValue ? "Data Terakhir : {$lastValue}" : 'Data Belum Tersedia')
-                            ->unique(ignoreRecord: true)
-                            ->columnSpan($isEdit ? 'full' : 1)
-                            ->hint('Format: XXX/QKS/PRO/SV/MM/YY'),
-
+                        self::selectInput(),
                         TextInput::make('nama_perusahaan')
                             ->required()
                             ->label('Nama Perusahaan')
@@ -62,7 +53,8 @@ class SPKVendorResource extends Resource
         return $table
             ->columns([
                 //
-                TextColumn::make('no_spk_vendor'),
+                TextColumn::make('spk.no_spk')
+                    ->label('No SPK Marketing'),
                 TextColumn::make('nama_perusahaan'),
             ])
             ->filters([
@@ -76,7 +68,6 @@ class SPKVendorResource extends Resource
                         ->label(_('View PDF'))
                         ->icon('heroicon-o-document')
                         ->color('success')
-                        // ->url(fn($record) => route('pdf.permintaanAlatBahan', ['record' => $record->id])),
                         ->url(fn($record) => route('pdf.spkVendor', ['record' => $record->id])),
                 ])
             ])
@@ -101,5 +92,21 @@ class SPKVendorResource extends Resource
             'create' => Pages\CreateSPKVendor::route('/create'),
             'edit' => Pages\EditSPKVendor::route('/{record}/edit'),
         ];
+    }
+
+    protected static function selectInput(): Select
+    {
+        return
+            Select::make('spk_marketing_id')
+            ->label('Nomor SPK')
+            ->options(function () {
+                return SPKMarketing::whereHas('permintaan')
+                    ->whereDoesntHave('spkVendor')
+                    ->pluck('no_spk', 'id');
+            })
+            ->native(false)
+            ->searchable()
+            ->preload()
+            ->required();
     }
 }
