@@ -39,6 +39,7 @@ class SPKServiceResource extends Resource
     protected static ?string $pluralLabel = 'SPK Service';
     protected static ?string $modelLabel = 'SPK Service';
     protected static ?string $slug = 'engineering/spk-service';
+    protected static ?string $navigationIcon = 'heroicon-o-wrench-screwdriver';
 
     public static function getNavigationBadge(): ?string
     {
@@ -254,16 +255,16 @@ class SPKServiceResource extends Resource
     {
         return
             SignaturePad::make($fieldName)
-            ->label($labelName)
-            ->exportPenColor('#0118D8')
-            ->helperText('*Harap Tandatangan di tengah area yang disediakan.')
-            ->afterStateUpdated(function ($state, $set) use ($fieldName) {
-                if (blank($state))
-                    return;
-                $path = SignatureUploader::handle($state, 'ttd_', 'Engineering/SPK/Signatures');
-                if ($path) {
-                    $set($fieldName, $path);
-                }
-            });
+                ->label($labelName)
+                ->exportPenColor('#0118D8')
+                ->helperText('*Harap Tandatangan di tengah area yang disediakan.')
+                ->afterStateUpdated(function ($state, $set) use ($fieldName) {
+                    if (blank($state))
+                        return;
+                    $path = SignatureUploader::handle($state, 'ttd_', 'Engineering/SPK/Signatures');
+                    if ($path) {
+                        $set($fieldName, $path);
+                    }
+                });
     }
 }

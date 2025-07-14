@@ -55,13 +55,20 @@ Route::get('/quality/pengecekan-performa/{record}/pdf-pengecekan-performa', [PDF
 Route::get('/quality/defect-status/{record}/pdf-defect-status', [PDFController::class, 'pdfDefectStatus'])->name('pdf.defectStatus');
 
 //Engineering
-<<<<<<< HEAD
-Route::get('/engineering/spkservice', [PDFController::class, 'pdfSPKService'])->name('pdf.spkService');
-Route::get('/engineering/sparepartalatkerja', [PDFController::class, 'pdfSparepartAlatKerja'])->name('pdf.sparepartAlatKerja');
-Route::get('/engineering/beritaacara', [PDFController::class, 'pdfBeritaAcara'])->name('pdf.beritaAcara');
-Route::get('/engineering/maintenancechamberg2', [PDFController::class, 'pdfMaintenanceChamberG2'])->name('pdf.maintenanceChamberG2');
-=======
 Route::get('/engineering/spk-service/{record}/pdf-spk-service', [PDFController::class, 'pdfSPKService'])->name('pdf.spkService');
 Route::get('/engineering/sparepart-alat-kerja/{record}/pdf-sparepart-alat-kerja', [PDFController::class, 'pdfSparepartAlatKerja'])->name('pdf.sparepartAlatKerja');
 Route::get('/engineering/berita-acara/{record}/pdf-berita-acara', [PDFController::class, 'pdfBeritaAcara'])->name('pdf.beritaAcara');
->>>>>>> 4197bd31de12fd50c7be780dc241c3229400025c
+
+Route::get('/engineering/chamberg2', [PDFController::class, 'pdfMaintenanceChamberG2'])->name('pdf.MaintenanceChamberG2');
+
+Route::get('/engineering/walkinchamberg2', [PDFController::class, 'pdfWalkInChamberG2'])->name('pdf.walkInChamberG2');
+
+Route::get('/engineering/rissingpipette', [PDFController::class, 'pdfRissingPipette'])->name('pdf.rissingPipette');
+
+Route::get('/engineering/chamberr1', [PDFController::class, 'pdfWalkInChamberR1'])->name('pdf.walkInChamberR1');
+
+Route::get('/engineering/chamberr2', [PDFController::class, 'pdfWalkInChamberR2'])->name('pdf.walkInChamberR2');
+
+Route::get('/engineering/maintenancerefrigator', [PDFController::class, 'pdfMaintenanceRefrigator'])->name('pdf.MaintenanceRefrigator');
+
+Route::get('/engineering/maintenancecoldroom', [PDFController::class, 'pdfMaintenanceColdRoom'])->name('pdf.MaintenanceColdRoom');
