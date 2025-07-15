@@ -71,7 +71,7 @@ class ChamberG2Resource extends Resource
                 Fieldset::make('Informasi')
                     ->label('')
                     ->schema([
-                        self::textInput('tag_no', 'WTC Name/TAG No')
+                        self::textInput('tag_no', 'CTC Name/TAG No')
                             ->hint('Format: TAG No.')
                             ->placeholder($lastValue ? "Data Terakhir : {$lastValue}" : 'Data Belum Tersedia')
                             // ->hiddenOn('edit')
@@ -110,56 +110,44 @@ class ChamberG2Resource extends Resource
                                         'style' => 'pointer-events: none;'
                                     ]),
 
-                                TableRepeater::make('parts')
+                                Repeater::make('parts')
                                     ->label('')
                                     ->schema([
 
                                         TextInput::make('part')
-                                            ->label('Part')
-                                            ->extraAttributes([
-                                                'readonly' => true,
-                                                'style' => 'pointer-events: none;'
-                                            ]),
+                                            ->columnSpan(3)
+                                            ->required(),
 
                                         TextInput::make('before')
-                                            ->label('Before Maintenance')
+                                            ->columnSpan(1)
                                             ->required(),
 
                                         TextInput::make('after')
-                                            ->label('After Maintenance')
+                                            ->columnSpan(1)
                                             ->required(),
 
-                                        // ButtonGroup::make('accepted')
-                                        //     ->options([
-                                        //         'yes' => 'Yes',
-                                        //         'no' => 'No',
-                                        //         'na' => 'NA',
-                                        //     ])
-                                        //     ->onColor('primary')
-                                        //     ->offColor('gray')
-                                        //     ->gridDirection('row'),
-
                                         Select::make('accepted')
-                                            ->label('Accepted')
                                             ->options([
                                                 'yes' => 'Yes',
                                                 'no' => 'No',
                                                 'na' => 'NA',
                                             ])
+                                            ->columnSpan(1)
                                             ->required(),
 
                                         Select::make('remark')
-                                            ->label('Remark')
                                             ->options([
                                                 'ok' => 'OK',
                                                 'h' => 'Hold',
                                                 'r' => 'Repaired',
                                             ])
+                                            ->columnSpan(1)
                                             ->required(),
 
                                     ])
-                                    ->columns(5)
-                                    ->addable(false)
+                                    ->columns(7)
+                                    ->defaultItems(1)
+                                    ->addable(true)
                                     ->deletable(false)
                                     ->reorderable(false),
 
@@ -239,7 +227,7 @@ class ChamberG2Resource extends Resource
                         ->icon('heroicon-o-document')
                         ->color('success')
                         ->visible(fn($record) => $record->status_penyetujuan === 'Disetujui')
-                    // ->url(fn($record) => route('pdf.spkService', ['record' => $record->id])),
+                        ->url(fn($record) => route('pdf.MaintenanceChamberG2', ['record' => $record->id])),
                 ])
             ])
             ->bulkActions([
@@ -277,16 +265,16 @@ class ChamberG2Resource extends Resource
     {
         return
             SignaturePad::make($fieldName)
-                ->label($labelName)
-                ->exportPenColor('#0118D8')
-                ->helperText('*Harap Tandatangan di tengah area yang disediakan.')
-                ->afterStateUpdated(function ($state, $set) use ($fieldName) {
-                    if (blank($state))
-                        return;
-                    $path = SignatureUploader::handle($state, 'ttd_', 'Engineering/Maintenance/ChamberG2/Signature');
-                    if ($path) {
-                        $set($fieldName, $path);
-                    }
-                });
+            ->label($labelName)
+            ->exportPenColor('#0118D8')
+            ->helperText('*Harap Tandatangan di tengah area yang disediakan.')
+            ->afterStateUpdated(function ($state, $set) use ($fieldName) {
+                if (blank($state))
+                    return;
+                $path = SignatureUploader::handle($state, 'ttd_', 'Engineering/Maintenance/ChamberG2/Signature');
+                if ($path) {
+                    $set($fieldName, $path);
+                }
+            });
     }
 }

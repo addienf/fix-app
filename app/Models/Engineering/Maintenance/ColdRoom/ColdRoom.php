@@ -26,12 +26,12 @@ class ColdRoom extends Model
 
     public function detail()
     {
-        return $this->hasOne(ColdRoomDetail::class, 'cold_room_id');
+        return $this->hasOne(ColdRoomDetail::class, 'cold_id');
     }
 
     public function pic()
     {
-        return $this->hasOne(ColdRoomPIC::class, 'cold_room_id');
+        return $this->hasOne(ColdRoomPIC::class, 'cold_id');
     }
 
     protected static function booted()

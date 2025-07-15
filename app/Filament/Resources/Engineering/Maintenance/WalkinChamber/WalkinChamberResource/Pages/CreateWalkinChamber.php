@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Engineering\Maintenance\WalkinChamber\WalkinChamberResource\Pages;
 
 use App\Filament\Resources\Engineering\Maintenance\WalkinChamber\WalkinChamberResource;
+use App\Models\Engineering\Maintenance\WalkinChamber\WalkinChamber;
 use Filament\Actions;
 use Filament\Resources\Pages\CreateRecord;
 

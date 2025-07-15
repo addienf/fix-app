@@ -3,6 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\Engineering\Berita\BeritaAcara;
+use App\Models\Engineering\Maintenance\ChamberG2\ChamberG2;
+use App\Models\Engineering\Maintenance\ChamberR2\ChamberR2;
+use App\Models\Engineering\Maintenance\ChamberWalkinG2\ChamberWalkinG2;
+use App\Models\Engineering\Maintenance\ColdRoom\ColdRoom;
+use App\Models\Engineering\Maintenance\Refrigerator\Refrigerator;
+use App\Models\Engineering\Maintenance\RissingPipette\RissingPipette;
+use App\Models\Engineering\Maintenance\WalkinChamber\WalkinChamber;
 use App\Models\Engineering\Permintaan\PermintaanSparepart;
 use App\Models\Engineering\SPK\SPKService;
 use App\Models\Production\Jadwal\JadwalProduksi;
@@ -286,35 +293,49 @@ class PDFController extends Controller
         return view('pdf.engineering.pdfBeritaAcara', compact('berita'));
     }
 
-    public function pdfMaintenanceChamberG2()
+    public function pdfMaintenanceChamberG2($id)
     {
-        return view('pdf.engineering.pdfMaintenanceChamberG2');
+        $G2 = ChamberG2::with(['spkService', 'detail', 'pic'])->findOrFail($id);
+
+        return view('pdf.engineering.pdfMaintenanceChamberG2', compact('G2'));
     }
-    public function pdfWalkInChamberG2()
+    public function pdfWalkInChamberG2($id)
     {
-        return view('pdf.engineering.pdfWalkInChamberG2');
+        $walkinG2 = ChamberWalkinG2::with(['spkService', 'detail', 'pic'])->findOrFail($id);
+
+        return view('pdf.engineering.pdfWalkInChamberG2', compact('walkinG2'));
     }
 
-    public function pdfRissingPipette()
+    public function pdfRissingPipette($id)
     {
-        return view('pdf.engineering.pdfRissingPipette');
+        $rissing = RissingPipette::with(['spkService', 'detail', 'pic'])->findOrFail($id);
+
+        return view('pdf.engineering.pdfRissingPipette', compact('rissing'));
     }
 
-    public function pdfWalkInChamberR1()
+    public function pdfWalkInChamberR1($id)
     {
-        return view('pdf.engineering.pdfWalkInChamberR1');
+        $walkin = WalkinChamber::with(['spkService', 'detail', 'pic'])->findOrFail($id);
+
+        return view('pdf.engineering.pdfWalkInChamberR1', compact('walkin'));
     }
 
-    public function pdfWalkInChamberR2()
+    public function pdfWalkInChamberR2($id)
     {
-        return view('pdf.engineering.pdfWalkInChamberR2');
+        $R2 = ChamberR2::with(['spkService', 'detail', 'pic'])->findOrFail($id);
+
+        return view('pdf.engineering.pdfWalkInChamberR2', compact('R2'));
     }
-    public function pdfMaintenanceRefrigator()
+    public function pdfMaintenanceRefrigator($id)
     {
-        return view('pdf.engineering.pdfMaintenanceRefrigator');
+        $refrigerator = Refrigerator::with(['spkService', 'detail', 'pic'])->findOrFail($id);
+
+        return view('pdf.engineering.pdfMaintenanceRefrigator', compact('refrigerator'));
     }
-    public function pdfMaintenanceColdRoom()
+    public function pdfMaintenanceColdRoom($id)
     {
-        return view('pdf.engineering.pdfMaintenanceColdRoom');
+        $cold = ColdRoom::with(['spkService', 'detail', 'pic'])->findOrFail($id);
+
+        return view('pdf.engineering.pdfMaintenanceColdRoom', compact('cold'));
     }
 }

@@ -23,7 +23,7 @@ class DatabaseSeeder extends Seeder
             'name' => 'Admin',
             'email' => 'admin@mail.com',
             'password' => Hash::make('admin123'),
-            'role' => 'admin',
+            // 'role' => 'admin',
             'email_verified_at' => Carbon::now(),
         ]);
 
@@ -31,7 +31,7 @@ class DatabaseSeeder extends Seeder
             'name' => 'Sales',
             'email' => 'sales@mail.com',
             'password' => Hash::make('sales123'),
-            'role' => 'sales',
+            // 'role' => 'sales',
             'email_verified_at' => Carbon::now(),
         ]);
 

@@ -26,21 +26,44 @@ class StandarisasiDrawingDetail extends Model
         return $this->belongsTo(StandarisasiDrawing::class, 'standarisasi_drawing_id');
     }
 
+    // protected static function booted(): void
+    // {
+    //     static::updating(function ($model) {
+    //         if (
+    //             $model->isDirty('lampiran') &&
+    //             $model->getOriginal('lampiran') &&
+    //             Storage::disk('public')->exists($model->getOriginal('lampiran'))
+    //         ) {
+    //             Storage::disk('public')->delete($model->getOriginal('lampiran'));
+    //         }
+    //     });
+
+    //     static::deleting(function ($model) {
+    //         if ($model->lampiran && Storage::disk('public')->exists($model->lampiran)) {
+    //             Storage::disk('public')->delete($model->lampiran);
+    //         }
+    //     });
+    // }
+
     protected static function booted(): void
     {
         static::updating(function ($model) {
-            if (
-                $model->isDirty('lampiran') &&
-                $model->getOriginal('lampiran') &&
-                Storage::disk('public')->exists($model->getOriginal('lampiran'))
-            ) {
-                Storage::disk('public')->delete($model->getOriginal('lampiran'));
+            $old = collect($model->getOriginal('lampiran') ?? []);
+            $new = collect($model->lampiran ?? []);
+            $toDelete = $old->diff($new);
+
+            foreach ($toDelete as $file) {
+                if (Storage::disk('public')->exists($file)) {
+                    Storage::disk('public')->delete($file);
+                }
             }
         });
 
         static::deleting(function ($model) {
-            if ($model->lampiran && Storage::disk('public')->exists($model->lampiran)) {
-                Storage::disk('public')->delete($model->lampiran);
+            foreach ($model->lampiran ?? [] as $file) {
+                if (Storage::disk('public')->exists($file)) {
+                    Storage::disk('public')->delete($file);
+                }
             }
         });
     }
