@@ -180,35 +180,35 @@ class ServiceReportResource extends Resource
                             ->columnSpanFull()
                     ]),
 
-                // Section::make('PIC')
-                //     ->collapsible()
-                //     ->relationship('pic')
-                //     ->schema([
+                Section::make('PIC')
+                    ->collapsible()
+                    ->relationship('pic')
+                    ->schema([
 
-                //         Grid::make(2)
-                //             ->schema([
+                        Grid::make(2)
+                            ->schema([
 
-                //                 Grid::make(1)
-                //                     ->schema([
-                //                         self::textInput('checked_name', 'Checked By'),
-                //                         self::signatureInput('checked_signature', ''),
-                //                         DatePicker::make('checked_date')
-                //                             ->label('')
-                //                             ->required()
-                //                     ])->hiddenOn(operations: 'edit'),
+                                Grid::make(1)
+                                    ->schema([
+                                        self::textInput('checked_name', 'Checked By'),
+                                        self::signatureInput('checked_signature', ''),
+                                        DatePicker::make('checked_date')
+                                            ->label('')
+                                            ->required()
+                                    ])->hiddenOn(operations: 'edit'),
 
-                //                 Grid::make(1)
-                //                     ->schema([
-                //                         self::textInput('approved_name', 'Approved By'),
-                //                         self::signatureInput('approved_signature', ''),
-                //                         DatePicker::make('approved_date')
-                //                             ->label('')
-                //                             ->required()
-                //                     ])->hiddenOn(operations: 'create'),
+                                Grid::make(1)
+                                    ->schema([
+                                        self::textInput('approved_name', 'Approved By'),
+                                        self::signatureInput('approved_signature', ''),
+                                        DatePicker::make('approved_date')
+                                            ->label('')
+                                            ->required()
+                                    ])->hiddenOn(operations: 'create'),
 
-                //             ]),
+                            ]),
 
-                //     ]),
+                    ]),
             ]);
     }
 
