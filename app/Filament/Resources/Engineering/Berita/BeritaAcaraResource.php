@@ -12,6 +12,8 @@ use Filament\Actions\Action;
 use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Fieldset;
+use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Split;
@@ -23,6 +25,7 @@ use Filament\Tables;
 use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Icetalker\FilamentTableRepeater\Forms\Components\TableRepeater;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Saade\FilamentAutograph\Forms\Components\SignaturePad;
@@ -56,8 +59,8 @@ class BeritaAcaraResource extends Resource
                                     SPKService::whereHas('permintaanSparepart', function ($query) {
                                         $query->where('status_penyerahan', 'Diserahkan');
                                     })
-                                        ->whereDoesntHave('beritaAcara')
-                                        ->pluck('no_spk_service', 'id');
+                                    ->whereDoesntHave('beritaAcara')
+                                    ->pluck('no_spk_service', 'id');
                             })
                             ->native(false)
                             ->searchable()
@@ -141,23 +144,21 @@ class BeritaAcaraResource extends Resource
                     ->relationship('detail')
                     ->collapsible()
                     ->schema([
-                        Select::make('jenis_pekerjaan')
-                            ->required()
-                            ->label('Jenis Pekerjaan')
-                            ->placeholder('Pilih Jenis Pekerjaan')
-                            ->options([
-                                'service' => 'Service',
-                                'maintenance' => 'Maintenance'
+                        Grid::make(2)
+                            ->schema([
+                                Select::make('jenis_pekerjaan')
+                                    ->required()
+                                    ->label('Jenis Pekerjaan')
+                                    ->placeholder('Pilih Jenis Pekerjaan')
+                                    ->options([
+                                        'service' => 'Service',
+                                        'maintenance' => 'Maintenance'
+                                    ]),
+
+                                TextInput::make('lokasi_pengerjaan')
+                                    ->required()
+                                    ->label('Lokasi Pengerjaan'),
                             ]),
-
-                        Textarea::make('detail_pekerjaan')
-                            ->required()
-                            ->rows(1)
-                            ->label('Deskripsi Pekerjaan'),
-
-                        TextInput::make('lokasi_pengerjaan')
-                            ->required()
-                            ->label('Lokasi Pengerjaan'),
 
                         TextInput::make('nama_teknisi')
                             ->required()
@@ -166,6 +167,18 @@ class BeritaAcaraResource extends Resource
                                 'readonly' => true,
                                 'style' => 'pointer-events: none;'
                             ])
+                            ->columnSpanFull(),
+
+                        Repeater::make('detail_pekerjaan')
+                            ->label('Detail Pekerjaan')
+                            ->schema([
+                                TextInput::make('deskripsi')
+                                    ->required()
+                                    ->label('Deskripsi Pekerjaan'),
+                            ])
+                            ->reorderable(false)
+                            ->addActionLabel('Tambah Deskripsi Pekerjaan')
+                            ->columnSpanFull(),
                     ])
                     ->columns(2),
 
@@ -237,16 +250,16 @@ class BeritaAcaraResource extends Resource
     {
         return
             SignaturePad::make($fieldName)
-                ->label($labelName)
-                ->exportPenColor('#0118D8')
-                ->helperText('*Harap Tandatangan di tengah area yang disediakan.')
-                ->afterStateUpdated(function ($state, $set) use ($fieldName) {
-                    if (blank($state))
-                        return;
-                    $path = SignatureUploader::handle($state, 'ttd_', 'Engineering/BeritaAcara/Signatures');
-                    if ($path) {
-                        $set($fieldName, $path);
-                    }
-                });
+            ->label($labelName)
+            ->exportPenColor('#0118D8')
+            ->helperText('*Harap Tandatangan di tengah area yang disediakan.')
+            ->afterStateUpdated(function ($state, $set) use ($fieldName) {
+                if (blank($state))
+                    return;
+                $path = SignatureUploader::handle($state, 'ttd_', 'Engineering/BeritaAcara/Signatures');
+                if ($path) {
+                    $set($fieldName, $path);
+                }
+            });
     }
 }

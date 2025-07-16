@@ -71,8 +71,10 @@
                 </li>
                 <li>
                     <strong>Jumlah & Jenis Material</strong><br>
-                    Jenis Material: Plat SS 304 / Mild Steel / Aluminium<br>
-                    Ketebalan: 1.5 mm / 2 mm<br>
+                    Jenis Material:
+                    {{ $vendor->spk->permintaan->details->pluck('bahan_baku')->unique()->implode(' / ') }}<br>
+                    Ketebalan:
+                    {{ $vendor->spk->permintaan->details->pluck('spesifikasi')->unique()->implode(' / ') }}<br>
                     Jumlah: Sesuai dokumen terlampir
                 </li>
                 <li>
@@ -113,7 +115,7 @@
     </div>
 
     <div class="mt-6 mb-3 text-center">
-        <button onclick="exportPDF()"
+        <button onclick="exportPDF('{{ $vendor->id }}')"
             class="inline-flex items-center gap-2 py-3 text-sm font-semibold text-black text-white bg-blue-600 border rounded border-animated px-7 border-black-400 hover:bg-purple-600 hover:text-white">
             <!-- Icon download SVG -->
             <svg class="w-5 h-5 transition-colors duration-300" fill="none" stroke="currentColor" stroke-width="2"
@@ -130,8 +132,8 @@
 
 
 <script>
-    function exportPDF() {
-        window.scrollTo(0, 0); // pastikan posisi di atas
+    function exportPDF(id) {
+        window.scrollTo(0, 0);
 
         const element = document.getElementById("export-area");
 
@@ -176,7 +178,9 @@
                 pagebreak: {
                     mode: ["avoid", "css"]
                 }
-            }).from(element).save();
+            }).from(element).save().then(() => {
+                window.location.href = `/produksi/spk-vendor/${id}/download-zip`;
+            });
         }
     }
 </script>

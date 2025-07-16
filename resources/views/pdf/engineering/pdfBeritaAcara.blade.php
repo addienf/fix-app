@@ -137,10 +137,15 @@
                 {{-- 1. Detail Pekerjaan --}}
                 <div>
                     <label class="font-semibold">1. Detail Pekerjaan yang telah diselesaikan:</label>
-                    <div id="note" readonly
+                    {{-- <div id="note" readonly
                         class="w-full min-h-[75px] px-3 py-2 mt-2 text-sm leading-relaxed text-left border rounded-md text-black border-black">
                         {{ trim($berita->detail->detail_pekerjaan) }}
-                    </div>
+                    </div> --}}
+                    <ul class="mt-2 text-sm text-black list-disc list-inside">
+                        @foreach ($berita->detail->detail_pekerjaan as $item)
+                            <li>{{ $item['deskripsi'] }}</li>
+                        @endforeach
+                    </ul>
                 </div>
 
                 {{-- 2. Lokasi Pekerjaan --}}

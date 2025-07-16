@@ -52,6 +52,7 @@ class SPKVendorResource extends Resource
 
                 Section::make('List Detail Bahan Baku')
                     ->collapsible()
+                    ->hiddenOn('edit')
                     ->schema([
 
                         TableRepeater::make('details')

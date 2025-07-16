@@ -30,7 +30,8 @@ Route::get('/produksi/penyerahan-electrical/{record}/pdf-penyerahan-electrical',
 Route::get('/produksi/penyerahan-electrical/{record}/download-file', [PDFController::class, 'downloadPenyerahanElectrical'])->name('penyerahanElectrical.file-download');
 Route::get('/produksi/spk-quality/{record}/pdf-spk-quality', [PDFController::class, 'pdfSPKQuality'])->name('pdf.spkQuality');
 Route::get('/produksi/penyerahan-produk-jadi/{record}/pdf-penyerahan-produk-jadi', [PDFController::class, 'pdfPenyerahanProdukJadi'])->name('pdf.PenyerahanProdukJadi');
-Route::get('/production/spk-vendor/{record}/pdf-spk-vendor', [PDFController::class, 'pdfSPKVendor'])->name('pdf.spkVendor');
+Route::get('/produksi/spk-vendor/{record}/pdf-spk-vendor', [PDFController::class, 'pdfSPKVendor'])->name('pdf.spkVendor');
+Route::get('/produksi/spk-vendor/{record}/download-zip', [PDFController::class, 'downloadSPKVendor'])->name('spkVendor.download-zip');
 
 // Warehouse
 Route::get('/warehouse/permintaan-bahan/{record}/pdf-permintaan-bahan', [PDFController::class, 'pdfPermintaanBahan'])->name('pdf.permintaanBahan');

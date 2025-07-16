@@ -267,9 +267,50 @@ class PDFController extends Controller
 
     public function pdfSPKVendor($id)
     {
-        $vendor = SPKVendor::findOrFail($id);
+        $vendor = SPKVendor::with(['spk.permintaan'])->findOrFail($id);
 
         return view('pdf.production.pdfSPKVendor', compact('vendor'));
+    }
+
+    public function downloadSPKVendor($id)
+    {
+        $vendor = SPKVendor::findOrFail($id);
+
+        //PDF
+        $filePath = $vendor->file_path;
+        $pdfFullPath = storage_path('app/public/' . $filePath);
+
+        //Gambar
+        $zipFileName = 'lampiran-' . $vendor->id . '.zip';
+        $zipDir = storage_path('app/temp');
+        $zipPath = $zipDir . '/' . $zipFileName;
+
+        // Buat folder sementara jika belum ada
+        if (!file_exists($zipDir)) {
+            mkdir($zipDir, 0755, true);
+        }
+
+        $zip = new ZipArchive;
+        if ($zip->open($zipPath, ZipArchive::CREATE | ZipArchive::OVERWRITE)) {
+
+            // Tambahkan file PDF ke dalam folder 'dokumen/' di ZIP
+            if (file_exists($pdfFullPath)) {
+                $zip->addFile($pdfFullPath, 'dokumen/' . basename($filePath));
+            }
+
+            // Tambahkan semua gambar ke dalam folder 'gambar/' di ZIP
+            foreach ($vendor->lampiran ?? [] as $gambarPath) {
+                $fullGambarPath = storage_path('app/public/' . $gambarPath);
+                if (file_exists($fullGambarPath)) {
+                    $zip->addFile($fullGambarPath, 'gambar/' . basename($gambarPath));
+                }
+            }
+
+            $zip->close();
+        }
+
+        // Kirimkan file ZIP sebagai download dan hapus setelah dikirim
+        return response()->download($zipPath)->deleteFileAfterSend(true);
     }
 
     public function pdfSPKService($id)

@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('spk_service_id')->constrained('spk_services')->cascadeOnDelete();
             $table->string('nama_teknisi');
             $table->string('jabatan');
-            $table->string('ttd');
+            $table->string('ttd')->nullable();
             $table->timestamps();
         });
     }
