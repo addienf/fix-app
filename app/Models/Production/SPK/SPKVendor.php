@@ -19,6 +19,10 @@ class SPKVendor extends Model
         'lampiran',
     ];
 
+    protected $casts = [
+        'lampiran' => 'array'
+    ];
+
     public function spk()
     {
         return $this->belongsTo(SPKMarketing::class, 'spk_marketing_id');

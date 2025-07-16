@@ -19,7 +19,8 @@ class BeritaAcaraDetail extends Model
     ];
 
     protected $casts = [
-        'nama_teknisi' => 'array'
+        'nama_teknisi' => 'array',
+        'detail_pekerjaan' => 'array',
     ];
 
     public function beritaAcara()

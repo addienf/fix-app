@@ -12,7 +12,6 @@ use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Hidden;
-use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
@@ -27,6 +26,7 @@ use Filament\Tables\Table;
 use Icetalker\FilamentTableRepeater\Forms\Components\TableRepeater;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Str;
 use Saade\FilamentAutograph\Forms\Components\SignaturePad;
 use Wallo\FilamentSelectify\Components\ButtonGroup;
 
@@ -62,19 +62,23 @@ class SPKServiceResource extends Resource
 
                 TextInput::make('no_complaint_form')
                     ->label('Nomor Form Complaint')
-                    ->hint('Format: Complaint Form No.')
+                    ->default('CF-' . now()->format('Ymd') . '-' . strtoupper(Str::random(6)))
                     ->placeholder($lastValue2 ? "Data Terakhir : {$lastValue2}" : 'Data Belum Tersedia')
                     ->hiddenOn('edit')
                     ->unique(ignoreRecord: true)
                     ->columnSpanFull()
-                    ->required(),
+                    ->required()
+                    ->extraAttributes([
+                        'readonly' => true,
+                        'style' => 'pointer-events: none;'
+                    ]),
 
                 Section::make('Informasi Umum')
                     ->collapsible()
                     ->schema([
                         TextInput::make('no_spk_service')
                             ->label('Nomor SPK Service')
-                            ->hint('Format: XXX/QKS/MKT/SPK/MM/YY')
+                            ->hint('Format: XXX/QKS/ENG/SPK/MM/YY')
                             ->placeholder($lastValue ? "Data Terakhir : {$lastValue}" : 'Data Belum Tersedia')
                             ->hiddenOn('edit')
                             ->unique(ignoreRecord: true)
@@ -137,6 +141,7 @@ class SPKServiceResource extends Resource
 
                 Section::make('Pemeriksaan dan Persetujuan')
                     ->collapsible()
+                    ->hiddenOn('create')
                     ->relationship('pemeriksaanPersetujuan')
                     ->schema([
                         ButtonGroup::make('status_pekerjaan')
@@ -195,6 +200,21 @@ class SPKServiceResource extends Resource
 
                 TextColumn::make('perusahaan')
                     ->label('Nama Perusahaan'),
+
+                TextColumn::make('pemeriksaanPersetujuan.status_pekerjaan')
+                    ->label('Status Pengerjaan')
+                    ->badge()
+                    ->formatStateUsing(function ($state) {
+                        if (strtolower($state) === 'ya') {
+                            return 'Selesai';
+                        }
+
+                        return 'Belum Selesai';
+                    })
+                    ->color(function ($state) {
+                        return strtolower($state) === 'ya' ? 'success' : 'danger';
+                    })
+                    ->alignCenter(),
 
                 TextColumn::make('status_penyelesaian')
                     ->label('Status')
@@ -255,16 +275,16 @@ class SPKServiceResource extends Resource
     {
         return
             SignaturePad::make($fieldName)
-                ->label($labelName)
-                ->exportPenColor('#0118D8')
-                ->helperText('*Harap Tandatangan di tengah area yang disediakan.')
-                ->afterStateUpdated(function ($state, $set) use ($fieldName) {
-                    if (blank($state))
-                        return;
-                    $path = SignatureUploader::handle($state, 'ttd_', 'Engineering/SPK/Signatures');
-                    if ($path) {
-                        $set($fieldName, $path);
-                    }
-                });
+            ->label($labelName)
+            ->exportPenColor('#0118D8')
+            ->helperText('*Harap Tandatangan di tengah area yang disediakan.')
+            ->afterStateUpdated(function ($state, $set) use ($fieldName) {
+                if (blank($state))
+                    return;
+                $path = SignatureUploader::handle($state, 'ttd_', 'Engineering/SPK/Signatures');
+                if ($path) {
+                    $set($fieldName, $path);
+                }
+            });
     }
 }
