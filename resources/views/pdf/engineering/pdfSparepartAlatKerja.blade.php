@@ -148,7 +148,7 @@
                         <label class="block mb-1 font-semibold">{{ $role }}</label>
                         <input type="text" value="{{ $data['name'] }}" readonly class="w-full p-2 mb-2 text-black" />
 
-                        <label class="block mb-1 font-semibold">Signature</label>
+                        <label class="block mb-1 font-semibold"></label>
                         <div class="flex items-center justify-center w-full h-24 mb-2 bg-white">
                             @if ($data['signature'])
                                 <img src="{{ asset('storage/' . $data['signature']) }}" alt="Signature"
