@@ -63,7 +63,7 @@ class ChamberG2Policy
      */
     public function forceDelete(User $user, ChamberG2 $chamberG2): bool
     {
-        return $user->can('{{ ForceDelete }}');
+        return $user->can('force_delete_engineering::maintenance::chamber::g2::chamber::g2');
     }
 
     /**
@@ -71,7 +71,7 @@ class ChamberG2Policy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('{{ ForceDeleteAny }}');
+        return $user->can('force_delete_any_engineering::maintenance::chamber::g2::chamber::g2');
     }
 
     /**
@@ -79,7 +79,7 @@ class ChamberG2Policy
      */
     public function restore(User $user, ChamberG2 $chamberG2): bool
     {
-        return $user->can('{{ Restore }}');
+        return $user->can('restore_engineering::maintenance::chamber::g2::chamber::g2');
     }
 
     /**
@@ -87,7 +87,7 @@ class ChamberG2Policy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('{{ RestoreAny }}');
+        return $user->can('restore_any_engineering::maintenance::chamber::g2::chamber::g2');
     }
 
     /**
@@ -95,7 +95,7 @@ class ChamberG2Policy
      */
     public function replicate(User $user, ChamberG2 $chamberG2): bool
     {
-        return $user->can('{{ Replicate }}');
+        return $user->can('replicate_engineering::maintenance::chamber::g2::chamber::g2');
     }
 
     /**
@@ -103,6 +103,6 @@ class ChamberG2Policy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('{{ Reorder }}');
+        return $user->can('reorder_engineering::maintenance::chamber::g2::chamber::g2');
     }
 }

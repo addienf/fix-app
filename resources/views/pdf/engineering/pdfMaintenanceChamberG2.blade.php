@@ -58,7 +58,7 @@
 
             <table class="w-full max-w-4xl pt-4 mx-auto table-auto border border-black text-xs">
                 <thead>
-                    <tr class="bg-gray-300 text-center font-bold">
+                    <tr class=" text-center font-bold">
                         <th class="border border-black w-8">NO</th>
                         <th class="border border-black w-48">ITEM TO CHECK</th>
                         <th class="border border-black w-40">BEFORE<br>MAINTENANCE</th>
@@ -66,7 +66,7 @@
                         <th class="border border-black w-16" colspan="3">ACCEPTED</th>
                         <th class="border border-black w-36">REMARK</th>
                     </tr>
-                    <tr class="bg-gray-300 text-center font-bold">
+                    <tr class=" text-center font-bold">
                         <th colspan="4" class="invisible"></th>
                         <th class="border border-black w-10">YES</th>
                         <th class="border border-black w-10">NO</th>
@@ -78,7 +78,7 @@
                     @php $rowNumber = 1; @endphp
                     @foreach ($details as $group)
                         <tr>
-                            <td colspan="8" class="px-3 py-2 font-semibold bg-gray-200 border border-black">
+                            <td colspan="8" class="px-3 py-2 font-semibold border border-black">
                                 {{ $group['mainPart'] ?? '-' }}</td>
                         </tr>
                         @foreach ($group['parts'] as $part)

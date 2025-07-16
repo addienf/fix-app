@@ -63,7 +63,7 @@ class URSPolicy
      */
     public function forceDelete(User $user, URS $uRS): bool
     {
-        return $user->can('{{ ForceDelete }}');
+        return $user->can('force_delete_general::u::r::s::u::r::s');
     }
 
     /**
@@ -71,7 +71,7 @@ class URSPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('{{ ForceDeleteAny }}');
+        return $user->can('force_delete_any_general::u::r::s::u::r::s');
     }
 
     /**
@@ -79,7 +79,7 @@ class URSPolicy
      */
     public function restore(User $user, URS $uRS): bool
     {
-        return $user->can('{{ Restore }}');
+        return $user->can('restore_general::u::r::s::u::r::s');
     }
 
     /**
@@ -87,7 +87,7 @@ class URSPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('{{ RestoreAny }}');
+        return $user->can('restore_any_general::u::r::s::u::r::s');
     }
 
     /**
@@ -95,7 +95,7 @@ class URSPolicy
      */
     public function replicate(User $user, URS $uRS): bool
     {
-        return $user->can('{{ Replicate }}');
+        return $user->can('replicate_general::u::r::s::u::r::s');
     }
 
     /**
@@ -103,6 +103,6 @@ class URSPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('{{ Reorder }}');
+        return $user->can('reorder_general::u::r::s::u::r::s');
     }
 }

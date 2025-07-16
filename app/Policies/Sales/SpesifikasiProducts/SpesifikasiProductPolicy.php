@@ -63,7 +63,7 @@ class SpesifikasiProductPolicy
      */
     public function forceDelete(User $user, SpesifikasiProduct $spesifikasiProduct): bool
     {
-        return $user->can('{{ ForceDelete }}');
+        return $user->can('force_delete_sales::spesifikasi::products::spesifikasi::product');
     }
 
     /**
@@ -71,7 +71,7 @@ class SpesifikasiProductPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('{{ ForceDeleteAny }}');
+        return $user->can('force_delete_any_sales::spesifikasi::products::spesifikasi::product');
     }
 
     /**
@@ -79,7 +79,7 @@ class SpesifikasiProductPolicy
      */
     public function restore(User $user, SpesifikasiProduct $spesifikasiProduct): bool
     {
-        return $user->can('{{ Restore }}');
+        return $user->can('restore_sales::spesifikasi::products::spesifikasi::product');
     }
 
     /**
@@ -87,7 +87,7 @@ class SpesifikasiProductPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('{{ RestoreAny }}');
+        return $user->can('restore_any_sales::spesifikasi::products::spesifikasi::product');
     }
 
     /**
@@ -95,7 +95,7 @@ class SpesifikasiProductPolicy
      */
     public function replicate(User $user, SpesifikasiProduct $spesifikasiProduct): bool
     {
-        return $user->can('{{ Replicate }}');
+        return $user->can('replicate_sales::spesifikasi::products::spesifikasi::product');
     }
 
     /**
@@ -103,6 +103,6 @@ class SpesifikasiProductPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('{{ Reorder }}');
+        return $user->can('reorder_sales::spesifikasi::products::spesifikasi::product');
     }
 }
