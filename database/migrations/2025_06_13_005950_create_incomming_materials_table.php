@@ -17,7 +17,7 @@ return new class extends Migration {
             $table->string('kondisi_material');
             $table->string('status_penerimaan');
             $table->string('dokumen_pendukung');
-            $table->string('file_upload');
+            $table->string('file_upload')->nullable();
             $table->string('status_penerimaan_pic');
             $table->timestamps();
         });

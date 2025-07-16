@@ -11,6 +11,7 @@ use App\Models\Engineering\Maintenance\Refrigerator\Refrigerator;
 use App\Models\Engineering\Maintenance\RissingPipette\RissingPipette;
 use App\Models\Engineering\Maintenance\WalkinChamber\WalkinChamber;
 use App\Models\Engineering\Permintaan\PermintaanSparepart;
+use App\Models\Engineering\Service\ServiceReport;
 use App\Models\Engineering\SPK\SPKService\Pivot\PemeriksaanPersetujuan;
 use App\Models\Engineering\SPK\SPKService\Pivot\Petugas;
 use App\Models\Engineering\SPK\SPKService\Pivot\SPKServicePIC;
@@ -99,6 +100,11 @@ class SPKService extends Model
     public function chamberG2()
     {
         return $this->hasOne(ChamberG2::class, 'spk_service_id');
+    }
+
+    public function service()
+    {
+        return $this->hasOne(ServiceReport::class, 'spk_service_id');
     }
 
     protected static function booted()

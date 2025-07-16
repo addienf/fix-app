@@ -11,7 +11,7 @@ class ColdRoomDetail extends Model
     use HasFactory;
 
     protected $fillable = [
-        'cold_room_id',
+        'cold_id',
         'checklist',
     ];
 
@@ -21,6 +21,6 @@ class ColdRoomDetail extends Model
 
     public function coldRoom()
     {
-        return $this->belongsTo(ColdRoom::class, 'cold_room_id');
+        return $this->belongsTo(ColdRoom::class, 'cold_id');
     }
 }

@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('spk_marketing_id')->constrained('spk_marketings')->cascadeOnDelete();
             $table->string('nama_perusahaan');
+            $table->string('file_path');
+            $table->string('lampiran');
             $table->timestamps();
         });
     }

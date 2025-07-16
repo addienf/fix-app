@@ -13,7 +13,7 @@ class ColdRoomPIC extends Model
 
     protected $table = 'cold_room_pics';
     protected $fillable = [
-        'cold_room_id',
+        'cold_id',
         'checked_name',
         'checked_signature',
         'checked_date',
@@ -24,7 +24,7 @@ class ColdRoomPIC extends Model
 
     public function coldRoom()
     {
-        return $this->belongsTo(ColdRoom::class, 'cold_room_id');
+        return $this->belongsTo(ColdRoom::class, 'cold_id');
     }
 
     protected static function booted(): void

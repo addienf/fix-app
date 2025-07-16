@@ -196,7 +196,7 @@ class SpesifikasiProductResource extends Resource
                                 ->send();
                         }),
                     Action::make('pdf_view')
-                        ->label(_('View PDF'))
+                        ->label(_('Lihat PDF'))
                         ->icon('heroicon-o-document')
                         ->color('success')
                         ->openUrlInNewTab()

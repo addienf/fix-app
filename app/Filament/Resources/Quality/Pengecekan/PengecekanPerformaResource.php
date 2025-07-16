@@ -334,7 +334,7 @@ class PengecekanPerformaResource extends Resource
 
                 $tipe = $spk?->jadwalProduksi?->details->first()->tipe;
                 $volume = $spk?->jadwalProduksi?->details->first()->volume;
-                $s_n = $spk?->serial_number;
+                $s_n = $spk?->defect->serial_number;
 
                 $set('tipe', $tipe);
                 $set('volume', $volume);

@@ -5,11 +5,11 @@ return [
         'parts' => [
             'Measure the current of cooling system (compresor)',
             'Pressure analyzer (10Psi - 15Psi)',
-            'Normal 2,58 - 2,76A in 220-240V/50Hz',
-            'Normal 2,34 - 2,39A in 203-230V/60Hz',
-            'Normal 3,46 - 3,71A in 220-240V/50Hz',
-            'Normal 3,4 - 3,56A in 203-230V/60Hz',
-            'Check the freon leak with halogen leak detector',
+            // 'Normal 2,58 - 2,76A in 220-240V/50Hz',
+            // 'Normal 2,34 - 2,39A in 203-230V/60Hz',
+            // 'Normal 3,46 - 3,71A in 220-240V/50Hz',
+            // 'Normal 3,4 - 3,56A in 203-230V/60Hz',
+            // 'Check the freon leak with halogen leak detector',
         ]
     ],
     // [

@@ -11,10 +11,12 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Ysfkaya\FilamentPhoneInput\Forms\PhoneInput;
 
 class CustomerResource extends Resource
 {
@@ -34,12 +36,18 @@ class CustomerResource extends Resource
                 Section::make('Customer')
                     ->collapsible()
                     ->schema([
-                        self::textInput('name', 'Nama Customer'),
-                        self::textInput('phone_number', 'No Telpon'),
+                        self::textInput('name', 'Nama Customer')
+                            ->columnSpanFull(),
+                        // self::textInput('phone_number', 'No Telpon'),
+                        PhoneInput::make('phone_number')
+                            // ->defaultCountry('US')
+                            ->label('Nomor Telpon')
+                            ->required(),
                         self::textInput('department', 'Department'),
                         self::textInput('company_name', 'Nama Perusahaan'),
                         self::textInput('company_address', 'Alamat Perusahaan'),
                     ])
+                    ->columns(2)
             ]);
     }
 
@@ -58,7 +66,10 @@ class CustomerResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                ActionGroup::make([
+                    Tables\Actions\EditAction::make(),
+                    Tables\Actions\DeleteAction::make(),
+                ])
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

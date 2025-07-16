@@ -184,10 +184,9 @@ class SPKResource extends Resource
                     Tables\Actions\EditAction::make(),
                     Tables\Actions\DeleteAction::make(),
                     Action::make('pdf_view')
-                        ->label(_('View PDF'))
+                        ->label(_('Lihat PDF'))
                         ->icon('heroicon-o-document')
                         ->color('success')
-                        // ->url(fn($record) => self::getUrl('pdfSPK', ['record' => $record->id]))
                         ->url(fn($record) => route('pdf.SPKMarketing', ['record' => $record->id]))
                         ->visible(fn($record) => $record->status_penerimaan === 'Diterima'),
                 ])

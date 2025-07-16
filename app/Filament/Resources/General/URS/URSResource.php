@@ -14,6 +14,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -45,9 +46,13 @@ class URSResource extends Resource
                         self::selectInput('customer_id', 'Nama Customer', 'customer', 'name')
                             ->createOptionForm(fn() => self::customerFormSchema()),
 
-                        Textarea::make('permintaan_khusus')->label('Remark Permintaan Khusus')
+                        Textarea::make('permintaan_khusus')
+                            ->label('Remark Permintaan Khusus')
+                            ->required()
+                            ->columnSpanFull()
 
                     ])
+                    ->columns(2)
 
             ]);
     }
@@ -64,7 +69,10 @@ class URSResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                ActionGroup::make([
+                    Tables\Actions\EditAction::make(),
+                    Tables\Actions\DeleteAction::make(),
+                ])
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

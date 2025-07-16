@@ -58,17 +58,10 @@ Route::get('/quality/defect-status/{record}/pdf-defect-status', [PDFController::
 Route::get('/engineering/spk-service/{record}/pdf-spk-service', [PDFController::class, 'pdfSPKService'])->name('pdf.spkService');
 Route::get('/engineering/sparepart-alat-kerja/{record}/pdf-sparepart-alat-kerja', [PDFController::class, 'pdfSparepartAlatKerja'])->name('pdf.sparepartAlatKerja');
 Route::get('/engineering/berita-acara/{record}/pdf-berita-acara', [PDFController::class, 'pdfBeritaAcara'])->name('pdf.beritaAcara');
-
-Route::get('/engineering/chamberg2', [PDFController::class, 'pdfMaintenanceChamberG2'])->name('pdf.MaintenanceChamberG2');
-
-Route::get('/engineering/walkinchamberg2', [PDFController::class, 'pdfWalkInChamberG2'])->name('pdf.walkInChamberG2');
-
-Route::get('/engineering/rissingpipette', [PDFController::class, 'pdfRissingPipette'])->name('pdf.rissingPipette');
-
-Route::get('/engineering/chamberr1', [PDFController::class, 'pdfWalkInChamberR1'])->name('pdf.walkInChamberR1');
-
-Route::get('/engineering/chamberr2', [PDFController::class, 'pdfWalkInChamberR2'])->name('pdf.walkInChamberR2');
-
-Route::get('/engineering/maintenancerefrigator', [PDFController::class, 'pdfMaintenanceRefrigator'])->name('pdf.MaintenanceRefrigator');
-
-Route::get('/engineering/maintenancecoldroom', [PDFController::class, 'pdfMaintenanceColdRoom'])->name('pdf.MaintenanceColdRoom');
+Route::get('/engineering/chamber-g2/{record}/pdf-chamber-g2', [PDFController::class, 'pdfMaintenanceChamberG2'])->name('pdf.MaintenanceChamberG2');
+Route::get('/engineering/walkin-chamber-g2/{record}/pdf-walkin-chamber-g2', [PDFController::class, 'pdfWalkInChamberG2'])->name('pdf.walkInChamberG2');
+Route::get('/engineering/rissing-pipette/{record}/pdf-rissing-pipette', [PDFController::class, 'pdfRissingPipette'])->name('pdf.rissingPipette');
+Route::get('/engineering/chamber-r1/{record}/pdf-chamber-r1', [PDFController::class, 'pdfWalkInChamberR1'])->name('pdf.walkInChamberR1');
+Route::get('/engineering/chamber-r2/{record}/pdf-chamber-r2', [PDFController::class, 'pdfWalkInChamberR2'])->name('pdf.walkInChamberR2');
+Route::get('/engineering/maintenance-refrigator/{record}/pdf-maintenance-refrigator', [PDFController::class, 'pdfMaintenanceRefrigator'])->name('pdf.MaintenanceRefrigator');
+Route::get('/engineering/maintenance-cold-room/{record}/pdf-cold-room', [PDFController::class, 'pdfMaintenanceColdRoom'])->name('pdf.MaintenanceColdRoom');
