@@ -15,6 +15,8 @@ class SPKVendor extends Model
     protected $fillable = [
         'spk_marketing_id',
         'nama_perusahaan',
+        'file_path',
+        'lampiran',
     ];
 
     public function spk()

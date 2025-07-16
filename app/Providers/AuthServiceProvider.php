@@ -52,6 +52,7 @@ use App\Policies\Engineering\SPK\SPKServicePolicy;
 use App\Policies\General\CustomerPolicy;
 use App\Policies\Production\Jadwal\JadwalProduksiPolicy;
 use App\Policies\Production\Penyerahan\PenyerahanElectrical\PenyerahanElectricalPolicy;
+use App\Policies\Production\Penyerahan\PenyerahanProdukJadiPolicy;
 use App\Policies\Production\PermintaanBahanProduksi\PermintaanAlatDanBahanPolicy;
 use App\Policies\Production\SPK\SPKQualityPolicy;
 use App\Policies\Production\SPK\SPKVendorPolicy;
@@ -95,7 +96,7 @@ class AuthServiceProvider extends ServiceProvider
         //Produksi
         JadwalProduksi::class => JadwalProduksiPolicy::class,
         PenyerahanElectrical::class => PenyerahanElectricalPolicy::class,
-        PenyerahanProdukJadi::class => PenyerahanElectricalPolicy::class,
+        PenyerahanProdukJadi::class => PenyerahanProdukJadiPolicy::class,
         PermintaanAlatDanBahan::class => PermintaanAlatDanBahanPolicy::class,
         SPKQuality::class => SPKQualityPolicy::class,
         SPKVendor::class => SPKVendorPolicy::class,
