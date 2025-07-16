@@ -63,7 +63,7 @@ class PengecekanMaterialSSPolicy
      */
     public function forceDelete(User $user, PengecekanMaterialSS $pengecekanMaterialSS): bool
     {
-        return $user->can('{{ ForceDelete }}');
+        return $user->can('force_delete_quality::pengecekan::material::s::s::pengecekan::material::s::s');
     }
 
     /**
@@ -71,7 +71,7 @@ class PengecekanMaterialSSPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('{{ ForceDeleteAny }}');
+        return $user->can('force_delete_any_quality::pengecekan::material::s::s::pengecekan::material::s::s');
     }
 
     /**
@@ -79,7 +79,7 @@ class PengecekanMaterialSSPolicy
      */
     public function restore(User $user, PengecekanMaterialSS $pengecekanMaterialSS): bool
     {
-        return $user->can('{{ Restore }}');
+        return $user->can('restore_quality::pengecekan::material::s::s::pengecekan::material::s::s');
     }
 
     /**
@@ -87,7 +87,7 @@ class PengecekanMaterialSSPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('{{ RestoreAny }}');
+        return $user->can('restore_any_quality::pengecekan::material::s::s::pengecekan::material::s::s');
     }
 
     /**
@@ -95,7 +95,7 @@ class PengecekanMaterialSSPolicy
      */
     public function replicate(User $user, PengecekanMaterialSS $pengecekanMaterialSS): bool
     {
-        return $user->can('{{ Replicate }}');
+        return $user->can('replicate_quality::pengecekan::material::s::s::pengecekan::material::s::s');
     }
 
     /**
@@ -103,6 +103,6 @@ class PengecekanMaterialSSPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('{{ Reorder }}');
+        return $user->can('reorder_quality::pengecekan::material::s::s::pengecekan::material::s::s');
     }
 }

@@ -63,7 +63,7 @@ class PermintaanBahanPolicy
      */
     public function forceDelete(User $user, PermintaanBahan $permintaanBahan): bool
     {
-        return $user->can('{{ ForceDelete }}');
+        return $user->can('force_delete_warehouse::permintaan::bahan::w::b::b::permintaan::bahan');
     }
 
     /**
@@ -71,7 +71,7 @@ class PermintaanBahanPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('{{ ForceDeleteAny }}');
+        return $user->can('force_delete_any_warehouse::permintaan::bahan::w::b::b::permintaan::bahan');
     }
 
     /**
@@ -79,7 +79,7 @@ class PermintaanBahanPolicy
      */
     public function restore(User $user, PermintaanBahan $permintaanBahan): bool
     {
-        return $user->can('{{ Restore }}');
+        return $user->can('restore_warehouse::permintaan::bahan::w::b::b::permintaan::bahan');
     }
 
     /**
@@ -87,7 +87,7 @@ class PermintaanBahanPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('{{ RestoreAny }}');
+        return $user->can('restore_any_warehouse::permintaan::bahan::w::b::b::permintaan::bahan');
     }
 
     /**
@@ -95,7 +95,7 @@ class PermintaanBahanPolicy
      */
     public function replicate(User $user, PermintaanBahan $permintaanBahan): bool
     {
-        return $user->can('{{ Replicate }}');
+        return $user->can('replicate_warehouse::permintaan::bahan::w::b::b::permintaan::bahan');
     }
 
     /**
@@ -103,6 +103,6 @@ class PermintaanBahanPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('{{ Reorder }}');
+        return $user->can('reorder_warehouse::permintaan::bahan::w::b::b::permintaan::bahan');
     }
 }
