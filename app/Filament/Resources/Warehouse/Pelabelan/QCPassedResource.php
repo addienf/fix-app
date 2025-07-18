@@ -9,6 +9,7 @@ use App\Models\Warehouse\Pelabelan\QCPassed;
 use App\Services\SignatureUploader;
 use Filament\Actions\Action;
 use Filament\Forms;
+use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Grid;
@@ -70,12 +71,15 @@ class QCPassedResource extends Resource
 
                     ])->columns($isEdit ? 2 : 3),
 
+
                 Section::make('Detail Laporan Produk')
                     ->collapsible()
                     ->schema([
-                        TableRepeater::make('details')
+                        Repeater::make('details')
+                            ->label('')
                             ->relationship('details')
                             ->schema([
+                                // Grid untuk 6 kolom
                                 self::textInput('nama_produk', 'Nama Produk')
                                     ->extraAttributes([
                                         'readonly' => true,
@@ -94,7 +98,7 @@ class QCPassedResource extends Resource
                                         'style' => 'pointer-events: none;'
                                     ]),
 
-                                self::selectJenis(),
+                                self::selectJenis(), // Asumsi ini dropdown
 
                                 self::textInput('jumlah', 'Jumlah')
                                     ->extraAttributes([
@@ -102,9 +106,9 @@ class QCPassedResource extends Resource
                                         'style' => 'pointer-events: none;'
                                     ]),
 
-                                self::textInput('keterangan', 'Keterangan')
-
+                                self::textInput('keterangan', 'Keterangan'),
                             ])
+                            ->columns(6)
                             ->deletable(false)
                             ->reorderable(false)
                             ->addable(false)
@@ -225,42 +229,44 @@ class QCPassedResource extends Resource
     {
         return
             Select::make('spk_marketing_id')
-            ->label('Nomor SPK')
-            ->relationship(
-                'spk',
-                'no_spk',
-                fn($query) => $query
-                    ->whereHas('pengecekanPerforma', function ($query) {
-                        $query->where('status_penyelesaian', 'Disetujui');
-                    })->whereDoesntHave('qc')
-            )
-            ->native(false)
-            ->searchable()
-            ->preload()
-            ->required()
-            ->reactive()
-            ->afterStateUpdated(function ($state, callable $set) {
-                if (!$state) return;
+                ->label('Nomor SPK')
+                ->relationship(
+                    'spk',
+                    'no_spk',
+                    fn($query) => $query
+                        ->whereHas('pengecekanPerforma', function ($query) {
+                            $query->where('status_penyelesaian', 'Disetujui');
+                        })->whereDoesntHave('qc')
+                )
+                ->native(false)
+                ->searchable()
+                ->preload()
+                ->required()
+                ->reactive()
+                ->afterStateUpdated(function ($state, callable $set) {
+                    if (!$state)
+                        return;
 
-                $spk = SPKMarketing::with('spesifikasiProduct.details.product', 'pengecekanElectrical', 'pengecekanPerforma')->find($state);
-                if (!$spk) return;
+                    $spk = SPKMarketing::with('spesifikasiProduct.details.product', 'pengecekanElectrical', 'pengecekanPerforma')->find($state);
+                    if (!$spk)
+                        return;
 
-                $spesifikasi = $spk->spesifikasiProduct;
-                $serial = $spk->pengecekanPerforma?->serial_number;
-                $tipe = $spk?->pengecekanElectrical?->tipe;
+                    $spesifikasi = $spk->spesifikasiProduct;
+                    $serial = $spk->pengecekanPerforma?->serial_number;
+                    $tipe = $spk?->pengecekanElectrical?->tipe;
 
-                $details = $spesifikasi->details->map(function ($detail) use ($serial, $tipe) {
-                    return [
-                        'nama_produk' => $detail->product?->name ?? '-',
-                        'jumlah' => $detail?->quantity ?? '-',
-                        'serial_number' => $serial ?? '-',
-                        'tipe' => $tipe  ?? '-',
-                    ];
-                })->toArray();
+                    $details = $spesifikasi->details->map(function ($detail) use ($serial, $tipe) {
+                        return [
+                            'nama_produk' => $detail->product?->name ?? '-',
+                            'jumlah' => $detail?->quantity ?? '-',
+                            'serial_number' => $serial ?? '-',
+                            'tipe' => $tipe ?? '-',
+                        ];
+                    })->toArray();
 
-                // dd($details);
-                $set('details', $details);
-            })
+                    // dd($details);
+                    $set('details', $details);
+                })
         ;
     }
 
@@ -268,73 +274,73 @@ class QCPassedResource extends Resource
     {
         return
             Select::make($fieldName)
-            ->relationship($relation, $title)
-            ->label($label)
-            ->native(false)
-            ->searchable()
-            ->preload()
-            ->required()
-            ->reactive();
+                ->relationship($relation, $title)
+                ->label($label)
+                ->native(false)
+                ->searchable()
+                ->preload()
+                ->required()
+                ->reactive();
     }
 
     protected static function selectInputOptions(string $fieldName, string $label, string $config): Select
     {
         return
             Select::make($fieldName)
-            ->options(config($config))
-            ->label($label)
-            ->native(false)
-            ->searchable()
-            ->preload()
-            ->required()
-            ->reactive();
+                ->options(config($config))
+                ->label($label)
+                ->native(false)
+                ->searchable()
+                ->preload()
+                ->required()
+                ->reactive();
     }
 
     protected static function selectJenis(): Select
     {
         return
             Select::make('jenis_transaksi')
-            ->label('Jenis Transaksi')
-            ->required()
-            ->placeholder('Pilih Jenis Transaksi')
-            ->options([
-                'masuk' => 'Masuk',
-                'keluar' => 'Keluar',
-            ]);
+                ->label('Jenis Transaksi')
+                ->required()
+                ->placeholder('Pilih Jenis Transaksi')
+                ->options([
+                    'masuk' => 'Masuk',
+                    'keluar' => 'Keluar',
+                ]);
     }
 
     protected static function datePicker(string $fieldName, string $label): DatePicker
     {
         return
             DatePicker::make($fieldName)
-            ->label($label)
-            ->displayFormat('M d Y')
-            ->seconds(false);
+                ->label($label)
+                ->displayFormat('M d Y')
+                ->seconds(false);
     }
 
     protected static function signatureInput(string $fieldName, string $labelName): SignaturePad
     {
         return
             SignaturePad::make($fieldName)
-            ->label($labelName)
-            ->exportPenColor('#0118D8')
-            ->helperText('*Harap Tandatangan di tengah area yang disediakan.')
-            ->afterStateUpdated(function ($state, $set) use ($fieldName) {
-                if (blank($state))
-                    return;
-                $path = SignatureUploader::handle($state, 'ttd_', 'Quality/PengecekanMaterial/SS/Signatures');
-                if ($path) {
-                    $set($fieldName, $path);
-                }
-            });
+                ->label($labelName)
+                ->exportPenColor('#0118D8')
+                ->helperText('*Harap Tandatangan di tengah area yang disediakan.')
+                ->afterStateUpdated(function ($state, $set) use ($fieldName) {
+                    if (blank($state))
+                        return;
+                    $path = SignatureUploader::handle($state, 'ttd_', 'Quality/PengecekanMaterial/SS/Signatures');
+                    if ($path) {
+                        $set($fieldName, $path);
+                    }
+                });
     }
 
     protected static function textColumn(string $fieldName, string $label): TextColumn
     {
         return
             TextColumn::make($fieldName)
-            ->label($label)
-            ->searchable()
-            ->sortable();
+                ->label($label)
+                ->searchable()
+                ->sortable();
     }
 }
