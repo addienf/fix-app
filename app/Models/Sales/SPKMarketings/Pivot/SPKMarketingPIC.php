@@ -3,6 +3,7 @@
 namespace App\Models\Sales\SPKMarketings\Pivot;
 
 use App\Models\Sales\SPKMarketings\SPKMarketing;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
@@ -24,6 +25,17 @@ class SPKMarketingPIC extends Model
     {
         return $this->belongsTo(SPKMarketing::class);
     }
+
+    public function createName()
+    {
+        return $this->belongsTo(User::class, 'create_name');
+    }
+
+    public function receiveName()
+    {
+        return $this->belongsTo(User::class, 'receive_name');
+    }
+
     protected static function booted(): void
     {
         static::updating(function ($model) {

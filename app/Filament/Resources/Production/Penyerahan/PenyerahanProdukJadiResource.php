@@ -153,8 +153,15 @@ class PenyerahanProdukJadiResource extends Resource
 
                                 Grid::make(1)
                                     ->schema([
+                                        Hidden::make('submit_name')
+                                            ->default(fn() => auth()->id()),
 
-                                        self::textInput('submit_name', 'Diserahkan Oleh'),
+                                        self::textInput('submit_name_placeholder', 'Diserahkan Oleh')
+                                            ->default(fn() => auth()->user()?->name)
+                                            ->extraAttributes([
+                                                'readonly' => true,
+                                                'style' => 'pointer-events: none;'
+                                            ]),
 
                                         self::signatureInput('submit_signature', ''),
 
@@ -162,8 +169,20 @@ class PenyerahanProdukJadiResource extends Resource
 
                                 Grid::make(1)
                                     ->schema([
+                                        Hidden::make('receive_name')
+                                            ->default(fn() => auth()->id())
+                                            ->dehydrated(true)
+                                            ->afterStateHydrated(function ($component) {
+                                                $component->state(auth()->id());
+                                            }),
 
-                                        self::textInput('receive_name', 'Diterima Oleh'),
+                                        self::textInput('receive_name_placeholder', 'Diterima Oleh')
+                                            ->placeholder(fn() => auth()->user()?->name)
+                                            ->required(false)
+                                            ->extraAttributes([
+                                                'readonly' => true,
+                                                'style' => 'pointer-events: none;'
+                                            ]),
 
                                         self::signatureInput('receive_signature', ''),
 
@@ -194,16 +213,6 @@ class PenyerahanProdukJadiResource extends Resource
                     )
                     ->alignCenter(),
 
-                // ImageColumn::make('pic.submit_signature')
-                //     ->width(150)
-                //     ->label('Diserahkan Oleh')
-                //     ->height(75),
-
-                // ImageColumn::make('pic.receive_signature')
-                //     ->width(150)
-                //     ->label('Diterima Oleh')
-                //     ->height(75),
-
             ])
             ->filters([
                 //
@@ -213,7 +222,7 @@ class PenyerahanProdukJadiResource extends Resource
                     Tables\Actions\EditAction::make(),
                     Tables\Actions\DeleteAction::make(),
                     Action::make('pdf_view')
-                        ->label(_('View PDF'))
+                        ->label(_('Lihat PDF'))
                         ->icon('heroicon-o-document')
                         ->color('success')
                         ->visible(fn($record) => $record->status_penerimaan === 'Diterima')

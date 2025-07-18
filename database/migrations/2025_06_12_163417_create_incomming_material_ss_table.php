@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('permintaan_pembelian_id')->constrained('permintaan_pembelians')->onDelete('cascade');
             $table->string('no_po');
             $table->string('supplier');
-            $table->string('remark');
+            $table->text('remark');
             $table->string('status_penyelesaian');
             $table->timestamps();
         });

@@ -79,7 +79,7 @@
                     <img src="{{ asset('storage/' . $permintaan_pembelian->pic->create_signature) }}" alt="Signature"
                         class="object-contain h-20 w-80" />
                     <div class="mt-2 font-medium dark:text-white">
-                        {{ $permintaan_pembelian->pic->create_name }}
+                        {{ $permintaan_pembelian->pic->createName->name }}
                     </div>
                 </div>
                 <div class="flex flex-col items-center">
@@ -87,7 +87,7 @@
                     <img src="{{ asset('storage/' . $permintaan_pembelian->pic->knowing_signature) }}" alt="Signature"
                         class="object-contain h-20 w-80" />
                     <div class="mt-2 font-medium dark:text-white">
-                        {{ $permintaan_pembelian->pic->knowing_name }}
+                        {{ $permintaan_pembelian->pic->knowingName->name }}
                     </div>
                 </div>
             </div>

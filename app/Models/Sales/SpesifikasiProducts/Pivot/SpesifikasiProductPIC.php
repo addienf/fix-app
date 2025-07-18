@@ -3,6 +3,7 @@
 namespace App\Models\Sales\SpesifikasiProducts\Pivot;
 
 use App\Models\Sales\SpesifikasiProducts\SpesifikasiProduct;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
@@ -27,6 +28,12 @@ class SpesifikasiProductPIC extends Model
     {
         return $this->belongsTo(SpesifikasiProduct::class);
     }
+
+    public function userName()
+    {
+        return $this->belongsTo(User::class, 'name');
+    }
+
     protected static function booted(): void
     {
         static::updating(function ($model) {

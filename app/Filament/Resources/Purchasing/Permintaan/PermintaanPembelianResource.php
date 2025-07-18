@@ -122,16 +122,47 @@ class PermintaanPembelianResource extends Resource
 
                                 Grid::make(1)
                                     ->schema([
-                                        self::textInput('create_name', 'Dibuat Oleh'),
+
+                                        Hidden::make('create_name')
+                                            ->default(fn() => auth()->id()),
+
+                                        self::textInput('create_name_placeholder', 'Dibuat Oleh')
+                                            ->default(fn() => auth()->user()?->name)
+                                            ->extraAttributes([
+                                                'readonly' => true,
+                                                'style' => 'pointer-events: none;'
+                                            ]),
+
+                                        // self::textInput('create_name', 'Dibuat Oleh'),
                                         // ->placeholder('Marketing'),
                                         self::signatureInput('create_signature', ''),
+
                                     ])->hiddenOn(operations: 'edit'),
 
                                 Grid::make(1)
                                     ->schema([
-                                        self::textInput('knowing_name', 'Mengetahui'),
+
+                                        Hidden::make('knowing_name')
+                                            ->default(fn() => auth()->id())
+                                            ->dehydrated(true)
+                                            ->afterStateHydrated(function ($component) {
+                                                $component->state(auth()->id());
+                                            }),
+
+                                        self::textInput('knowing_name_placeholder', 'Mengetahui')
+                                            ->default(fn() => auth()->user()?->name)
+                                            ->placeholder(fn() => auth()->user()?->name)
+                                            ->required(false)
+                                            ->extraAttributes([
+                                                'readonly' => true,
+                                                'style' => 'pointer-events: none;'
+                                            ]),
+
+                                        // self::textInput('knowing_name', 'Mengetahui'),
                                         // ->placeholder('Produksi'),
+
                                         self::signatureInput('knowing_signature', ''),
+
                                     ])->hiddenOn(operations: 'create'),
 
                             ]),
@@ -164,7 +195,7 @@ class PermintaanPembelianResource extends Resource
                     Tables\Actions\EditAction::make(),
                     Tables\Actions\DeleteAction::make(),
                     Action::make('pdf_view')
-                        ->label(_('View PDF'))
+                        ->label(_('Lihat PDF'))
                         ->icon('heroicon-o-document')
                         ->color('success')
                         ->visible(fn($record) => $record->status_persetujuan === 'Disetujui')

@@ -3,6 +3,7 @@
 namespace App\Models\Engineering\SPK\SPKService\Pivot;
 
 use App\Models\Engineering\SPK\SPKService;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
@@ -24,6 +25,16 @@ class SPKServicePIC extends Model
     public function spkService()
     {
         return $this->belongsTo(SPKService::class, 'spk_service_id');
+    }
+
+    public function dikonfirmasiNama()
+    {
+        return $this->belongsTo(User::class, 'dikonfirmasi_nama');
+    }
+
+    public function diketahuiNama()
+    {
+        return $this->belongsTo(User::class, 'diketahui_nama');
     }
 
     protected static function booted(): void

@@ -2,15 +2,11 @@
 return [
     [
         'mainPart' => 'Check Evaporator from Freeze',
-        'parts' => [
-            '',
-        ]
+        'parts' => []
     ],
     [
         'mainPart' => 'Cleaning Condensing Unit',
-        'parts' => [
-            '',
-        ]
+        'parts' => []
     ],
     // [
     //     'mainPart' => 'Check and flushing drainase',

@@ -4,11 +4,11 @@ return [
         'mainPart' => 'Cooling System',
         'parts' => [
             'Check & clena the cooling system',
-            'Measure the current of cooling system (compresor)',
-            'Pressure analyzer (......Psi - ......Psi)*',
-            'Normal (......A to ......A)*',
-            'Clean the condenser',
-            'Clean the evaporator'
+            // 'Measure the current of cooling system (compresor)',
+            // 'Pressure analyzer (......Psi - ......Psi)*',
+            // 'Normal (......A to ......A)*',
+            // 'Clean the condenser',
+            // 'Clean the evaporator'
         ]
     ],
     // [

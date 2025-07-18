@@ -102,12 +102,41 @@ class ChamberWalkinG2Resource extends Resource
                             ->label('')
                             ->schema([
 
-                                TextInput::make('mainPart')
-                                    ->label('Main Part')
-                                    ->hidden(fn(callable $get) => blank($get('mainPart')))
-                                    ->extraAttributes([
-                                        'readonly' => true,
-                                        'style' => 'pointer-events: none;'
+                                Grid::make(7)
+                                    ->schema([
+                                        TextInput::make('mainPart')
+                                            ->label('Main Part')
+                                            ->hidden(fn(callable $get) => blank($get('mainPart')))
+                                            ->extraAttributes([
+                                                'readonly' => true,
+                                                'style' => 'pointer-events: none;'
+                                            ])
+                                            ->columnSpan(3),
+
+                                        TextInput::make('before')
+                                            ->label('Before')
+                                            ->required()
+                                            ->columnSpan(1),
+
+                                        TextInput::make('after')
+                                            ->label('After')
+                                            ->required()
+                                            ->columnSpan(1),
+
+                                        Select::make('accepted')
+                                            ->label('Accepted')
+                                            ->required()
+                                            ->options([
+                                                'yes' => 'Yes',
+                                                'no' => 'No',
+                                                'na' => 'NA',
+                                            ])
+                                            ->columnSpan(1),
+
+                                        TextInput::make('remark')
+                                            ->label('Remark')
+                                            ->required()
+                                            ->columnSpan(1),
                                     ]),
 
                                 Repeater::make('parts')
@@ -135,19 +164,13 @@ class ChamberWalkinG2Resource extends Resource
                                             ->columnSpan(1)
                                             ->required(),
 
-                                        Select::make('remark')
-                                            ->options([
-                                                'ok' => 'OK',
-                                                'h' => 'Hold',
-                                                'r' => 'Repaired',
-                                            ])
+                                        TextInput::make('remark')
                                             ->columnSpan(1)
                                             ->required(),
 
                                     ])
                                     ->columns(7)
-                                    ->defaultItems(1)
-                                    ->addable(true)
+                                    ->addable(false)
                                     ->deletable(false)
                                     ->reorderable(false),
 

@@ -94,7 +94,7 @@
                     <p class="mb-2 dark:text-white">Yang Membuat</p>
                     <img src="{{ asset('storage/' . $spk_qc->pic->create_signature) }}" alt="Product Signature"
                         class="h-20 w-80" />
-                    <p class="mt-1 font-semibold dark:text-white">{{ $spk_qc->dari }}</p>
+                    <p class="mt-1 font-semibold dark:text-white">{{ $spk_qc->pic->createName->name }}</p>
                     <p class="mt-1 font-semibold dark:text-white">Produksi</p>
                 </div>
                 <!-- Kanan -->
@@ -102,7 +102,7 @@
                     <p class="mb-2 dark:text-white">Yang Menerima</p>
                     <img src="{{ asset('storage/' . $spk_qc->pic->receive_signature) }}" alt="Product Signature"
                         class="h-20 w-80" />
-                    <p class="mt-1 font-semibold dark:text-white">{{ $spk_qc->kepada }}</p>
+                    <p class="mt-1 font-semibold dark:text-white">{{ $spk_qc->pic->receiveName->name }}</p>
                     <p class="mt-1 font-semibold dark:text-white">QC</p>
                 </div>
             </div>

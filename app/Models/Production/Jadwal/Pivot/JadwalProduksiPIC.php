@@ -4,6 +4,7 @@ namespace App\Models\Production\Jadwal\Pivot;
 
 use App\Models\Production\Jadwal\JadwalProduksi as JadwalJadwalProduksi;
 use App\Models\Production\JadwalProduksi;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
@@ -25,6 +26,16 @@ class JadwalProduksiPIC extends Model
     public function jadwalProduksi()
     {
         return $this->belongsTo(JadwalJadwalProduksi::class);
+    }
+
+    public function createName()
+    {
+        return $this->belongsTo(User::class, 'create_name');
+    }
+
+    public function approveName()
+    {
+        return $this->belongsTo(User::class, 'approve_name');
     }
 
     protected static function booted(): void

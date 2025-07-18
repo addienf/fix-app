@@ -212,11 +212,22 @@ class IncommingMaterialSSResource extends Resource
                                 Grid::make(1)
                                     ->schema([
 
-                                        self::textInput('checked_name', 'Checked By'),
+                                        Hidden::make('checked_name')
+                                            ->default(fn() => auth()->id()),
+
+                                        self::textInput('checked_name_placeholder', 'Checked By')
+                                            ->default(fn() => auth()->user()?->name)
+                                            ->extraAttributes([
+                                                'readonly' => true,
+                                                'style' => 'pointer-events: none;'
+                                            ]),
+
+                                        // self::textInput('checked_name', 'Checked By'),
 
                                         self::signatureInput('checked_signature', ''),
 
                                         self::datePicker('checked_date', '')
+                                            ->default(now())
                                             ->required(),
 
                                     ])->hiddenOn(operations: 'edit'),
@@ -224,7 +235,23 @@ class IncommingMaterialSSResource extends Resource
                                 Grid::make(1)
                                     ->schema([
 
-                                        self::textInput('accepted_name', 'Accepted By'),
+                                        Hidden::make('accepted_name')
+                                            ->default(fn() => auth()->id())
+                                            ->dehydrated(true)
+                                            ->afterStateHydrated(function ($component) {
+                                                $component->state(auth()->id());
+                                            }),
+
+                                        self::textInput('accepted_name_placeholder', 'Accepted By')
+                                            ->default(fn() => auth()->user()?->name)
+                                            ->placeholder(fn() => auth()->user()?->name)
+                                            ->required(false)
+                                            ->extraAttributes([
+                                                'readonly' => true,
+                                                'style' => 'pointer-events: none;'
+                                            ]),
+
+                                        // self::textInput('accepted_name', 'Accepted By'),
 
                                         self::signatureInput('accepted_signature', ''),
 
@@ -239,7 +266,23 @@ class IncommingMaterialSSResource extends Resource
                                 Grid::make(1)
                                     ->schema([
 
-                                        self::textInput('approved_name', 'Approved By'),
+                                        Hidden::make('approved_name')
+                                            ->default(fn() => auth()->id())
+                                            ->dehydrated(true)
+                                            ->afterStateHydrated(function ($component) {
+                                                $component->state(auth()->id());
+                                            }),
+
+                                        self::textInput('approved_name_placeholder', 'Approved By')
+                                            ->default(fn() => auth()->user()?->name)
+                                            ->placeholder(fn() => auth()->user()?->name)
+                                            ->required(false)
+                                            ->extraAttributes([
+                                                'readonly' => true,
+                                                'style' => 'pointer-events: none;'
+                                            ]),
+
+                                        // self::textInput('approved_name', 'Approved By'),
 
                                         self::signatureInput('approved_signature', ''),
 
@@ -293,7 +336,7 @@ class IncommingMaterialSSResource extends Resource
                     Tables\Actions\EditAction::make(),
                     Tables\Actions\DeleteAction::make(),
                     Action::make('pdf_view')
-                        ->label(_('View PDF'))
+                        ->label(_('Lihat PDF'))
                         ->icon('heroicon-o-document')
                         ->color('success')
                         ->visible(fn($record) => $record->status_penyelesaian === 'Disetujui')

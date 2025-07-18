@@ -3,6 +3,7 @@
 namespace App\Models\Quality\IncommingMaterial\MaterialNonSS\Pivot;
 
 use App\Models\Quality\IncommingMaterial\MaterialNonSS\IncommingMaterialNonSS;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
@@ -29,6 +30,21 @@ class IncommingMaterialNonSSPIC extends Model
     public function productNonSS()
     {
         return $this->belongsTo(IncommingMaterialNonSS::class, 'material_non_ss_id');
+    }
+
+    public function checkedName()
+    {
+        return $this->belongsTo(User::class, 'checked_name');
+    }
+
+    public function acceptedName()
+    {
+        return $this->belongsTo(User::class, 'accepted_name');
+    }
+
+    public function approvedName()
+    {
+        return $this->belongsTo(User::class, 'approved_name');
     }
 
     protected static function booted(): void

@@ -131,7 +131,17 @@ class PermintaanSparepartResource extends Resource
                                 Grid::make(1)
                                     ->schema([
 
-                                        self::textInput('dibuat_name', 'Dibuat Oleh'),
+                                        Hidden::make('dibuat_name')
+                                            ->default(fn() => auth()->id()),
+
+                                        self::textInput('dibuat_name_placeholder', 'Dibuat Oleh')
+                                            ->default(fn() => auth()->user()?->name)
+                                            ->extraAttributes([
+                                                'readonly' => true,
+                                                'style' => 'pointer-events: none;'
+                                            ]),
+
+                                        // self::textInput('dibuat_name', 'Dibuat Oleh'),
 
                                         self::signatureInput('dibuat_ttd', ''),
 
@@ -140,7 +150,23 @@ class PermintaanSparepartResource extends Resource
                                 Grid::make(1)
                                     ->schema([
 
-                                        self::textInput('diketahui_name', 'Diketahui Oleh'),
+                                        Hidden::make('diketahui_name')
+                                            ->default(fn() => auth()->id())
+                                            ->dehydrated(true)
+                                            ->afterStateHydrated(function ($component) {
+                                                $component->state(auth()->id());
+                                            }),
+
+                                        self::textInput('diketahui_name_placeholder', 'Diketahui Oleh')
+                                            ->default(fn() => auth()->user()?->name)
+                                            ->placeholder(fn() => auth()->user()?->name)
+                                            ->required(false)
+                                            ->extraAttributes([
+                                                'readonly' => true,
+                                                'style' => 'pointer-events: none;'
+                                            ]),
+
+                                        // self::textInput('diketahui_name', 'Diketahui Oleh'),
 
                                         self::signatureInput('diketahui_ttd', ''),
 
@@ -152,7 +178,23 @@ class PermintaanSparepartResource extends Resource
                                 Grid::make(1)
                                     ->schema([
 
-                                        self::textInput('diserahkan_name', 'Diserahkan Kepada'),
+                                        Hidden::make('diserahkan_name')
+                                            ->default(fn() => auth()->id())
+                                            ->dehydrated(true)
+                                            ->afterStateHydrated(function ($component) {
+                                                $component->state(auth()->id());
+                                            }),
+
+                                        self::textInput('diserahkan_name_placeholder', 'Diserahkan Kepada')
+                                            ->default(fn() => auth()->user()?->name)
+                                            ->placeholder(fn() => auth()->user()?->name)
+                                            ->required(false)
+                                            ->extraAttributes([
+                                                'readonly' => true,
+                                                'style' => 'pointer-events: none;'
+                                            ]),
+
+                                        // self::textInput('diserahkan_name', 'Diserahkan Kepada'),
 
                                         self::signatureInput('diserahkan_ttd', ''),
 
@@ -203,7 +245,7 @@ class PermintaanSparepartResource extends Resource
                     Tables\Actions\EditAction::make(),
                     Tables\Actions\DeleteAction::make(),
                     Action::make('pdf_view')
-                        ->label(_('View PDF'))
+                        ->label(_('Lihat PDF'))
                         ->icon('heroicon-o-document')
                         ->color('success')
                         ->visible(fn($record) => $record->status_penyerahan === 'Diserahkan')

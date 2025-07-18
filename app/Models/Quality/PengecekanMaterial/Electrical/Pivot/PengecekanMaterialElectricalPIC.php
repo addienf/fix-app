@@ -3,6 +3,7 @@
 namespace App\Models\Quality\PengecekanMaterial\Electrical\Pivot;
 
 use App\Models\Quality\PengecekanMaterial\Electrical\PengecekanMaterialElectrical;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
@@ -29,6 +30,21 @@ class PengecekanMaterialElectricalPIC extends Model
     public function pengecekanElectrical()
     {
         return $this->belongsTo(PengecekanMaterialElectrical::class, 'pengecekan_electrical_id');
+    }
+
+    public function inspectedName()
+    {
+        return $this->belongsTo(User::class, 'inspected_name');
+    }
+
+    public function acceptedName()
+    {
+        return $this->belongsTo(User::class, 'accepted_name');
+    }
+
+    public function approvedName()
+    {
+        return $this->belongsTo(User::class, 'approved_name');
     }
 
     protected static function booted(): void

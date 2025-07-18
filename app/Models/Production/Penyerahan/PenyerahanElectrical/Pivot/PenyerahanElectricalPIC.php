@@ -3,6 +3,7 @@
 namespace App\Models\Production\Penyerahan\PenyerahanElectrical\Pivot;
 
 use App\Models\Production\Penyerahan\PenyerahanElectrical\PenyerahanElectrical;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
@@ -26,6 +27,21 @@ class PenyerahanElectricalPIC extends Model
     public function penyerahanElectrical()
     {
         return $this->belongsTo(PenyerahanElectrical::class, 'penyerahan_electrical_id');
+    }
+
+    public function submitName()
+    {
+        return $this->belongsTo(User::class, 'submit_name');
+    }
+
+    public function receiveName()
+    {
+        return $this->belongsTo(User::class, 'receive_name');
+    }
+
+    public function knowingName()
+    {
+        return $this->belongsTo(User::class, 'knowing_name');
     }
 
     protected static function booted(): void

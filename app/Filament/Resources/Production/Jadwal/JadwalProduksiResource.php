@@ -133,8 +133,15 @@ class JadwalProduksiResource extends Resource
 
                                 Grid::make(1)
                                     ->schema([
+                                        Hidden::make('create_name')
+                                            ->default(fn() => auth()->id()),
 
-                                        self::textInput('create_name', 'Dibuat Oleh'),
+                                        self::textInput('create_name_placeholder', 'Dibuat Oleh')
+                                            ->default(fn() => auth()->user()?->name)
+                                            ->extraAttributes([
+                                                'readonly' => true,
+                                                'style' => 'pointer-events: none;'
+                                            ]),
 
                                         self::signatureInput('create_signature', ''),
 
@@ -142,13 +149,24 @@ class JadwalProduksiResource extends Resource
 
                                 Grid::make(1)
                                     ->schema([
+                                        Hidden::make('approve_name')
+                                            ->default(fn() => auth()->id())
+                                            ->dehydrated(true)
+                                            ->afterStateHydrated(function ($component) {
+                                                $component->state(auth()->id());
+                                            }),
 
-                                        self::textInput('approve_name', 'Disetujui Oleh'),
+                                        self::textInput('approve_name_placeholder', 'Disetujui Oleh')
+                                            ->placeholder(fn() => auth()->user()?->name)
+                                            ->required(false)
+                                            ->extraAttributes([
+                                                'readonly' => true,
+                                                'style' => 'pointer-events: none;'
+                                            ]),
 
                                         self::signatureInput('approve_signature', ''),
 
                                     ])->hiddenOn(operations: 'create'),
-
                             ]),
 
                     ]),

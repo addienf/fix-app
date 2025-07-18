@@ -1,23 +1,23 @@
 @extends('pdf.layout.layout')
 @section('title', 'Regular Maintenance Checklist - Qlab Stability Chamber PDF')
 @section('content')
-    <div id="export-area" class="p-2 bg-white text-black">
+    <div id="export-area" class="p-2 text-black bg-white">
 
 
         <table class="w-full max-w-4xl mx-auto text-sm border border-black" style="border-collapse: collapse;">
             <tr>
 
-                <td rowspan="2" class="w-32 h-24 text-center border border-black align-middle">
+                <td rowspan="2" class="w-32 h-24 text-center align-middle border border-black">
                     <img src="{{ asset('asset/logo.png') }}" alt="Logo" class="object-contain h-16 mx-auto" />
                 </td>
 
 
-                <td class="border border-black px-2 py-1 align-top">
+                <td class="px-2 py-1 align-top border border-black">
                     <strong>Project :</strong>
                 </td>
 
 
-                <td rowspan="2" class="w-48 border border-black align-top text-center text-sm leading-tight pt-2 p-2">
+                <td rowspan="2" class="w-48 p-2 pt-2 text-sm leading-tight text-center align-top border border-black">
                     FO-QKS-ENG-01-05<br>
                     Rev. 02<br>
                     02 June 2025
@@ -25,64 +25,59 @@
             </tr>
             <tr>
 
-                <td class="border border-black px-2 py-1 align-top">
+                <td class="px-2 py-1 align-top border border-black">
                     Client
                 </td>
             </tr>
         </table>
         <div class="w-full max-w-4xl pt-4 mx-auto text-sm">
-            <h2 class="text-xl font-bold text-center mb-4">
+            <h2 class="mb-4 text-xl font-bold text-center">
                 REGULAR MAINTENANCE CHECK LIST - QLAB STABILITY CHAMBER
             </h2>
-            <div class="flex justify-center items-center gap-2 w-full my-6">
-                <span class="text-center font-semibold">CTC Name Tag/No: {{ $R2->tag_no }}</span>
-                {{-- <input type="text" disabled class="px-2 py-1 text-sm bg-transparent border border-gray-300 rounded"
-                    value="PB-2025/00123" /> --}}
+            <div class="flex items-center justify-center w-full gap-2 my-6">
+                <span class="font-semibold text-center">CTC Name Tag/No: {{ $R2->tag_no }}</span>
             </div>
 
             @php
                 $rawDetails = $R2->detail->checklist ?? [];
                 $details = is_string($rawDetails) ? json_decode($rawDetails, true) : $rawDetails;
-                // function statusLabel($code)
-                // {
-                //     return match (strtolower($code)) {
-                //         'ok' => 'OK',
-                //         'h' => 'Hold',
-                //         'r' => 'Repaired',
-                //         default => ucfirst($code ?? '-'),
-                //     };
-                // }
             @endphp
 
-            <table class="w-full max-w-4xl pt-4 mx-auto table-auto border border-black text-xs">
+            <table class="w-full max-w-4xl pt-4 mx-auto text-xs border border-black table-auto">
                 <thead>
-                    <tr class=" text-center font-bold">
-                        <th class="border border-black w-8" rowspan="2">NO</th>
-                        <th class="border border-black w-48" rowspan="2">ITEM TO CHECK</th>
-                        <th class="border border-black w-40" rowspan="2">BEFORE<br>MAINTENANCE</th>
-                        <th class="border border-black w-40" rowspan="2">AFTER<br>MAINTENANCE</th>
-                        <th class="border border-black w-48" colspan="3">ACCEPTED</th>
+                    <tr class="font-bold text-center">
+                        <th class="w-8 border border-black" rowspan="2">NO</th>
+                        <th class="border border-black w-72" rowspan="2">ITEM TO CHECK</th>
+                        <th class="w-24 border border-black" rowspan="2">BEFORE<br>MAINTENANCE</th>
+                        <th class="w-24 border border-black" rowspan="2">AFTER<br>MAINTENANCE</th>
+                        <th class="w-48 border border-black" colspan="3">ACCEPTED</th>
                         <th class="border border-black w-36" rowspan="2">REMARK</th>
                     </tr>
-                    {{-- <tr class="bg-gray-300 text-center font-bold">
-                        <th colspan="4" class="invisible"></th>
-                        <th class="border border-black w-10">YES</th>
-                        <th class="border border-black w-10">NO</th>
-                        <th class="border border-black w-10">NA</th>
-                        <th class="invisible"></th>
-                    </tr> --}}
-                    <tr class=" text-center font-bold">
-                        <th class="border border-black w-16">YES</th>
-                        <th class="border border-black w-16">NO</th>
-                        <th class="border border-black w-16">NA</th>
+                    <tr class="font-bold text-center">
+                        <th class="w-16 border border-black">YES</th>
+                        <th class="w-16 border border-black">NO</th>
+                        <th class="w-16 border border-black">NA</th>
                     </tr>
                 </thead>
                 <tbody>
                     @php $rowNumber = 1; @endphp
                     @foreach ($details as $group)
                         <tr>
-                            <td colspan="8" class="px-3 py-2 font-semibold border-black">
+                            <td class="px-3 py-2 text-center border border-black">{{ $rowNumber++ }}</td>
+                            <td class="px-3 py-2 font-semibold border border-black">
                                 {{ $group['mainPart'] ?? '-' }}</td>
+                            <td class="px-3 py-2 text-center border border-black">{{ $group['before'] ?? '-' }}</td>
+                            <td class="px-3 py-2 text-center border border-black">{{ $group['after'] ?? '-' }}</td>
+                            <td class="px-3 py-2 text-center border border-black">
+                                {{ ($group['accepted'] ?? '') === 'yes' ? '✔' : '' }}
+                            </td>
+                            <td class="px-3 py-2 text-center border border-black">
+                                {{ ($group['accepted'] ?? '') === 'no' ? '✔' : '' }}
+                            </td>
+                            <td class="px-3 py-2 text-center border border-black">
+                                {{ ($group['accepted'] ?? '') === 'na' ? '✔' : '' }}
+                            </td>
+                            <td class="px-3 py-2 border border-black">{{ $group['remark'] }}</td>
                         </tr>
                         @foreach ($group['parts'] as $part)
                             <tr>
@@ -106,7 +101,7 @@
                 </tbody>
             </table>
 
-            <div class="w-full max-w-4xl mx-auto pt-4 mb-3">
+            <div class="w-full max-w-4xl pt-4 mx-auto mb-3">
                 <label for="note" class="block mb-1 text-sm font-medium text-black">Remark:</label>
                 <div id="note" readonly
                     class="w-full px-3 py-2 overflow-hidden text-sm leading-relaxed border border-black rounded-md resize-none">
@@ -114,41 +109,41 @@
             </div>
 
             {{-- TTD Section --}}
-            <table class="w-full border border-black text-sm">
+            <table class="w-full text-sm border border-black">
                 <thead>
-                    <tr class="bg-gray-200 text-center font-semibold">
-                        <th class="border border-black w-32"></th>
-                        <th class="border border-black py-2">Checked by</th>
-                        <th class="border border-black py-2">Approved by</th>
+                    <tr class="font-semibold text-center bg-gray-200">
+                        <th class="w-32 border border-black"></th>
+                        <th class="py-2 border border-black">Checked by</th>
+                        <th class="py-2 border border-black">Approved by</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
-                        <td class="border border-black font-medium px-2 py-2">Name</td>
-                        <td class="border border-black px-2 py-2">
+                        <td class="px-2 py-2 font-medium border border-black">Name</td>
+                        <td class="px-2 py-2 border border-black">
                             {{ $R2->pic->checked_name }}
                         </td>
-                        <td class="border border-black px-2 py-2">
+                        <td class="px-2 py-2 border border-black">
                             {{ $R2->pic->approved_name }}
                         </td>
                     </tr>
                     <tr>
-                        <td class="border border-black font-medium px-2 py-2">Signature</td>
-                        <td class="border border-black px-2 py-4">
+                        <td class="px-2 py-2 font-medium border border-black">Signature</td>
+                        <td class="px-2 py-4 border border-black">
                             <img src="{{ asset('storage/' . $R2->pic->checked_signature) }}" alt="Signature"
                                 class="object-contain h-full" />
                         </td>
-                        <td class="border border-black px-2 py-4">
+                        <td class="px-2 py-4 border border-black">
                             <img src="{{ asset('storage/' . $R2->pic->approved_signature) }}" alt="Signature"
                                 class="object-contain h-full" />
                         </td>
                     </tr>
                     <tr>
-                        <td class="border border-black font-medium px-2 py-2">Date</td>
-                        <td class="border border-black px-2 py-2">
+                        <td class="px-2 py-2 font-medium border border-black">Date</td>
+                        <td class="px-2 py-2 border border-black">
                             {{ $R2->pic->checked_date }}
                         </td>
-                        <td class="border border-black px-2 py-2">
+                        <td class="px-2 py-2 border border-black">
                             {{ $R2->pic->approved_date }}
                         </td>
                         </td>

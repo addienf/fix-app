@@ -3,6 +3,7 @@
 namespace App\Models\Production\Penyerahan\Pivot;
 
 use App\Models\Production\Penyerahan\PenyerahanProdukJadi;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
@@ -25,6 +26,17 @@ class PenyerahanProdukJadiPIC extends Model
     {
         return $this->belongsTo(PenyerahanProdukJadi::class, 'produk_jadi_id');
     }
+
+    public function submitName()
+    {
+        return $this->belongsTo(User::class, 'submit_name');
+    }
+
+    public function receiveName()
+    {
+        return $this->belongsTo(User::class, 'receive_name');
+    }
+
     protected static function booted(): void
     {
         static::updating(function ($model) {

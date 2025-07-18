@@ -3,6 +3,7 @@
 namespace App\Models\Quality\Pengecekan\Pivot;
 
 use App\Models\Quality\Pengecekan\PengecekanPerforma;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
@@ -30,6 +31,21 @@ class PengecekanPerformaPIC extends Model
     public function pengecekanPerforma()
     {
         return $this->belongsTo(PengecekanPerforma::class, 'pengecekan_performa_id');
+    }
+
+    public function inspectedName()
+    {
+        return $this->belongsTo(User::class, 'inspected_name');
+    }
+
+    public function acceptedName()
+    {
+        return $this->belongsTo(User::class, 'accepted_name');
+    }
+
+    public function approvedName()
+    {
+        return $this->belongsTo(User::class, 'approved_name');
     }
 
     protected static function booted(): void

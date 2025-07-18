@@ -90,17 +90,17 @@
 
             $roles = [
                 'Diserahkan Oleh,' => [
-                    'name' => $serahElectrical->pic->submit_name ?? '-',
+                    'name' => $serahElectrical->pic->submitName->name ?? '-',
                     'signature' => $serahElectrical->pic->submit_signature ?? null,
                     'date' => $serahElectrical->pic->submit_date ?? null,
                 ],
                 'Diterima Oleh,' => [
-                    'name' => $serahElectrical->pic->receive_name ?? '-',
+                    'name' => $serahElectrical->pic->receiveName->name ?? '-',
                     'signature' => $serahElectrical->pic->receive_signature ?? null,
                     'date' => $serahElectrical->pic->receive_date ?? null,
                 ],
                 'Diketahui Oleh,' => [
-                    'name' => $serahElectrical->pic->knowing_name ?? '-',
+                    'name' => $serahElectrical->pic->knowingName->name ?? '-',
                     'signature' => $serahElectrical->pic->knowing_signature ?? null,
                     'date' => $serahElectrical->pic->knowing_date ?? null,
                 ],
@@ -178,7 +178,7 @@
                 <label class="block mb-1 font-semibold">Jelaskan</label>
                 <div
                     class="w-full min-h-[75px] px-3 py-2 text-sm leading-relaxed text-left border rounded-md text-black border-black">
-                    {{ $deskripsi_kondisi }}
+                    {{ $serahElectrical->sebelumSerahTerima->detail_kondisi_fisik }}
                 </div>
             </div>
 
@@ -207,7 +207,7 @@
                 <label class="block mb-1 font-semibold">Sebutkan</label>
                 <div
                     class="w-full min-h-[75px] px-3 py-2 text-sm leading-relaxed text-left border rounded-md text-black border-black">
-                    {{ $deskripsi_kondisi }}
+                    {{ $serahElectrical->sebelumSerahTerima->detail_kelengkapan_komponen }}
                 </div>
             </div>
 
@@ -259,7 +259,7 @@
                         <label class="block mb-1 font-semibold">Jelaskan</label>
                         <div
                             class="w-full min-h-[75px] px-3 py-2 text-sm leading-relaxed text-left border rounded-md text-black border-black">
-                            {{ $deskripsi_kondisi }}
+                            {{ $penjelasan_status }}
                         </div>
                     </div>
                     <label class="inline-flex items-center gap-2">
@@ -271,7 +271,7 @@
                         <label class="block mb-1 font-semibold">Jelaskan</label>
                         <div
                             class="w-full min-h-[75px] px-3 py-2 text-sm leading-relaxed text-left border rounded-md text-black border-black">
-                            {{ $deskripsi_kondisi }}
+                            {{ $alasan_status }}
                         </div>
                     </div>
                 </div>

@@ -102,12 +102,41 @@ class WalkinChamberResource extends Resource
                             ->label('')
                             ->schema([
 
-                                TextInput::make('mainPart')
-                                    ->label('Main Part')
-                                    ->hidden(fn(callable $get) => blank($get('mainPart')))
-                                    ->extraAttributes([
-                                        'readonly' => true,
-                                        'style' => 'pointer-events: none; font-weight: bold; font-size:'
+                                Grid::make(7)
+                                    ->schema([
+                                        TextInput::make('mainPart')
+                                            ->label('Main Part')
+                                            ->hidden(fn(callable $get) => blank($get('mainPart')))
+                                            ->extraAttributes([
+                                                'readonly' => true,
+                                                'style' => 'pointer-events: none;'
+                                            ])
+                                            ->columnSpan(3),
+
+                                        TextInput::make('before')
+                                            ->label('Before')
+                                            ->required()
+                                            ->columnSpan(1),
+
+                                        TextInput::make('after')
+                                            ->label('After')
+                                            ->required()
+                                            ->columnSpan(1),
+
+                                        Select::make('accepted')
+                                            ->label('Accepted')
+                                            ->required()
+                                            ->options([
+                                                'yes' => 'Yes',
+                                                'no' => 'No',
+                                                'na' => 'NA',
+                                            ])
+                                            ->columnSpan(1),
+
+                                        TextInput::make('remark')
+                                            ->label('Remark')
+                                            ->required()
+                                            ->columnSpan(1),
                                     ]),
 
                                 Repeater::make('parts')
@@ -116,10 +145,6 @@ class WalkinChamberResource extends Resource
 
                                         TextInput::make('part')
                                             ->columnSpan(3)
-                                            ->extraAttributes([
-                                                'readonly' => true,
-                                                'style' => 'pointer-events: none; font-weight: bold;'
-                                            ])
                                             ->required(),
 
                                         TextInput::make('before')
@@ -139,12 +164,7 @@ class WalkinChamberResource extends Resource
                                             ->columnSpan(1)
                                             ->required(),
 
-                                        Select::make('remark')
-                                            ->options([
-                                                'ok' => 'OK',
-                                                'h' => 'Hold',
-                                                'r' => 'Repaired',
-                                            ])
+                                        TextInput::make('remark')
                                             ->columnSpan(1)
                                             ->required(),
 
@@ -158,7 +178,6 @@ class WalkinChamberResource extends Resource
                             ->addable(false)
                             ->deletable(false)
                             ->reorderable(false)
-
                     ]),
 
                 Fieldset::make('Remarks')
@@ -179,21 +198,51 @@ class WalkinChamberResource extends Resource
 
                                 Grid::make(1)
                                     ->schema([
-                                        self::textInput('checked_name', 'Checked By'),
+                                        Hidden::make('checked_name')
+                                            ->default(fn() => auth()->id()),
+
+                                        // self::textInput('checked_name', 'Checked By'),
+
+                                        TextInput::make('checked_name_display')
+                                            ->label('Checked By')
+                                            ->default(fn() => auth()->user()?->name)
+                                            ->disabled(),
+
                                         self::signatureInput('checked_signature', ''),
+
                                         DatePicker::make('checked_date')
                                             ->label('')
+                                            ->default(now())
                                             ->required()
-                                    ])->hiddenOn(operations: 'edit'),
+
+                                    ])
+                                    ->hiddenOn(operations: 'edit'),
 
                                 Grid::make(1)
                                     ->schema([
-                                        self::textInput('approved_name', 'Approved By'),
+                                        Hidden::make('approved_name')
+                                            ->default(fn() => auth()->id())
+                                            ->dehydrated(true) // pastikan disimpan ke DB saat submit
+                                            ->afterStateHydrated(function ($component) {
+                                                // selalu override nilai dari database
+                                                $component->state(auth()->id());
+                                            }),
+
+                                        // self::textInput('approved_name', 'Approved By'),
+                                        TextInput::make('approved_name_display')
+                                            ->label('Approved By')
+                                            ->placeholder(fn() => auth()->user()?->name)
+                                            ->disabled(),
+
                                         self::signatureInput('approved_signature', ''),
+
                                         DatePicker::make('approved_date')
                                             ->label('')
-                                            ->required()
-                                    ])->hiddenOn(operations: 'create'),
+                                            ->default(now())
+                                            ->required(),
+
+                                    ])
+                                    ->hiddenOn(operations: 'create'),
 
                             ]),
 

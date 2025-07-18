@@ -163,14 +163,14 @@
                     <p class="mb-2 dark:text-white">Diserahkan Oleh</p>
                     <img src="{{ asset('storage/' . $incomingMaterial->pic->submited_signature) }}" alt="Product Signature"
                         class="h-20 w-80" />
-                    <p class="mt-4 font-semibold dark:text-white">{{ $incomingMaterial->pic->submited_name }}</p>
+                    <p class="mt-4 font-semibold dark:text-white">{{ $incomingMaterial->pic->submitedName->name }}</p>
                 </div>
                 <!-- Kanan -->
                 <div class="flex flex-col items-center">
                     <p class="mb-2 dark:text-white">Diterima Oleh</p>
                     <img src="{{ asset('storage/' . $incomingMaterial->pic->received_signature) }}" alt="Product Signature"
                         class="h-20 w-80" />
-                    <p class="mt-4 font-semibold dark:text-white">{{ $incomingMaterial->pic->received_name }}</p>
+                    <p class="mt-4 font-semibold dark:text-white">{{ $incomingMaterial->pic->receivedName->name }}</p>
                 </div>
             </div>
         </div>

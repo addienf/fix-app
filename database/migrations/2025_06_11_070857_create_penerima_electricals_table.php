@@ -16,10 +16,10 @@ return new class extends Migration
             $table->foreignId('penyerahan_electrical_id')->constrained('penyerahan_electricals')->onDelete('cascade');
             $table->date('tanggal');
             $table->string('diterima_oleh');
-            $table->string('catatan_tambahan');
+            $table->text('catatan_tambahan');
             $table->string('status_penerimaan');
-            $table->string('penjelasan_status')->nullable();
-            $table->string('alasan_status')->nullable();
+            $table->text('penjelasan_status')->nullable();
+            $table->text('alasan_status')->nullable();
             $table->timestamps();
         });
     }

@@ -10,6 +10,8 @@ class CreateChamberG2 extends CreateRecord
 {
     protected static string $resource = ChamberG2Resource::class;
 
+    protected static bool $canCreateAnother = false;
+
     protected function getRedirectUrl(): string
     {
         return $this->getResource()::getUrl('index');
