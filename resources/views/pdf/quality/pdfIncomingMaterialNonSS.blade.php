@@ -190,7 +190,7 @@
                 <table class="w-full border-collapse">
                     <thead>
                         <tr class="font-semibold text-center bg-gray-100">
-                            <th class="w-32 border border-black">Field</th>
+                            <th class="w-32 border border-black"></th>
                             @foreach ($roles as $role => $data)
                                 <th class="border border-black">{{ $role }}</th>
                             @endforeach
