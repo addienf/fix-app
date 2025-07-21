@@ -6,20 +6,16 @@ use App\Models\Engineering\Service\ServiceReport;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class ServiceReportDetail extends Model
+class ServiceReportProduk extends Model
 {
     use HasFactory;
 
     protected $fillable = [
         'service_id',
-        'remark',
-        'taken_item',
-        'service_status',
-        'upload_file'
-    ];
-
-    protected $casts = [
-        'upload_file' => 'array',
+        'produk_name',
+        'type',
+        'serial_number',
+        'status_warranty',
     ];
 
     public function service()

@@ -103,12 +103,19 @@
             <h2 class="mb-4 text-xl font-bold">II. Spesifikasi Teknis</h2>
             <div class="flex items-center gap-4">
                 <label class="w-48 font-medium">Jenis Gambar :</label>
-                <input type="text" readonly value="{{ ucfirst($standarisasi->jenis_gambar) }}"
+                <input type="text" readonly
+                    value="{{ is_array($standarisasi->jenis_gambar)
+                        ? implode(', ', array_map('ucwords', $standarisasi->jenis_gambar))
+                        : implode(', ', array_map('ucwords', json_decode($standarisasi->jenis_gambar, true))) }}
+"
                     class="flex-1 px-3 py-2 text-black bg-white border border-gray-300 rounded-md cursor-not-allowed" />
             </div>
             <div class="flex items-center gap-4">
                 <label class="w-48 font-medium">Format Gambar :</label>
-                <input type="text" readonly value="{{ $standarisasi->format_gambar }}"
+                <input type="text" readonly
+                    value="{{ is_array($standarisasi->format_gambar)
+                        ? implode(', ', $standarisasi->format_gambar)
+                        : implode(', ', json_decode($standarisasi->format_gambar, true)) }}"
                     class="flex-1 px-3 py-2 text-black bg-white border border-gray-300 rounded-md cursor-not-allowed" />
             </div>
         </div>
@@ -131,35 +138,6 @@
                 {{ trim($standarisasi->detail->catatan) }}
             </div>
         </div>
-
-        <!-- Lampiran dan Tanda Tangan -->
-        {{-- <div class="w-full max-w-4xl pt-6 mx-auto">
-            <h2 class="mb-3 text-xl font-bold">V. Lampiran</h2>
-            <div style="display: flex; flex-wrap: wrap; gap: 10px;">
-                @foreach ($standarisasi->detail->lampiran as $gambar)
-                    <div
-                        style="width: 500px; height: 500px; border: 1px solid #ccc; padding: 5px; display: flex; align-items: center; justify-content: center;">
-                        <img src="{{ asset('storage/' . $gambar) }}"
-                            style="max-width: 100%; max-height: 100%; object-fit: contain;">
-                    </div>
-                @endforeach
-            </div>
-
-            <div class="flex items-start justify-between gap-8">
-                <div class="flex flex-col items-center w-1/2">
-                    <p class="mb-2">Dibuat Oleh</p>
-                    <img src="{{ asset('storage/' . $standarisasi->pic->create_signature) }}" alt="ttd"
-                        class="h-20 w-80" />
-                    <p class="mt-1 font-semibold">{{ $standarisasi->pic->create_name }}</p>
-                </div>
-                <div class="flex flex-col items-center w-1/2">
-                    <p class="mb-2">Diperiksa Oleh</p>
-                    <img src="{{ asset('storage/' . $standarisasi->pic->check_signature) }}" alt="ttd"
-                        class="h-20 w-80" />
-                    <p class="mt-1 font-semibold">{{ $standarisasi->pic->check_name }}</p>
-                </div>
-            </div>
-        </div> --}}
 
         <div class="w-full max-w-4xl pt-6 mx-auto">
             <h2 class="mb-4 text-xl font-bold">V. Lampiran</h2>

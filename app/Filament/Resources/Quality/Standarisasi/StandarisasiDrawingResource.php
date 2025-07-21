@@ -106,10 +106,12 @@ class StandarisasiDrawingResource extends Resource
 
                         self::selectInputOptions('jenis_gambar', 'Jenis Gambar', 'standarisasi.jenis_gambar')
                             ->placeholder('Pilih Jenis Gambar')
+                            ->multiple()
                             ->required(),
 
                         self::selectInputOptions('format_gambar', 'Format Gambar', 'standarisasi.format_gambar')
                             ->placeholder('Pilih Format Gambar')
+                            ->multiple()
                             ->required(),
 
                     ])->columns(2),

@@ -14,7 +14,7 @@ class ServiceReportPIC extends Model
 
     protected $table = 'service_report_pics';
     protected $fillable = [
-        'cold_id',
+        'service_id',
         'checked_name',
         'checked_signature',
         'checked_date',

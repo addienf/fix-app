@@ -84,9 +84,9 @@
                     </tr>
                 </thead>
                 <tbody class="bg-white dark:bg-gray-900">
-                    @foreach ($permintaan_alat_bahan->details as $index => $produk)
+                    @foreach ($permintaan_alat_bahan->details as $produk)
                         <tr>
-                            <td class="px-4 py-2 border">{{ $index + 1 }}</td>
+                            <td class="px-4 py-2 border">{{ $loop->iteration }}</td>
                             <td class="px-4 py-2 border">{{ $produk['bahan_baku'] }}</td>
                             <td class="px-4 py-2 border">{{ $produk['spesifikasi'] }}</td>
                             <td class="px-4 py-2 border">{{ $produk['jumlah'] }}</td>

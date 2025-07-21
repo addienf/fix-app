@@ -66,4 +66,5 @@ Route::get('/engineering/chamber-r1/{record}/pdf-chamber-r1', [PDFController::cl
 Route::get('/engineering/chamber-r2/{record}/pdf-chamber-r2', [PDFController::class, 'pdfWalkInChamberR2'])->name('pdf.walkInChamberR2');
 Route::get('/engineering/maintenance-refrigator/{record}/pdf-maintenance-refrigator', [PDFController::class, 'pdfMaintenanceRefrigator'])->name('pdf.MaintenanceRefrigator');
 Route::get('/engineering/maintenance-cold-room/{record}/pdf-cold-room', [PDFController::class, 'pdfMaintenanceColdRoom'])->name('pdf.MaintenanceColdRoom');
-Route::get('/engineering/service-report', [PDFController::class, 'pdfServiceReport'])->name('pdf.serviceReport');
+Route::get('/engineering/service-report/{record}/pdf-service-report', [PDFController::class, 'pdfServiceReport'])->name('pdf.serviceReport');
+Route::get('/engineering/service-report/{record}/download-zip', [PDFController::class, 'downloadZipserviceReport'])->name('serviceReport.download-zip');
