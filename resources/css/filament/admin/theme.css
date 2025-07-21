@@ -137,6 +137,12 @@
     }
 }
 
+@layer components {
+    .fi-input {
+        font-family: theme('fontFamily.poppins');
+    }
+}
+
 .download {
    background-color: red;
 }
