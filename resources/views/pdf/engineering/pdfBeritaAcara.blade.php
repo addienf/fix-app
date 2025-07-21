@@ -53,7 +53,7 @@
     ];
                 @endphp
 
-                <div class="grid gap-2 mb-6">
+                <div class="grid gap-4 mb-6">
                     @foreach ($fields as $field)
                         <div class="flex items-center">
                             <label class="w-32 font-medium">{{ $field['label'] }}</label>
@@ -88,7 +88,7 @@
     ];
                 @endphp
 
-                <div class="grid gap-2 mb-6">
+                <div class="grid gap-4 mb-6">
                     @foreach ($fields as $field)
                         <div class="flex items-center">
                             <label class="w-32 font-medium">{{ $field['label'] }}</label>
@@ -109,7 +109,7 @@
     ];
                 @endphp
 
-                <div class="grid gap-2 mb-6">
+                <div class="grid gap-4 mb-6">
                     @foreach ($fields as $field)
                         <div class="flex items-center">
                             <label class="w-32 font-medium">{{ $field['label'] }}</label>
@@ -149,7 +149,7 @@
                 </div>
 
                     {{-- 2. Lokasi Pekerjaan --}}
-                    <div class="flex items-center">
+                    <div class="flex items-center pt-8">
                         <label class="w-48 font-semibold">2. Lokasi Pekerjaan</label>
                         <span class="mx-2">:</span>
                         <input type="text" class="flex-1 border-b border-dotted focus:outline-none"
@@ -169,7 +169,7 @@
                     disepakati dan dalam kondisi baik. Demikian berita acara ini dibuat untuk dipergunakan sebagaimana mestinya.
                 </p>
 
-                <div class="flex items-start justify-between gap-4">
+                <div class="flex items-start justify-between gap-4 pt-4">
                     <!-- Kiri -->
                     <div class="flex flex-col items-center">
                         <p class="mb-2 dark:text-white">( Pihak 1 Penyedia Jasa )</p>
