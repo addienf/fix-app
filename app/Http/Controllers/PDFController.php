@@ -379,4 +379,11 @@ class PDFController extends Controller
 
         return view('pdf.engineering.pdfMaintenanceColdRoom', compact('cold'));
     }
+
+    public function pdfServiceReport()
+    {
+
+        return view('pdf.engineering.pdfServiceReport');
+    }
+
 }
