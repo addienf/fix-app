@@ -123,6 +123,7 @@ class ServiceReportResource extends Resource
                             ]),
 
                         Select::make('action')
+                            ->placeholder('Pilih Action')
                             ->required()
                             ->multiple()
                             ->options([
@@ -136,6 +137,7 @@ class ServiceReportResource extends Resource
 
                         Select::make('service_fields')
                             ->label('Service Fields')
+                            ->placeholder('Pilih Service')
                             ->required()
                             ->multiple()
                             ->options([
@@ -152,12 +154,7 @@ class ServiceReportResource extends Resource
                                 'software' => 'Software',
                                 'other' => 'Other',
                             ]),
-                    ]),
 
-                Fieldset::make('Upload File')
-                    ->label('')
-                    ->relationship('detail')
-                    ->schema([
                         FileUpload::make('upload_file')
                             ->label('Lampiran')
                             ->directory('Engineering/ServiceReport/Files')
@@ -190,7 +187,17 @@ class ServiceReportResource extends Resource
 
                                 Grid::make(1)
                                     ->schema([
-                                        self::textInput('checked_name', 'Checked By'),
+                                        Hidden::make('checked_name')
+                                            ->default(fn() => auth()->id()),
+
+                                        // self::textInput('checked_name', 'Checked By'),
+
+                                        TextInput::make('checked_name_display')
+                                            ->label('Service By')
+                                            ->default(fn() => auth()->user()?->name)
+                                            ->disabled(),
+
+                                        // self::textInput('checked_name', 'Checked By'),
                                         self::signatureInput('checked_signature', ''),
                                         DatePicker::make('checked_date')
                                             ->label('')
@@ -199,7 +206,21 @@ class ServiceReportResource extends Resource
 
                                 Grid::make(1)
                                     ->schema([
-                                        self::textInput('approved_name', 'Approved By'),
+                                        Hidden::make('approved_name')
+                                            ->default(fn() => auth()->id())
+                                            ->dehydrated(true) // pastikan disimpan ke DB saat submit
+                                            ->afterStateHydrated(function ($component) {
+                                                // selalu override nilai dari database
+                                                $component->state(auth()->id());
+                                            }),
+
+                                        // self::textInput('approved_name', 'Approved By'),
+                                        TextInput::make('approved_name_display')
+                                            ->label('Approved By')
+                                            ->placeholder(fn() => auth()->user()?->name)
+                                            ->disabled(),
+
+                                        // self::textInput('approved_name', 'Approved By'),
                                         self::signatureInput('approved_signature', ''),
                                         DatePicker::make('approved_date')
                                             ->label('')

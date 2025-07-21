@@ -120,10 +120,10 @@
                     <tr>
                         <td class="px-2 py-2 font-medium border border-black">Name</td>
                         <td class="px-2 py-2 border border-black">
-                            {{ $refrigerator->pic->checked_name }}
+                            {{ $refrigerator->pic?->checkedBy?->name ?? '-' }}
                         </td>
                         <td class="px-2 py-2 border border-black">
-                            {{ $refrigerator->pic->approved_name }}
+                            {{ $refrigerator->pic?->approvedBy?->name ?? '-' }}
                         </td>
                     </tr>
                     <tr>

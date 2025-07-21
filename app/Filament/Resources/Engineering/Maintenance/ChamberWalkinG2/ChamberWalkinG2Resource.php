@@ -199,21 +199,51 @@ class ChamberWalkinG2Resource extends Resource
 
                                 Grid::make(1)
                                     ->schema([
-                                        self::textInput('checked_name', 'Checked By'),
+                                        Hidden::make('checked_name')
+                                            ->default(fn() => auth()->id()),
+
+                                        // self::textInput('checked_name', 'Checked By'),
+
+                                        TextInput::make('checked_name_display')
+                                            ->label('Checked By')
+                                            ->default(fn() => auth()->user()?->name)
+                                            ->disabled(),
+
                                         self::signatureInput('checked_signature', ''),
+
                                         DatePicker::make('checked_date')
                                             ->label('')
+                                            ->default(now())
                                             ->required()
-                                    ])->hiddenOn(operations: 'edit'),
+
+                                    ])
+                                    ->hiddenOn(operations: 'edit'),
 
                                 Grid::make(1)
                                     ->schema([
-                                        self::textInput('approved_name', 'Approved By'),
+                                        Hidden::make('approved_name')
+                                            ->default(fn() => auth()->id())
+                                            ->dehydrated(true) // pastikan disimpan ke DB saat submit
+                                            ->afterStateHydrated(function ($component) {
+                                                // selalu override nilai dari database
+                                                $component->state(auth()->id());
+                                            }),
+
+                                        // self::textInput('approved_name', 'Approved By'),
+                                        TextInput::make('approved_name_display')
+                                            ->label('Approved By')
+                                            ->placeholder(fn() => auth()->user()?->name)
+                                            ->disabled(),
+
                                         self::signatureInput('approved_signature', ''),
+
                                         DatePicker::make('approved_date')
                                             ->label('')
-                                            ->required()
-                                    ])->hiddenOn(operations: 'create'),
+                                            ->default(now())
+                                            ->required(),
+
+                                    ])
+                                    ->hiddenOn(operations: 'create'),
 
                             ]),
 

@@ -3,6 +3,7 @@
 namespace App\Models\Engineering\Maintenance\ColdRoom\Pivot;
 
 use App\Models\Engineering\Maintenance\ColdRoom\ColdRoom;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
@@ -25,6 +26,16 @@ class ColdRoomPIC extends Model
     public function coldRoom()
     {
         return $this->belongsTo(ColdRoom::class, 'cold_id');
+    }
+
+    public function approvedBy()
+    {
+        return $this->belongsTo(User::class, 'approved_name');
+    }
+
+    public function checkedBy()
+    {
+        return $this->belongsTo(User::class, 'checked_name');
     }
 
     protected static function booted(): void

@@ -121,10 +121,10 @@
                     <tr>
                         <td class="px-2 py-2 font-medium border border-black">Name</td>
                         <td class="px-2 py-2 border border-black">
-                            {{ $walkinG2->pic->checked_name }}
+                            {{ $walkinG2->pic?->checkedBy?->name ?? '-' }}
                         </td>
                         <td class="px-2 py-2 border border-black">
-                            {{ $walkinG2->pic->approved_name }}
+                            {{ $walkinG2->pic?->approvedBy?->name ?? '-' }}
                         </td>
                     </tr>
                     <tr>

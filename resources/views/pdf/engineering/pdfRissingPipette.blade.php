@@ -100,10 +100,10 @@
                     <tr>
                         <td class="px-2 py-2 font-medium border border-black">Name</td>
                         <td class="px-2 py-2 border border-black">
-                            {{ $rissing->pic->checked_name }}
+                            {{ $rissing->pic?->checkedBy?->name ?? '-' }}
                         </td>
                         <td class="px-2 py-2 border border-black">
-                            {{ $rissing->pic->approved_name }}
+                            {{ $rissing->pic?->approvedBy?->name ?? '-' }}
                         </td>
                     </tr>
                     <tr>

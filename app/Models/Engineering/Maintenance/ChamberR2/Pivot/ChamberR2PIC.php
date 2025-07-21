@@ -3,6 +3,7 @@
 namespace App\Models\Engineering\Maintenance\ChamberR2\Pivot;
 
 use App\Models\Engineering\Maintenance\ChamberR2\ChamberR2;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
@@ -26,6 +27,16 @@ class ChamberR2PIC extends Model
     public function chamberR2()
     {
         return $this->belongsTo(ChamberR2::class, 'r2_id');
+    }
+
+    public function approvedBy()
+    {
+        return $this->belongsTo(User::class, 'approved_name');
+    }
+
+    public function checkedBy()
+    {
+        return $this->belongsTo(User::class, 'checked_name');
     }
 
     protected static function booted(): void

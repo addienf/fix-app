@@ -26,21 +26,50 @@ class AdminChartWidget extends AdvancedChartWidget
 
     public function getHeading(): string
     {
+        $selectedDepartment = $this->filters['selectedDepartment'] ?? null;
+        $selectedModel = $this->filters['selectedModel'] ?? null;
         $selectedMonth = $this->filters['selectedMonth'] ?? now()->month;
-        $monthName = Carbon::create()->month($selectedMonth)->format('F');
+        $monthName = Carbon::create()->month($selectedMonth)->translatedFormat('F');
 
-        $config = $this->getSelectedModelConfig();
-        return "Total Data {$config['label']} Bulan - {$monthName}";
+        if (!$selectedModel) {
+            return '';
+        }
+
+        // Cek jika department atau model tidak valid
+        if (!$selectedDepartment || !config("models.$selectedDepartment.$selectedModel")) {
+            return 'Pilih Model Terlebih Dahulu';
+        }
+
+        $config = $this->getSelectedModelConfig($selectedDepartment, $selectedModel);
+        return $config ? "Total Data {$config['label']} Bulan - {$monthName}" : "Pilih Model Terlebih Dahulu";
     }
 
     protected function getData(): array
     {
+        $selectedDepartment = $this->filters['selectedDepartment'] ?? null;
+        $selectedModel = $this->filters['selectedModel'] ?? null;
         $month = $this->filters['selectedMonth'] ?? now()->month;
         $year = now()->year;
 
-        $config = $this->getSelectedModelConfig();
+        if (!$selectedDepartment || !$selectedModel) {
+            return [
+                'datasets' => [],
+                'labels' => [],
+            ];
+        }
+
+        $config = $this->getSelectedModelConfig($selectedDepartment, $selectedModel);
+
+        if (!$config) {
+            return [
+                'datasets' => [],
+                'labels' => [],
+            ];
+        }
+
         $modelClass = $config['class'];
         $label = $config['label'];
+
         $start = Carbon::create($year, $month)->startOfMonth();
         $end = Carbon::create($year, $month)->endOfMonth();
 
@@ -69,16 +98,40 @@ class AdminChartWidget extends AdvancedChartWidget
         return 'bar';
     }
 
-    // protected function getOptions(): ?array
-    // {
-    //     return [
-    //         'scales' => [
-    //             'y' => [
-    //                 'ticks' => [
-    //                     'precision' => 0,
-    //                 ],
-    //             ],
-    //         ],
-    //     ];
-    // }
+    protected function getOptions(): ?array
+    {
+        return [
+            'scales' => [
+                'y' => [
+                    'ticks' => [
+                        'precision' => 0,
+                    ],
+                ],
+            ],
+        ];
+    }
+
+    public function isVisible(): bool
+    {
+        $selectedDepartment = $this->filters['selectedDepartment'] ?? null;
+        $selectedModel = $this->filters['selectedModel'] ?? null;
+
+        // Sembunyikan widget jika belum memilih model yang valid
+        return $selectedDepartment && $selectedModel && config("models.$selectedDepartment.$selectedModel");
+    }
+
+    protected function getSelectedModelConfig(string $department, string $modelKey): ?array
+    {
+        $config = config("models.$department.$modelKey");
+
+        if (!$config || !isset($config['model'])) {
+            return null;
+        }
+
+        return [
+            'key' => $modelKey,
+            'label' => $config['label'],
+            'class' => $config['model'],
+        ];
+    }
 }

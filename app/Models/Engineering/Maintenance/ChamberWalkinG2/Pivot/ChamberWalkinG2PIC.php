@@ -3,6 +3,7 @@
 namespace App\Models\Engineering\Maintenance\ChamberWalkinG2\Pivot;
 
 use App\Models\Engineering\Maintenance\ChamberWalkinG2\ChamberWalkinG2;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
@@ -25,6 +26,16 @@ class ChamberWalkinG2PIC extends Model
     public function walkinG2()
     {
         return $this->belongsTo(ChamberWalkinG2::class, 'walk_in_g2_id');
+    }
+
+    public function approvedBy()
+    {
+        return $this->belongsTo(User::class, 'approved_name');
+    }
+
+    public function checkedBy()
+    {
+        return $this->belongsTo(User::class, 'checked_name');
     }
 
     protected static function booted(): void
