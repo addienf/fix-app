@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('spk_marketing_id')->constrained('spk_marketings')->onDelete('cascade');
             $table->date('tanggal');
-            $table->enum('jenis_gambar', ['arsitektur', 'struktur', 'mekanikal', 'elektrikal', 'lainnya']);
-            $table->enum('format_gambar', ['A4', 'A3', 'A2', 'A1']);
+            $table->string('jenis_gambar');
+            $table->string('format_gambar');
             $table->string('status_pemeriksaan')->nullable();
             $table->timestamps();
         });

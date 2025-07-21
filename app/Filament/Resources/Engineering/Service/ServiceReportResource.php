@@ -6,6 +6,7 @@ use App\Filament\Resources\Engineering\Service\ServiceReportResource\Pages;
 use App\Filament\Resources\Engineering\Service\ServiceReportResource\RelationManagers;
 use App\Models\Engineering\Service\ServiceReport;
 use App\Models\Engineering\SPK\SPKService;
+use App\Models\General\Product;
 use App\Services\SignatureUploader;
 use Filament\Actions\Action;
 use Filament\Forms;
@@ -14,6 +15,8 @@ use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\Radio;
+use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -26,8 +29,10 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Str;
 use Saade\FilamentAutograph\Forms\Components\SignaturePad;
 use Wallo\FilamentSelectify\Components\ButtonGroup;
+use Ysfkaya\FilamentPhoneInput\Forms\PhoneInput;
 
 class ServiceReportResource extends Resource
 {
@@ -48,7 +53,8 @@ class ServiceReportResource extends Resource
 
     public static function form(Form $form): Form
     {
-        // $lastValue = Refrigerator::latest('tag_no')->value('tag_no');
+
+        $lastValue2 = ServiceReport::latest('form_no')->value('form_no');
         $isEdit = $form->getOperation() === 'edit';
 
         return $form
@@ -71,110 +77,183 @@ class ServiceReportResource extends Resource
                             ->searchable()
                             ->preload()
                             ->required()
-                            ->hiddenOn(operations: 'edit'),
                     ])
+                    ->hiddenOn(operations: 'edit')
                     ->columns(1),
 
                 Section::make('Informasi Umum')
                     ->collapsible()
                     ->schema([
-                        TextInput::make('produk_name')
-                            ->label('Nama Produk')
-                            ->required(),
+                        Grid::make($isEdit ? 1 : 2)
+                            ->schema([
+                                TextInput::make('form_no')
+                                    ->label('Nomor Form')
+                                    ->default('SR-' . now()->format('Ymd') . '-' . strtoupper(Str::random(6)))
+                                    ->placeholder($lastValue2 ? "Data Terakhir : {$lastValue2}" : 'Data Belum Tersedia')
+                                    ->hiddenOn('edit')
+                                    ->unique(ignoreRecord: true)
+                                    // ->columnSpanFull()
+                                    ->required()
+                                    ->extraAttributes([
+                                        'readonly' => true,
+                                        'style' => 'pointer-events: none;'
+                                    ]),
 
-                        TextInput::make('type')
-                            ->label('Type/Model')
-                            ->required(),
-
-                        TextInput::make('serial_number')
-                            ->label('Nomor Seri')
-                            ->required(),
-
-                        // TextInput::make('status_warranty')
-                        //     ->label('Status Warranty')
-                        //     ->required(),
-
-                        ButtonGroup::make('status_warranty')
-                            ->required()
-                            ->label('Status Warranty')
-                            ->gridDirection('row')
-                            ->options([
-                                1 => 'Yes',
-                                0 => 'No',
+                                DatePicker::make('tanggal')
+                                    ->required()
                             ])
+                    ]),
+
+                Section::make('Data Complain')
+                    ->collapsible()
+                    ->schema([
+                        Grid::make(2)
+                            ->schema([
+                                TextInput::make('name_complaint')
+                                    ->required()
+                                    ->label('Who Complaint'),
+
+                                TextInput::make('company_name')
+                                    ->required()
+                                    ->label('Company Name'),
+
+                                TextInput::make('address')
+                                    ->required()
+                                    ->label('Address'),
+
+                                PhoneInput::make('phone_number')
+                                    // ->defaultCountry('US')
+                                    ->label('Phone Number')
+                                    ->required(),
+                            ])
+                    ]),
+
+                Section::make('Informasi Produk')
+                    ->collapsible()
+                    ->schema([
+                        Repeater::make('Service Produk')
+                            ->relationship('produkServices')
+                            ->label('')
+                            ->schema([
+                                Select::make('produk_name')
+                                    ->label('Pilih Produk')
+                                    ->options(Product::pluck('name', 'name')) // key dan value sama
+                                    ->searchable(),
+
+                                TextInput::make('type')
+                                    ->label('Type/Model')
+                                    ->required(),
+
+                                TextInput::make('serial_number')
+                                    ->label('Nomor Seri')
+                                    ->required(),
+
+                                ButtonGroup::make('status_warranty')
+                                    ->required()
+                                    ->label('Status Warranty')
+                                    ->gridDirection('row')
+                                    ->options([
+                                        1 => 'Yes',
+                                        0 => 'No',
+                                    ])
+                            ])
+                            ->columnSpanFull()
+                            ->columns(2)
+                            ->addable(false)
+                            ->reorderable(false)
+                            ->deletable(false)
                     ])
                     ->columns(2),
 
-                Section::make('Detail Informasi')
-                    ->relationship('detail')
-                    ->collapsible()
-                    ->schema([
-                        Textarea::make('taken_item')
-                            ->label('Taken Item')
-                            ->required(),
-
-                        ButtonGroup::make('status_service')
-                            ->required()
-                            ->label('Status Service')
-                            ->gridDirection('row')
-                            ->options([
-                                1 => 'Finish',
-                                0 => 'Not Finish',
-                            ]),
-
-                        Select::make('action')
-                            ->placeholder('Pilih Action')
-                            ->required()
-                            ->multiple()
-                            ->options([
-                                'cleaning' => 'Cleaning',
-                                'installation' => 'Installation',
-                                'repairing' => 'Repairing',
-                                'maintenance' => 'Maintenance',
-                                'replacing' => 'Replacing',
-                                'other' => 'Other',
-                            ]),
-
-                        Select::make('service_fields')
-                            ->label('Service Fields')
-                            ->placeholder('Pilih Service')
-                            ->required()
-                            ->multiple()
-                            ->options([
-                                'controlling' => 'Controlling',
-                                'air_circulation_system' => 'Air Circulation System',
-                                'logging_system' => 'Logging System',
-                                'serve_computer' => 'Serve Computer',
-                                'networking' => 'Networking',
-                                'water_feeding_system' => 'Water Feeding System',
-                                'cooling_system' => 'Cooling System',
-                                'humidifier_system' => 'Humidifier System',
-                                'communication_system' => 'Communication System',
-                                'air_heating_system' => 'Air Heating System',
-                                'software' => 'Software',
-                                'other' => 'Other',
-                            ]),
-
-                        FileUpload::make('upload_file')
-                            ->label('Lampiran')
-                            ->directory('Engineering/ServiceReport/Files')
-                            ->acceptedFileTypes(['image/png', 'image/jpeg'])
-                            ->helperText('*Hanya file gambar (PNG, JPG, JPEG) yang diperbolehkan. Maksimal ukuran 10 MB.')
-                            ->multiple()
-                            ->image()
-                            ->downloadable()
-                            ->reorderable()
-                            ->maxSize(10240)
-                            ->columnSpanFull()
-                            ->required(),
-                    ]),
-
-                Fieldset::make('Remarks')
+                Fieldset::make('Checklist')
                     ->label('')
                     ->schema([
-                        Textarea::make('remarks')
-                            ->required()
+                        Grid::make(3)
+                            ->schema([
+                                Select::make('service_category')
+                                    ->multiple()
+                                    ->options([
+                                        'installation' => 'Installation',
+                                        'maintenance' => 'Maintenance',
+                                        'repair' => 'Repair',
+                                        'consultation' => 'Consultation',
+                                    ]),
+
+                                Select::make('actions')
+                                    ->multiple()
+                                    ->options([
+                                        'cleaning' => 'Cleaning',
+                                        'installation' => 'Installation',
+                                        'repairing' => 'Repairing',
+                                        'maintenance' => 'Maintenance',
+                                        'replacing' => 'Replacing',
+                                        'other' => 'Other',
+                                    ]),
+
+                                Select::make('service_fields')
+                                    ->multiple()
+                                    ->options([
+                                        'controlling' => 'Controlling',
+                                        'air_cooling_system' => 'Air Cooling System',
+                                        'logging_system' => 'Logging System',
+                                        'server_computer' => 'Server Computer',
+                                        'networking' => 'Networking',
+                                        'water_feeding_system' => 'Water Feeding System',
+                                        'cooling_system' => 'Cooling System',
+                                        'humidifier_system' => 'Humidifier System',
+                                        'communication_system' => 'Communication System',
+                                        'air_heating_system' => 'Air Heating System',
+                                        'software' => 'Software',
+                                        'other' => 'Other',
+                                    ]),
+                            ]),
+                    ]),
+
+                Section::make('Detail Produk')
+                    ->collapsible()
+                    ->schema([
+                        Repeater::make('details')
+                            ->relationship('details')
+                            ->schema([
+                                Grid::make(2)
+                                    ->schema([
+                                        TextInput::make('remark')
+                                            ->label('Remark')
+                                            ->required(),
+
+                                        ButtonGroup::make('service_status')
+                                            ->required()
+                                            ->label('Service Status')
+                                            ->gridDirection('row')
+                                            ->options([
+                                                1 => 'Yes',
+                                                0 => 'No',
+                                            ]),
+
+                                        Textarea::make('taken_item')
+                                            ->label('Taken Item')
+                                            ->columnSpanFull()
+                                            ->required(),
+
+                                        FileUpload::make('upload_file')
+                                            ->label('Lampiran')
+                                            ->directory('Engineering/ServiceReport/Files')
+                                            ->acceptedFileTypes(['image/png', 'image/jpeg'])
+                                            ->helperText('*Hanya file gambar (PNG, JPG, JPEG) yang diperbolehkan. Maksimal ukuran 10 MB.')
+                                            ->multiple()
+                                            ->image()
+                                            ->downloadable()
+                                            ->reorderable()
+                                            ->maxSize(10240)
+                                            ->columnSpanFull()
+                                            ->required(),
+                                    ]),
+                            ])
                             ->columnSpanFull()
+                            ->columns(2)
+                            ->addable(false)
+                            ->reorderable(false)
+                            ->deletable(false),
                     ]),
 
                 Section::make('PIC')
@@ -190,8 +269,6 @@ class ServiceReportResource extends Resource
                                         Hidden::make('checked_name')
                                             ->default(fn() => auth()->id()),
 
-                                        // self::textInput('checked_name', 'Checked By'),
-
                                         TextInput::make('checked_name_display')
                                             ->label('Service By')
                                             ->default(fn() => auth()->user()?->name)
@@ -201,6 +278,7 @@ class ServiceReportResource extends Resource
                                         self::signatureInput('checked_signature', ''),
                                         DatePicker::make('checked_date')
                                             ->label('')
+                                            ->default(now())
                                             ->required()
                                     ])->hiddenOn(operations: 'edit'),
 
@@ -208,13 +286,11 @@ class ServiceReportResource extends Resource
                                     ->schema([
                                         Hidden::make('approved_name')
                                             ->default(fn() => auth()->id())
-                                            ->dehydrated(true) // pastikan disimpan ke DB saat submit
+                                            ->dehydrated(true)
                                             ->afterStateHydrated(function ($component) {
-                                                // selalu override nilai dari database
                                                 $component->state(auth()->id());
                                             }),
 
-                                        // self::textInput('approved_name', 'Approved By'),
                                         TextInput::make('approved_name_display')
                                             ->label('Approved By')
                                             ->placeholder(fn() => auth()->user()?->name)
@@ -226,9 +302,7 @@ class ServiceReportResource extends Resource
                                             ->label('')
                                             ->required()
                                     ])->hiddenOn(operations: 'create'),
-
                             ]),
-
                     ]),
             ]);
     }
@@ -238,8 +312,11 @@ class ServiceReportResource extends Resource
         return $table
             ->columns([
                 //
-                TextColumn::make('produk_name')
-                    ->label('Nama Produk'),
+                TextColumn::make('spkService.no_spk_service')
+                    ->label('No SPK Service'),
+
+                TextColumn::make('form_no')
+                    ->label('Form No'),
 
                 TextColumn::make('status_penyetujuan')
                     ->label('Status')
@@ -262,7 +339,7 @@ class ServiceReportResource extends Resource
                         ->icon('heroicon-o-document')
                         ->color('success')
                         ->visible(fn($record) => $record->status_penyetujuan === 'Disetujui')
-                    // ->url(fn($record) => route('pdf.MaintenanceRefrigator', ['record' => $record->id])),
+                        ->url(fn($record) => route('pdf.serviceReport', ['record' => $record->id])),
                 ])
             ])
             ->bulkActions([

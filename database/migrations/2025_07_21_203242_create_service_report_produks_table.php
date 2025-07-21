@@ -11,13 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('service_report_details', function (Blueprint $table) {
+        Schema::create('service_report_produks', function (Blueprint $table) {
             $table->id();
             $table->foreignId(column: 'service_id')->constrained('service_reports')->cascadeOnDelete();
-            $table->string('remark');
-            $table->string('taken_item');
-            $table->string('service_status');
-            $table->string('upload_file');
+            $table->string('produk_name');
+            $table->string('type');
+            $table->string('serial_number');
+            $table->string('status_warranty');
             $table->timestamps();
         });
     }
@@ -27,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('service_report_details');
+        Schema::dropIfExists('service_report_produks');
     }
 };

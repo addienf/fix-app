@@ -22,6 +22,8 @@ class StandarisasiDrawing extends Model
     ];
 
     protected $casts = [
+        'jenis_gambar' => 'array',
+        'format_gambar' => 'array',
         'tanggal' => 'date',
     ];
 

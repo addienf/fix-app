@@ -157,17 +157,18 @@ class IncommingMaterialSSResource extends Resource
 
                 Section::make('Summary & Quantity')
                     ->label('')
+                    ->relationship('summary')
                     ->schema([
                         Grid::make(2),
                         // ->schema([
                         //     // Header kiri
                         //     Placeholder::make('summary_title')
-                        //         ->content(new HtmlString('<div class="px-5 py-4 font-bold rounded-md text-lg"></div>'))
+                        //         ->content(new HtmlString('<div class="px-5 py-4 text-lg font-bold rounded-md"></div>'))
                         //         ->disableLabel(),
 
                         //     // Header kanan
                         //     Placeholder::make('quantity_title')
-                        //         ->content(new HtmlString('<div class="px-3 py-4 font-bold rounded-md text-lg"></div>'))
+                        //         ->content(new HtmlString('<div class="px-3 py-4 text-lg font-bold rounded-md"></div>'))
                         //         ->disableLabel(),
                         // ]),
 
@@ -388,69 +389,69 @@ class IncommingMaterialSSResource extends Resource
     {
         return
             Select::make($fieldName)
-                ->relationship($relation, $title)
-                ->options(function () {
-                    return
-                        PermintaanPembelian::with('permintaanBahanWBB')
-                            ->whereDoesntHave('materialSS')
-                            ->get()
-                            ->mapWithKeys(function ($item) {
-                                return [$item->id => $item->permintaanBahanWBB->no_surat ?? 'Tanpa No Surat'];
-                            });
-                })
-                ->label($label)
-                ->native(false)
-                ->searchable()
-                ->preload()
-                ->required()
-                ->reactive();
+            ->relationship($relation, $title)
+            ->options(function () {
+                return
+                    PermintaanPembelian::with('permintaanBahanWBB')
+                    ->whereDoesntHave('materialSS')
+                    ->get()
+                    ->mapWithKeys(function ($item) {
+                        return [$item->id => $item->permintaanBahanWBB->no_surat ?? 'Tanpa No Surat'];
+                    });
+            })
+            ->label($label)
+            ->native(false)
+            ->searchable()
+            ->preload()
+            ->required()
+            ->reactive();
     }
 
     protected static function selectInputOptions(string $fieldName, string $label, string $config): Select
     {
         return
             Select::make($fieldName)
-                ->options(config($config))
-                ->label($label)
-                ->native(false)
-                ->searchable()
-                ->preload()
-                ->required()
-                ->reactive();
+            ->options(config($config))
+            ->label($label)
+            ->native(false)
+            ->searchable()
+            ->preload()
+            ->required()
+            ->reactive();
     }
 
     protected static function datePicker(string $fieldName, string $label): DatePicker
     {
         return
             DatePicker::make($fieldName)
-                ->label($label)
-                ->displayFormat('M d Y')
-                ->seconds(false);
+            ->label($label)
+            ->displayFormat('M d Y')
+            ->seconds(false);
     }
 
     protected static function signatureInput(string $fieldName, string $labelName): SignaturePad
     {
         return
             SignaturePad::make($fieldName)
-                ->label($labelName)
-                ->exportPenColor('#0118D8')
-                ->helperText('*Harap Tandatangan di tengah area yang disediakan.')
-                ->afterStateUpdated(function ($state, $set) use ($fieldName) {
-                    if (blank($state))
-                        return;
-                    $path = SignatureUploader::handle($state, 'ttd_', 'Quality/IncommingMaterial/SS/Signatures');
-                    if ($path) {
-                        $set($fieldName, $path);
-                    }
-                });
+            ->label($labelName)
+            ->exportPenColor('#0118D8')
+            ->helperText('*Harap Tandatangan di tengah area yang disediakan.')
+            ->afterStateUpdated(function ($state, $set) use ($fieldName) {
+                if (blank($state))
+                    return;
+                $path = SignatureUploader::handle($state, 'ttd_', 'Quality/IncommingMaterial/SS/Signatures');
+                if ($path) {
+                    $set($fieldName, $path);
+                }
+            });
     }
 
     protected static function textColumn(string $fieldName, string $label): TextColumn
     {
         return
             TextColumn::make($fieldName)
-                ->label($label)
-                ->searchable()
-                ->sortable();
+            ->label($label)
+            ->searchable()
+            ->sortable();
     }
 }

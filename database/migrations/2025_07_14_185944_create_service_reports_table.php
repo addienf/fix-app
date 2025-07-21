@@ -14,11 +14,15 @@ return new class extends Migration
         Schema::create('service_reports', function (Blueprint $table) {
             $table->id();
             $table->foreignId('spk_service_id')->constrained('spk_services')->cascadeOnDelete();
-            $table->string('produk_name');
-            $table->string('type');
-            $table->string('serial_number');
-            $table->string('status_warranty');
-            $table->text('remarks');
+            $table->string('form_no');
+            $table->date('tanggal');
+            $table->string('name_complaint');
+            $table->string('company_name');
+            $table->string('address');
+            $table->string('phone_number');
+            $table->string('service_category');
+            $table->string('actions');
+            $table->string('service_fields');
             $table->string('status_penyetujuan');
             $table->timestamps();
         });

@@ -11,6 +11,7 @@ use App\Models\Engineering\Maintenance\Refrigerator\Refrigerator;
 use App\Models\Engineering\Maintenance\RissingPipette\RissingPipette;
 use App\Models\Engineering\Maintenance\WalkinChamber\WalkinChamber;
 use App\Models\Engineering\Permintaan\PermintaanSparepart;
+use App\Models\Engineering\Service\ServiceReport;
 use App\Models\Engineering\SPK\SPKService;
 use App\Models\Production\Jadwal\JadwalProduksi;
 use App\Models\Production\Penyerahan\PenyerahanElectrical\PenyerahanElectrical;
@@ -380,10 +381,39 @@ class PDFController extends Controller
         return view('pdf.engineering.pdfMaintenanceColdRoom', compact('cold'));
     }
 
-    public function pdfServiceReport()
+    public function pdfServiceReport($id)
     {
+        $serviceReport = ServiceReport::with(['spkService', 'details', 'produkServices', 'pic', 'pic.approvedBy', 'pic.checkedBy'])->findOrFail($id);
 
-        return view('pdf.engineering.pdfServiceReport');
+        return view('pdf.engineering.pdfServiceReport', compact('serviceReport'));
     }
 
+    public function downloadZipserviceReport($id)
+    {
+        $serviceReport = ServiceReport::with(['spkService', 'details', 'produkServices', 'pic', 'pic.approvedBy', 'pic.checkedBy'])->findOrFail($id);
+
+        $zipFileName = 'service-report' . $serviceReport->id . '.zip';
+        $zipPath = storage_path('app/temp/' . $zipFileName);
+
+        if (!file_exists(storage_path('app/temp'))) {
+            mkdir(storage_path('app/temp'), 0755, true);
+        }
+
+        $zip = new ZipArchive;
+        if ($zip->open($zipPath, ZipArchive::CREATE | ZipArchive::OVERWRITE)) {
+
+            foreach ($serviceReport->details as $detail) {
+                foreach ($detail->upload_file ?? [] as $gambarPath) {
+                    $fullPath = storage_path('app/public/' . $gambarPath);
+                    if (file_exists($fullPath)) {
+                        $zip->addFile($fullPath, basename($gambarPath));
+                    }
+                }
+            }
+
+            $zip->close();
+        }
+
+        return response()->download($zipPath)->deleteFileAfterSend(true);
+    }
 }
