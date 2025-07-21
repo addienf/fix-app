@@ -111,7 +111,7 @@
                     <img src="{{ asset('storage/' . $permintaan_bahan->pic->create_signature) }}" alt="Create Signature"
                         class="h-20 w-80" />
                     <div class="mt-2 font-medium">
-                        {{ $permintaan_bahan->pic->create_name }}
+                        {{ $permintaan_bahan->pic->createName->name }}
                     </div>
                 </div>
             </div>

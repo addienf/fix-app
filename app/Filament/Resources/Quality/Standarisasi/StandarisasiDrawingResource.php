@@ -146,12 +146,35 @@ class StandarisasiDrawingResource extends Resource
                             ->schema([
                                 Grid::make(1)
                                     ->schema([
-                                        self::textInput('create_name', 'Dibuat Oleh'),
+                                        Hidden::make('create_name')
+                                            ->default(fn() => auth()->id()),
+
+                                        self::textInput('create_name_placeholder', 'Dibuat Oleh')
+                                            ->default(fn() => auth()->user()?->name)
+                                            ->extraAttributes([
+                                                'readonly' => true,
+                                                'style' => 'pointer-events: none;'
+                                            ]),
+
                                         self::signatureInput('create_signature', ''),
                                     ])->hiddenOn(operations: 'edit'),
                                 Grid::make(1)
                                     ->schema([
-                                        self::textInput('check_name', 'Diperiksa Oleh'),
+                                        Hidden::make('check_name')
+                                            ->default(fn() => auth()->id())
+                                            ->dehydrated(true)
+                                            ->afterStateHydrated(function ($component) {
+                                                $component->state(auth()->id());
+                                            }),
+
+                                        self::textInput('check_name_placeholder', 'Diperiksa Oleh')
+                                            ->placeholder(fn() => auth()->user()?->name)
+                                            ->required(false)
+                                            ->extraAttributes([
+                                                'readonly' => true,
+                                                'style' => 'pointer-events: none;'
+                                            ]),
+
                                         self::signatureInput('check_signature', ''),
                                     ])->hiddenOn(operations: 'create'),
                             ]),

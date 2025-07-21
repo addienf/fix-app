@@ -3,6 +3,7 @@
 namespace App\Models\Production\PermintaanBahanProduksi\Pivot;
 
 use App\Models\Production\PermintaanBahanProduksi\PermintaanAlatDanBahan;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
@@ -26,6 +27,21 @@ class PermintaanAlatDanBahanPIC extends Model
     public function permintaanBahan()
     {
         return $this->belongsTo(PermintaanAlatDanBahan::class, 'permintaan_bahan_id');
+    }
+
+    public function dibuatName()
+    {
+        return $this->belongsTo(User::class, 'dibuat_name');
+    }
+
+    public function diketahuiName()
+    {
+        return $this->belongsTo(User::class, 'diketahui_name');
+    }
+
+    public function diserahkanName()
+    {
+        return $this->belongsTo(User::class, 'diserahkan_name');
     }
 
     protected static function booted(): void

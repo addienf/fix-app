@@ -178,13 +178,13 @@
                     <p class="mb-2">Dibuat Oleh</p>
                     <img src="{{ asset('storage/' . $standarisasi->pic->create_signature) }}" alt="ttd"
                         class="object-contain w-64 h-20" />
-                    <p class="mt-1 font-semibold">{{ $standarisasi->pic->create_name }}</p>
+                    <p class="mt-1 font-semibold">{{ $standarisasi->pic->createName->name }}</p>
                 </div>
                 <div class="flex flex-col items-center w-full sm:w-1/2">
                     <p class="mb-2">Diperiksa Oleh</p>
                     <img src="{{ asset('storage/' . $standarisasi->pic->check_signature) }}" alt="ttd"
                         class="object-contain w-64 h-20" />
-                    <p class="mt-1 font-semibold">{{ $standarisasi->pic->check_name }}</p>
+                    <p class="mt-1 font-semibold">{{ $standarisasi->pic->checkName->name }}</p>
                 </div>
             </div>
         </div>

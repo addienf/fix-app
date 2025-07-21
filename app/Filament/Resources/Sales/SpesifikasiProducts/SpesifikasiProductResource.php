@@ -11,6 +11,7 @@ use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
@@ -148,12 +149,22 @@ class SpesifikasiProductResource extends Resource
                     ->schema([
                         Grid::make(2)
                             ->schema([
-                                self::textInput('name', 'Nama Pembuat')
-                                    ->required(),
+                                Hidden::make('name')
+                                    ->default(fn() => auth()->id()),
+
+                                self::textInput('name_display', 'Nama Pembuat')
+                                    ->default(fn() => auth()->user()?->name)
+                                    ->extraAttributes([
+                                        'readonly' => true,
+                                        'style' => 'pointer-events: none;'
+                                    ]),
+
                                 DatePicker::make('date')
                                     ->label('Tanggal Dibuat')
                                     ->required()
+                                    ->default(now())
                                     ->displayFormat('M d Y'),
+
                                 self::signatureInput('signature')
                                     ->label('Tanda Tangan')
                                     ->required()

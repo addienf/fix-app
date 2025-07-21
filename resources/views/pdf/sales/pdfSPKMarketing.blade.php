@@ -109,16 +109,18 @@
                     <p class="mb-2 dark:text-white">Yang Membuat</p>
                     <img src="{{ asset('storage/' . $spk_mkt->pic->create_signature) }}" alt="Product Signature"
                         class="h-20 w-80" />
-                    <p class="mt-1 font-semibold dark:text-white">{{ $spk_mkt->dari }}</p>
-                    <p class="mt-1 font-semibold dark:text-white">Marketing</p>
+                    <p class="mt-1 font-semibold dark:text-white">{{ $spk_mkt->pic->createName->name }}</p>
+                    {{-- <p class="mt-1 font-semibold dark:text-white">{{ $spk_mkt->pic->create_name }}</p> --}}
+                    <p class="mt-1 font-semibold dark:text-white">( Marketing )</p>
                 </div>
                 <!-- Kanan -->
                 <div class="flex flex-col items-center">
                     <p class="mb-2 dark:text-white">Yang Menerima</p>
                     <img src="{{ asset('storage/' . $spk_mkt->pic->receive_signature) }}" alt="Product Signature"
                         class="h-20 w-80" />
-                    <p class="mt-1 font-semibold dark:text-white">{{ $spk_mkt->kepada }}</p>
-                    <p class="mt-1 font-semibold dark:text-white">Produksi</p>
+                    <p class="mt-1 font-semibold dark:text-white">{{ $spk_mkt->pic->receiveName->name }}</p>
+                    {{-- <p class="mt-1 font-semibold dark:text-white">{{ $spk_mkt->pic->receive_name }}</p> --}}
+                    <p class="mt-1 font-semibold dark:text-white">( Produksi )</p>
                 </div>
             </div>
         </div>

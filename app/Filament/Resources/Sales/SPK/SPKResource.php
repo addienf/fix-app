@@ -139,16 +139,39 @@ class SPKResource extends Resource
 
                                 Grid::make(1)
                                     ->schema([
-                                        self::textInput('create_name', 'Yang Membuat')
-                                            ->placeholder('Marketing'),
+                                        Hidden::make('create_name')
+                                            ->default(fn() => auth()->id()),
+
+                                        self::textInput('create_name_placeholder', 'Yang Membuat')
+                                            ->default(fn() => auth()->user()?->name)
+                                            ->extraAttributes([
+                                                'readonly' => true,
+                                                'style' => 'pointer-events: none;'
+                                            ]),
+
                                         self::signatureInput('create_signature', ''),
+
                                     ])->hiddenOn(operations: 'edit'),
 
                                 Grid::make(1)
                                     ->schema([
-                                        self::textInput('receive_name', 'Yang Menerima')
-                                            ->placeholder('Produksi'),
+                                        Hidden::make('receive_name')
+                                            ->default(fn() => auth()->id())
+                                            ->dehydrated(true)
+                                            ->afterStateHydrated(function ($component) {
+                                                $component->state(auth()->id());
+                                            }),
+
+                                        self::textInput('receive_name_placeholder', 'Yang Menerima')
+                                            ->placeholder(fn() => auth()->user()?->name)
+                                            ->required(false)
+                                            ->extraAttributes([
+                                                'readonly' => true,
+                                                'style' => 'pointer-events: none;'
+                                            ]),
+
                                         self::signatureInput('receive_signature', ''),
+
                                     ])->hiddenOn(operations: 'create'),
 
                             ]),

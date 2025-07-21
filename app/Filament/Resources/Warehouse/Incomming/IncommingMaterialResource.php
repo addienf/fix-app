@@ -147,7 +147,17 @@ class IncommingMaterialResource extends Resource
                                 Grid::make(1)
                                     ->schema([
 
-                                        self::textInput('submited_name', 'Diserahkan Oleh'),
+                                        Hidden::make('submited_name')
+                                            ->default(fn() => auth()->id()),
+
+                                        self::textInput('submited_name_placeholder', 'Diserahkan Oleh')
+                                            ->default(fn() => auth()->user()?->name)
+                                            ->extraAttributes([
+                                                'readonly' => true,
+                                                'style' => 'pointer-events: none;'
+                                            ]),
+
+                                        // self::textInput('submited_name', 'Diserahkan Oleh'),
 
                                         self::signatureInput('submited_signature', ''),
 
@@ -156,7 +166,22 @@ class IncommingMaterialResource extends Resource
                                 Grid::make(1)
                                     ->schema([
 
-                                        self::textInput('received_name', 'Diterima Oleh'),
+                                        Hidden::make('received_name')
+                                            ->default(fn() => auth()->id())
+                                            ->dehydrated(true)
+                                            ->afterStateHydrated(function ($component) {
+                                                $component->state(auth()->id());
+                                            }),
+
+                                        self::textInput('received_name_placeholder', 'Diterima Oleh')
+                                            ->placeholder(fn() => auth()->user()?->name)
+                                            ->required(false)
+                                            ->extraAttributes([
+                                                'readonly' => true,
+                                                'style' => 'pointer-events: none;'
+                                            ]),
+
+                                        // self::textInput('received_name', 'Diterima Oleh'),
 
                                         self::signatureInput('received_signature', ''),
 
@@ -198,7 +223,7 @@ class IncommingMaterialResource extends Resource
                     Tables\Actions\EditAction::make(),
                     Tables\Actions\DeleteAction::make(),
                     Action::make('pdf_view')
-                        ->label(_('View PDF'))
+                        ->label(_('Lihat PDF'))
                         ->icon('heroicon-o-document')
                         ->color('success')
                         ->visible(fn($record) => $record->status_penerimaan_pic === 'Diterima')

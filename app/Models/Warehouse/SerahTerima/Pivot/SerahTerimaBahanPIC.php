@@ -2,6 +2,7 @@
 
 namespace App\Models\Warehouse\SerahTerima\Pivot;
 
+use App\Models\User;
 use App\Models\Warehouse\SerahTerima\SerahTerimaBahan;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -23,6 +24,16 @@ class SerahTerimaBahanPIC extends Model
     public function serahTerima()
     {
         return $this->belongsTo(SerahTerimaBahan::class);
+    }
+
+    public function submitName()
+    {
+        return $this->belongsTo(User::class, 'submit_name');
+    }
+
+    public function receiveName()
+    {
+        return $this->belongsTo(User::class, 'receive_name');
     }
 
     protected static function booted(): void

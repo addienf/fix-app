@@ -49,11 +49,28 @@ class DefectStatusDetail extends Model
             $revisiBaru = collect($model->spesifikasi_revisi ?? [])
                 ->keyBy(fn($item) => $item['mainPart'] ?? null);
 
-            $detailsFinal = $detailsLama->map(function ($item) use ($revisiBaru) {
-                $mainPart = $item['mainPart'] ?? null;
+            // $detailsFinal = $detailsLama->map(function ($item) use ($revisiBaru) {
+            //     $mainPart = $item['mainPart'] ?? null;
 
-                if ($mainPart && $revisiBaru->has($mainPart)) {
-                    return $revisiBaru->get($mainPart);
+            //     if ($mainPart && $revisiBaru->has($mainPart)) {
+            //         return $revisiBaru->get($mainPart);
+            //     }
+
+            //     return $item;
+            // });
+
+            $detailsFinal = $detailsLama->map(function ($item) use ($revisiBaru) {
+                $mainPartKey = $item['mainPart'] ?? null;
+
+                if ($mainPartKey && $revisiBaru->has($mainPartKey)) {
+                    $revisi = $revisiBaru->get($mainPartKey);
+
+                    return [
+                        'mainPart' => $revisi['mainPart'] ?? $item['mainPart'],
+                        'mainPart_result' => $revisi['mainPart_result'] ?? $item['mainPart_result'],
+                        'mainPart_status' => $revisi['mainPart_status'] ?? $item['mainPart_status'],
+                        'parts' => $revisi['parts'] ?? $item['parts'],
+                    ];
                 }
 
                 return $item;

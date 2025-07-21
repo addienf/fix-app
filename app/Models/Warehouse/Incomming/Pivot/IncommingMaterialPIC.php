@@ -2,6 +2,7 @@
 
 namespace App\Models\Warehouse\Incomming\Pivot;
 
+use App\Models\User;
 use App\Models\Warehouse\Incomming\IncommingMaterial;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -25,6 +26,16 @@ class IncommingMaterialPIC extends Model
     public function incommingMaterial()
     {
         return $this->belongsTo(IncommingMaterial::class, 'incomming_material_id');
+    }
+
+    public function submitedName()
+    {
+        return $this->belongsTo(User::class, 'submited_name');
+    }
+
+    public function receivedName()
+    {
+        return $this->belongsTo(User::class, 'received_name');
     }
 
     protected static function booted(): void

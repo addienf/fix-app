@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('spk_marketing_id')->constrained('spk_marketings')->onDelete('cascade');
             $table->string('tipe');
             $table->string('ref_document');
-            $table->string('note');
+            $table->text('note');
             $table->string('status_penyelesaian');
             $table->timestamps();
         });

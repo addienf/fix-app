@@ -147,10 +147,35 @@ class SerahTerimaBahanResource extends Resource
                         Grid::make(2)
                             ->schema([
 
+                                // Grid::make(1)
+                                //     ->schema([
+
+                                //         self::textInput('submit_name', 'Diserahkan oleh'),
+
+                                //         self::signatureInput('submit_signature', ''),
+
+                                //     ])->hiddenOn(operations: 'edit'),
+
+                                // Grid::make(1)
+                                //     ->schema([
+
+                                //         self::textInput('receive_name', 'Diterima oleh'),
+
+                                //         self::signatureInput('receive_signature', ''),
+
+                                //     ])->hiddenOn(operations: 'create'),
+
                                 Grid::make(1)
                                     ->schema([
+                                        Hidden::make('submit_name')
+                                            ->default(fn() => auth()->id()),
 
-                                        self::textInput('submit_name', 'Diserahkan oleh'),
+                                        self::textInput('submit_name_placeholder', 'Diserahkan oleh')
+                                            ->default(fn() => auth()->user()?->name)
+                                            ->extraAttributes([
+                                                'readonly' => true,
+                                                'style' => 'pointer-events: none;'
+                                            ]),
 
                                         self::signatureInput('submit_signature', ''),
 
@@ -158,14 +183,28 @@ class SerahTerimaBahanResource extends Resource
 
                                 Grid::make(1)
                                     ->schema([
+                                        Hidden::make('receive_name')
+                                            ->default(fn() => auth()->id())
+                                            ->dehydrated(true)
+                                            ->afterStateHydrated(function ($component) {
+                                                $component->state(auth()->id());
+                                            }),
 
-                                        self::textInput('receive_name', 'Diterima oleh'),
+                                        self::textInput('receive_name_placeholder', 'Diterima oleh')
+                                            ->placeholder(fn() => auth()->user()?->name)
+                                            ->required(false)
+                                            ->extraAttributes([
+                                                'readonly' => true,
+                                                'style' => 'pointer-events: none;'
+                                            ]),
 
                                         self::signatureInput('receive_signature', ''),
 
                                     ])->hiddenOn(operations: 'create'),
 
                             ]),
+
+
 
                     ]),
 

@@ -12,6 +12,7 @@ use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -127,7 +128,17 @@ class PermintaanBahanResource extends Resource
                     ->schema([
                         Grid::make(1)
                             ->schema([
-                                self::textInput('create_name', 'Dibuat Oleh'),
+
+                                Hidden::make('create_name')
+                                    ->default(fn() => auth()->id()),
+
+                                self::textInput('create_name_placeholder', 'Dibuat Oleh')
+                                    ->default(fn() => auth()->user()?->name)
+                                    ->extraAttributes([
+                                        'readonly' => true,
+                                        'style' => 'pointer-events: none;'
+                                    ]),
+
                                 self::signatureInput('create_signature', ''),
                             ])
                     ]),
@@ -153,7 +164,7 @@ class PermintaanBahanResource extends Resource
                     Tables\Actions\EditAction::make(),
                     Tables\Actions\DeleteAction::make(),
                     Action::make('pdf_view')
-                        ->label(_('View PDF'))
+                        ->label(_('Lihat PDF'))
                         ->icon('heroicon-o-document')
                         ->color('success')
                         ->url(fn($record) => route('pdf.permintaanBahan', ['record' => $record->id])),

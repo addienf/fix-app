@@ -13,6 +13,7 @@ use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
@@ -186,9 +187,21 @@ class BeritaAcaraResource extends Resource
                     ->collapsible()
                     ->relationship('pic')
                     ->schema([
+
+                        // Hidden::make('jasa_name')
+                        //     ->default(fn() => auth()->id()),
+
+                        // self::textInput('jasa_name_placeholder', 'Nama Penyedia Jasa')
+                        //     ->default(fn() => auth()->user()?->name)
+                        //     ->extraAttributes([
+                        //         'readonly' => true,
+                        //         'style' => 'pointer-events: none;'
+                        //     ]),
+
                         TextInput::make('jasa_name')
                             ->required()
-                            ->label('Nama Penyedia Jasa'),
+                            ->label('Nama Penyedia Jasa')
+                            ->default(fn() => auth()->user()?->name),
 
                         self::signatureInput('jasa_ttd', ''),
                     ])
@@ -217,7 +230,7 @@ class BeritaAcaraResource extends Resource
                     Tables\Actions\EditAction::make(),
                     Tables\Actions\DeleteAction::make(),
                     Action::make('pdf_view')
-                        ->label(_('View PDF'))
+                        ->label(_('Lihat PDF'))
                         ->icon('heroicon-o-document')
                         ->color('success')
                         ->url(fn($record) => route('pdf.beritaAcara', ['record' => $record->id])),
@@ -244,6 +257,14 @@ class BeritaAcaraResource extends Resource
             'create' => Pages\CreateBeritaAcara::route('/create'),
             'edit' => Pages\EditBeritaAcara::route('/{record}/edit'),
         ];
+    }
+
+    protected static function textInput(string $fieldName, string $label): TextInput
+    {
+        return TextInput::make($fieldName)
+            ->label($label)
+            ->required()
+            ->maxLength(255);
     }
 
     protected static function signatureInput(string $fieldName, string $labelName): SignaturePad

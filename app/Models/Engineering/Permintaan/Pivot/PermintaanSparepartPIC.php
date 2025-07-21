@@ -3,6 +3,7 @@
 namespace App\Models\Engineering\Permintaan\Pivot;
 
 use App\Models\Engineering\Permintaan\PermintaanSparepart;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
@@ -26,6 +27,21 @@ class PermintaanSparepartPIC extends Model
     public function permintaanSparepart()
     {
         return $this->belongsTo(PermintaanSparepart::class, 'sparepart_id');
+    }
+
+    public function dibuatName()
+    {
+        return $this->belongsTo(User::class, 'dibuat_name');
+    }
+
+    public function diketahuiName()
+    {
+        return $this->belongsTo(User::class, 'diketahui_name');
+    }
+
+    public function diserahkanName()
+    {
+        return $this->belongsTo(User::class, 'diserahkan_name');
     }
 
     protected static function booted(): void

@@ -3,6 +3,7 @@
 namespace App\Models\Production\SPK\Pivot;
 
 use App\Models\Production\SPK\SPKQuality;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
@@ -25,6 +26,17 @@ class SPKQualityPIC extends Model
     {
         return $this->belongsTo(SPKQuality::class);
     }
+
+    public function createName()
+    {
+        return $this->belongsTo(User::class, 'create_name');
+    }
+
+    public function receiveName()
+    {
+        return $this->belongsTo(User::class, 'receive_name');
+    }
+
     protected static function booted(): void
     {
         static::updating(function ($model) {

@@ -5,6 +5,7 @@ namespace App\Models\Engineering\Maintenance\WalkinChamber;
 use App\Models\Engineering\Maintenance\WalkinChamber\Pivot\WalkinChamberDetail;
 use App\Models\Engineering\Maintenance\WalkinChamber\Pivot\WalkinChamberPIC;
 use App\Models\Engineering\SPK\SPKService;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 

@@ -168,14 +168,44 @@ class SPKServiceResource extends Resource
 
                                 Grid::make(1)
                                     ->schema([
-                                        self::textInput('dikonfirmasi_nama', 'Dikonfirmasi Oleh,'),
+                                        Hidden::make('dikonfirmasi_nama')
+                                            ->default(fn() => auth()->id()),
+
+                                        self::textInput('dikonfirmasi_nama_placeholder', 'Dikonfirmasi Oleh,')
+                                            ->default(fn() => auth()->user()?->name)
+                                            ->extraAttributes([
+                                                'readonly' => true,
+                                                'style' => 'pointer-events: none;'
+                                            ]),
+
+                                        // self::textInput('dikonfirmasi_nama', 'Dikonfirmasi Oleh,'),
+
                                         self::signatureInput('dikonfirmasi_ttd', ''),
+
                                     ])->hiddenOn(operations: 'edit'),
 
                                 Grid::make(1)
                                     ->schema([
-                                        self::textInput('diketahui_nama', 'Diketahui Oleh,'),
+
+                                        Hidden::make('diketahui_nama')
+                                            ->default(fn() => auth()->id())
+                                            ->dehydrated(true)
+                                            ->afterStateHydrated(function ($component) {
+                                                $component->state(auth()->id());
+                                            }),
+
+                                        self::textInput('diketahui_nama_placeholder', 'Diketahui Oleh,')
+                                            ->placeholder(fn() => auth()->user()?->name)
+                                            ->required(false)
+                                            ->extraAttributes([
+                                                'readonly' => true,
+                                                'style' => 'pointer-events: none;'
+                                            ]),
+
+                                        // self::textInput('diketahui_nama', 'Diketahui Oleh,'),
+
                                         self::signatureInput('diketahui_ttd', ''),
+
                                     ])->hiddenOn(operations: 'create'),
 
                             ]),
@@ -233,7 +263,7 @@ class SPKServiceResource extends Resource
                     Tables\Actions\EditAction::make(),
                     Tables\Actions\DeleteAction::make(),
                     Action::make('pdf_view')
-                        ->label(_('View PDF'))
+                        ->label(_('Lihat PDF'))
                         ->icon('heroicon-o-document')
                         ->color('success')
                         ->visible(fn($record) => $record->status_penyelesaian === 'Selesai')

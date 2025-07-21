@@ -25,6 +25,7 @@ use Filament\Tables\Table;
 use Icetalker\FilamentTableRepeater\Forms\Components\TableRepeater;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Str;
 use Saade\FilamentAutograph\Forms\Components\SignaturePad;
 
 class PeminjamanAlatResource extends Resource
@@ -73,7 +74,8 @@ class PeminjamanAlatResource extends Resource
                             ->columns(2) // Membagi dua kolom
                             ->schema([
                                 self::textInput('department', 'Departemen')
-                                    ->default(auth()->user()->role),
+                                    ->default(fn() => Str::headline(auth()->user()->roles->first()?->name ?? '')),
+
                                 self::textInput('nama_peminjam', 'Nama Peminjam')
                                     ->default(auth()->user()->name),
                             ]),

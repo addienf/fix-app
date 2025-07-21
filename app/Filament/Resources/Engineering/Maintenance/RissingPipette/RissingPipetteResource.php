@@ -49,15 +49,8 @@ class RissingPipetteResource extends Resource
 
     public static function form(Form $form): Form
     {
-        $defaultParts = collect(config('rissingPipette'))
-            ->map(function ($group) {
-                return [
-                    'mainPart' => $group['mainPart'],
-                    'parts' => collect($group['parts'])
-                        ->map(fn($part) => ['part' => $part])
-                        ->toArray(),
-                ];
-            })
+        $parts = collect(config('rissingPipette.parts'))
+            ->map(fn($part) => ['part' => $part])
             ->toArray();
         $lastValue = RissingPipette::latest('tag_no')->value('tag_no');
         $isEdit = $form->getOperation() === 'edit';
@@ -98,66 +91,44 @@ class RissingPipetteResource extends Resource
                     ->schema([
 
                         Repeater::make('checklist')
-                            ->default($defaultParts)
+                            ->default($parts)
                             ->label('')
                             ->schema([
 
-                                TextInput::make('mainPart')
-                                    ->label('Main Part')
-                                    ->hidden(fn(callable $get) => blank($get('mainPart')))
+                                TextInput::make('part')
+                                    ->columnSpan(3)
                                     ->extraAttributes([
                                         'readonly' => true,
                                         'style' => 'pointer-events: none;'
-                                    ]),
-
-                                Repeater::make('parts')
-                                    ->label('')
-                                    ->schema([
-
-                                        TextInput::make('part')
-                                            ->columnSpan(3)
-                                            ->extraAttributes([
-                                                'readonly' => true,
-                                                'style' => 'pointer-events: none; font-weight: bold;'
-                                            ])
-                                            ->required(),
-
-                                        TextInput::make('before')
-                                            ->columnSpan(1)
-                                            ->required(),
-
-                                        TextInput::make('after')
-                                            ->columnSpan(1)
-                                            ->required(),
-
-                                        Select::make('accepted')
-                                            ->options([
-                                                'yes' => 'Yes',
-                                                'no' => 'No',
-                                                'na' => 'NA',
-                                            ])
-                                            ->columnSpan(1)
-                                            ->required(),
-
-                                        Select::make('remark')
-                                            ->options([
-                                                'ok' => 'OK',
-                                                'h' => 'Hold',
-                                                'r' => 'Repaired',
-                                            ])
-                                            ->columnSpan(1)
-                                            ->required(),
-
                                     ])
-                                    ->columns(7)
-                                    ->addable(false)
-                                    ->deletable(false)
-                                    ->reorderable(false),
+                                    ->required(),
+
+                                TextInput::make('before')
+                                    ->columnSpan(1)
+                                    ->required(),
+
+                                TextInput::make('after')
+                                    ->columnSpan(1)
+                                    ->required(),
+
+                                Select::make('accepted')
+                                    ->options([
+                                        'yes' => 'Yes',
+                                        'no' => 'No',
+                                        'na' => 'NA',
+                                    ])
+                                    ->columnSpan(1)
+                                    ->required(),
+
+                                TextInput::make('remark')
+                                    ->columnSpan(1)
+                                    ->required(),
 
                             ])
+                            ->columns(7)
                             ->addable(false)
                             ->deletable(false)
-                            ->reorderable(false)
+                            ->reorderable(false),
 
                     ]),
 

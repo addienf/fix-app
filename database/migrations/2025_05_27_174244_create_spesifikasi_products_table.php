@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('urs_id')->constrained()->cascadeOnDelete();
             $table->boolean('is_stock')->nullable();
-            $table->string('detail_specification');
+            $table->text('detail_specification');
             $table->string('delivery_address');
             $table->timestamps();
         });

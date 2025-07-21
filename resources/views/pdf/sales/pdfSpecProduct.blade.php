@@ -173,7 +173,7 @@
                     </tr>
                     <tr class="h-10">
                         <td class="p-2 font-semibold border border-gray-300 rounded-md">Name</td>
-                        <td class="p-2 border border-gray-300 rounded-md">{{ $spesifikasi->pic->name }}</td>
+                        <td class="p-2 border border-gray-300 rounded-md">{{ $spesifikasi->pic->userName->name }}</td>
                     </tr>
                     <tr class="h-10">
                         <td class="p-2 font-semibold border border-gray-300 rounded-md">Date</td>

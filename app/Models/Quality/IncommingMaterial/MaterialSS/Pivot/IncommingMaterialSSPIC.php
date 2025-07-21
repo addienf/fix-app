@@ -3,6 +3,7 @@
 namespace App\Models\Quality\IncommingMaterial\MaterialSS\Pivot;
 
 use App\Models\Quality\IncommingMaterial\MaterialSS\IncommingMaterialSS;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
@@ -29,6 +30,21 @@ class IncommingMaterialSSPIC extends Model
     public function productSS()
     {
         return $this->belongsTo(IncommingMaterialSS::class, 'material_ss_id');
+    }
+
+    public function checkedName()
+    {
+        return $this->belongsTo(User::class, 'checked_name');
+    }
+
+    public function acceptedName()
+    {
+        return $this->belongsTo(User::class, 'accepted_name');
+    }
+
+    public function approvedName()
+    {
+        return $this->belongsTo(User::class, 'approved_name');
     }
 
     protected static function booted(): void

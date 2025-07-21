@@ -2,6 +2,7 @@
 
 namespace App\Models\Warehouse\PermintaanBahanWBB\Pivot;
 
+use App\Models\User;
 use App\Models\Warehouse\PermintaanBahanWBB\PermintaanBahan;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -22,6 +23,11 @@ class PermintaanBahanPIC extends Model
     public function permintaanBahanWBB()
     {
         return $this->belongsTo(PermintaanBahan::class, 'permintaan_bahan_wbb_id');
+    }
+
+    public function createName()
+    {
+        return $this->belongsTo(User::class, 'create_name');
     }
 
     protected static function booted(): void

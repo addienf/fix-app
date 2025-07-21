@@ -105,7 +105,7 @@
                     <img src="{{ asset('storage/' . $serah_terima->pic->submit_signature) }}" alt="Signature"
                         class="object-contain h-20 w-80" />
                     <div class="mt-2 font-medium dark:text-white">
-                        {{ $serah_terima->pic->submit_name }}
+                        {{ $serah_terima->pic->submitName->name }}
                     </div>
                 </div>
                 <div class="flex flex-col items-center">
@@ -113,7 +113,7 @@
                     <img src="{{ asset('storage/' . $serah_terima->pic->receive_signature) }}" alt="Signature"
                         class="object-contain h-20 w-80" />
                     <div class="mt-2 font-medium dark:text-white">
-                        {{ $serah_terima->pic->receive_name }}
+                        {{ $serah_terima->pic->receiveName->name }}
                     </div>
                 </div>
             </div>

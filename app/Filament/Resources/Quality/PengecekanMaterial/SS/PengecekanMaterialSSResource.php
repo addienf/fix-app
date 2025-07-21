@@ -109,11 +109,34 @@ class PengecekanMaterialSSResource extends Resource
                             ->default($defaultParts)
                             ->schema([
 
-                                TextInput::make('mainPart')
-                                    ->label('')
-                                    ->extraAttributes([
-                                        'readonly' => true,
-                                        'style' => 'pointer-events: none;'
+                                Grid::make(3)
+                                    ->schema([
+                                        TextInput::make('mainPart')
+                                            ->label('Main Part')
+                                            ->extraAttributes([
+                                                'readonly' => true,
+                                                'style' => 'pointer-events: none;'
+                                            ]),
+
+                                        ButtonGroup::make('mainPart_result')
+                                            ->label('Result')
+                                            ->options([
+                                                1 => 'Yes',
+                                                0 => 'No',
+                                            ])
+                                            ->onColor('primary')
+                                            ->offColor('gray')
+                                            ->gridDirection('row')
+                                            ->default('individual'),
+
+                                        Select::make('mainPart_status')
+                                            ->label('Status')
+                                            ->options([
+                                                'ok' => 'OK',
+                                                'h' => 'Hold',
+                                                'r' => 'Repaired',
+                                            ])
+                                            ->required(),
                                     ]),
 
                                 TableRepeater::make('parts')
@@ -177,11 +200,22 @@ class PengecekanMaterialSSResource extends Resource
                                 Grid::make(1)
                                     ->schema([
 
-                                        self::textInput('inspected_name', 'Inspected By'),
+                                        Hidden::make('inspected_name')
+                                            ->default(fn() => auth()->id()),
+
+                                        self::textInput('inspected_name_placeholder', 'Inspected By')
+                                            ->default(fn() => auth()->user()?->name)
+                                            ->extraAttributes([
+                                                'readonly' => true,
+                                                'style' => 'pointer-events: none;'
+                                            ]),
+
+                                        // self::textInput('inspected_name', 'Inspected By'),
 
                                         self::signatureInput('inspected_signature', ''),
 
                                         self::datePicker('inspected_date', '')
+                                            ->default(now())
                                             ->required(),
 
                                     ])->hiddenOn(operations: 'edit'),
@@ -189,7 +223,23 @@ class PengecekanMaterialSSResource extends Resource
                                 Grid::make(1)
                                     ->schema([
 
-                                        self::textInput('accepted_name', 'Accepted By'),
+                                        Hidden::make('accepted_name')
+                                            ->default(fn() => auth()->id())
+                                            ->dehydrated(true)
+                                            ->afterStateHydrated(function ($component) {
+                                                $component->state(auth()->id());
+                                            }),
+
+                                        self::textInput('accepted_name_placeholder', 'Accepted By')
+                                            ->default(fn() => auth()->user()?->name)
+                                            ->placeholder(fn() => auth()->user()?->name)
+                                            ->required(false)
+                                            ->extraAttributes([
+                                                'readonly' => true,
+                                                'style' => 'pointer-events: none;'
+                                            ]),
+
+                                        // self::textInput('accepted_name', 'Accepted By'),
 
                                         self::signatureInput('accepted_signature', ''),
 
@@ -204,7 +254,23 @@ class PengecekanMaterialSSResource extends Resource
                                 Grid::make(1)
                                     ->schema([
 
-                                        self::textInput('approved_name', 'Approved By'),
+                                        Hidden::make('approved_name')
+                                            ->default(fn() => auth()->id())
+                                            ->dehydrated(true)
+                                            ->afterStateHydrated(function ($component) {
+                                                $component->state(auth()->id());
+                                            }),
+
+                                        self::textInput('approved_name_placeholder', 'Approved By')
+                                            ->default(fn() => auth()->user()?->name)
+                                            ->placeholder(fn() => auth()->user()?->name)
+                                            ->required(false)
+                                            ->extraAttributes([
+                                                'readonly' => true,
+                                                'style' => 'pointer-events: none;'
+                                            ]),
+
+                                        // self::textInput('approved_name', 'Approved By'),
 
                                         self::signatureInput('approved_signature', ''),
 
@@ -259,7 +325,7 @@ class PengecekanMaterialSSResource extends Resource
                     Tables\Actions\EditAction::make(),
                     Tables\Actions\DeleteAction::make(),
                     Action::make('pdf_view')
-                        ->label(_('View PDF'))
+                        ->label(_('Lihat PDF'))
                         ->icon('heroicon-o-document')
                         ->color('success')
                         ->visible(fn($record) => $record->status_penyelesaian === 'Disetujui')

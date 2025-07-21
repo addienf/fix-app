@@ -2,6 +2,7 @@
 
 namespace App\Models\Warehouse\Pelabelan\Pivot;
 
+use App\Models\User;
 use App\Models\Warehouse\Pelabelan\QCPassed;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -24,6 +25,16 @@ class QCPassedPIC extends Model
     public function qc()
     {
         return $this->belongsTo(QCPassed::class, 'qc_passed_id');
+    }
+
+    public function createdName()
+    {
+        return $this->belongsTo(User::class, 'created_name');
+    }
+
+    public function approvedName()
+    {
+        return $this->belongsTo(User::class, 'approved_name');
     }
 
     protected static function booted(): void

@@ -3,6 +3,7 @@
 namespace App\Models\Engineering\Berita\Pivot;
 
 use App\Models\Engineering\Berita\BeritaAcara;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
@@ -22,6 +23,11 @@ class BeritaAcaraPIC extends Model
     public function beritaAcara()
     {
         return $this->belongsTo(BeritaAcara::class, 'berita_id');
+    }
+
+    public function jasaName()
+    {
+        return $this->belongsTo(User::class, 'jasa_name');
     }
 
     protected static function booted(): void

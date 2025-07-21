@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('tipe');
             $table->string('volume');
             $table->string('serial_number');
-            $table->string('note');
+            $table->text('note');
             $table->string('status_penyelesaian')->nullable();
             $table->timestamps();
         });

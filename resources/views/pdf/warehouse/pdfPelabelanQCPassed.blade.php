@@ -150,7 +150,7 @@
                     <p class="mb-2 dark:text-white">Dibuat Oleh</p>
                     <img src="{{ asset('storage/' . $pelabelan->pic->created_signature) }}" alt="Product Signature"
                         class="h-20 w-80" />
-                    <p class="mt-1 font-semibold dark:text-white">{{ $pelabelan->pic->created_name }}</p>
+                    <p class="mt-1 font-semibold dark:text-white">{{ $pelabelan->pic->createdName->name }}</p>
                 </div>
 
                 <!-- Kanan -->
@@ -158,7 +158,7 @@
                     <p class="mb-2 dark:text-white">Disetujui Oleh</p>
                     <img src="{{ asset('storage/' . $pelabelan->pic->approved_signature) }}" alt="Product Signature"
                         class="h-20 w-80" />
-                    <p class="mt-1 font-semibold dark:text-white">{{ $pelabelan->pic->approved_name }}</p>
+                    <p class="mt-1 font-semibold dark:text-white">{{ $pelabelan->pic->approvedName->name }}</p>
                 </div>
             </div>
         </div>

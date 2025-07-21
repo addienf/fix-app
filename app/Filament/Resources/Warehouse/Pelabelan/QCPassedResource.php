@@ -137,7 +137,17 @@ class QCPassedResource extends Resource
                                 Grid::make(1)
                                     ->schema([
 
-                                        self::textInput('created_name', 'Dibuat Oleh'),
+                                        Hidden::make('created_name')
+                                            ->default(fn() => auth()->id()),
+
+                                        self::textInput('created_name_placeholder', 'Dibuat Oleh')
+                                            ->default(fn() => auth()->user()?->name)
+                                            ->extraAttributes([
+                                                'readonly' => true,
+                                                'style' => 'pointer-events: none;'
+                                            ]),
+
+                                        // self::textInput('created_name', 'Dibuat Oleh'),
 
                                         self::signatureInput('created_signature', ''),
 
@@ -146,7 +156,22 @@ class QCPassedResource extends Resource
                                 Grid::make(1)
                                     ->schema([
 
-                                        self::textInput('approved_name', 'Disetujui Oleh'),
+                                        Hidden::make('approved_name')
+                                            ->default(fn() => auth()->id())
+                                            ->dehydrated(true)
+                                            ->afterStateHydrated(function ($component) {
+                                                $component->state(auth()->id());
+                                            }),
+
+                                        self::textInput('approved_name_placeholder', 'Disetujui Oleh')
+                                            ->placeholder(fn() => auth()->user()?->name)
+                                            ->required(false)
+                                            ->extraAttributes([
+                                                'readonly' => true,
+                                                'style' => 'pointer-events: none;'
+                                            ]),
+
+                                        // self::textInput('approved_name', 'Disetujui Oleh'),
 
                                         self::signatureInput('approved_signature', ''),
 
@@ -186,7 +211,7 @@ class QCPassedResource extends Resource
                     Tables\Actions\EditAction::make(),
                     Tables\Actions\DeleteAction::make(),
                     Action::make('pdf_view')
-                        ->label(_('View PDF'))
+                        ->label(_('Lihat PDF'))
                         ->icon('heroicon-o-document')
                         ->color('success')
                         ->visible(fn($record) => $record->status_persetujuan === 'Disetujui')

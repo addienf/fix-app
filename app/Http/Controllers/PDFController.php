@@ -50,7 +50,7 @@ class PDFController extends Controller
 
     public function previewSpesifikasiProduct($id)
     {
-        $spesifikasi = SpesifikasiProduct::with(['urs.customer', 'pic', 'details.product', 'details.file'])->findOrFail($id);
+        $spesifikasi = SpesifikasiProduct::with(['urs.customer', 'pic', 'details.product', 'details.file', 'pic.userName'])->findOrFail($id);
 
         return view('pdf.sales.pdfSpecProduct', compact('spesifikasi'));
     }
@@ -70,56 +70,56 @@ class PDFController extends Controller
 
     public function pdfSPKMarketing($id)
     {
-        $spk_mkt = SPKMarketing::with(['spesifikasiProduct', 'pic'])->findOrFail($id);
+        $spk_mkt = SPKMarketing::with(['spesifikasiProduct', 'pic', 'pic.createName', 'pic.receiveName'])->findOrFail($id);
 
         return view('pdf.sales.pdfSPKMarketing', compact('spk_mkt'));
     }
 
     public function pdfJadwalProduksi($id)
     {
-        $jadwal = JadwalProduksi::with(['spk', 'details', 'pic', 'sumber'])->findOrFail($id);
+        $jadwal = JadwalProduksi::with(['spk', 'details', 'pic', 'sumber', 'pic.createName', 'pic.approveName'])->findOrFail($id);
 
         return view('pdf.production.pdfJadwalProduksi', compact('jadwal'));
     }
 
     public function pdfPermintaanAlatBahan($id)
     {
-        $permintaan_alat_bahan = PermintaanAlatDanBahan::with(['spk', 'details', 'pic'])->findOrFail($id);
+        $permintaan_alat_bahan = PermintaanAlatDanBahan::with(['spk', 'details', 'pic', 'pic.dibuatName', 'pic.diketahuiName', 'pic.diserahkanName'])->findOrFail($id);
 
         return view('pdf.production.pdfPermintaanAlatBahan', compact('permintaan_alat_bahan'));
     }
 
     public function pdfPermintaanBahan($id)
     {
-        $permintaan_bahan = PermintaanBahan::with(['permintaanBahanPro', 'details', 'pic'])->findOrFail($id);
+        $permintaan_bahan = PermintaanBahan::with(['permintaanBahanPro', 'details', 'pic', 'pic.createName'])->findOrFail($id);
 
         return view('pdf.warehouse.pdfPermintaanBahan', compact('permintaan_bahan'));
     }
 
     public function pdfPermintaanPembelian($id)
     {
-        $permintaan_pembelian = PermintaanPembelian::with(['permintaanBahanWBB', 'details', 'pic'])->findOrFail($id);
+        $permintaan_pembelian = PermintaanPembelian::with(['permintaanBahanWBB', 'details', 'pic', 'pic.createName', 'pic.knowingName'])->findOrFail($id);
 
         return view('pdf.purchasing.pdfPermintaanPembelian', compact('permintaan_pembelian'));
     }
 
     public function pdfIncomingMaterialSS($id)
     {
-        $incomingSS = IncommingMaterialSS::with(['permintaanPembelian', 'summary', 'detail', 'pic'])->findOrFail($id);
+        $incomingSS = IncommingMaterialSS::with(['permintaanPembelian', 'summary', 'detail', 'pic', 'pic.checkedName', 'pic.acceptedName', 'pic.approvedName'])->findOrFail($id);
 
         return view('pdf.quality.pdfIncomingMaterialSS', compact('incomingSS'));
     }
 
     public function pdfIncomingMaterialNonSS($id)
     {
-        $incomingNonSS = IncommingMaterialNonSS::with(['permintaanPembelian', 'summary', 'detail', 'pic'])->findOrFail($id);
+        $incomingNonSS = IncommingMaterialNonSS::with(['permintaanPembelian', 'summary', 'detail', 'pic', 'pic.checkedName', 'pic.acceptedName', 'pic.approvedName'])->findOrFail($id);
 
         return view('pdf.quality.pdfIncomingMaterialNonSS', compact('incomingNonSS'));
     }
 
     public function pdfIncomingMaterial($id)
     {
-        $incomingMaterial = IncommingMaterial::with(['permintaanPembelian', 'details', 'pic'])->findOrFail($id);
+        $incomingMaterial = IncommingMaterial::with(['permintaanPembelian', 'details', 'pic', 'pic.submitedName', 'pic.receivedName'])->findOrFail($id);
 
         return view('pdf.warehouse.pdfIncomingMaterial', compact('incomingMaterial'));
     }
@@ -144,14 +144,14 @@ class PDFController extends Controller
 
     public function pdfSerahTerima($id)
     {
-        $serah_terima = SerahTerimaBahan::with(['permintaanBahanPro', 'details', 'pic'])->findOrFail($id);
+        $serah_terima = SerahTerimaBahan::with(['permintaanBahanPro', 'details', 'pic', 'pic.submitName', 'pic.receiveName'])->findOrFail($id);
 
         return view('pdf.warehouse.pdfSerahTerima', compact('serah_terima'));
     }
 
     public function pdfStandarisasiDrawing($id)
     {
-        $standarisasi = StandarisasiDrawing::with(['spk', 'identitas', 'detail', 'pic'])->findOrFail($id);
+        $standarisasi = StandarisasiDrawing::with(['spk', 'identitas', 'detail', 'pic', 'pic.createName', 'pic.checkName'])->findOrFail($id);
 
         return view('pdf.quality.pdfStandarisasiDrawing', compact('standarisasi'));
     }
@@ -186,21 +186,21 @@ class PDFController extends Controller
 
     public function pdfKelengkapanMaterialSS($id)
     {
-        $kelengkapan = KelengkapanMaterialSS::with(['spk', 'pic', 'detail'])->findOrFail($id);
+        $kelengkapan = KelengkapanMaterialSS::with(['spk', 'pic', 'detail', 'pic.inspectedName', 'pic.acceptedName', 'pic.approvedName'])->findOrFail($id);
 
         return view('pdf.quality.pdfKelengkapanMaterialSS', compact('kelengkapan'));
     }
 
     public function pdfPengecekanMaterialSS($id)
     {
-        $pengecekanSS = PengecekanMaterialSS::with(['spk', 'pic', 'detail', 'penyerahan'])->findOrFail($id);
+        $pengecekanSS = PengecekanMaterialSS::with(['spk', 'pic', 'detail', 'penyerahan', 'pic.inspectedName', 'pic.acceptedName', 'pic.approvedName'])->findOrFail($id);
 
         return view('pdf.quality.pdfPengecekanMaterialSS', compact('pengecekanSS'));
     }
 
     public function pdfPenyerahanElectrical($id)
     {
-        $serahElectrical = PenyerahanElectrical::with(['pengecekanSS', 'sebelumSerahTerima', 'pic', 'penerimaElectrical'])->findOrFail($id);
+        $serahElectrical = PenyerahanElectrical::with(['pengecekanSS', 'sebelumSerahTerima', 'pic', 'penerimaElectrical', 'pic.submitName', 'pic.receiveName', 'pic.knowingName'])->findOrFail($id);
 
         return view('pdf.production.pdfPenyerahanElectrical', compact('serahElectrical'));
     }
@@ -218,35 +218,35 @@ class PDFController extends Controller
 
     public function pdfSPKQuality($id)
     {
-        $spk_qc = SPKQuality::with(['spk', 'details', 'pic'])->findOrFail($id);
+        $spk_qc = SPKQuality::with(['spk', 'details', 'pic', 'pic.createName', 'pic.receiveName'])->findOrFail($id);
 
         return view('pdf.production.pdfSPKQuality', compact('spk_qc'));
     }
 
     public function pdfPengecekanElectrical($id)
     {
-        $electrical = PengecekanMaterialElectrical::with(['spk', 'pic', 'detail'])->findOrFail($id);
+        $electrical = PengecekanMaterialElectrical::with(['spk', 'pic', 'detail', 'pic.inspectedName', 'pic.acceptedName', 'pic.approvedName'])->findOrFail($id);
 
         return view('pdf.quality.pdfPengecekanElectrical', compact('electrical'));
     }
 
     public function pdfPenyerahanProdukJadi($id)
     {
-        $produkJadi = PenyerahanProdukJadi::with(['spk', 'details', 'pic'])->findOrFail($id);
+        $produkJadi = PenyerahanProdukJadi::with(['spk', 'details', 'pic', 'pic.submitName', 'pic.receiveName'])->findOrFail($id);
 
         return view('pdf.production.pdfPenyerahanProdukJadi', compact('produkJadi'));
     }
 
     public function pdfPengecekanPerforma($id)
     {
-        $performa = PengecekanPerforma::with(['spk', 'pic', 'detail'])->findOrFail($id);
+        $performa = PengecekanPerforma::with(['spk', 'pic', 'detail', 'pic.inspectedName', 'pic.acceptedName', 'pic.approvedName'])->findOrFail($id);
 
         return view('pdf.quality.pdfPengecekanPerforma', compact('performa'));
     }
 
     public function pdfPelabelanQCPassed($id)
     {
-        $pelabelan = QCPassed::with(['spk', 'pic', 'details'])->findOrFail($id);
+        $pelabelan = QCPassed::with(['spk', 'pic', 'details', 'pic.createdName', 'pic.approvedName'])->findOrFail($id);
 
         return view('pdf.warehouse.pdfPelabelanQCPassed', compact('pelabelan'));
     }
@@ -260,7 +260,7 @@ class PDFController extends Controller
 
     public function pdfDefectStatus($id)
     {
-        $defect = DefectStatus::with(['spk', 'details', 'pic'])->findOrFail($id);
+        $defect = DefectStatus::with(['spk', 'details', 'pic', 'pic.inspectedName', 'pic.acceptedName', 'pic.approvedName'])->findOrFail($id);
 
         return view('pdf.quality.pdfDefectStatus', compact('defect'));
     }
@@ -315,21 +315,21 @@ class PDFController extends Controller
 
     public function pdfSPKService($id)
     {
-        $service = SPKService::with(['petugas', 'pemeriksaanPersetujuan', 'pic'])->findOrFail($id);
+        $service = SPKService::with(['petugas', 'pemeriksaanPersetujuan', 'pic', 'pic.dikonfirmasiNama', 'pic.diketahuiNama'])->findOrFail($id);
 
         return view('pdf.engineering.pdfSPKService', compact('service'));
     }
 
     public function pdfSparepartAlatKerja($id)
     {
-        $sparepart = PermintaanSparepart::with(['spkService', 'details', 'pic'])->findOrFail($id);
+        $sparepart = PermintaanSparepart::with(['spkService', 'details', 'pic', 'pic.dibuatName', 'pic.diketahuiName', 'pic.diserahkanName'])->findOrFail($id);
 
         return view('pdf.engineering.pdfSparepartAlatKerja', compact('sparepart'));
     }
 
     public function pdfBeritaAcara($id)
     {
-        $berita = BeritaAcara::with(['spkService', 'detail', 'pic', 'pelanggan', 'penyediaJasa'])->findOrFail($id);
+        $berita = BeritaAcara::with(['spkService', 'detail', 'pic', 'pelanggan', 'penyediaJasa', 'pic.jasaName'])->findOrFail($id);
 
         return view('pdf.engineering.pdfBeritaAcara', compact('berita'));
     }
@@ -356,7 +356,7 @@ class PDFController extends Controller
 
     public function pdfWalkInChamberR1($id)
     {
-        $walkin = WalkinChamber::with(['spkService', 'detail', 'pic'])->findOrFail($id);
+        $walkin = WalkinChamber::with(['spkService', 'detail', 'pic', 'pic.approvedBy', 'pic.checkedBy'])->findOrFail($id);
 
         return view('pdf.engineering.pdfWalkInChamberR1', compact('walkin'));
     }

@@ -3,6 +3,7 @@
 namespace App\Models\Engineering\Maintenance\WalkinChamber\Pivot;
 
 use App\Models\Engineering\Maintenance\WalkinChamber\WalkinChamber;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
@@ -26,6 +27,16 @@ class WalkinChamberPIC extends Model
     public function walkinChamber()
     {
         return $this->belongsTo(WalkinChamber::class, 'walk_in_id');
+    }
+
+    public function approvedBy()
+    {
+        return $this->belongsTo(User::class, 'approved_name');
+    }
+
+    public function checkedBy()
+    {
+        return $this->belongsTo(User::class, 'checked_name');
     }
 
     protected static function booted(): void

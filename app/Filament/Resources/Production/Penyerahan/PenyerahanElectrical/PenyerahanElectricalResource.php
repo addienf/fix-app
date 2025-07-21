@@ -160,7 +160,22 @@ class PenyerahanElectricalResource extends Resource
                                 Grid::make(1)
                                     ->schema([
 
-                                        self::textInput('submit_name', 'Diserahkan Oleh'),
+                                        Hidden::make('submit_name')
+                                            ->default(fn() => auth()->id())
+                                            ->dehydrated(true)
+                                            ->afterStateHydrated(function ($component) {
+                                                $component->state(auth()->id());
+                                            }),
+
+                                        self::textInput('submit_name_placeholder', 'Diserahkan Oleh')
+                                            ->default(fn() => auth()->user()?->name)
+                                            ->required(false)
+                                            ->extraAttributes([
+                                                'readonly' => true,
+                                                'style' => 'pointer-events: none;'
+                                            ]),
+
+                                        // self::textInput('submit_name', 'Diserahkan Oleh'),
 
                                         self::signatureInput('submit_signature', ''),
 
@@ -169,7 +184,23 @@ class PenyerahanElectricalResource extends Resource
                                 Grid::make(1)
                                     ->schema([
 
-                                        self::textInput('receive_name', 'Diterima Oleh'),
+                                        Hidden::make('receive_name')
+                                            ->default(fn() => auth()->id())
+                                            ->dehydrated(true)
+                                            ->afterStateHydrated(function ($component) {
+                                                $component->state(auth()->id());
+                                            }),
+
+                                        self::textInput('receive_name_placeholder', 'Diterima Oleh')
+                                            ->default(fn() => auth()->user()?->name)
+                                            ->placeholder(fn() => auth()->user()?->name)
+                                            ->required(false)
+                                            ->extraAttributes([
+                                                'readonly' => true,
+                                                'style' => 'pointer-events: none;'
+                                            ]),
+
+                                        // self::textInput('receive_name', 'Diterima Oleh'),
 
                                         self::signatureInput('receive_signature', ''),
 
@@ -181,7 +212,23 @@ class PenyerahanElectricalResource extends Resource
                                 Grid::make(1)
                                     ->schema([
 
-                                        self::textInput('knowing_name', 'Diketahui Oleh'),
+                                        Hidden::make('knowing_name')
+                                            ->default(fn() => auth()->id())
+                                            ->dehydrated(true)
+                                            ->afterStateHydrated(function ($component) {
+                                                $component->state(auth()->id());
+                                            }),
+
+                                        self::textInput('knowing_name_placeholder', 'Diketahui Oleh')
+                                            ->default(fn() => auth()->user()?->name)
+                                            ->placeholder(fn() => auth()->user()?->name)
+                                            ->required(false)
+                                            ->extraAttributes([
+                                                'readonly' => true,
+                                                'style' => 'pointer-events: none;'
+                                            ]),
+
+                                        // self::textInput('knowing_name', 'Diketahui Oleh'),
 
                                         self::signatureInput('knowing_signature', ''),
 
@@ -228,7 +275,7 @@ class PenyerahanElectricalResource extends Resource
                     Tables\Actions\EditAction::make(),
                     Tables\Actions\DeleteAction::make(),
                     Action::make('pdf_view')
-                        ->label(_('View PDF'))
+                        ->label(_('Lihat PDF'))
                         ->icon('heroicon-o-document')
                         ->color('success')
                         ->visible(fn($record) => $record->status_penyelesaian === 'Disetujui')
@@ -435,8 +482,7 @@ class PenyerahanElectricalResource extends Resource
         return
             Textarea::make($fieldName)
             ->label($label)
-            ->required()
-            ->maxLength(255);
+            ->required();
     }
 
     protected static function textColumn(string $fieldName, string $label): TextColumn
