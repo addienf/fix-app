@@ -25,20 +25,46 @@ class AdminChartYearWidget extends AdvancedChartWidget
 
     public function getHeading(): string
     {
+        $selectedDepartment = $this->filters['selectedDepartment'] ?? null;
+        $selectedModel = $this->filters['selectedModel'] ?? null;
         $year = now()->year;
-        $config = $this->getSelectedModelConfig('user');
 
-        return "Total Data {$config['label']} Tahun - {$year}";
+        if (!$selectedModel) {
+            return '';
+        }
+
+        if (!$selectedDepartment || !config("models.$selectedDepartment.$selectedModel")) {
+            return 'Pilih Model Terlebih Dahulu';
+        }
+
+        $config = $this->getSelectedModelConfig($selectedDepartment, $selectedModel);
+        return $config ? "Total Data {$config['label']} Tahun - {$year}" : "Pilih Model Terlebih Dahulu";
     }
 
     protected function getData(): array
     {
-
+        $selectedDepartment = $this->filters['selectedDepartment'] ?? null;
+        $selectedModel = $this->filters['selectedModel'] ?? null;
         $year = now()->year;
         $start = Carbon::create($year, 1, 1)->startOfDay();
         $end = Carbon::create($year, 12, 31)->endOfDay();
 
-        $config = $this->getSelectedModelConfig('user');
+        if (!$selectedDepartment || !$selectedModel) {
+            return [
+                'datasets' => [],
+                'labels' => [],
+            ];
+        }
+
+        $config = $this->getSelectedModelConfig($selectedDepartment, $selectedModel);
+
+        if (!$config) {
+            return [
+                'datasets' => [],
+                'labels' => [],
+            ];
+        }
+
         $modelClass = $config['class'];
         $label = $config['label'];
 
@@ -69,5 +95,33 @@ class AdminChartYearWidget extends AdvancedChartWidget
     protected function getType(): string
     {
         return 'bar';
+    }
+
+    protected function getOptions(): ?array
+    {
+        return [
+            'scales' => [
+                'y' => [
+                    'ticks' => [
+                        'precision' => 0,
+                    ],
+                ],
+            ],
+        ];
+    }
+
+    protected function getSelectedModelConfig(string $department, string $modelKey): ?array
+    {
+        $config = config("models.$department.$modelKey");
+
+        if (!$config || !isset($config['model'])) {
+            return null;
+        }
+
+        return [
+            'key' => $modelKey,
+            'label' => $config['label'],
+            'class' => $config['model'],
+        ];
     }
 }

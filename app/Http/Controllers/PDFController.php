@@ -336,20 +336,20 @@ class PDFController extends Controller
 
     public function pdfMaintenanceChamberG2($id)
     {
-        $G2 = ChamberG2::with(['spkService', 'detail', 'pic'])->findOrFail($id);
+        $G2 = ChamberG2::with(['spkService', 'detail', 'pic', 'pic.approvedBy', 'pic.checkedBy'])->findOrFail($id);
 
         return view('pdf.engineering.pdfMaintenanceChamberG2', compact('G2'));
     }
     public function pdfWalkInChamberG2($id)
     {
-        $walkinG2 = ChamberWalkinG2::with(['spkService', 'detail', 'pic'])->findOrFail($id);
+        $walkinG2 = ChamberWalkinG2::with(['spkService', 'detail', 'pic', 'pic.approvedBy', 'pic.checkedBy'])->findOrFail($id);
 
         return view('pdf.engineering.pdfWalkInChamberG2', compact('walkinG2'));
     }
 
     public function pdfRissingPipette($id)
     {
-        $rissing = RissingPipette::with(['spkService', 'detail', 'pic'])->findOrFail($id);
+        $rissing = RissingPipette::with(['spkService', 'detail', 'pic', 'pic', 'pic.approvedBy', 'pic.checkedBy'])->findOrFail($id);
 
         return view('pdf.engineering.pdfRissingPipette', compact('rissing'));
     }
@@ -363,19 +363,19 @@ class PDFController extends Controller
 
     public function pdfWalkInChamberR2($id)
     {
-        $R2 = ChamberR2::with(['spkService', 'detail', 'pic'])->findOrFail($id);
+        $R2 = ChamberR2::with(['spkService', 'detail', 'pic', 'pic.approvedBy', 'pic.checkedBy'])->findOrFail($id);
 
         return view('pdf.engineering.pdfWalkInChamberR2', compact('R2'));
     }
     public function pdfMaintenanceRefrigator($id)
     {
-        $refrigerator = Refrigerator::with(['spkService', 'detail', 'pic'])->findOrFail($id);
+        $refrigerator = Refrigerator::with(['spkService', 'detail', 'pic', 'pic.approvedBy', 'pic.checkedBy'])->findOrFail($id);
 
         return view('pdf.engineering.pdfMaintenanceRefrigator', compact('refrigerator'));
     }
     public function pdfMaintenanceColdRoom($id)
     {
-        $cold = ColdRoom::with(['spkService', 'detail', 'pic'])->findOrFail($id);
+        $cold = ColdRoom::with(['spkService', 'detail', 'pic', 'pic.approvedBy', 'pic.checkedBy'])->findOrFail($id);
 
         return view('pdf.engineering.pdfMaintenanceColdRoom', compact('cold'));
     }

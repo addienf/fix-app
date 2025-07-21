@@ -3,6 +3,7 @@
 namespace App\Models\Engineering\Maintenance\Refrigerator\Pivot;
 
 use App\Models\Engineering\Maintenance\Refrigerator\Refrigerator;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
@@ -26,6 +27,16 @@ class RefrigeratorPIC extends Model
     public function refrigerator()
     {
         return $this->belongsTo(Refrigerator::class, 'refrigerator_id');
+    }
+
+    public function approvedBy()
+    {
+        return $this->belongsTo(User::class, 'approved_name');
+    }
+
+    public function checkedBy()
+    {
+        return $this->belongsTo(User::class, 'checked_name');
     }
 
     protected static function booted(): void

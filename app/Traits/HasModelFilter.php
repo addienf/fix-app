@@ -6,17 +6,17 @@ use App\Models\User;
 
 trait HasModelFilter
 {
-    protected function getSelectedModelConfig(string $defaultModel = 'user'): array
-    {
-        $selectedModel = $this->filters['selectedModel'] ?? $defaultModel;
-        $config = config("models.$selectedModel", []);
+    // protected function getSelectedModelConfig(string $defaultModel = 'user'): array
+    // {
+    //     $selectedModel = $this->filters['selectedModel'] ?? $defaultModel;
+    //     $config = config("models.$selectedModel", []);
 
-        return [
-            'key' => $selectedModel,
-            'label' => $config['label'] ?? ucfirst($selectedModel),
-            'class' => $config['model'] ?? User::class,
-        ];
-    }
+    //     return [
+    //         'key' => $selectedModel,
+    //         'label' => $config['label'] ?? ucfirst($selectedModel),
+    //         'class' => $config['model'] ?? User::class,
+    //     ];
+    // }
 
     protected function getMonthLabels(): array
     {
