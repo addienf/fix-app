@@ -15,6 +15,35 @@
     @yield('content')
 
     <style>
+        tr {
+            page-break-inside: avoid !important;
+        }
+    
+        thead {
+            display: table-header-group;
+        }
+    
+        tfoot {
+            display: table-footer-group;
+        }
+    
+        /* Untuk hindari pemotongan antar section besar */
+        .section-block {
+            page-break-inside: avoid !important;
+        }
+    
+        /* Jika terlalu panjang, bisa pecah di antar div saja */
+        .break-after {
+            page-break-after: always;
+        }
+        .ttd{
+            page-break-inside: avoid !important;
+        }
+    </style>
+
+    
+
+    <style>
         .border-animated {
             position: relative;
             overflow: hidden;
