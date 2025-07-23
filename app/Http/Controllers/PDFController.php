@@ -254,7 +254,7 @@ class PDFController extends Controller
 
     public function pdfPeminjamanAlat($id)
     {
-        $peminjaman = PeminjamanAlat::with(['details', 'pic'])->findOrFail($id);
+        $peminjaman = PeminjamanAlat::with(['details', 'pic', 'pic.NamaPeminjam'])->findOrFail($id);
 
         return view('pdf.warehouse.pdfPeminjamanAlat', compact('peminjaman'));
     }

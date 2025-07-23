@@ -10,6 +10,16 @@ use App\Models\Warehouse\SerahTerima\SerahTerimaBahan;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @property string|null $id
+ * @property string|null $spk_marketing_id
+ * @property string|null $tanggal
+ * @property string|null $no_surat
+ * @property string|null $dari
+ * @property string|null $kepada
+ * @property string|null $status
+ * @property string|null $status_penyerahan
+ */
 class PermintaanAlatDanBahan extends Model
 {
     use HasFactory;

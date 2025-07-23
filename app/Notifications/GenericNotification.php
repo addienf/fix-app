@@ -1,24 +1,33 @@
 <?php
 
-namespace App\Notifications\Sales;
+namespace App\Notifications;
 
-use App\Models\Sales\SPKMarketings\SPKMarketing;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class SpkMarketingNotif extends Notification
+class GenericNotification extends Notification
 {
     use Queueable;
-    protected SPKMarketing $record;
+
+    protected Model $record;
+    protected string $subject;
+    protected string $message;
+    protected string $url;
+    protected string $title;
 
     /**
      * Create a new notification instance.
      */
-    public function __construct($record)
+    public function __construct(Model $record, string $subject, string $message, string $url, string $title)
     {
         $this->record = $record;
+        $this->subject = $subject;
+        $this->message = $message;
+        $this->url = $url;
+        $this->title = $title;
     }
 
     /**
@@ -37,9 +46,9 @@ class SpkMarketingNotif extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->subject('SPK Marketing Baru Dibuat')
-            ->line('Ada data SPK Marketing baru yang berhasil dibuat.')
-            ->action('Lihat Data', url('/admin/sales/spk-marketing/' . $this->record->id . '/edit'))
+            ->subject($this->subject)
+            ->line($this->message)
+            ->action('Lihat Data', $this->url)
             ->line('Terima kasih.');
     }
 
@@ -51,11 +60,10 @@ class SpkMarketingNotif extends Notification
     public function toArray(object $notifiable): array
     {
         return [
-            //
-            'title' => 'Data SPK Marketing Berhasil Dibuat',
+            'title' => $this->title,
             'record_id' => $this->record->id,
-            'url' => url('/admin/sales/spk-marketing/' . $this->record->id . '/edit'),
-            'message' => 'Ada data SPK Marketing baru yang berhasil dibuat.',
+            'url' => $this->url,
+            'message' => $this->message,
         ];
     }
 }

@@ -66,7 +66,7 @@
                             <td class="px-4 py-2 border">{{ $produk['jumlah'] }}</td>
                             <td class="px-4 py-2 border">
                                 {{ \Carbon\Carbon::parse($peminjaman->tanggal_kembali)->translatedFormat('d M Y') }}</td>
-                            <td class="px-4 py-2 border">{{ $peminjaman->pic->nama_peminjam }}</td>
+                            <td class="px-4 py-2 border">{{ $peminjaman->pic->NamaPeminjam->name }}</td>
                             <td class="px-4 py-2 border"><img src="{{ asset('storage/' . $peminjaman->pic->signature) }}"
                                     alt="Create Signature" class="h-20 w-80" /></td>
                         </tr>

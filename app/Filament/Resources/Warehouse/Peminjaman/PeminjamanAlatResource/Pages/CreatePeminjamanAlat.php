@@ -3,8 +3,12 @@
 namespace App\Filament\Resources\Warehouse\Peminjaman\PeminjamanAlatResource\Pages;
 
 use App\Filament\Resources\Warehouse\Peminjaman\PeminjamanAlatResource;
+use App\Jobs\SendGenericNotif;
+use App\Jobs\Warehouse\SendPeminjamanAlatNotif;
+use App\Notifications\Warehouse\PeminjamanAlatNotif;
 use Filament\Actions;
 use Filament\Resources\Pages\CreateRecord;
+use Illuminate\Support\Facades\Log;
 
 class CreatePeminjamanAlat extends CreateRecord
 {

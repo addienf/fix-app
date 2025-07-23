@@ -3,8 +3,12 @@
 namespace App\Filament\Resources\Quality\Standarisasi\StandarisasiDrawingResource\Pages;
 
 use App\Filament\Resources\Quality\Standarisasi\StandarisasiDrawingResource;
+use App\Jobs\Quality\SendStandarisasiDrawingNotif;
+use App\Jobs\SendGenericNotif;
+use App\Notifications\Quality\StandarisasiDrawingNotif;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
+use Illuminate\Support\Facades\Log;
 
 class EditStandarisasiDrawing extends EditRecord
 {
