@@ -156,7 +156,7 @@
             </div>
         </div>
 
-        <div class="max-w-4xl mx-auto mt-10 text-sm">
+        <div class="ttd max-w-4xl mx-auto mt-10 text-sm">
             <div class="flex items-start justify-between gap-4">
                 <!-- Kiri -->
                 <div class="flex flex-col items-center">
