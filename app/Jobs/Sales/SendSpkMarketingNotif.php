@@ -2,29 +2,28 @@
 
 namespace App\Jobs\Sales;
 
-use App\Models\Sales\SpesifikasiProducts\SpesifikasiProduct;
+use App\Models\Sales\SPKMarketings\SPKMarketing;
 use App\Models\User;
-use App\Notifications\Sales\SpesifikasiProductNotif;
-use Filament\Notifications\Actions\Action;
-use Filament\Notifications\Notification;
+use App\Notifications\Sales\SpkMarketingNotif;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Filament\Notifications\Actions\Action;
+use Filament\Notifications\Notification;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
-class SendSpesifikasiProductNotif implements ShouldQueue
+class SendSpkMarketingNotif implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
-
-    protected SpesifikasiProduct $record;
+    protected SPKMarketing $record;
 
     /**
      * Create a new job instance.
      */
-    public function __construct(SpesifikasiProduct $record)
+    public function __construct(SPKMarketing $record)
     {
         $this->record = $record;
     }
@@ -34,21 +33,22 @@ class SendSpesifikasiProductNotif implements ShouldQueue
      */
     public function handle(): void
     {
-        Log::info('🚀 [JOB] SendSpesifikasiProductNotif dimulai', [
+        Log::info('🚀 [JOB] SendSPKMarketingNotif dimulai', [
             'record_id' => $this->record->id,
         ]);
 
         // STEP 1: Ambil user ID dari signature
         try {
-            $signedUserIds = DB::table('spesifikasi_product_pics')
-                ->where('spesifikasi_product_id', $this->record->id)
-                ->pluck('name'); // diasumsikan berisi user ID
+            $signedUserIds = DB::table('spk_marketing_pics')
+                ->where('spk_marketing_id', $this->record->id)
+                ->whereNotNull('receive_signature') // hanya yang sudah isi tanda tangan
+                ->pluck('receive_name'); // ID user penerima
 
-            Log::info('✅ STEP 1: Signed user IDs ditemukan', [
+            Log::info('✅ STEP 1: Signed receive_user IDs ditemukan', [
                 'user_ids' => $signedUserIds->toArray(),
             ]);
         } catch (\Throwable $e) {
-            Log::error('❌ STEP 1 GAGAL: Gagal ambil user dari signature', [
+            Log::error('❌ STEP 1 GAGAL: Gagal ambil user dari receive_signature', [
                 'error' => $e->getMessage(),
             ]);
             return;
@@ -77,17 +77,17 @@ class SendSpesifikasiProductNotif implements ShouldQueue
         foreach ($users as $user) {
             try {
                 // Email via Laravel Notification
-                $user->notify(new SpesifikasiProductNotif($this->record));
+                $user->notify(new SpkMarketingNotif($this->record));
                 Log::info("📨 Notifikasi email dikirim ke {$user->email}");
 
                 // Filament Notification
                 Notification::make()
-                    ->title('Data Product Berhasil Dibuat')
-                    ->body('Ada data produk yang telah Anda tanda tangani.')
+                    ->title('Data SPK Marketing Berhasil Dibuat')
+                    ->body('Ada data SPK Marketing yang telah Anda tanda tangani.')
                     ->actions([
                         Action::make('Lihat')
                             ->button()
-                            ->url(url('/admin/sales/spesifikasi-product/' . $this->record->id . '/edit')),
+                            ->url(url('/admin/sales/spk-marketing/' . $this->record->id . '/edit')),
                     ])
                     ->sendToDatabase($user);
 
@@ -99,6 +99,6 @@ class SendSpesifikasiProductNotif implements ShouldQueue
             }
         }
 
-        Log::info('✅ [JOB] SendSpesifikasiProductNotif SELESAI');
+        Log::info('✅ [JOB] SendSPKMarketingNotif SELESAI');
     }
 }

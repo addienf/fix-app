@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Sales\SpesifikasiProducts;
 
 use App\Filament\Resources\Sales\SpesifikasiProducts\SpesifikasiProductResource\Pages;
 use App\Filament\Resources\Sales\SpesifikasiProducts\SpesifikasiProductResource\RelationManagers;
+use App\Models\General\Product;
 use App\Models\Sales\SpesifikasiProducts\SpesifikasiProduct;
 use App\Services\SignatureUploader;
 use Filament\Forms;
@@ -17,6 +18,7 @@ use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\ToggleButtons;
 use Filament\Forms\Form;
 use Filament\Forms\Set;
@@ -35,6 +37,7 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Str;
 use Saade\FilamentAutograph\Forms\Components\SignaturePad;
 use Wallo\FilamentSelectify\Components\ButtonGroup;
+use Wallo\FilamentSelectify\Components\ToggleButton;
 
 class SpesifikasiProductResource extends Resource
 {
@@ -74,12 +77,29 @@ class SpesifikasiProductResource extends Resource
                             ->schema([
                                 Grid::make(2)
                                     ->schema([
-                                        self::selectInput('product_id', 'Pilih Produk', 'product', 'name')
+
+                                        // self::selectInput('product_id', 'Pilih Produk', 'product', 'name')
+                                        //     ->required(),
+
+                                        Select::make('product_id')
+                                            ->label('Pilih Produk')
+                                            ->relationship(
+                                                'product',
+                                                'name',
+                                                fn($query) => $query->orderBy('name', 'desc')
+                                            )
+                                            ->native(false)
+                                            ->searchable()
+                                            ->preload()
+                                            ->reactive()
                                             ->required(),
+
+
                                         self::textInput('quantity', 'Banyak Produk')
                                             ->numeric()
                                             ->required(),
                                     ]),
+
                                 Grid::make()
                                     ->relationship('file')
                                     ->schema([
@@ -92,9 +112,15 @@ class SpesifikasiProductResource extends Resource
                                             ->columnSpanFull()
                                             ->helperText('Hanya file PDF yang diperbolehkan. Maksimal ukuran 10 MB.'),
                                     ]),
+
                                 TableRepeater::make('specification')
                                     ->label('Pilih Spesifikasi')
+                                    ->visible(
+                                        fn($get) =>
+                                        optional(Product::find($get('product_id')))?->category_id === 1
+                                    )
                                     ->schema([
+
                                         Select::make('name')
                                             ->reactive()
                                             ->required()
@@ -102,29 +128,97 @@ class SpesifikasiProductResource extends Resource
                                             ->options(config('spec.spesifikasi'))
                                             ->columnSpan(1)
                                             ->placeholder('Pilih Jenis Spesifikasi'),
+
                                         ButtonGroup::make('value_bool')
                                             ->label('')
                                             ->required()
-                                            ->options([
-                                                '1' => 'Yes',
-                                                '0' => 'No',
-                                            ])
+                                            ->options(function (callable $get) {
+                                                $name = $get('name'); // ambil nilai dari field 'name'
+
+                                                if ($name === 'Tipe Chamber') {
+                                                    return [
+                                                        'knockdown' => 'Knockdown',
+                                                        'regular' => 'Regular',
+                                                    ];
+                                                } elseif ($name === 'Software') {
+                                                    return [
+                                                        'with' => 'With Software',
+                                                        'without' => 'Without Software',
+                                                    ];
+                                                } else {
+                                                    return [
+                                                        '1' => 'Yes',
+                                                        '0' => 'No',
+                                                    ];
+                                                }
+                                            })
+                                            ->reactive()
                                             ->onColor('primary')
                                             ->offColor('gray')
                                             ->gridDirection('row')
-                                            ->visible(fn($get) => in_array($get('name'), ['Water Feeding System', 'Software', 'Tensile Test', 'Compression Test', 'Torque Test', 'Digital', 'Computerised'])),
+                                            ->visible(fn($get) => in_array(
+                                                $get('name'),
+                                                [
+                                                    'Water Feeding System',
+                                                    'Software',
+                                                    'Tipe Chamber',
+                                                ]
+                                            )),
 
                                         TextInput::make('value_str')
                                             ->required()
                                             ->label('')
                                             ->placeholder('Masukkan Nilai')
-                                            ->visible(fn($get) => !in_array($get('name'), ['Water Feeding System', 'Software', 'Tensile Test', 'Compression Test', 'Torque Test', 'Digital', 'Computerised']))
+                                            ->visible(fn($get) => !in_array(
+                                                $get('name'),
+                                                [
+                                                    'Water Feeding System',
+                                                    'Software',
+                                                    'Tipe Chamber',
+                                                ]
+                                            ))
                                             ->columnSpan(1),
                                     ])
                                     ->columns(2)
                                     ->defaultItems(1)
                                     ->columnSpanFull()
                                     ->addActionLabel('Tambah Spesifikasi'),
+
+                                Repeater::make('specification')
+                                    ->label('Spesifikasi Mecmesin')
+                                    ->visible(
+                                        fn($get) =>
+                                        optional(Product::find($get('product_id')))?->category_id === 2 // ganti dengan ID Mecmesin kamu
+                                    )
+                                    ->schema([
+                                        Grid::make(2)
+                                            ->schema([
+                                                Select::make('test_type')
+                                                    ->label('Test Type')
+                                                    ->options([
+                                                        'tensile' => 'Tensile Test',
+                                                        'compression' => 'Compression Test',
+                                                        'torque' => 'Torque Test',
+                                                    ])
+                                                    ->required()
+                                                    ->reactive(),
+
+                                                ButtonGroup::make('jenis_tes')
+                                                    ->label('Jenis Tes')
+                                                    ->gridDirection('row')
+                                                    ->options([
+                                                        'digital' => 'Digital',
+                                                        'computerised' => 'Computerised'
+                                                    ]),
+                                            ]),
+                                        Grid::make(2)
+                                            ->schema([
+                                                TextInput::make('capacity')->label('Capacity'),
+                                                TextInput::make('sample')->label('Sample to test'),
+                                            ])
+                                    ])
+                                    ->columns(2)
+                                    ->addActionLabel('Tambah Test'),
                             ])
                             ->defaultItems(1)
                             ->reorderable()
@@ -250,7 +344,11 @@ class SpesifikasiProductResource extends Resource
     {
         return
             Select::make($fieldName)
-            ->relationship($relation, $title)
+            ->relationship(
+                $relation,
+                $title,
+                fn(Builder $query) => $query->orderBy($title)
+            )
             ->label($label)
             ->native(false)
             ->searchable()

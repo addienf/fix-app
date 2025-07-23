@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\PDFController;
+use App\Jobs\Sales\SendSpesifikasiProductNotif;
+use App\Models\Sales\SpesifikasiProducts\SpesifikasiProduct;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -68,3 +70,9 @@ Route::get('/engineering/maintenance-refrigator/{record}/pdf-maintenance-refriga
 Route::get('/engineering/maintenance-cold-room/{record}/pdf-cold-room', [PDFController::class, 'pdfMaintenanceColdRoom'])->name('pdf.MaintenanceColdRoom');
 Route::get('/engineering/service-report/{record}/pdf-service-report', [PDFController::class, 'pdfServiceReport'])->name('pdf.serviceReport');
 Route::get('/engineering/service-report/{record}/download-zip', [PDFController::class, 'downloadZipserviceReport'])->name('serviceReport.download-zip');
+
+Route::get('/test-job', function () {
+    $record = SpesifikasiProduct::latest()->first();
+    dispatch(new SendSpesifikasiProductNotif($record));
+    return 'Job dispatched';
+});
