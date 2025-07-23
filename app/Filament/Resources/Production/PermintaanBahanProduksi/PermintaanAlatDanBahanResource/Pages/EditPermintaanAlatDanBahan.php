@@ -3,8 +3,12 @@
 namespace App\Filament\Resources\Production\PermintaanBahanProduksi\PermintaanAlatDanBahanResource\Pages;
 
 use App\Filament\Resources\Production\PermintaanBahanProduksi\PermintaanAlatDanBahanResource;
+use App\Jobs\Production\SendPermintaanAlatdanBahanNotif;
+use App\Jobs\SendGenericNotif;
+use App\Notifications\Production\PermintaanAlatdanBahanNotif;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
+use Illuminate\Support\Facades\Log;
 
 class EditPermintaanAlatDanBahan extends EditRecord
 {

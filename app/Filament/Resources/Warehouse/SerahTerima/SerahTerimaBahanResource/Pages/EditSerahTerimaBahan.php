@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Warehouse\SerahTerima\SerahTerimaBahanResource\Pages;
 
 use App\Filament\Resources\Warehouse\SerahTerima\SerahTerimaBahanResource;
+use App\Jobs\Warehouse\SendSerahTerimaBahanNotif;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
 

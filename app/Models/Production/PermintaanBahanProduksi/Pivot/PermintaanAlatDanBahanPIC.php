@@ -8,6 +8,16 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 
+/**
+ * @property string|null $id
+ * @property string|null $permintaan_bahan_id
+ * @property string|null $dibuat_signature
+ * @property string|null $dibuat_name
+ * @property string|null $diketahui_signature
+ * @property string|null $diketahui_name
+ * @property string|null $diserahkan_signature
+ * @property string|null $diserahkan_name
+ */
 class PermintaanAlatDanBahanPIC extends Model
 {
     use HasFactory;

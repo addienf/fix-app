@@ -2,6 +2,7 @@
 
 namespace App\Models\Warehouse\Peminjaman\Pivot;
 
+use App\Models\User;
 use App\Models\Warehouse\Peminjaman\PeminjamanAlat;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -23,6 +24,11 @@ class PeminjamanAlatPIC extends Model
     public function peminjaman()
     {
         return $this->belongsTo(PeminjamanAlat::class);
+    }
+
+    public function NamaPeminjam()
+    {
+        return $this->belongsTo(User::class, 'nama_peminjam');
     }
 
     protected static function booted(): void

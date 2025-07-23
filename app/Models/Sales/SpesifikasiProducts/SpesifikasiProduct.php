@@ -10,6 +10,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 
+/**
+ * @property string|null $id
+ * @property string|null $urs_id
+ * @property string|null $is_stock
+ * @property string|null $detail_specification
+ * @property string|null $delivery_address
+ */
 class SpesifikasiProduct extends Model
 {
     use HasFactory, Notifiable;

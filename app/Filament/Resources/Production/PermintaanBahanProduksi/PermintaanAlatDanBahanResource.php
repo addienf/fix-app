@@ -43,7 +43,7 @@ class PermintaanAlatDanBahanResource extends Resource
     protected static ?string $navigationLabel = 'Permintaan Bahan dan Alat Produksi';
     protected static ?string $pluralLabel = 'Permintaan Bahan dan Alat Produksi';
     protected static ?string $modelLabel = 'Permintaan Bahan dan Alat Produksi';
-    protected static ?string $slug = 'production/permintaan-alat-dan-bahan';
+    protected static ?string $slug = 'produksi/permintaan-alat-dan-bahan';
 
     public static function getNavigationBadge(): ?string
     {

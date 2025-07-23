@@ -20,6 +20,16 @@ use App\Models\Warehouse\Pelabelan\QCPassed;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @property string|null $id
+ * @property string|null $spesifikasi_product_id
+ * @property string|null $no_spk
+ * @property string|null $no_order
+ * @property string|null $tanggal
+ * @property string|null $dari
+ * @property string|null $kepada
+ * @property string|null $status_penerimaan
+ */
 class SPKMarketing extends Model
 {
     use HasFactory;
