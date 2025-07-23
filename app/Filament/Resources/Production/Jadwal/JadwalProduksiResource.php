@@ -43,7 +43,7 @@ class JadwalProduksiResource extends Resource
     protected static ?string $navigationLabel = 'Jadwal Produksi';
     protected static ?string $pluralLabel = 'Jadwal Produksi';
     protected static ?string $modelLabel = 'Jadwal Produksi';
-    protected static ?string $slug = 'production/jadwal-produksi';
+    protected static ?string $slug = 'produksi/jadwal-produksi';
 
     public static function getNavigationBadge(): ?string
     {

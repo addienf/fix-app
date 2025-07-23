@@ -1,12 +1,10 @@
 <?php
 
-namespace App\Jobs\Sales;
+namespace App\Jobs\Production;
 
-use App\Models\Sales\SpesifikasiProducts\SpesifikasiProduct;
+use App\Models\Production\Jadwal\JadwalProduksi;
 use App\Models\User;
-use App\Notifications\Sales\SpesifikasiProductNotif;
-use Filament\Notifications\Actions\Action;
-use Filament\Notifications\Notification;
+use App\Notifications\Production\JadwalProduksiNotif;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -14,17 +12,17 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Filament\Notifications\Actions\Action;
+use Filament\Notifications\Notification;
 
-class SendSpesifikasiProductNotif implements ShouldQueue
+class SendJadwalProduksiNotif implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
-
-    protected SpesifikasiProduct $record;
-
+    protected JadwalProduksi $record;
     /**
      * Create a new job instance.
      */
-    public function __construct(SpesifikasiProduct $record)
+    public function __construct(JadwalProduksi $record)
     {
         $this->record = $record;
     }
@@ -34,21 +32,22 @@ class SendSpesifikasiProductNotif implements ShouldQueue
      */
     public function handle(): void
     {
-        Log::info('🚀 [JOB] SendSpesifikasiProductNotif dimulai', [
+        Log::info('🚀 [JOB] SendJadwalProduksiNotif dimulai', [
             'record_id' => $this->record->id,
         ]);
 
         // STEP 1: Ambil user ID dari signature
         try {
-            $signedUserIds = DB::table('spesifikasi_product_pics')
-                ->where('spesifikasi_product_id', $this->record->id)
-                ->pluck('name'); // diasumsikan berisi user ID
+            $signedUserIds = DB::table('jadwal_produksi_pics')
+                ->where('jadwal_produksi_id', $this->record->id)
+                ->whereNotNull('approve_signature') // hanya yang sudah isi tanda tangan
+                ->pluck('approve_name'); // ID user penerima
 
-            Log::info('✅ STEP 1: Signed user IDs ditemukan', [
+            Log::info('✅ STEP 1: Signed approve_user IDs ditemukan', [
                 'user_ids' => $signedUserIds->toArray(),
             ]);
         } catch (\Throwable $e) {
-            Log::error('❌ STEP 1 GAGAL: Gagal ambil user dari signature', [
+            Log::error('❌ STEP 1 GAGAL: Gagal ambil user dari approve_signature', [
                 'error' => $e->getMessage(),
             ]);
             return;
@@ -77,17 +76,17 @@ class SendSpesifikasiProductNotif implements ShouldQueue
         foreach ($users as $user) {
             try {
                 // Email via Laravel Notification
-                $user->notify(new SpesifikasiProductNotif($this->record));
+                $user->notify(new JadwalProduksiNotif($this->record));
                 Log::info("📨 Notifikasi email dikirim ke {$user->email}");
 
                 // Filament Notification
                 Notification::make()
-                    ->title('Data Product Berhasil Dibuat')
-                    ->body('Ada data produk yang telah Anda tanda tangani.')
+                    ->title('Data Jadwal Produksi Berhasil Dibuat')
+                    ->body('Ada data Jadwal Produksi yang telah Anda tanda tangani.')
                     ->actions([
                         Action::make('Lihat')
                             ->button()
-                            ->url(url('/admin/sales/spesifikasi-product/' . $this->record->id . '/edit')),
+                            ->url(url('/admin/produksi/jadwal-produksi/' . $this->record->id . '/edit')),
                     ])
                     ->sendToDatabase($user);
 
@@ -99,6 +98,6 @@ class SendSpesifikasiProductNotif implements ShouldQueue
             }
         }
 
-        Log::info('✅ [JOB] SendSpesifikasiProductNotif SELESAI');
+        Log::info('✅ [JOB] SendJadwalProduksiNotif SELESAI');
     }
 }

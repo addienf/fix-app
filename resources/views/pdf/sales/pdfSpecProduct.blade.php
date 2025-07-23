@@ -60,53 +60,16 @@
                     </div>
                 @endforeach
             </div>
-            <!-- Spesifikasi Teknis -->
+
             @php
                 $chunks = $spesifikasi->details->chunk(2); // Bagi tiap 2 item
             @endphp
 
-            {{-- <div class="max-w-4xl pt-6 mx-auto space-y-4 text-sm">
-                    @foreach ($chunks as $chunk)
-                        <div class="grid gap-4 {{ $chunk->count() == 1 ? 'grid-cols-1' : 'grid-cols-2' }}">
-                            @foreach ($chunk as $detail)
-                                <div class="p-2 border border-gray-300 rounded dark:border-gray-600">
-                                    <div class="pb-4">
-                                        <label class="block mb-2 font-medium">Nama Item</label>
-                                        <input type="text" disabled
-                                            class="w-full px-2 py-1 text-black bg-white border border-gray-300 rounded cursor-not-allowed dark:bg-gray-800 dark:text-white dark:border-gray-600"
-                                            value="{{ $detail->product->name }}" />
-                                    </div>
-                                    <div class="pb-4">
-                                        <label class="block mb-2 font-medium">Quantity</label>
-                                        <input type="text" disabled
-                                            class="w-full px-2 py-1 text-black bg-white border border-gray-300 rounded cursor-not-allowed dark:bg-gray-800 dark:text-white dark:border-gray-600"
-                                            value="{{ $detail->quantity }}" />
-                                    </div>
-                                    @foreach ($detail->specification as $spec)
-                                        <div class="pb-4">
-                                            <label class="block mb-2 font-medium">{{ $spec['name'] }}</label>
-                                            <input type="text" disabled
-                                                class="w-full px-2 py-1 text-black bg-white border border-gray-300 rounded cursor-not-allowed dark:bg-gray-800 dark:text-white dark:border-gray-600"
-                                                value="{{ in_array($spec['name'], ['Water Feeding System', 'Software'])
-                                                    ? (isset($spec['value_bool']) && $spec['value_bool']
-                                                        ? 'Ya'
-                                                        : 'Tidak')
-                                                    : $spec['value_str'] ?? '-' }}" />
-                                        </div>
-                                    @endforeach
-                                </div>
-                            @endforeach
-                        </div>
-                    @endforeach
-                </div> --}}
-
             <div class="max-w-4xl pt-8 mx-auto space-y-8 text-sm">
-                @foreach ($chunks as $chunk)
+                {{-- @foreach ($chunks as $chunk)
                     @foreach ($chunk as $detail)
-                        {{-- Mulai kotak per item --}}
                         <div class="p-4 space-y-5 bg-white border border-gray-400 rounded-md shadow-sm">
 
-                            {{-- Produk --}}
                             <div class="grid items-center grid-cols-4 gap-2">
                                 <label class="col-span-1 font-medium">Nama Item :</label>
                                 <input type="text" disabled
@@ -121,47 +84,95 @@
                                     value="{{ $detail->quantity }}" />
                             </div>
 
-                            {{-- Spesifikasi --}}
                             @foreach ($detail->specification as $spec)
                                 <div class="grid items-center grid-cols-4 gap-2">
                                     <label class="col-span-1 font-medium">{{ $spec['name'] }} :</label>
                                     <input type="text" disabled
                                         class="col-span-3 px-2 py-1 text-black bg-white border border-gray-300 rounded cursor-not-allowed dark:bg-gray-800 dark:text-white dark:border-gray-600"
-                                        value="{{ in_array($spec['name'], ['Water Feeding System', 'Software'])
-                                            ? (isset($spec['value_bool']) && $spec['value_bool'] === 'yes'
-                                                ? 'Ya'
-                                                : 'Tidak')
-                                            : $spec['value_str'] ?? '-' }}" />
+                                        value="{{ match ($spec['name']) {
+                                            'Tipe Chamber' => $spec['value_bool'] === 'knockdown' ? 'Knockdown' : 'Regular',
+
+                                            'Water Feeding System' => in_array($spec['value_bool'], ['1', 'yes']) ? 'Ya' : 'Tidak',
+
+                                            'Software' => $spec['value_bool'] === 'with' ? 'With Software' : 'Without Software',
+
+                                            default => $spec['value_str'] ?? ($spec['value_bool'] ?? '-'),
+                                        } }}" />
                                 </div>
                             @endforeach
+
                         </div>
-                        {{-- Akhir kotak per item --}}
+                    @endforeach
+                @endforeach --}}
+
+                @foreach ($chunks as $chunk)
+                    @foreach ($chunk as $detail)
+                        <div class="p-4 space-y-5 bg-white border border-gray-400 rounded-md shadow-sm">
+
+                            {{-- Produk --}}
+                            <div class="grid items-center grid-cols-4 gap-2">
+                                <label class="col-span-1 font-medium">Nama Item :</label>
+                                <input type="text" disabled
+                                    class="col-span-3 px-2 py-1 text-black bg-white border border-gray-300 rounded cursor-not-allowed"
+                                    value="{{ $detail->product->name }}" />
+                            </div>
+
+                            {{-- Quantity --}}
+                            <div class="grid items-center grid-cols-4 gap-2">
+                                <label class="col-span-1 font-medium">Quantity :</label>
+                                <input type="text" disabled
+                                    class="col-span-3 px-2 py-1 text-black bg-white border border-gray-300 rounded cursor-not-allowed"
+                                    value="{{ $detail->quantity }}" />
+                            </div>
+
+                            {{-- Cek kategori produk: QLab atau bukan --}}
+                            @if ($detail->product->category?->id === 1)
+                                {{-- Spesifikasi QLab --}}
+                                @foreach ($detail->specification as $spec)
+                                    <div class="grid items-center grid-cols-4 gap-2">
+                                        <label class="col-span-1 font-medium">{{ $spec['name'] }} :</label>
+                                        <input type="text" disabled
+                                            class="col-span-3 px-2 py-1 text-black bg-white border border-gray-300 rounded cursor-not-allowed"
+                                            value="{{ match ($spec['name']) {
+                                                'Tipe Chamber' => $spec['value_bool'] === 'knockdown' ? 'Knockdown' : 'Regular',
+                                                'Water Feeding System' => in_array($spec['value_bool'], ['1', 'yes']) ? 'Ya' : 'Tidak',
+                                                'Software' => $spec['value_bool'] === 'with' ? 'With Software' : 'Without Software',
+                                                default => $spec['value_str'] ?? ($spec['value_bool'] ?? '-'),
+                                            } }}" />
+                                    </div>
+                                @endforeach
+                            @else
+                                {{-- Spesifikasi Mecmesin / Non-QLab --}}
+                                @foreach ($detail->specification as $spec)
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="font-medium">Sample:</label>
+                                            <div class="p-1 mt-1 border rounded">{{ $spec['sample'] ?? '-' }}</div>
+                                        </div>
+                                        <div>
+                                            <label class="font-medium">Capacity:</label>
+                                            <div class="p-1 mt-1 border rounded">{{ $spec['capacity'] ?? '-' }}</div>
+                                        </div>
+                                        <div>
+                                            <label class="font-medium">Jenis Tes:</label>
+                                            <div class="p-1 mt-1 border rounded">{{ ucfirst($spec['jenis_tes'] ?? '-') }}
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label class="font-medium">Test Type:</label>
+                                            <div class="p-1 mt-1 border rounded">{{ ucfirst($spec['test_type'] ?? '-') }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            @endif
+
+                        </div>
                     @endforeach
                 @endforeach
             </div>
 
             <!-- Penanggung Jawab -->
-            {{-- <div class="max-w-4xl pt-10 mx-auto text-sm">
-
-                    <div>
-                        <label class="pt-3 font-bold">Penanggung Jawab</label>
-                        <div class="flex flex-col pt-3 text-sm">
-                            <img src="{{ asset('storage/' . $spesifikasi->pic->signature) }}" alt="Product Signature"
-                                class="h-20 w-80" />
-                            <div class="mt-2 font-medium">
-                                {{ $spesifikasi->pic->name }}
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="">
-                        <label class="font-bold">Tanggal: </label>
-                        <input type="text" readonly disabled
-                            class="px-2 py-1 text-black bg-white border border-gray-300 rounded cursor-not-allowed dark:bg-gray-800 dark:text-white dark:border-gray-600"
-                            value="{{ \Carbon\Carbon::parse($spesifikasi->pic->date)->translatedFormat('d F Y') }}" />
-                    </div>
-
-                </div> --}}
             <div class="max-w-4xl pt-10 mx-auto text-sm">
                 <table class="w-full text-sm border border-gray-300 rounded-md table-fixed">
                     <tr class="h-20">

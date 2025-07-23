@@ -7,6 +7,7 @@ use App\Jobs\Sales\SendSpesifikasiProductNotif;
 use Filament\Actions\Action;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\CreateRecord;
+use Illuminate\Support\Facades\Log;
 
 class CreateSpesifikasiProduct extends CreateRecord
 {
@@ -19,7 +20,11 @@ class CreateSpesifikasiProduct extends CreateRecord
 
     protected function afterCreate(): void
     {
-        dispatch(new SendSpesifikasiProductNotif($this->record));
+        if ($this->record && $this->record->id) {
+            dispatch(new SendSpesifikasiProductNotif($this->record));
+        } else {
+            Log::error('afterCreate dipanggil tapi record belum lengkap.');
+        }
     }
 
     public function getTitle(): string
