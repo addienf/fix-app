@@ -49,6 +49,7 @@ class GenericNotification extends Notification
             ->subject($this->subject)
             ->line($this->message)
             ->action('Lihat Data', $this->url)
+            ->salutation('PT. Qlab Kinarya Sentosa')
             ->line('Terima kasih.');
     }
 
