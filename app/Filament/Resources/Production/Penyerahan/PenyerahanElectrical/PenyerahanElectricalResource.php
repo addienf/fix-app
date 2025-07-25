@@ -40,7 +40,7 @@ class PenyerahanElectricalResource extends Resource
     protected static ?string $navigationLabel = 'Serah Terima Electrical';
     protected static ?string $pluralLabel = 'Serah Terima Electrical';
     protected static ?string $modelLabel = 'Serah Terima Electrical';
-    protected static ?string $slug = 'production/serah-terima-electrical';
+    protected static ?string $slug = 'produksi/serah-terima-electrical';
 
     public static function getNavigationBadge(): ?string
     {

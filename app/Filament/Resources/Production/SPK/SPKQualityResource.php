@@ -39,7 +39,7 @@ class SPKQualityResource extends Resource
     protected static ?string $navigationLabel = 'SPK Quality';
     protected static ?string $pluralLabel = 'SPK Quality';
     protected static ?string $modelLabel = 'SPK Quality';
-    protected static ?string $slug = 'production/spk-quality';
+    protected static ?string $slug = 'produksi/spk-quality';
 
 
     public static function getNavigationBadge(): ?string

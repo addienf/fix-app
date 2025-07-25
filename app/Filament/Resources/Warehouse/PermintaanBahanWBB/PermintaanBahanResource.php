@@ -33,7 +33,7 @@ use Saade\FilamentAutograph\Forms\Components\SignaturePad;
 class PermintaanBahanResource extends Resource
 {
     protected static ?string $model = PermintaanBahan::class;
-    protected static ?string $slug = 'Warehouse/permintaan-pembelian-bahan-warehpuse';
+    protected static ?string $slug = 'warehouse/permintaan-bahan-warehouse';
     protected static ?string $navigationIcon = 'heroicon-o-cog-6-tooth';
     protected static ?int $navigationSort = 5;
     protected static ?string $navigationGroup = 'Warehouse';
