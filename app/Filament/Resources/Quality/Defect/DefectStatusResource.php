@@ -45,6 +45,7 @@ class DefectStatusResource extends Resource
     protected static ?string $navigationLabel = 'Defect Status';
     protected static ?string $pluralLabel = 'Defect Status';
     protected static ?string $modelLabel = 'Defect Status';
+    protected static ?string $slug = 'quality/defect-status';
 
     public static function getNavigationBadge(): ?string
     {

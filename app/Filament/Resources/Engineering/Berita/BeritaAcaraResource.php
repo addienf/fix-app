@@ -188,20 +188,20 @@ class BeritaAcaraResource extends Resource
                     ->relationship('pic')
                     ->schema([
 
-                        // Hidden::make('jasa_name')
-                        //     ->default(fn() => auth()->id()),
+                        Hidden::make('jasa_name')
+                            ->default(fn() => auth()->id()),
 
-                        // self::textInput('jasa_name_placeholder', 'Nama Penyedia Jasa')
-                        //     ->default(fn() => auth()->user()?->name)
-                        //     ->extraAttributes([
-                        //         'readonly' => true,
-                        //         'style' => 'pointer-events: none;'
-                        //     ]),
+                        self::textInput('jasa_name_placeholder', 'Nama Penyedia Jasa')
+                            ->default(fn() => auth()->user()?->name)
+                            ->extraAttributes([
+                                'readonly' => true,
+                                'style' => 'pointer-events: none;'
+                            ]),
 
-                        TextInput::make('jasa_name')
-                            ->required()
-                            ->label('Nama Penyedia Jasa')
-                            ->default(fn() => auth()->user()?->name),
+                        // TextInput::make('jasa_name')
+                        //     ->required()
+                        //     ->label('Nama Penyedia Jasa')
+                        //     ->default(fn() => auth()->user()?->name),
 
                         self::signatureInput('jasa_ttd', ''),
                     ])
