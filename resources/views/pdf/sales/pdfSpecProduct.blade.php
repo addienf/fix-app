@@ -128,7 +128,7 @@
                             {{-- Cek kategori produk: QLab atau bukan --}}
                             @if ($detail->product->category?->id === 1)
                                 {{-- Spesifikasi QLab --}}
-                                @foreach ($detail->specification as $spec)
+                                @foreach ($detail->specification ?? [] as $spec)
                                     <div class="grid items-center grid-cols-4 gap-2">
                                         <label class="col-span-1 font-medium">{{ $spec['name'] }} :</label>
                                         <input type="text" disabled
@@ -143,7 +143,7 @@
                                 @endforeach
                             @else
                                 {{-- Spesifikasi Mecmesin / Non-QLab --}}
-                                @foreach ($detail->specification as $spec)
+                                @foreach ($detail->specification_mecmesin ?? [] as $spec)
                                     <div class="grid grid-cols-2 gap-4">
                                         <div>
                                             <label class="font-medium">Sample:</label>
@@ -173,7 +173,7 @@
             </div>
 
             <!-- Penanggung Jawab -->
-            <div class="max-w-4xl pt-10 mx-auto text-sm">
+            <div class="max-w-4xl pt-10 mx-auto text-sm ttd">
                 <table class="w-full text-sm border border-gray-300 rounded-md table-fixed">
                     <tr class="h-20">
                         <td class="w-1/3 p-2 font-semibold align-top border border-gray-300 rounded-md">Signed</td>

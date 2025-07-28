@@ -152,7 +152,7 @@ class PDFController extends Controller
 
     public function pdfStandarisasiDrawing($id)
     {
-        $standarisasi = StandarisasiDrawing::with(['spk', 'identitas', 'detail', 'pic', 'pic.createName', 'pic.checkName'])->findOrFail($id);
+        $standarisasi = StandarisasiDrawing::with(['spk', 'identitas', 'detail', 'pemeriksaan', 'pic', 'pic.createName', 'pic.checkName'])->findOrFail($id);
 
         return view('pdf.quality.pdfStandarisasiDrawing', compact('standarisasi'));
     }

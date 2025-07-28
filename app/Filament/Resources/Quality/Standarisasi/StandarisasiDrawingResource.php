@@ -140,6 +140,20 @@ class StandarisasiDrawingResource extends Resource
 
                     ]),
 
+                Section::make('Komponen Gambar Yang Diperiksa')
+                    ->collapsible()
+                    ->relationship('pemeriksaan')
+                    ->schema([
+                        Select::make('pemeriksaan_komponen')
+                            ->label('Komponen Gamber Yang Diperksa')
+                            ->multiple()
+                            ->options([
+                                'keselarasan_spesifikasi' => 'Keselarasan Dengan Spesifikasi',
+                                'ketepatan_skala' => 'Ketepatan Dimensi Dengan Skala',
+                                'kesesuaian' => 'Kesesuaian Dengan Gambar Produk'
+                            ])
+                    ]),
+
                 Section::make('Detail PIC')
                     ->collapsible()
                     ->relationship('pic')
@@ -218,7 +232,7 @@ class StandarisasiDrawingResource extends Resource
                     Tables\Actions\EditAction::make(),
                     Tables\Actions\DeleteAction::make(),
                     Action::make('pdf_view')
-                        ->label(_('View PDF'))
+                        ->label(_('Lihat PDF'))
                         ->icon('heroicon-o-document')
                         ->color('success')
                         ->visible(fn($record) => $record->status_pemeriksaan === 'Diperiksa')

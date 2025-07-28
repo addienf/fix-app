@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('spesifikasi_product_id')->constrained()->onDelete('cascade');
             $table->foreignId('product_id')->constrained()->onDelete('cascade');
             $table->json('specification');
+            $table->json('specification_mecmesin');
             $table->integer('quantity');
             $table->timestamps();
         });

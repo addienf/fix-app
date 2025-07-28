@@ -78,21 +78,22 @@ class SpesifikasiProductResource extends Resource
                                 Grid::make(2)
                                     ->schema([
 
-                                        // self::selectInput('product_id', 'Pilih Produk', 'product', 'name')
-                                        //     ->required(),
+                                        self::selectInput('product_id', 'Pilih Produk', 'product', 'name')
+                                            ->required()
+                                            ->reactive(),
 
-                                        Select::make('product_id')
-                                            ->label('Pilih Produk')
-                                            ->relationship(
-                                                'product',
-                                                'name',
-                                                fn($query) => $query->orderBy('name', 'desc')
-                                            )
-                                            ->native(false)
-                                            ->searchable()
-                                            ->preload()
-                                            ->reactive()
-                                            ->required(),
+                                        // Select::make('product_id')
+                                        //     ->label('Pilih Produk')
+                                        //     ->relationship(
+                                        //         'product',
+                                        //         'name',
+                                        //         fn($query) => $query->orderBy('name', 'desc')
+                                        //     )
+                                        //     ->native(false)
+                                        //     ->searchable()
+                                        //     ->preload()
+                                        //     ->reactive()
+                                        //     ->required(),
 
 
                                         self::textInput('quantity', 'Banyak Produk')
@@ -114,13 +115,12 @@ class SpesifikasiProductResource extends Resource
                                     ]),
 
                                 TableRepeater::make('specification')
-                                    ->label('Pilih Spesifikasi')
+                                    ->label('Spesifikasi')
                                     ->visible(
                                         fn($get) =>
                                         optional(Product::find($get('product_id')))?->category_id === 1
                                     )
                                     ->schema([
-
                                         Select::make('name')
                                             ->reactive()
                                             ->required()
@@ -133,7 +133,7 @@ class SpesifikasiProductResource extends Resource
                                             ->label('')
                                             ->required()
                                             ->options(function (callable $get) {
-                                                $name = $get('name'); // ambil nilai dari field 'name'
+                                                $name = $get('name');
 
                                                 if ($name === 'Tipe Chamber') {
                                                     return [
@@ -184,7 +184,7 @@ class SpesifikasiProductResource extends Resource
                                     ->columnSpanFull()
                                     ->addActionLabel('Tambah Spesifikasi'),
 
-                                Repeater::make('specification')
+                                Repeater::make('specification_mecmesin')
                                     ->label('Spesifikasi Mecmesin')
                                     ->visible(
                                         fn($get) =>

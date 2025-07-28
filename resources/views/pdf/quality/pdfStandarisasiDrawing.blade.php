@@ -121,13 +121,28 @@
         </div>
 
         <!-- Komponen Gambar -->
+        @php
+            $komponenLabels = [
+                'keselarasan_spesifikasi' => 'Keselarasan dengan spesifikasi',
+                'ketepatan_skala' => 'Ketepatan dimensi dengan skala',
+                'kesesuaian' => 'Kesesuaian dengan gambar dan produk',
+            ];
+
+            $data = $standarisasi->pemeriksaan->pemeriksaan_komponen ?? [];
+        @endphp
+
         <div class="w-full max-w-4xl pt-6 mx-auto text-sm">
             <h2 class="mb-4 text-xl font-bold">III. Komponen Gambar yang Diperiksa</h2>
-            <ul class="mb-6 list-decimal list-inside">
-                <li>Keselarasan dengan spesifikasi</li>
-                <li>Ketepatan dimensi dengan skala</li>
-                <li>Kesesuaian dengan gambar dan produk</li>
-            </ul>
+            <div class="mb-6 space-y-2">
+                @foreach ($komponenLabels as $key => $label)
+                    <label class="flex items-center space-x-2">
+                        <input type="checkbox" name="pemeriksaan_komponen[]" value="{{ $key }}"
+                            class="w-4 h-4 text-blue-600 border-gray-300 rounded"
+                            {{ in_array($key, $data) ? 'checked' : '' }} disabled>
+                        <span>{{ $label }}</span>
+                    </label>
+                @endforeach
+            </div>
         </div>
 
         <!-- Catatan -->
