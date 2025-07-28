@@ -20,25 +20,6 @@ class EditIncommingMaterialSS extends EditRecord
         return $this->getResource()::getUrl('index');
     }
 
-    protected function afterSave(): void
-    {
-        if ($this->record && $this->record->id) {
-            SendGenericNotif::dispatch(
-                $this->record,
-                'incomming_material_ss_pics',
-                'material_ss_id',
-                'approved_signature',
-                'approved_name',
-                GenericNotification::class,
-                '/admin/quality/incoming-material-stainless-steel',
-                'Data incoming material stainless steel berhasil dibuat',
-                'Ada data incoming material stainless steel yang telah Anda tanda tangani.'
-            );
-        } else {
-            Log::error('afterCreate dipanggil tapi record belum lengkap.');
-        }
-    }
-
     protected function getHeaderActions(): array
     {
         return [

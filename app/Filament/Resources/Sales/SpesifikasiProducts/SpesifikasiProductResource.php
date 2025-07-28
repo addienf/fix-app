@@ -82,20 +82,6 @@ class SpesifikasiProductResource extends Resource
                                             ->required()
                                             ->reactive(),
 
-                                        // Select::make('product_id')
-                                        //     ->label('Pilih Produk')
-                                        //     ->relationship(
-                                        //         'product',
-                                        //         'name',
-                                        //         fn($query) => $query->orderBy('name', 'desc')
-                                        //     )
-                                        //     ->native(false)
-                                        //     ->searchable()
-                                        //     ->preload()
-                                        //     ->reactive()
-                                        //     ->required(),
-
-
                                         self::textInput('quantity', 'Banyak Produk')
                                             ->numeric()
                                             ->required(),

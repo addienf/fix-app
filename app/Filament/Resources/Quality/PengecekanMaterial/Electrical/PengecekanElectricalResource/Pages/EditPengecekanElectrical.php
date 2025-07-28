@@ -20,25 +20,6 @@ class EditPengecekanElectrical extends EditRecord
         return $this->getResource()::getUrl('index');
     }
 
-    protected function afterSave(): void
-    {
-        if ($this->record && $this->record->id) {
-            SendGenericNotif::dispatch(
-                $this->record,
-                'electrical_pics',
-                'pengecekan_electrical_id',
-                'approved_signature',
-                'approved_name',
-                GenericNotification::class,
-                '/admin/quality/pengecekan-material-electrical',
-                'Data pengecekan material electrical berhasil dibuat',
-                'Ada data pengecekan material electrical yang telah Anda tanda tangani.'
-            );
-        } else {
-            Log::error('afterCreate dipanggil tapi record belum lengkap.');
-        }
-    }
-
     protected function getHeaderActions(): array
     {
         return [

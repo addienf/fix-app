@@ -50,6 +50,7 @@ Route::get('/purchasing/permintaan-pembelian/{record}/pdf-permintaan-pembelian',
 Route::get('/quality/incoming-material-ss/{record}/pdf-incoming-material-ss', [PDFController::class, 'pdfIncomingMaterialSS'])->name('pdf.incomingMaterialSS');
 Route::get('/quality/incoming-material-non-ss/{record}/pdf-incoming-material-non-ss', [PDFController::class, 'pdfIncomingMaterialNonSS'])->name('pdf.incomingMaterialNonSS');
 Route::get('/quality/standarisasi-gambar-kerja/{record}/pdf-standarisasi-gambar-kerja', [PDFController::class, 'pdfStandarisasiDrawing'])->name('pdf.StandarisasiDrawing');
+Route::get('/quality/standarisasi-gambar-kerja/{record}/pdf-lampiran-standarisasi-gambar-kerja', [PDFController::class, 'pdfStandarisasiDrawingLampiran'])->name('pdf.StandarisasiDrawingLampiran');
 Route::get('/quality/standarisasi-gambar-kerja/{record}/download-zip', [PDFController::class, 'downloadZipStandarisasiDrawing'])->name('StandarisasiDrawing.download-zip');
 Route::get('/quality/kelengkapan-material-ss/{record}/pdf-kelengkapan-material-ss', [PDFController::class, 'pdfKelengkapanMaterialSS'])->name('pdf.kelengkapanMaterialSS');
 Route::get('/quality/pengecekan-material-ss/{record}/pdf-kelengkapan-material-ss', [PDFController::class, 'pdfPengecekanMaterialSS'])->name('pdf.pengecekanMaterialSS');
@@ -70,9 +71,3 @@ Route::get('/engineering/maintenance-refrigator/{record}/pdf-maintenance-refriga
 Route::get('/engineering/maintenance-cold-room/{record}/pdf-cold-room', [PDFController::class, 'pdfMaintenanceColdRoom'])->name('pdf.MaintenanceColdRoom');
 Route::get('/engineering/service-report/{record}/pdf-service-report', [PDFController::class, 'pdfServiceReport'])->name('pdf.serviceReport');
 Route::get('/engineering/service-report/{record}/download-zip', [PDFController::class, 'downloadZipserviceReport'])->name('serviceReport.download-zip');
-
-Route::get('/test-job', function () {
-    $record = SpesifikasiProduct::latest()->first();
-    dispatch(new SendSpesifikasiProductNotif($record));
-    return 'Job dispatched';
-});

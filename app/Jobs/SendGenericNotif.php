@@ -19,36 +19,27 @@ class SendGenericNotif implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    protected Model $record;
-    protected string $relationTable;
-    protected string $foreignKeyColumn;
-    protected string $signatureColumn;
-    protected string $nameColumn;
-    protected string $notificationClass;
-    protected string $urlPrefix;
-    protected string $notifTitle;
-    protected string $notifBody;
+    public $record;
+    public array $roleNames;
+    public string $notifClass;
+    public string $urlPrefix;
+    public string $notifTitle;
+    public string $notifBody;
 
     /**
      * Create a new job instance.
      */
     public function __construct(
-        Model $record,
-        string $relationTable,
-        string $foreignKeyColumn,
-        string $signatureColumn,
-        string $nameColumn,
-        string $notificationClass,
+        $record,
+        array $roleNames,
+        string $notifClass,
         string $urlPrefix,
         string $notifTitle,
         string $notifBody
     ) {
         $this->record = $record;
-        $this->relationTable = $relationTable;
-        $this->foreignKeyColumn = $foreignKeyColumn;
-        $this->signatureColumn = $signatureColumn;
-        $this->nameColumn = $nameColumn;
-        $this->notificationClass = $notificationClass;
+        $this->roleNames = $roleNames;
+        $this->notifClass = $notifClass;
         $this->urlPrefix = $urlPrefix;
         $this->notifTitle = $notifTitle;
         $this->notifBody = $notifBody;
@@ -59,47 +50,25 @@ class SendGenericNotif implements ShouldQueue
      */
     public function handle(): void
     {
-        // STEP 1
         try {
-            $signedUserIds = DB::table($this->relationTable)
-                ->where($this->foreignKeyColumn, $this->record->id)
-                ->whereNotNull($this->signatureColumn)
-                ->pluck($this->nameColumn);
-
-            Log::info('✅ STEP 1: Nama user ditemukan', [
-                'user_ids' => $signedUserIds->toArray(),
-            ]);
-        } catch (\Throwable $e) {
-            Log::error('❌ STEP 1 GAGAL', ['error' => $e->getMessage()]);
-            return;
-        }
-
-        // STEP 2
-        try {
-            $users = User::whereIn('id', $signedUserIds)->get();
+            $users = User::role($this->roleNames)->get(); // ← Spatie mendukung array di sini
 
             if ($users->isEmpty()) {
-                Log::warning('⚠️ STEP 2: Tidak ada user ditemukan');
+                Log::warning("⚠️ Tidak ada user dengan role: " . implode(', ', $this->roleNames));
                 return;
             }
 
-            Log::info('✅ STEP 2: User ditemukan', [
-                'user_emails' => $users->pluck('email')->toArray(),
+            Log::info("✅ User ditemukan dengan role: " . implode(', ', $this->roleNames), [
+                'emails' => $users->pluck('email')->toArray(),
             ]);
-        } catch (\Throwable $e) {
-            Log::error('❌ STEP 2 GAGAL', ['error' => $e->getMessage()]);
-            return;
-        }
 
-        // STEP 3
-        foreach ($users as $user) {
-            try {
-                $notification = new GenericNotification(
+            foreach ($users as $user) {
+                $notification = new $this->notifClass(
                     $this->record,
-                    $this->notifTitle, // untuk subject email
-                    $this->notifBody,  // untuk isi email & database
-                    url("{$this->urlPrefix}/{$this->record->id}/edit"), // URL
-                    $this->notifTitle  // untuk title database
+                    $this->notifTitle,
+                    $this->notifBody,
+                    url("{$this->urlPrefix}/{$this->record->id}/edit"),
+                    $this->notifTitle
                 );
 
                 $user->notify($notification);
@@ -116,11 +85,11 @@ class SendGenericNotif implements ShouldQueue
                     ->sendToDatabase($user);
 
                 Log::info("🗂️ Notifikasi database dikirim ke {$user->email}");
-            } catch (\Throwable $e) {
-                Log::error("❌ Gagal kirim notifikasi ke {$user->email}", [
-                    'error' => $e->getMessage(),
-                ]);
             }
+        } catch (\Throwable $e) {
+            Log::error("❌ Gagal kirim notifikasi ke role", [
+                'error' => $e->getMessage(),
+            ]);
         }
     }
 }

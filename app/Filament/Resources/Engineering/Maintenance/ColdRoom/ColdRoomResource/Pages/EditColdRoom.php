@@ -20,25 +20,6 @@ class EditColdRoom extends EditRecord
         return $this->getResource()::getUrl('index');
     }
 
-    protected function afterSave(): void
-    {
-        if ($this->record && $this->record->id) {
-            SendGenericNotif::dispatch(
-                $this->record,
-                'cold_room_pics',
-                'cold_id',
-                'approved_signature',
-                'approved_name',
-                GenericNotification::class,
-                '/admin/engineering/cold-room',
-                'Data cold room berhasil dibuat',
-                'Ada data cold room yang telah Anda tanda tangani.'
-            );
-        } else {
-            Log::error('afterCreate dipanggil tapi record belum lengkap.');
-        }
-    }
-
     protected function getHeaderActions(): array
     {
         return [

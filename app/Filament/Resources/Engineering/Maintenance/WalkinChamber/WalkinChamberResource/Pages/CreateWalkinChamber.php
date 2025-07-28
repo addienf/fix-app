@@ -6,6 +6,10 @@ use App\Filament\Resources\Engineering\Maintenance\WalkinChamber\WalkinChamberRe
 use App\Models\Engineering\Maintenance\WalkinChamber\WalkinChamber;
 use Filament\Actions;
 use Filament\Resources\Pages\CreateRecord;
+use Illuminate\Support\Facades\Log;
+use App\Jobs\SendGenericNotif;
+use App\Notifications\GenericNotification;
+
 
 class CreateWalkinChamber extends CreateRecord
 {
@@ -16,6 +20,22 @@ class CreateWalkinChamber extends CreateRecord
     protected function getRedirectUrl(): string
     {
         return $this->getResource()::getUrl('index');
+    }
+
+    protected function afterCreate(): void
+    {
+        if ($this->record && $this->record->id) {
+            SendGenericNotif::dispatch(
+                $this->record,
+                ['sales', 'super_admin'],
+                GenericNotification::class,
+                '/admin/engineering/walkin-chamber',
+                'Data Walk-in Chamber berhasil dibuat',
+                'Ada data Walk-in Chamber yang harus di tanda tangani.'
+            );
+        } else {
+            Log::error('Record belum lengkap.');
+        }
     }
 
     public function getTitle(): string

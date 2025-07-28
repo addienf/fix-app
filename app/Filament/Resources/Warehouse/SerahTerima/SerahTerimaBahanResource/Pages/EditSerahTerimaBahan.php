@@ -20,25 +20,6 @@ class EditSerahTerimaBahan extends EditRecord
         return $this->getResource()::getUrl('index');
     }
 
-    protected function afterSave(): void
-    {
-        if ($this->record && $this->record->id) {
-            SendGenericNotif::dispatch(
-                $this->record,
-                'serah_terima_bahan_pics',
-                'serah_terima_bahan_id',
-                'receive_signature',
-                'receive_name',
-                GenericNotification::class,
-                '/admin/warehouse/serah-terima-bahan',
-                'Data serah terima bahan berhasil dibuat',
-                'Ada data serah terima bahan yang telah Anda tanda tangani.'
-            );
-        } else {
-            Log::error('afterCreate dipanggil tapi record belum lengkap.');
-        }
-    }
-
     protected function getHeaderActions(): array
     {
         return [

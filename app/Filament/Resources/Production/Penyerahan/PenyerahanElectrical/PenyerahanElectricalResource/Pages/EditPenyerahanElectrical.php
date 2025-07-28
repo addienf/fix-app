@@ -20,25 +20,6 @@ class EditPenyerahanElectrical extends EditRecord
         return $this->getResource()::getUrl('index');
     }
 
-    protected function afterSave(): void
-    {
-        if ($this->record && $this->record->id) {
-            SendGenericNotif::dispatch(
-                $this->record,
-                'penyerahan_electrical_pics',
-                'penyerahan_electrical_id',
-                'knowing_signature',
-                'knowing_name',
-                GenericNotification::class,
-                '/admin/produksi/serah-terima-electrical',
-                'Data penyerahan electrical berhasil dibuat',
-                'Ada data penyerahan electrical yang telah Anda tanda tangani.'
-            );
-        } else {
-            Log::error('afterCreate dipanggil tapi record belum lengkap.');
-        }
-    }
-
     protected function getHeaderActions(): array
     {
         return [

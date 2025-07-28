@@ -26,17 +26,14 @@ class CreateSpesifikasiProduct extends CreateRecord
         if ($this->record && $this->record->id) {
             SendGenericNotif::dispatch(
                 $this->record,
-                'spesifikasi_product_pics',
-                'spesifikasi_product_id',
-                'signature',
-                'name',
+                ['sales', 'super_admin'],
                 GenericNotification::class,
                 '/admin/sales/spesifikasi-produk',
-                'Data spesifikasi produk berhasil dibuat',
-                'Ada data spesifikasi produk yang telah Anda tanda tangani.'
+                'Data Spesifikasi Produk berhasil dibuat',
+                'Ada data Spesifikasi Produk baru yang masuk.'
             );
         } else {
-            Log::error('afterCreate dipanggil tapi record belum lengkap.');
+            Log::error('Record belum lengkap.');
         }
     }
 

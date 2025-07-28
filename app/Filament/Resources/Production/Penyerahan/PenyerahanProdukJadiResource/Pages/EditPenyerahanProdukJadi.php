@@ -20,25 +20,6 @@ class EditPenyerahanProdukJadi extends EditRecord
         return $this->getResource()::getUrl('index');
     }
 
-    protected function afterSave(): void
-    {
-        if ($this->record && $this->record->id) {
-            SendGenericNotif::dispatch(
-                $this->record,
-                'penyerahan_produk_jadi_pics',
-                'produk_jadi_id',
-                'receive_signature',
-                'receive_name',
-                GenericNotification::class,
-                '/admin/produksi/penyerahan-produk-jadi',
-                'Data penyerahan produk jadi berhasil dibuat',
-                'Ada data peenyerahan produk jadi yang telah Anda tanda tangani.'
-            );
-        } else {
-            Log::error('afterCreate dipanggil tapi record belum lengkap.');
-        }
-    }
-
     protected function getHeaderActions(): array
     {
         return [

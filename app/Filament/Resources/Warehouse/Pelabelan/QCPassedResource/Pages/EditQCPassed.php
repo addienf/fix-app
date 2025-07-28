@@ -20,25 +20,6 @@ class EditQCPassed extends EditRecord
         return $this->getResource()::getUrl('index');
     }
 
-    protected function afterSave(): void
-    {
-        if ($this->record && $this->record->id) {
-            SendGenericNotif::dispatch(
-                $this->record,
-                'qc_passed_pics',
-                'qc_passed_id',
-                'approved_signature',
-                'approved_name',
-                GenericNotification::class,
-                '/admin/warehouse/pelabelan-qc-passed',
-                'Data pelabelan qc passed berhasil dibuat',
-                'Ada data pelabelan qc passed yang telah Anda tanda tangani.'
-            );
-        } else {
-            Log::error('afterCreate dipanggil tapi record belum lengkap.');
-        }
-    }
-
     protected function getHeaderActions(): array
     {
         return [

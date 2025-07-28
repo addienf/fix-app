@@ -20,25 +20,6 @@ class EditDefectStatus extends EditRecord
         return $this->getResource()::getUrl('index');
     }
 
-    protected function afterSave(): void
-    {
-        if ($this->record && $this->record->id) {
-            SendGenericNotif::dispatch(
-                $this->record,
-                'defect_status_pics',
-                'defect_status_id',
-                'approved_signature',
-                'approved_name',
-                GenericNotification::class,
-                '/admin/quality/defect-status',
-                'Data defect status berhasil dibuat',
-                'Ada data defect status yang telah Anda tanda tangani.'
-            );
-        } else {
-            Log::error('afterCreate dipanggil tapi record belum lengkap.');
-        }
-    }
-
     protected function getHeaderActions(): array
     {
         return [
