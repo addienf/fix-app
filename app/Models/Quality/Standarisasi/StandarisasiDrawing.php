@@ -3,6 +3,7 @@
 namespace App\Models\Quality\Standarisasi;
 
 use App\Models\Quality\Standarisasi\Pivot\IdentitasGambarKerja;
+use App\Models\Quality\Standarisasi\Pivot\PemeriksaanGambar;
 use App\Models\Quality\Standarisasi\Pivot\StandarisasiDrawingDetail;
 use App\Models\Quality\Standarisasi\Pivot\StandarisasiDrawingPIC;
 use App\Models\Sales\SPKMarketings\SPKMarketing;
@@ -45,6 +46,11 @@ class StandarisasiDrawing extends Model
     public function detail()
     {
         return $this->hasOne(StandarisasiDrawingDetail::class, 'standarisasi_drawing_id');
+    }
+
+    public function pemeriksaan()
+    {
+        return $this->hasOne(PemeriksaanGambar::class, 'standarisasi_drawing_id');
     }
 
     protected static function booted()
