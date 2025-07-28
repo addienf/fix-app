@@ -25,14 +25,11 @@ class CreateBeritaAcara extends CreateRecord
         if ($this->record && $this->record->id) {
             SendGenericNotif::dispatch(
                 $this->record,
-                'berita_acara_pics',
-                'berita_id',
-                'jasa_ttd',
-                'jasa_name',
+                ['sales', 'super_admin'],
                 GenericNotification::class,
                 '/admin/engineering/berita-acara',
-                'Data berita acara berhasil dibuat',
-                'Ada data berita acara yang telah Anda tanda tangani.'
+                'Data Berita Acara berhasil dibuat',
+                'Ada data Berita Acara yang harus ditanda tangani.'
             );
         } else {
             Log::error('afterCreate dipanggil tapi record belum lengkap.');

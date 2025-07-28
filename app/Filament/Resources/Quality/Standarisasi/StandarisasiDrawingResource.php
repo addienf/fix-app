@@ -237,6 +237,12 @@ class StandarisasiDrawingResource extends Resource
                         ->color('success')
                         ->visible(fn($record) => $record->status_pemeriksaan === 'Diperiksa')
                         ->url(fn($record) => route('pdf.StandarisasiDrawing', ['record' => $record->id])),
+                    Action::make('lampiran_view')
+                        ->label(_('Lihat Lampiran'))
+                        ->icon('heroicon-o-clipboard')
+                        ->color('primary')
+                        ->visible(fn($record) => !empty($record->detail?->lampiran))
+                        ->url(fn($record) => route('pdf.StandarisasiDrawingLampiran', ['record' => $record->id])),
                 ])
             ])
             ->bulkActions([

@@ -3,10 +3,10 @@
 namespace App\Filament\Resources\Sales\SPK\SPKResource\Pages;
 
 use App\Filament\Resources\Sales\SPK\SPKResource;
-use App\Jobs\Sales\SendSpkMarketingNotif;
-use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Support\Facades\Log;
+use App\Jobs\SendGenericNotif;
+use App\Notifications\GenericNotification;
 
 class CreateSPK extends CreateRecord
 {
@@ -16,6 +16,22 @@ class CreateSPK extends CreateRecord
     protected function getRedirectUrl(): string
     {
         return $this->getResource()::getUrl('index');
+    }
+
+    protected function afterCreate(): void
+    {
+        if ($this->record && $this->record->id) {
+            SendGenericNotif::dispatch(
+                $this->record,
+                ['sales', 'super_admin'],
+                GenericNotification::class,
+                '/admin/sales/spk-marketing',
+                'Data SPK Marketing berhasil dibuat',
+                'Ada data SPK Marketing yang harus di tanda tangani.'
+            );
+        } else {
+            Log::error('Record belum lengkap.');
+        }
     }
 
     public function getTitle(): string

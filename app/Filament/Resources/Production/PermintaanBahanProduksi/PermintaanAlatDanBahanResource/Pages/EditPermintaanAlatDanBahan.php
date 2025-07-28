@@ -22,25 +22,6 @@ class EditPermintaanAlatDanBahan extends EditRecord
         return $this->getResource()::getUrl('index');
     }
 
-    protected function afterSave(): void
-    {
-        if ($this->record && $this->record->id) {
-            SendGenericNotif::dispatch(
-                $this->record,
-                'permintaan_alat_dan_bahan_pics',
-                'permintaan_bahan_id',
-                'diserahkan_signature',
-                'diserahkan_name',
-                GenericNotification::class,
-                '/admin/produksi/permintaan-alat-dan-bahan',
-                'Data permintaan alat dan bahan berhasil dibuat',
-                'Ada data permintaan alat dan bahan yang telah Anda tanda tangani.'
-            );
-        } else {
-            Log::error('afterCreate dipanggil tapi record belum lengkap.');
-        }
-    }
-
     protected function getHeaderActions(): array
     {
         return [

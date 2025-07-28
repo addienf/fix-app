@@ -22,25 +22,6 @@ class EditSPK extends EditRecord
         return $this->getResource()::getUrl('index');
     }
 
-    protected function afterSave(): void
-    {
-        if ($this->record && $this->record->id) {
-            SendGenericNotif::dispatch(
-                $this->record,
-                'spk_marketing_pics',
-                'spk_marketing_id',
-                'receive_signature',
-                'receive_name',
-                GenericNotification::class,
-                '/admin/sales/spk-marketing',
-                'Data spk marketing berhasil dibuat',
-                'Ada data spk marketing yang telah Anda tanda tangani.'
-            );
-        } else {
-            Log::error('afterCreate dipanggil tapi record belum lengkap.');
-        }
-    }
-
     protected function getHeaderActions(): array
     {
         return [

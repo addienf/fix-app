@@ -5,6 +5,10 @@ namespace App\Filament\Resources\Purchasing\Permintaan\PermintaanPembelianResour
 use App\Filament\Resources\Purchasing\Permintaan\PermintaanPembelianResource;
 use Filament\Actions;
 use Filament\Resources\Pages\CreateRecord;
+use Illuminate\Support\Facades\Log;
+use App\Jobs\SendGenericNotif;
+use App\Notifications\GenericNotification;
+
 
 class CreatePermintaanPembelian extends CreateRecord
 {
@@ -15,6 +19,22 @@ class CreatePermintaanPembelian extends CreateRecord
     protected function getRedirectUrl(): string
     {
         return $this->getResource()::getUrl('index');
+    }
+
+    protected function afterCreate(): void
+    {
+        if ($this->record && $this->record->id) {
+            SendGenericNotif::dispatch(
+                $this->record,
+                ['sales', 'super_admin'],
+                GenericNotification::class,
+                '/admin/purchasing/permintaan-pembelian',
+                'Data Permintaan Pembelian berhasil dibuat',
+                'Ada data Permintaan Pembelian yang harus di tanda tangani.'
+            );
+        } else {
+            Log::error('Record belum lengkap.');
+        }
     }
 
     public function getTitle(): string

@@ -20,25 +20,6 @@ class EditChamberR2 extends EditRecord
         return $this->getResource()::getUrl('index');
     }
 
-    protected function afterSave(): void
-    {
-        if ($this->record && $this->record->id) {
-            SendGenericNotif::dispatch(
-                $this->record,
-                'chamber_r2_pics',
-                'r2_id',
-                'approved_signature',
-                'approved_name',
-                GenericNotification::class,
-                '/admin/engineering/chamber-r2',
-                'Data chamber r2 berhasil dibuat',
-                'Ada data chamber r2 yang telah Anda tanda tangani.'
-            );
-        } else {
-            Log::error('afterCreate dipanggil tapi record belum lengkap.');
-        }
-    }
-
     protected function getHeaderActions(): array
     {
         return [

@@ -5,6 +5,10 @@ namespace App\Filament\Resources\Engineering\Maintenance\Refrigerator\Refrigerat
 use App\Filament\Resources\Engineering\Maintenance\Refrigerator\RefrigeratorResource;
 use Filament\Actions;
 use Filament\Resources\Pages\CreateRecord;
+use Illuminate\Support\Facades\Log;
+use App\Jobs\SendGenericNotif;
+use App\Notifications\GenericNotification;
+
 
 class CreateRefrigerator extends CreateRecord
 {
@@ -15,6 +19,22 @@ class CreateRefrigerator extends CreateRecord
     protected function getRedirectUrl(): string
     {
         return $this->getResource()::getUrl('index');
+    }
+
+    protected function afterCreate(): void
+    {
+        if ($this->record && $this->record->id) {
+            SendGenericNotif::dispatch(
+                $this->record,
+                ['sales', 'super_admin'],
+                GenericNotification::class,
+                '/admin/engineering/refrigerator',
+                'Data Refrigerator berhasil dibuat',
+                'Ada data Refrigerator yang harus di tanda tangani.'
+            );
+        } else {
+            Log::error('Record belum lengkap.');
+        }
     }
 
     public function getTitle(): string

@@ -20,25 +20,6 @@ class EditRissingPipette extends EditRecord
         return $this->getResource()::getUrl('index');
     }
 
-    protected function afterSave(): void
-    {
-        if ($this->record && $this->record->id) {
-            SendGenericNotif::dispatch(
-                $this->record,
-                'rissing_pipette_pics',
-                'rissing_id',
-                'approved_signature',
-                'approved_name',
-                GenericNotification::class,
-                '/admin/engineering/rissing-pipette',
-                'Data rissing pipette berhasil dibuat',
-                'Ada data rissing pipette yang telah Anda tanda tangani.'
-            );
-        } else {
-            Log::error('afterCreate dipanggil tapi record belum lengkap.');
-        }
-    }
-
     protected function getHeaderActions(): array
     {
         return [

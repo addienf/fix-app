@@ -20,25 +20,6 @@ class EditServiceReport extends EditRecord
         return $this->getResource()::getUrl('index');
     }
 
-    protected function afterSave(): void
-    {
-        if ($this->record && $this->record->id) {
-            SendGenericNotif::dispatch(
-                $this->record,
-                'service_report_pics',
-                'service_id',
-                'approved_signature',
-                'approved_name',
-                GenericNotification::class,
-                '/admin/engineering/service-report',
-                'Data service report berhasil dibuat',
-                'Ada data service report yang telah Anda tanda tangani.'
-            );
-        } else {
-            Log::error('afterCreate dipanggil tapi record belum lengkap.');
-        }
-    }
-
     protected function getHeaderActions(): array
     {
         return [

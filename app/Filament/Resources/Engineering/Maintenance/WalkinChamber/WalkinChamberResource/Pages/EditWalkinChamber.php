@@ -20,25 +20,6 @@ class EditWalkinChamber extends EditRecord
         return $this->getResource()::getUrl('index');
     }
 
-    protected function afterSave(): void
-    {
-        if ($this->record && $this->record->id) {
-            SendGenericNotif::dispatch(
-                $this->record,
-                'walkin_chamber_pics',
-                'walk_in_id',
-                'approved_signature',
-                'approved_name',
-                GenericNotification::class,
-                '/admin/engineering/walkin-chamber',
-                'Data walk-in chamber berhasil dibuat',
-                'Ada data walk-in chamber yang telah Anda tanda tangani.'
-            );
-        } else {
-            Log::error('afterCreate dipanggil tapi record belum lengkap.');
-        }
-    }
-
     protected function getHeaderActions(): array
     {
         return [

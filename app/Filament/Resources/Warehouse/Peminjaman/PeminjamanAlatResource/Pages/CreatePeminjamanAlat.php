@@ -26,14 +26,11 @@ class CreatePeminjamanAlat extends CreateRecord
         if ($this->record && $this->record->id) {
             SendGenericNotif::dispatch(
                 $this->record,
-                'peminjaman_alat_pics',
-                'peminjaman_alat_id',
-                'signature',
-                'nama_peminjam',
+                ['sales', 'super_admin'],
                 GenericNotification::class,
                 '/admin/warehouse/peminjaman-alat',
-                'Data peminjaman alat berhasil dibuat',
-                'Ada data peminjaman alat yang telah Anda tanda tangani.'
+                'Data Peminjaman Alat berhasil dibuat',
+                'Ada data Peminjaman Alat yang harus ditanda tangani.'
             );
         } else {
             Log::error('afterCreate dipanggil tapi record belum lengkap.');

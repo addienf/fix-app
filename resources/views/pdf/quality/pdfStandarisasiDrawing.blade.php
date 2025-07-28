@@ -39,6 +39,7 @@
                 </td>
             </tr>
         </table>
+
         @php
             $fields = [
                 ['label' => 'No SPK Produksi :', 'value' => $standarisasi->spk->no_spk],
@@ -157,14 +158,24 @@
         <div class="w-full max-w-4xl pt-6 mx-auto">
             <h2 class="mb-4 text-xl font-bold">V. Lampiran</h2>
 
-            <div class="grid grid-cols-1 gap-4 mb-6 sm:grid-cols-2">
+            {{-- <div class="grid grid-cols-1 gap-4 mb-6 sm:grid-cols-2">
                 @foreach ($standarisasi->detail->lampiran as $gambar)
                     <div class="border border-gray-300 rounded shadow p-2 flex items-center justify-center h-[300px]">
                         <img src="{{ asset('storage/' . $gambar) }}" alt="Lampiran"
                             class="object-contain max-w-full max-h-full" />
                     </div>
                 @endforeach
-            </div>
+            </div> --}}
+
+            @if (!empty($standarisasi->detail->lampiran))
+                <div class="mt-4 mb-5 text-sm text-gray-700">
+                    📎 Lampiran tersedia:
+                    <a href="{{ route('pdf.StandarisasiDrawingLampiran', $standarisasi->id) }}" target="_blank"
+                        class="text-blue-600 hover:text-blue-800">
+                        FO-QKS-QA-01-08
+                    </a>
+                </div>
+            @endif
 
             <div class="flex flex-col justify-between gap-8 sm:flex-row">
                 <div class="flex flex-col items-center w-full sm:w-1/2">
@@ -245,7 +256,6 @@
                     mode: ["avoid", "css"]
                 }
             }).from(element).save().then(() => {
-                // window.location.href = `/sales/spesifikasi-produk/${id}/download-file`;
                 window.location.href = `/quality/standarisasi-gambar-kerja/${id}/download-zip`;
             });
         }

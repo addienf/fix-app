@@ -5,6 +5,10 @@ namespace App\Filament\Resources\Quality\KelengkapanMaterial\SS\KelengkapanMater
 use App\Filament\Resources\Quality\KelengkapanMaterial\SS\KelengkapanMaterialSSResource;
 use Filament\Actions;
 use Filament\Resources\Pages\CreateRecord;
+use Illuminate\Support\Facades\Log;
+use App\Jobs\SendGenericNotif;
+use App\Notifications\GenericNotification;
+
 
 class CreateKelengkapanMaterialSS extends CreateRecord
 {
@@ -15,6 +19,22 @@ class CreateKelengkapanMaterialSS extends CreateRecord
     protected function getRedirectUrl(): string
     {
         return $this->getResource()::getUrl('index');
+    }
+
+    protected function afterCreate(): void
+    {
+        if ($this->record && $this->record->id) {
+            SendGenericNotif::dispatch(
+                $this->record,
+                ['sales', 'super_admin'],
+                GenericNotification::class,
+                '/admin/quality/kelengkapan-material',
+                'Data Kelengkapan Material berhasil dibuat',
+                'Ada data Kelengkapan Material yang harus di tanda tangani.'
+            );
+        } else {
+            Log::error('Record belum lengkap.');
+        }
     }
 
     public function getTitle(): string

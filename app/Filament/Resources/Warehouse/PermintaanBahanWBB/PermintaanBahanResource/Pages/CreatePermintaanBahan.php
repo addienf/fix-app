@@ -24,14 +24,11 @@ class CreatePermintaanBahan extends CreateRecord
         if ($this->record && $this->record->id) {
             SendGenericNotif::dispatch(
                 $this->record,
-                'permintaan_bahan_pics',
-                'permintaan_bahan_wbb_id',
-                'create_signature',
-                'create_name',
+                ['sales', 'super_admin'],
                 GenericNotification::class,
                 '/admin/warehouse/permintaan-bahan-warehouse',
-                'Data permintaan bahan warehouse berhasil dibuat',
-                'Ada data permintaan bahan warehouse yang telah Anda tanda tangani.'
+                'Data Permintaan Bahan Warehouse berhasil dibuat',
+                'Ada data Permintaan Bahan Warehouse yang harus ditanda tangani.'
             );
         } else {
             Log::error('afterCreate dipanggil tapi record belum lengkap.');

@@ -157,6 +157,13 @@ class PDFController extends Controller
         return view('pdf.quality.pdfStandarisasiDrawing', compact('standarisasi'));
     }
 
+    public function pdfStandarisasiDrawingLampiran($id)
+    {
+        $standarisasi_lampiran = StandarisasiDrawing::with(['spk', 'detail'])->findOrFail($id);
+
+        return view('pdf.quality.pdfLampiranStandarisasiDrawing', compact('standarisasi_lampiran'));
+    }
+
     public function downloadZipStandarisasiDrawing($id)
     {
         $standarisasi = StandarisasiDrawing::with(['detail'])->findOrFail($id);
