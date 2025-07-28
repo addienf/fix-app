@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('spesifikasi_product_id')->constrained()->onDelete('cascade');
             $table->foreignId('product_id')->constrained()->onDelete('cascade');
-            $table->json('specification');
-            $table->json('specification_mecmesin');
+            $table->json('specification')->nullable();
+            $table->json('specification_mecmesin')->nullable();
             $table->integer('quantity');
             $table->timestamps();
         });
