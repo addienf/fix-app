@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Engineering\Berita\BeritaAcara;
+use App\Models\Engineering\Complain\Complain;
 use App\Models\Engineering\Maintenance\ChamberG2\ChamberG2;
 use App\Models\Engineering\Maintenance\ChamberR2\ChamberR2;
 use App\Models\Engineering\Maintenance\ChamberWalkinG2\ChamberWalkinG2;
@@ -395,9 +396,11 @@ class PDFController extends Controller
         return view('pdf.engineering.pdfServiceReport', compact('serviceReport'));
     }
 
-    public function pdfCatatanPelanggan()
+    public function pdfCatatanPelanggan($id)
     {
-        return view('pdf.engineering.pdfCatatanPelanggan');
+        $complaint = Complain::with(['details', 'pic', 'pic.reportedBy'])->findOrFail($id);
+
+        return view('pdf.engineering.pdfCatatanPelanggan', compact('complaint'));
     }
 
     public function downloadZipserviceReport($id)
