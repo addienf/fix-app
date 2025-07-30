@@ -4,6 +4,7 @@ namespace App\Providers;
 
 // use Illuminate\Support\Facades\Gate;
 use App\Models\Engineering\Berita\BeritaAcara;
+use App\Models\Engineering\Complain\Complain;
 use App\Models\Engineering\Maintenance\ChamberG2\ChamberG2;
 use App\Models\Engineering\Maintenance\ChamberR2\ChamberR2;
 use App\Models\Engineering\Maintenance\ChamberWalkinG2\ChamberWalkinG2;
@@ -39,6 +40,7 @@ use App\Models\Warehouse\Peminjaman\PeminjamanAlat;
 use App\Models\Warehouse\PermintaanBahanWBB\PermintaanBahan;
 use App\Models\Warehouse\SerahTerima\SerahTerimaBahan;
 use App\Policies\Engineering\Berita\BeritaAcaraPolicy;
+use App\Policies\Engineering\Complain\ComplainPolicy;
 use App\Policies\Engineering\Maintenance\ChamberG2\ChamberG2Policy;
 use App\Policies\Engineering\Maintenance\ChamberR2\ChamberR2Policy;
 use App\Policies\Engineering\Maintenance\ChamberWalkinG2\ChamberWalkinG2Policy;
@@ -132,7 +134,9 @@ class AuthServiceProvider extends ServiceProvider
         ColdRoom::class => ColdRoomPolicy::class,
         Refrigerator::class => RefrigeratorPolicy::class,
         RissingPipette::class => RissingPipettePolicy::class,
-        WalkinChamber::class => WalkinChamberPolicy::class
+        WalkinChamber::class => WalkinChamberPolicy::class,
+        ServiceReport::class => ServiceReportPolicy::class,
+        Complain::class => ComplainPolicy::class,
     ];
 
     /**
