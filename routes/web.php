@@ -71,3 +71,5 @@ Route::get('/engineering/maintenance-refrigator/{record}/pdf-maintenance-refriga
 Route::get('/engineering/maintenance-cold-room/{record}/pdf-cold-room', [PDFController::class, 'pdfMaintenanceColdRoom'])->name('pdf.MaintenanceColdRoom');
 Route::get('/engineering/service-report/{record}/pdf-service-report', [PDFController::class, 'pdfServiceReport'])->name('pdf.serviceReport');
 Route::get('/engineering/service-report/{record}/download-zip', [PDFController::class, 'downloadZipserviceReport'])->name('serviceReport.download-zip');
+
+Route::get('/engineering/catatan-keluhan-pelanggan/pdfCatatanPelanggan', [PDFController::class, 'pdfCatatanPelanggan'])->name('pdf.CatatanPelanggan');

@@ -395,6 +395,11 @@ class PDFController extends Controller
         return view('pdf.engineering.pdfServiceReport', compact('serviceReport'));
     }
 
+    public function pdfCatatanPelanggan()
+    {
+        return view('pdf.engineering.pdfCatatanPelanggan');
+    }
+
     public function downloadZipserviceReport($id)
     {
         $serviceReport = ServiceReport::with(['spkService', 'details', 'produkServices', 'pic', 'pic.approvedBy', 'pic.checkedBy'])->findOrFail($id);
