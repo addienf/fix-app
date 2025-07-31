@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('spk_services', function (Blueprint $table) {
             $table->id();
-            $table->string('no_complaint_form');
+            $table->foreignId(column: 'complain_id')->constrained('complains')->cascadeOnDelete();
             $table->string('no_spk_service');
             $table->date('tanggal');
             $table->string('alamat');

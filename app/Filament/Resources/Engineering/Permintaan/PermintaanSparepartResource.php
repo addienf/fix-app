@@ -54,23 +54,23 @@ class PermintaanSparepartResource extends Resource
                 Hidden::make('status_penyerahan')
                     ->default('Belum Diketahui'),
 
-                Select::make('spk_service_id')
-                    ->label('Nomor SPK Service')
-                    ->options(function () {
-                        return SPKService::where('status_penyelesaian', 'Selesai')
-                            ->whereDoesntHave('permintaanSparepart')
-                            ->pluck('no_spk_service', 'id');
-                    })
-                    ->native(false)
-                    ->searchable()
-                    ->preload()
-                    ->required()
-                    ->columnSpanFull()
-                    ->hiddenOn(operations: 'edit'),
-
                 Section::make('Informasi Umum')
                     ->collapsible()
                     ->schema([
+
+                        Select::make('spk_service_id')
+                            ->label('Nomor SPK Service')
+                            ->options(function () {
+                                return SPKService::where('status_penyelesaian', 'Selesai')
+                                    ->whereDoesntHave('permintaanSparepart')
+                                    ->pluck('no_spk_service', 'id');
+                            })
+                            ->native(false)
+                            ->searchable()
+                            ->preload()
+                            ->required()
+                            ->columnSpanFull()
+                            ->hiddenOn(operations: 'edit'),
 
                         TextInput::make('no_surat')
                             ->label('Nomor Surat')

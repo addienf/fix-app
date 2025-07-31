@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Engineering\Berita;
 use App\Filament\Resources\Engineering\Berita\BeritaAcaraResource\Pages;
 use App\Filament\Resources\Engineering\Berita\BeritaAcaraResource\RelationManagers;
 use App\Models\Engineering\Berita\BeritaAcara;
+use App\Models\Engineering\Complain\Complain;
 use App\Models\Engineering\SPK\SPKService;
 use App\Services\SignatureUploader;
 use Carbon\Carbon;
@@ -34,7 +35,7 @@ use Saade\FilamentAutograph\Forms\Components\SignaturePad;
 class BeritaAcaraResource extends Resource
 {
     protected static ?string $model = BeritaAcara::class;
-    protected static ?int $navigationSort = 22;
+    protected static ?int $navigationSort = 30;
     protected static ?string $navigationGroup = 'Engineering';
     protected static ?string $navigationLabel = 'Berita Acara';
     protected static ?string $navigationIcon = 'heroicon-o-wrench-screwdriver';
@@ -57,10 +58,25 @@ class BeritaAcaraResource extends Resource
                             ->label('Nomor SPK Service')
                             ->options(function () {
                                 return
+                                    // SPKService::whereHas('permintaanSparepart', function ($query) {
+                                    //     $query->where('status_penyerahan', 'Diserahkan');
+                                    // })
+                                    // ->whereDoesntHave('beritaAcara')
+                                    // ->pluck('no_spk_service', 'id');
                                     SPKService::whereHas('permintaanSparepart', function ($query) {
                                         $query->where('status_penyerahan', 'Diserahkan');
                                     })
                                     ->whereDoesntHave('beritaAcara')
+                                    ->where(function ($query) {
+                                        $query->whereHas('walkinChamber')
+                                            ->orWhereHas('chamberR2')
+                                            ->orWhereHas('refrigerator')
+                                            ->orWhereHas('coldRoom')
+                                            ->orWhereHas('rissing')
+                                            ->orWhereHas('walkinG2')
+                                            ->orWhereHas('chamberG2')
+                                            ->orWhereHas('service');
+                                    })
                                     ->pluck('no_spk_service', 'id');
                             })
                             ->native(false)
@@ -75,14 +91,23 @@ class BeritaAcaraResource extends Resource
                                     return;
 
                                 $service = SPKService::with('petugas')->find($state);
+                                $complain = Complain::with('spkService')->find($state);
                                 if (!$service)
                                     return;
 
                                 $namaPetugas = $service->petugas->pluck('nama_teknisi')->toArray();
                                 $nama_teknisi = implode(', ', $namaPetugas);
+                                $namaComplain = $complain->name_complain;
+                                $companyName = $complain->company_name;
+                                $alamat = $complain->spkService->alamat;
+                                $department = $complain->department;
 
                                 // dd($nama_teknisi);
                                 $set('detail.nama_teknisi', $nama_teknisi);
+                                $set('pelanggan.nama', $namaComplain);
+                                $set('pelanggan.perusahaan', $companyName);
+                                $set('pelanggan.alamat', $alamat);
+                                $set('pelanggan.jabatan', $department);
                             }),
                     ]),
 

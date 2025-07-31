@@ -3,6 +3,7 @@
 namespace App\Models\Engineering\SPK;
 
 use App\Models\Engineering\Berita\BeritaAcara;
+use App\Models\Engineering\Complain\Complain;
 use App\Models\Engineering\Maintenance\ChamberG2\ChamberG2;
 use App\Models\Engineering\Maintenance\ChamberR2\ChamberR2;
 use App\Models\Engineering\Maintenance\ChamberWalkinG2\ChamberWalkinG2;
@@ -25,7 +26,7 @@ class SPKService extends Model
     protected $table = 'spk_services';
 
     protected $fillable = [
-        'no_complaint_form',
+        'complain_id',
         'no_spk_service',
         'tanggal',
         'alamat',
@@ -41,6 +42,11 @@ class SPKService extends Model
         'waktu_selesai' => 'datetime',
         'deskripsi_pekerjaan' => 'array'
     ];
+
+    public function complain()
+    {
+        return $this->belongsTo(Complain::class, 'complain_id');
+    }
 
     public function petugas()
     {
