@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Engineering\Service;
 
 use App\Filament\Resources\Engineering\Service\ServiceReportResource\Pages;
 use App\Filament\Resources\Engineering\Service\ServiceReportResource\RelationManagers;
+use App\Models\Engineering\Complain\Complain;
 use App\Models\Engineering\Service\ServiceReport;
 use App\Models\Engineering\SPK\SPKService;
 use App\Models\General\Product;
@@ -77,6 +78,36 @@ class ServiceReportResource extends Resource
                             ->searchable()
                             ->preload()
                             ->required()
+                            ->reactive()
+                            ->afterStateUpdated(function ($state, callable $set) {
+                                if (!$state)
+                                    return;
+
+                                $complain = Complain::with('spkService', 'details')->find($state);
+                                if (!$complain)
+                                    return;
+
+                                $details = $complain->details->map(function ($detail) {
+                                    return [
+                                        'produk_name' => $detail->unit_name ?? '-',
+                                        'type' => $detail?->tipe_model ?? '-',
+                                        'status_warranty' => $detail?->status_warranty  ?? '-',
+                                    ];
+                                })->toArray();
+
+                                $formNo = $complain->form_no;
+                                $namaComplain = $complain->name_complain;
+                                $companyName = $complain->company_name;
+                                $alamat = $complain->spkService->alamat;
+                                $number = $complain->phone_number;
+
+                                $set('form_no', $formNo);
+                                $set('name_complaint', $namaComplain);
+                                $set('company_name', $companyName);
+                                $set('address', $alamat);
+                                $set('phone_number', $number);
+                                $set('serviceProduk', $details);
+                            }),
                     ])
                     ->hiddenOn(operations: 'edit')
                     ->columns(1),
@@ -88,7 +119,7 @@ class ServiceReportResource extends Resource
                             ->schema([
                                 TextInput::make('form_no')
                                     ->label('Nomor Form')
-                                    ->default('SR-' . now()->format('Ymd') . '-' . strtoupper(Str::random(6)))
+                                    // ->default('SR-' . now()->format('Ymd') . '-' . strtoupper(Str::random(6)))
                                     ->placeholder($lastValue2 ? "Data Terakhir : {$lastValue2}" : 'Data Belum Tersedia')
                                     ->hiddenOn('edit')
                                     ->unique(ignoreRecord: true)
@@ -131,7 +162,7 @@ class ServiceReportResource extends Resource
                 Section::make('Informasi Produk')
                     ->collapsible()
                     ->schema([
-                        Repeater::make('Service Produk')
+                        Repeater::make('serviceProduk')
                             ->relationship('produkServices')
                             ->label('')
                             ->schema([

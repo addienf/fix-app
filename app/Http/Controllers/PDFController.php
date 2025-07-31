@@ -324,7 +324,7 @@ class PDFController extends Controller
 
     public function pdfSPKService($id)
     {
-        $service = SPKService::with(['petugas', 'pemeriksaanPersetujuan', 'pic', 'pic.dikonfirmasiNama', 'pic.diketahuiNama'])->findOrFail($id);
+        $service = SPKService::with(['complain', 'petugas', 'pemeriksaanPersetujuan', 'pic', 'pic.dikonfirmasiNama', 'pic.diketahuiNama'])->findOrFail($id);
 
         return view('pdf.engineering.pdfSPKService', compact('service'));
     }

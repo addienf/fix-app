@@ -42,7 +42,7 @@
         <div class="max-w-4xl p-6 mx-auto text-sm text-black bg-white">
             <!-- Header -->
             <div class="flex justify-start mb-3">
-                <label class="font-semibold">Complaint Form. No : {{ $service->no_complaint_form }}</label>
+                <label class="font-semibold">Complaint Form. No : {{ $service->complain->form_no }}</label>
             </div>
 
             <h2 class="mb-6 font-bold text-center uppercase">

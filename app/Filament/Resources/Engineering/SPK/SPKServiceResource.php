@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Engineering\SPK;
 
 use App\Filament\Resources\Engineering\SPK\SPKServiceResource\Pages;
 use App\Filament\Resources\Engineering\SPK\SPKServiceResource\RelationManagers;
+use App\Models\Engineering\Complain\Complain;
 use App\Models\Engineering\SPK\SPKService;
 use App\Services\SignatureUploader;
 use Carbon\Carbon;
@@ -51,7 +52,6 @@ class SPKServiceResource extends Resource
     public static function form(Form $form): Form
     {
         $lastValue = SPKService::latest('no_spk_service')->value('no_spk_service');
-        $lastValue2 = SPKService::latest('no_complaint_form')->value('no_complaint_form');
         $isEdit = $form->getOperation() === 'edit';
 
         return $form
@@ -60,22 +60,13 @@ class SPKServiceResource extends Resource
                 Hidden::make('status_penyelesaian')
                     ->default('Belum Diselesaikan'),
 
-                TextInput::make('no_complaint_form')
-                    ->label('Nomor Form Complaint')
-                    ->default('CF-' . now()->format('Ymd') . '-' . strtoupper(Str::random(6)))
-                    ->placeholder($lastValue2 ? "Data Terakhir : {$lastValue2}" : 'Data Belum Tersedia')
-                    ->hiddenOn('edit')
-                    ->unique(ignoreRecord: true)
-                    ->columnSpanFull()
-                    ->required()
-                    ->extraAttributes([
-                        'readonly' => true,
-                        'style' => 'pointer-events: none;'
-                    ]),
-
                 Section::make('Informasi Umum')
                     ->collapsible()
                     ->schema([
+                        self::selectSpecInput()
+                            ->columnSpanFull()
+                            ->hiddenOn('edit'),
+
                         TextInput::make('no_spk_service')
                             ->label('Nomor SPK Service')
                             ->hint('Format: XXX/QKS/ENG/SPK/MM/YY')
@@ -219,7 +210,7 @@ class SPKServiceResource extends Resource
         return $table
             ->columns([
                 //
-                TextColumn::make('no_complaint_form')
+                TextColumn::make('complain.form_no')
                     ->label('No Compaint Form'),
 
                 TextColumn::make('no_spk_service')
@@ -268,12 +259,6 @@ class SPKServiceResource extends Resource
                         ->color('success')
                         ->visible(fn($record) => $record->status_penyelesaian === 'Selesai')
                         ->url(fn($record) => route('pdf.spkService', ['record' => $record->id])),
-
-                    Action::make('pdf_view')
-                        ->label(_('Lihat PDF'))
-                        ->icon('heroicon-o-document')
-                        ->color('success')
-                        ->url(fn($record) => route('pdf.CatatanPelanggan')),
                 ])
             ])
             ->bulkActions([
@@ -311,16 +296,46 @@ class SPKServiceResource extends Resource
     {
         return
             SignaturePad::make($fieldName)
-                ->label($labelName)
-                ->exportPenColor('#0118D8')
-                ->helperText('*Harap Tandatangan di tengah area yang disediakan.')
-                ->afterStateUpdated(function ($state, $set) use ($fieldName) {
-                    if (blank($state))
-                        return;
-                    $path = SignatureUploader::handle($state, 'ttd_', 'Engineering/SPK/Signatures');
-                    if ($path) {
-                        $set($fieldName, $path);
-                    }
-                });
+            ->label($labelName)
+            ->exportPenColor('#0118D8')
+            ->helperText('*Harap Tandatangan di tengah area yang disediakan.')
+            ->afterStateUpdated(function ($state, $set) use ($fieldName) {
+                if (blank($state))
+                    return;
+                $path = SignatureUploader::handle($state, 'ttd_', 'Engineering/SPK/Signatures');
+                if ($path) {
+                    $set($fieldName, $path);
+                }
+            });
+    }
+
+    protected static function selectSpecInput(): Select
+    {
+        return
+            Select::make('complain_id')
+            ->label('Nomor Complaint Form')
+            ->placeholder('Pilih Nomor Complaint Form')
+            ->reactive()
+            ->required()
+            ->options(function () {
+                return
+                    Complain::whereDoesntHave('spkService')
+                    ->get()
+                    ->mapWithKeys(function ($item) {
+                        $noForm = $item->form_no ?? '-';
+                        $customerName = $item->name_complain ?? '-';
+                        return [$item->id => "{$noForm} - {$customerName}"];
+                    });
+            })
+            ->afterStateUpdated(function ($state, callable $set) {
+                if (!$state) return;
+
+                $complain = Complain::find($state);
+                if (!$complain) return;
+
+                $companyName = $complain->company_name ?? '-';
+
+                $set('perusahaan', $companyName);
+            });
     }
 }

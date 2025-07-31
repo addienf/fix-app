@@ -23,7 +23,7 @@ class ComplainPIC extends Model
 
     public function complain()
     {
-        return $this->hasMany(Complain::class, 'complain_id');
+        return $this->belongsTo(Complain::class, 'complain_id');
     }
 
     public function reportedBy()
