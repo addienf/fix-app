@@ -63,7 +63,7 @@ class PermintaanPembelianPolicy
      */
     public function forceDelete(User $user, PermintaanPembelian $permintaanPembelian): bool
     {
-        return $user->can('force_delete_purchasing::permintaan::permintaan::pembelian');
+        return $user->can('{{ ForceDelete }}');
     }
 
     /**
@@ -71,7 +71,7 @@ class PermintaanPembelianPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_purchasing::permintaan::permintaan::pembelian');
+        return $user->can('{{ ForceDeleteAny }}');
     }
 
     /**
@@ -79,7 +79,7 @@ class PermintaanPembelianPolicy
      */
     public function restore(User $user, PermintaanPembelian $permintaanPembelian): bool
     {
-        return $user->can('restore_purchasing::permintaan::permintaan::pembelian');
+        return $user->can('{{ Restore }}');
     }
 
     /**
@@ -87,7 +87,7 @@ class PermintaanPembelianPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_purchasing::permintaan::permintaan::pembelian');
+        return $user->can('{{ RestoreAny }}');
     }
 
     /**
@@ -95,7 +95,7 @@ class PermintaanPembelianPolicy
      */
     public function replicate(User $user, PermintaanPembelian $permintaanPembelian): bool
     {
-        return $user->can('replicate_purchasing::permintaan::permintaan::pembelian');
+        return $user->can('{{ Replicate }}');
     }
 
     /**
@@ -103,6 +103,6 @@ class PermintaanPembelianPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_purchasing::permintaan::permintaan::pembelian');
+        return $user->can('{{ Reorder }}');
     }
 }

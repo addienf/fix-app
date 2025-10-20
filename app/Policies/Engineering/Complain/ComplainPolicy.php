@@ -63,7 +63,7 @@ class ComplainPolicy
      */
     public function forceDelete(User $user, Complain $complain): bool
     {
-        return $user->can('force_delete_engineering::complain::complain');
+        return $user->can('{{ ForceDelete }}');
     }
 
     /**
@@ -71,7 +71,7 @@ class ComplainPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_engineering::complain::complain');
+        return $user->can('{{ ForceDeleteAny }}');
     }
 
     /**
@@ -79,7 +79,7 @@ class ComplainPolicy
      */
     public function restore(User $user, Complain $complain): bool
     {
-        return $user->can('restore_engineering::complain::complain');
+        return $user->can('{{ Restore }}');
     }
 
     /**
@@ -87,7 +87,7 @@ class ComplainPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_engineering::complain::complain');
+        return $user->can('{{ RestoreAny }}');
     }
 
     /**
@@ -95,7 +95,7 @@ class ComplainPolicy
      */
     public function replicate(User $user, Complain $complain): bool
     {
-        return $user->can('replicate_engineering::complain::complain');
+        return $user->can('{{ Replicate }}');
     }
 
     /**
@@ -103,6 +103,6 @@ class ComplainPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_engineering::complain::complain');
+        return $user->can('{{ Reorder }}');
     }
 }

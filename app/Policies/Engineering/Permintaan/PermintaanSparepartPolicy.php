@@ -63,7 +63,7 @@ class PermintaanSparepartPolicy
      */
     public function forceDelete(User $user, PermintaanSparepart $permintaanSparepart): bool
     {
-        return $user->can('force_delete_engineering::permintaan::permintaan::sparepart');
+        return $user->can('{{ ForceDelete }}');
     }
 
     /**
@@ -71,7 +71,7 @@ class PermintaanSparepartPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_engineering::permintaan::permintaan::sparepart');
+        return $user->can('{{ ForceDeleteAny }}');
     }
 
     /**
@@ -79,7 +79,7 @@ class PermintaanSparepartPolicy
      */
     public function restore(User $user, PermintaanSparepart $permintaanSparepart): bool
     {
-        return $user->can('restore_engineering::permintaan::permintaan::sparepart');
+        return $user->can('{{ Restore }}');
     }
 
     /**
@@ -87,7 +87,7 @@ class PermintaanSparepartPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_engineering::permintaan::permintaan::sparepart');
+        return $user->can('{{ RestoreAny }}');
     }
 
     /**
@@ -95,7 +95,7 @@ class PermintaanSparepartPolicy
      */
     public function replicate(User $user, PermintaanSparepart $permintaanSparepart): bool
     {
-        return $user->can('replicate_engineering::permintaan::permintaan::sparepart');
+        return $user->can('{{ Replicate }}');
     }
 
     /**
@@ -103,6 +103,6 @@ class PermintaanSparepartPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_engineering::permintaan::permintaan::sparepart');
+        return $user->can('{{ Reorder }}');
     }
 }

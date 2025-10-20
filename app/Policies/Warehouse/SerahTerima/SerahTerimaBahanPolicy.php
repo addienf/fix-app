@@ -63,7 +63,7 @@ class SerahTerimaBahanPolicy
      */
     public function forceDelete(User $user, SerahTerimaBahan $serahTerimaBahan): bool
     {
-        return $user->can('force_delete_warehouse::serah::terima::serah::terima::bahan');
+        return $user->can('{{ ForceDelete }}');
     }
 
     /**
@@ -71,7 +71,7 @@ class SerahTerimaBahanPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_warehouse::serah::terima::serah::terima::bahan');
+        return $user->can('{{ ForceDeleteAny }}');
     }
 
     /**
@@ -79,7 +79,7 @@ class SerahTerimaBahanPolicy
      */
     public function restore(User $user, SerahTerimaBahan $serahTerimaBahan): bool
     {
-        return $user->can('restore_warehouse::serah::terima::serah::terima::bahan');
+        return $user->can('{{ Restore }}');
     }
 
     /**
@@ -87,7 +87,7 @@ class SerahTerimaBahanPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_warehouse::serah::terima::serah::terima::bahan');
+        return $user->can('{{ RestoreAny }}');
     }
 
     /**
@@ -95,7 +95,7 @@ class SerahTerimaBahanPolicy
      */
     public function replicate(User $user, SerahTerimaBahan $serahTerimaBahan): bool
     {
-        return $user->can('replicate_warehouse::serah::terima::serah::terima::bahan');
+        return $user->can('{{ Replicate }}');
     }
 
     /**
@@ -103,6 +103,6 @@ class SerahTerimaBahanPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_warehouse::serah::terima::serah::terima::bahan');
+        return $user->can('{{ Reorder }}');
     }
 }

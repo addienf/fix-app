@@ -63,7 +63,7 @@ class ServiceReportPolicy
      */
     public function forceDelete(User $user, ServiceReport $serviceReport): bool
     {
-        return $user->can('force_delete_engineering::service::service::report');
+        return $user->can('{{ ForceDelete }}');
     }
 
     /**
@@ -71,7 +71,7 @@ class ServiceReportPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_engineering::service::service::report');
+        return $user->can('{{ ForceDeleteAny }}');
     }
 
     /**
@@ -79,7 +79,7 @@ class ServiceReportPolicy
      */
     public function restore(User $user, ServiceReport $serviceReport): bool
     {
-        return $user->can('restore_engineering::service::service::report');
+        return $user->can('{{ Restore }}');
     }
 
     /**
@@ -87,7 +87,7 @@ class ServiceReportPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_engineering::service::service::report');
+        return $user->can('{{ RestoreAny }}');
     }
 
     /**
@@ -95,7 +95,7 @@ class ServiceReportPolicy
      */
     public function replicate(User $user, ServiceReport $serviceReport): bool
     {
-        return $user->can('replicate_engineering::service::service::report');
+        return $user->can('{{ Replicate }}');
     }
 
     /**
@@ -103,6 +103,6 @@ class ServiceReportPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_engineering::service::service::report');
+        return $user->can('{{ Reorder }}');
     }
 }
