@@ -128,6 +128,73 @@
                 @endforeach
 
             </div>
+
+            <!-- Penanggung Jawab -->
+            @php
+                $roles = [
+                    'Signed by Sales Dept' => [
+                        'name' => $spesifikasi->pic->signedName->name ?? '-',
+                        'signature' => $spesifikasi->pic->signed_signature ?? null,
+                        'date' => $spesifikasi->pic->signed_date ?? null,
+                    ],
+                    'Accepted by Production Dept' => [
+                        'name' => $spesifikasi->pic->acceptedName->name ?? '-',
+                        'signature' => $spesifikasi->pic->accepted_signature ?? null,
+                        'date' => $spesifikasi->pic->accepted_date ?? null,
+                    ],
+                    'Acknowledge by MR' => [
+                        'name' => $spesifikasi->pic->acknowledgeName->name ?? '-',
+                        'signature' => $spesifikasi->pic->acknowledge_signature ?? null,
+                        'date' => $spesifikasi->pic->acknowledge_date ?? null,
+                    ],
+                ];
+            @endphp
+
+            <div class="max-w-4xl pt-10 mx-auto text-sm ttd">
+                <table class="w-full text-sm border-collapse">
+                    <thead>
+                        <tr class="font-semibold text-center bg-gray-100">
+                            @foreach ($roles as $role => $data)
+                                <th class="border border-gray-300 border-[1px] py-2">{{ $role }}</th>
+                            @endforeach
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        <tr>
+                            @foreach ($roles as $data)
+                                <td class="border border-gray-300 border-[1px] px-2 py-4">
+                                    <div class="flex items-center justify-center h-24">
+                                        @if ($data['signature'])
+                                            <img src="{{ asset('storage/' . $data['signature']) }}"
+                                                class="object-contain h-full" />
+                                        @else
+                                            <span class="text-sm text-gray-400">No Signature</span>
+                                        @endif
+                                    </div>
+                                </td>
+                            @endforeach
+                        </tr>
+
+                        <tr>
+                            @foreach ($roles as $data)
+                                <td class="border border-gray-300 border-[1px] px-2 py-2 text-center font-medium">
+                                    {{ $data['name'] }}
+                                </td>
+                            @endforeach
+                        </tr>
+
+                        <tr>
+                            @foreach ($roles as $data)
+                                <td class="border border-gray-300 border-[1px] px-2 py-2 text-center">
+                                    {{ $data['date'] ? \Carbon\Carbon::parse($data['date'])->format('d M Y') : '-' }}
+                                </td>
+                            @endforeach
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
         </div>
     </div>
 
