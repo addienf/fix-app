@@ -63,7 +63,7 @@ class IncommingMaterialSSPolicy
      */
     public function forceDelete(User $user, IncommingMaterialSS $incommingMaterialSS): bool
     {
-        return $user->can('force_delete_quality::incomming::material::material::s::s::incomming::material::s::s');
+        return $user->can('{{ ForceDelete }}');
     }
 
     /**
@@ -71,7 +71,7 @@ class IncommingMaterialSSPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_quality::incomming::material::material::s::s::incomming::material::s::s');
+        return $user->can('{{ ForceDeleteAny }}');
     }
 
     /**
@@ -79,7 +79,7 @@ class IncommingMaterialSSPolicy
      */
     public function restore(User $user, IncommingMaterialSS $incommingMaterialSS): bool
     {
-        return $user->can('restore_quality::incomming::material::material::s::s::incomming::material::s::s');
+        return $user->can('{{ Restore }}');
     }
 
     /**
@@ -87,7 +87,7 @@ class IncommingMaterialSSPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_quality::incomming::material::material::s::s::incomming::material::s::s');
+        return $user->can('{{ RestoreAny }}');
     }
 
     /**
@@ -95,7 +95,7 @@ class IncommingMaterialSSPolicy
      */
     public function replicate(User $user, IncommingMaterialSS $incommingMaterialSS): bool
     {
-        return $user->can('replicate_quality::incomming::material::material::s::s::incomming::material::s::s');
+        return $user->can('{{ Replicate }}');
     }
 
     /**
@@ -103,6 +103,6 @@ class IncommingMaterialSSPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_quality::incomming::material::material::s::s::incomming::material::s::s');
+        return $user->can('{{ Reorder }}');
     }
 }

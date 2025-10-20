@@ -63,7 +63,7 @@ class IncommingMaterialPolicy
      */
     public function forceDelete(User $user, IncommingMaterial $incommingMaterial): bool
     {
-        return $user->can('force_delete_warehouse::incomming::incomming::material');
+        return $user->can('{{ ForceDelete }}');
     }
 
     /**
@@ -71,7 +71,7 @@ class IncommingMaterialPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_warehouse::incomming::incomming::material');
+        return $user->can('{{ ForceDeleteAny }}');
     }
 
     /**
@@ -79,7 +79,7 @@ class IncommingMaterialPolicy
      */
     public function restore(User $user, IncommingMaterial $incommingMaterial): bool
     {
-        return $user->can('restore_warehouse::incomming::incomming::material');
+        return $user->can('{{ Restore }}');
     }
 
     /**
@@ -87,7 +87,7 @@ class IncommingMaterialPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_warehouse::incomming::incomming::material');
+        return $user->can('{{ RestoreAny }}');
     }
 
     /**
@@ -95,7 +95,7 @@ class IncommingMaterialPolicy
      */
     public function replicate(User $user, IncommingMaterial $incommingMaterial): bool
     {
-        return $user->can('replicate_warehouse::incomming::incomming::material');
+        return $user->can('{{ Replicate }}');
     }
 
     /**
@@ -103,6 +103,6 @@ class IncommingMaterialPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_warehouse::incomming::incomming::material');
+        return $user->can('{{ Reorder }}');
     }
 }

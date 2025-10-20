@@ -63,7 +63,7 @@ class PermintaanAlatDanBahanPolicy
      */
     public function forceDelete(User $user, PermintaanAlatDanBahan $permintaanAlatDanBahan): bool
     {
-        return $user->can('force_delete_production::permintaan::bahan::produksi::permintaan::alat::dan::bahan');
+        return $user->can('{{ ForceDelete }}');
     }
 
     /**
@@ -71,7 +71,7 @@ class PermintaanAlatDanBahanPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_production::permintaan::bahan::produksi::permintaan::alat::dan::bahan');
+        return $user->can('{{ ForceDeleteAny }}');
     }
 
     /**
@@ -79,7 +79,7 @@ class PermintaanAlatDanBahanPolicy
      */
     public function restore(User $user, PermintaanAlatDanBahan $permintaanAlatDanBahan): bool
     {
-        return $user->can('restore_production::permintaan::bahan::produksi::permintaan::alat::dan::bahan');
+        return $user->can('{{ Restore }}');
     }
 
     /**
@@ -87,7 +87,7 @@ class PermintaanAlatDanBahanPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_production::permintaan::bahan::produksi::permintaan::alat::dan::bahan');
+        return $user->can('{{ RestoreAny }}');
     }
 
     /**
@@ -95,7 +95,7 @@ class PermintaanAlatDanBahanPolicy
      */
     public function replicate(User $user, PermintaanAlatDanBahan $permintaanAlatDanBahan): bool
     {
-        return $user->can('replicate_production::permintaan::bahan::produksi::permintaan::alat::dan::bahan');
+        return $user->can('{{ Replicate }}');
     }
 
     /**
@@ -103,6 +103,6 @@ class PermintaanAlatDanBahanPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_production::permintaan::bahan::produksi::permintaan::alat::dan::bahan');
+        return $user->can('{{ Reorder }}');
     }
 }

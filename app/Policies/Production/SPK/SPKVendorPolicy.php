@@ -63,7 +63,7 @@ class SPKVendorPolicy
      */
     public function forceDelete(User $user, SPKVendor $sPKVendor): bool
     {
-        return $user->can('force_delete_production::s::p::k::vendor::s::p::k::vendor');
+        return $user->can('{{ ForceDelete }}');
     }
 
     /**
@@ -71,7 +71,7 @@ class SPKVendorPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_production::s::p::k::vendor::s::p::k::vendor');
+        return $user->can('{{ ForceDeleteAny }}');
     }
 
     /**
@@ -79,7 +79,7 @@ class SPKVendorPolicy
      */
     public function restore(User $user, SPKVendor $sPKVendor): bool
     {
-        return $user->can('restore_production::s::p::k::vendor::s::p::k::vendor');
+        return $user->can('{{ Restore }}');
     }
 
     /**
@@ -87,7 +87,7 @@ class SPKVendorPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_production::s::p::k::vendor::s::p::k::vendor');
+        return $user->can('{{ RestoreAny }}');
     }
 
     /**
@@ -95,7 +95,7 @@ class SPKVendorPolicy
      */
     public function replicate(User $user, SPKVendor $sPKVendor): bool
     {
-        return $user->can('replicate_production::s::p::k::vendor::s::p::k::vendor');
+        return $user->can('{{ Replicate }}');
     }
 
     /**
@@ -103,6 +103,6 @@ class SPKVendorPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_production::s::p::k::vendor::s::p::k::vendor');
+        return $user->can('{{ Reorder }}');
     }
 }

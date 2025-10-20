@@ -63,7 +63,7 @@ class SPKMarketingPolicy
      */
     public function forceDelete(User $user, SPKMarketing $sPKMarketing): bool
     {
-        return $user->can('force_delete_sales::s::p::k::s::p::k');
+        return $user->can('{{ ForceDelete }}');
     }
 
     /**
@@ -71,7 +71,7 @@ class SPKMarketingPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_sales::s::p::k::s::p::k');
+        return $user->can('{{ ForceDeleteAny }}');
     }
 
     /**
@@ -79,7 +79,7 @@ class SPKMarketingPolicy
      */
     public function restore(User $user, SPKMarketing $sPKMarketing): bool
     {
-        return $user->can('restore_sales::s::p::k::s::p::k');
+        return $user->can('{{ Restore }}');
     }
 
     /**
@@ -87,7 +87,7 @@ class SPKMarketingPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_sales::s::p::k::s::p::k');
+        return $user->can('{{ RestoreAny }}');
     }
 
     /**
@@ -95,7 +95,7 @@ class SPKMarketingPolicy
      */
     public function replicate(User $user, SPKMarketing $sPKMarketing): bool
     {
-        return $user->can('replicate_sales::s::p::k::s::p::k');
+        return $user->can('{{ Replicate }}');
     }
 
     /**
@@ -103,6 +103,6 @@ class SPKMarketingPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_sales::s::p::k::s::p::k');
+        return $user->can('{{ Reorder }}');
     }
 }

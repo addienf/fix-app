@@ -63,7 +63,7 @@ class BeritaAcaraPolicy
      */
     public function forceDelete(User $user, BeritaAcara $beritaAcara): bool
     {
-        return $user->can('force_delete_engineering::berita::berita::acara');
+        return $user->can('{{ ForceDelete }}');
     }
 
     /**
@@ -71,7 +71,7 @@ class BeritaAcaraPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_engineering::berita::berita::acara');
+        return $user->can('{{ ForceDeleteAny }}');
     }
 
     /**
@@ -79,7 +79,7 @@ class BeritaAcaraPolicy
      */
     public function restore(User $user, BeritaAcara $beritaAcara): bool
     {
-        return $user->can('restore_engineering::berita::berita::acara');
+        return $user->can('{{ Restore }}');
     }
 
     /**
@@ -87,7 +87,7 @@ class BeritaAcaraPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_engineering::berita::berita::acara');
+        return $user->can('{{ RestoreAny }}');
     }
 
     /**
@@ -95,7 +95,7 @@ class BeritaAcaraPolicy
      */
     public function replicate(User $user, BeritaAcara $beritaAcara): bool
     {
-        return $user->can('replicate_engineering::berita::berita::acara');
+        return $user->can('{{ Replicate }}');
     }
 
     /**
@@ -103,6 +103,6 @@ class BeritaAcaraPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_engineering::berita::berita::acara');
+        return $user->can('{{ Reorder }}');
     }
 }

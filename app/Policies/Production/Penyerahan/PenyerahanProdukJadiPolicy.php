@@ -63,7 +63,7 @@ class PenyerahanProdukJadiPolicy
      */
     public function forceDelete(User $user, PenyerahanProdukJadi $penyerahanProdukJadi): bool
     {
-        return $user->can('force_delete_production::penyerahan::penyerahan::produk::jadi');
+        return $user->can('{{ ForceDelete }}');
     }
 
     /**
@@ -71,7 +71,7 @@ class PenyerahanProdukJadiPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_production::penyerahan::penyerahan::produk::jadi');
+        return $user->can('{{ ForceDeleteAny }}');
     }
 
     /**
@@ -79,7 +79,7 @@ class PenyerahanProdukJadiPolicy
      */
     public function restore(User $user, PenyerahanProdukJadi $penyerahanProdukJadi): bool
     {
-        return $user->can('restore_production::penyerahan::penyerahan::produk::jadi');
+        return $user->can('{{ Restore }}');
     }
 
     /**
@@ -87,7 +87,7 @@ class PenyerahanProdukJadiPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_production::penyerahan::penyerahan::produk::jadi');
+        return $user->can('{{ RestoreAny }}');
     }
 
     /**
@@ -95,7 +95,7 @@ class PenyerahanProdukJadiPolicy
      */
     public function replicate(User $user, PenyerahanProdukJadi $penyerahanProdukJadi): bool
     {
-        return $user->can('replicate_production::penyerahan::penyerahan::produk::jadi');
+        return $user->can('{{ Replicate }}');
     }
 
     /**
@@ -103,6 +103,6 @@ class PenyerahanProdukJadiPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_production::penyerahan::penyerahan::produk::jadi');
+        return $user->can('{{ Reorder }}');
     }
 }
