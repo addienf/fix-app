@@ -268,12 +268,6 @@ class SPKServiceResource extends Resource
                         ->color('success')
                         ->visible(fn($record) => $record->status_penyelesaian === 'Selesai')
                         ->url(fn($record) => route('pdf.spkService', ['record' => $record->id])),
-
-                    Action::make('pdf_view')
-                        ->label(_('Lihat PDF'))
-                        ->icon('heroicon-o-document')
-                        ->color('success')
-                        ->url(fn($record) => route('pdf.CatatanPelanggan')),
                 ])
             ])
             ->bulkActions([
@@ -311,16 +305,16 @@ class SPKServiceResource extends Resource
     {
         return
             SignaturePad::make($fieldName)
-                ->label($labelName)
-                ->exportPenColor('#0118D8')
-                ->helperText('*Harap Tandatangan di tengah area yang disediakan.')
-                ->afterStateUpdated(function ($state, $set) use ($fieldName) {
-                    if (blank($state))
-                        return;
-                    $path = SignatureUploader::handle($state, 'ttd_', 'Engineering/SPK/Signatures');
-                    if ($path) {
-                        $set($fieldName, $path);
-                    }
-                });
+            ->label($labelName)
+            ->exportPenColor('#0118D8')
+            ->helperText('*Harap Tandatangan di tengah area yang disediakan.')
+            ->afterStateUpdated(function ($state, $set) use ($fieldName) {
+                if (blank($state))
+                    return;
+                $path = SignatureUploader::handle($state, 'ttd_', 'Engineering/SPK/Signatures');
+                if ($path) {
+                    $set($fieldName, $path);
+                }
+            });
     }
 }
