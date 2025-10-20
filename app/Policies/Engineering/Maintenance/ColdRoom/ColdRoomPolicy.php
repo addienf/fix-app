@@ -63,7 +63,7 @@ class ColdRoomPolicy
      */
     public function forceDelete(User $user, ColdRoom $coldRoom): bool
     {
-        return $user->can('force_delete_engineering::maintenance::cold::room::cold::room');
+        return $user->can('{{ ForceDelete }}');
     }
 
     /**
@@ -71,7 +71,7 @@ class ColdRoomPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_engineering::maintenance::cold::room::cold::room');
+        return $user->can('{{ ForceDeleteAny }}');
     }
 
     /**
@@ -79,7 +79,7 @@ class ColdRoomPolicy
      */
     public function restore(User $user, ColdRoom $coldRoom): bool
     {
-        return $user->can('restore_engineering::maintenance::cold::room::cold::room');
+        return $user->can('{{ Restore }}');
     }
 
     /**
@@ -87,7 +87,7 @@ class ColdRoomPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_engineering::maintenance::cold::room::cold::room');
+        return $user->can('{{ RestoreAny }}');
     }
 
     /**
@@ -95,7 +95,7 @@ class ColdRoomPolicy
      */
     public function replicate(User $user, ColdRoom $coldRoom): bool
     {
-        return $user->can('replicate_engineering::maintenance::cold::room::cold::room');
+        return $user->can('{{ Replicate }}');
     }
 
     /**
@@ -103,6 +103,6 @@ class ColdRoomPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_engineering::maintenance::cold::room::cold::room');
+        return $user->can('{{ Reorder }}');
     }
 }

@@ -63,7 +63,7 @@ class PeminjamanAlatPolicy
      */
     public function forceDelete(User $user, PeminjamanAlat $peminjamanAlat): bool
     {
-        return $user->can('force_delete_warehouse::peminjaman::peminjaman::alat');
+        return $user->can('{{ ForceDelete }}');
     }
 
     /**
@@ -71,7 +71,7 @@ class PeminjamanAlatPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_warehouse::peminjaman::peminjaman::alat');
+        return $user->can('{{ ForceDeleteAny }}');
     }
 
     /**
@@ -79,7 +79,7 @@ class PeminjamanAlatPolicy
      */
     public function restore(User $user, PeminjamanAlat $peminjamanAlat): bool
     {
-        return $user->can('restore_warehouse::peminjaman::peminjaman::alat');
+        return $user->can('{{ Restore }}');
     }
 
     /**
@@ -87,7 +87,7 @@ class PeminjamanAlatPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_warehouse::peminjaman::peminjaman::alat');
+        return $user->can('{{ RestoreAny }}');
     }
 
     /**
@@ -95,7 +95,7 @@ class PeminjamanAlatPolicy
      */
     public function replicate(User $user, PeminjamanAlat $peminjamanAlat): bool
     {
-        return $user->can('replicate_warehouse::peminjaman::peminjaman::alat');
+        return $user->can('{{ Replicate }}');
     }
 
     /**
@@ -103,6 +103,6 @@ class PeminjamanAlatPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_warehouse::peminjaman::peminjaman::alat');
+        return $user->can('{{ Reorder }}');
     }
 }

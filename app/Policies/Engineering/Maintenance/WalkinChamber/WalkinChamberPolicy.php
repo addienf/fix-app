@@ -63,7 +63,7 @@ class WalkinChamberPolicy
      */
     public function forceDelete(User $user, WalkinChamber $walkinChamber): bool
     {
-        return $user->can('force_delete_engineering::maintenance::walkin::chamber::walkin::chamber');
+        return $user->can('{{ ForceDelete }}');
     }
 
     /**
@@ -71,7 +71,7 @@ class WalkinChamberPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_engineering::maintenance::walkin::chamber::walkin::chamber');
+        return $user->can('{{ ForceDeleteAny }}');
     }
 
     /**
@@ -79,7 +79,7 @@ class WalkinChamberPolicy
      */
     public function restore(User $user, WalkinChamber $walkinChamber): bool
     {
-        return $user->can('restore_engineering::maintenance::walkin::chamber::walkin::chamber');
+        return $user->can('{{ Restore }}');
     }
 
     /**
@@ -87,7 +87,7 @@ class WalkinChamberPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_engineering::maintenance::walkin::chamber::walkin::chamber');
+        return $user->can('{{ RestoreAny }}');
     }
 
     /**
@@ -95,7 +95,7 @@ class WalkinChamberPolicy
      */
     public function replicate(User $user, WalkinChamber $walkinChamber): bool
     {
-        return $user->can('replicate_engineering::maintenance::walkin::chamber::walkin::chamber');
+        return $user->can('{{ Replicate }}');
     }
 
     /**
@@ -103,6 +103,6 @@ class WalkinChamberPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_engineering::maintenance::walkin::chamber::walkin::chamber');
+        return $user->can('{{ Reorder }}');
     }
 }

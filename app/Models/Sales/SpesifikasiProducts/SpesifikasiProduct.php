@@ -25,6 +25,14 @@ class SpesifikasiProduct extends Model
         'is_stock',
         'detail_specification',
         'delivery_address',
+        'estimasi_pengiriman',
+        'status_penerimaan_order',
+        'alasan',
+        'status'
+    ];
+
+    protected $casts = [
+        'estimasi_pengiriman' => 'date',
     ];
 
     public function urs()
@@ -49,6 +57,22 @@ class SpesifikasiProduct extends Model
 
     protected static function booted()
     {
+        static::saving(function ($model) {
+            if (
+                $model->pic?->signed_signature &&
+                $model->status !== 'Ditanda Tangan'
+            ) {
+                $model->status = 'Ditanda Tangan';
+            }
+
+            if (
+                $model->pic?->accepted_signature &&
+                $model->status !== 'Diketahui'
+            ) {
+                $model->status = 'Diketahui';
+            }
+        });
+
         static::deleting(function ($model) {
             foreach ($model->details as $detail) {
                 $detail->delete();

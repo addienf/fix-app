@@ -17,6 +17,10 @@ return new class extends Migration
             $table->boolean('is_stock')->nullable();
             $table->text('detail_specification');
             $table->string('delivery_address');
+            $table->date('estimasi_pengiriman');
+            $table->string('status_penerimaan_order');
+            $table->text('alasan');
+            $table->string('status');
             $table->timestamps();
         });
     }

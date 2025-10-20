@@ -63,7 +63,7 @@ class JadwalProduksiPolicy
      */
     public function forceDelete(User $user, JadwalProduksi $jadwalProduksi): bool
     {
-        return $user->can('force_delete_production::jadwal::jadwal::produksi');
+        return $user->can('{{ ForceDelete }}');
     }
 
     /**
@@ -71,7 +71,7 @@ class JadwalProduksiPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_production::jadwal::jadwal::produksi');
+        return $user->can('{{ ForceDeleteAny }}');
     }
 
     /**
@@ -79,7 +79,7 @@ class JadwalProduksiPolicy
      */
     public function restore(User $user, JadwalProduksi $jadwalProduksi): bool
     {
-        return $user->can('restore_production::jadwal::jadwal::produksi');
+        return $user->can('{{ Restore }}');
     }
 
     /**
@@ -87,7 +87,7 @@ class JadwalProduksiPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_production::jadwal::jadwal::produksi');
+        return $user->can('{{ RestoreAny }}');
     }
 
     /**
@@ -95,7 +95,7 @@ class JadwalProduksiPolicy
      */
     public function replicate(User $user, JadwalProduksi $jadwalProduksi): bool
     {
-        return $user->can('replicate_production::jadwal::jadwal::produksi');
+        return $user->can('{{ Replicate }}');
     }
 
     /**
@@ -103,6 +103,6 @@ class JadwalProduksiPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_production::jadwal::jadwal::produksi');
+        return $user->can('{{ Reorder }}');
     }
 }

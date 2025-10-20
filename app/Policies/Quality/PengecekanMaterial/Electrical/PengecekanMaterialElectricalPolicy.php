@@ -63,7 +63,7 @@ class PengecekanMaterialElectricalPolicy
      */
     public function forceDelete(User $user, PengecekanMaterialElectrical $pengecekanMaterialElectrical): bool
     {
-        return $user->can('force_delete_quality::pengecekan::material::electrical::pengecekan::electrical');
+        return $user->can('{{ ForceDelete }}');
     }
 
     /**
@@ -71,7 +71,7 @@ class PengecekanMaterialElectricalPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_quality::pengecekan::material::electrical::pengecekan::electrical');
+        return $user->can('{{ ForceDeleteAny }}');
     }
 
     /**
@@ -79,7 +79,7 @@ class PengecekanMaterialElectricalPolicy
      */
     public function restore(User $user, PengecekanMaterialElectrical $pengecekanMaterialElectrical): bool
     {
-        return $user->can('restore_quality::pengecekan::material::electrical::pengecekan::electrical');
+        return $user->can('{{ Restore }}');
     }
 
     /**
@@ -87,7 +87,7 @@ class PengecekanMaterialElectricalPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_quality::pengecekan::material::electrical::pengecekan::electrical');
+        return $user->can('{{ RestoreAny }}');
     }
 
     /**
@@ -95,7 +95,7 @@ class PengecekanMaterialElectricalPolicy
      */
     public function replicate(User $user, PengecekanMaterialElectrical $pengecekanMaterialElectrical): bool
     {
-        return $user->can('replicate_quality::pengecekan::material::electrical::pengecekan::electrical');
+        return $user->can('{{ Replicate }}');
     }
 
     /**
@@ -103,6 +103,6 @@ class PengecekanMaterialElectricalPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_quality::pengecekan::material::electrical::pengecekan::electrical');
+        return $user->can('{{ Reorder }}');
     }
 }

@@ -63,7 +63,7 @@ class DefectStatusPolicy
      */
     public function forceDelete(User $user, DefectStatus $defectStatus): bool
     {
-        return $user->can('force_delete_quality::defect::defect::status');
+        return $user->can('{{ ForceDelete }}');
     }
 
     /**
@@ -71,7 +71,7 @@ class DefectStatusPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_quality::defect::defect::status');
+        return $user->can('{{ ForceDeleteAny }}');
     }
 
     /**
@@ -79,7 +79,7 @@ class DefectStatusPolicy
      */
     public function restore(User $user, DefectStatus $defectStatus): bool
     {
-        return $user->can('restore_quality::defect::defect::status');
+        return $user->can('{{ Restore }}');
     }
 
     /**
@@ -87,7 +87,7 @@ class DefectStatusPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_quality::defect::defect::status');
+        return $user->can('{{ RestoreAny }}');
     }
 
     /**
@@ -95,7 +95,7 @@ class DefectStatusPolicy
      */
     public function replicate(User $user, DefectStatus $defectStatus): bool
     {
-        return $user->can('replicate_quality::defect::defect::status');
+        return $user->can('{{ Replicate }}');
     }
 
     /**
@@ -103,6 +103,6 @@ class DefectStatusPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_quality::defect::defect::status');
+        return $user->can('{{ Reorder }}');
     }
 }

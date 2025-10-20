@@ -52,7 +52,7 @@ class PDFController extends Controller
 
     public function previewSpesifikasiProduct($id)
     {
-        $spesifikasi = SpesifikasiProduct::with(['urs.customer', 'pic', 'details.product', 'details.file', 'pic.userName'])->findOrFail($id);
+        $spesifikasi = SpesifikasiProduct::with(['urs.customer', 'pic', 'details.product', 'details.file', 'pic.signedName', 'pic.acceptedName', 'pic.acknowledgeName'])->findOrFail($id);
 
         return view('pdf.sales.pdfSpecProduct', compact('spesifikasi'));
     }
@@ -324,7 +324,7 @@ class PDFController extends Controller
 
     public function pdfSPKService($id)
     {
-        $service = SPKService::with(['petugas', 'pemeriksaanPersetujuan', 'pic', 'pic.dikonfirmasiNama', 'pic.diketahuiNama'])->findOrFail($id);
+        $service = SPKService::with(['complain', 'petugas', 'pemeriksaanPersetujuan', 'pic', 'pic.dikonfirmasiNama', 'pic.diketahuiNama'])->findOrFail($id);
 
         return view('pdf.engineering.pdfSPKService', compact('service'));
     }
@@ -396,7 +396,6 @@ class PDFController extends Controller
         return view('pdf.engineering.pdfServiceReport', compact('serviceReport'));
     }
 
-<<<<<<< HEAD
     public function pdfCatatanPelanggan($id)
     {
         $complaint = Complain::with(['details', 'pic', 'pic.reportedBy'])->findOrFail($id);
@@ -404,8 +403,6 @@ class PDFController extends Controller
         return view('pdf.engineering.pdfCatatanPelanggan', compact('complaint'));
     }
 
-=======
->>>>>>> parent of 4dbcd10 (Form CC)
     public function downloadZipserviceReport($id)
     {
         $serviceReport = ServiceReport::with(['spkService', 'details', 'produkServices', 'pic', 'pic.approvedBy', 'pic.checkedBy'])->findOrFail($id);

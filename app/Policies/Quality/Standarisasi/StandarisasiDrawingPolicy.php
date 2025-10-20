@@ -63,7 +63,7 @@ class StandarisasiDrawingPolicy
      */
     public function forceDelete(User $user, StandarisasiDrawing $standarisasiDrawing): bool
     {
-        return $user->can('force_delete_quality::standarisasi::standarisasi::drawing');
+        return $user->can('{{ ForceDelete }}');
     }
 
     /**
@@ -71,7 +71,7 @@ class StandarisasiDrawingPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_quality::standarisasi::standarisasi::drawing');
+        return $user->can('{{ ForceDeleteAny }}');
     }
 
     /**
@@ -79,7 +79,7 @@ class StandarisasiDrawingPolicy
      */
     public function restore(User $user, StandarisasiDrawing $standarisasiDrawing): bool
     {
-        return $user->can('restore_quality::standarisasi::standarisasi::drawing');
+        return $user->can('{{ Restore }}');
     }
 
     /**
@@ -87,7 +87,7 @@ class StandarisasiDrawingPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_quality::standarisasi::standarisasi::drawing');
+        return $user->can('{{ RestoreAny }}');
     }
 
     /**
@@ -95,7 +95,7 @@ class StandarisasiDrawingPolicy
      */
     public function replicate(User $user, StandarisasiDrawing $standarisasiDrawing): bool
     {
-        return $user->can('replicate_quality::standarisasi::standarisasi::drawing');
+        return $user->can('{{ Replicate }}');
     }
 
     /**
@@ -103,6 +103,6 @@ class StandarisasiDrawingPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_quality::standarisasi::standarisasi::drawing');
+        return $user->can('{{ Reorder }}');
     }
 }

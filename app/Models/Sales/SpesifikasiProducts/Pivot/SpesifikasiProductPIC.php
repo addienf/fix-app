@@ -19,9 +19,15 @@ class SpesifikasiProductPIC extends Model
 
     protected $fillable = [
         'spesifikasi_product_id',
-        'signature',
-        'name',
-        'date'
+        'signed_signature',
+        'signed_name',
+        'signed_date',
+        'accepted_signature',
+        'accepted_name',
+        'accepted_date',
+        'acknowledge_signature',
+        'acknowledge_name',
+        'acknowledge_date',
     ];
 
     public function spesifikasiProduk()
@@ -29,26 +35,60 @@ class SpesifikasiProductPIC extends Model
         return $this->belongsTo(SpesifikasiProduct::class);
     }
 
-    public function userName()
+    public function signedName()
     {
-        return $this->belongsTo(User::class, 'name');
+        return $this->belongsTo(User::class, 'signed_name');
+    }
+
+    public function acceptedName()
+    {
+        return $this->belongsTo(User::class, 'accepted_name');
+    }
+
+    public function acknowledgeName()
+    {
+        return $this->belongsTo(User::class, 'acknowledge_name');
     }
 
     protected static function booted(): void
     {
         static::updating(function ($model) {
             if (
-                $model->isDirty('signature') &&
-                $model->getOriginal('signature') &&
-                Storage::disk('public')->exists($model->getOriginal('signature'))
+                $model->isDirty('signed_signature') &&
+                $model->getOriginal('signed_signature') &&
+                Storage::disk('public')->exists($model->getOriginal('signed_signature'))
             ) {
-                Storage::disk('public')->delete($model->getOriginal('signature'));
+                Storage::disk('public')->delete($model->getOriginal('signed_signature'));
+            }
+
+            if (
+                $model->isDirty('accepted_signature') &&
+                $model->getOriginal('accepted_signature') &&
+                Storage::disk('public')->exists($model->getOriginal('accepted_signature'))
+            ) {
+                Storage::disk('public')->delete($model->getOriginal('accepted_signature'));
+            }
+
+            if (
+                $model->isDirty('acknowledge_signature') &&
+                $model->getOriginal('acknowledge_signature') &&
+                Storage::disk('public')->exists($model->getOriginal('acknowledge_signature'))
+            ) {
+                Storage::disk('public')->delete($model->getOriginal('acknowledge_signature'));
             }
         });
 
         static::deleting(function ($model) {
-            if ($model->signature && Storage::disk('public')->exists($model->signature)) {
-                Storage::disk('public')->delete($model->signature);
+            if ($model->signed_signature && Storage::disk('public')->exists($model->signed_signature)) {
+                Storage::disk('public')->delete($model->signed_signature);
+            }
+
+            if ($model->accepted_signature && Storage::disk('public')->exists($model->accepted_signature)) {
+                Storage::disk('public')->delete($model->accepted_signature);
+            }
+
+            if ($model->acknowledge_signature && Storage::disk('public')->exists($model->acknowledge_signature)) {
+                Storage::disk('public')->delete($model->acknowledge_signature);
             }
         });
     }

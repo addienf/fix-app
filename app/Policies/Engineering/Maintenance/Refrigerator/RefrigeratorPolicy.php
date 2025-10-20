@@ -63,7 +63,7 @@ class RefrigeratorPolicy
      */
     public function forceDelete(User $user, Refrigerator $refrigerator): bool
     {
-        return $user->can('force_delete_engineering::maintenance::refrigerator::refrigerator');
+        return $user->can('{{ ForceDelete }}');
     }
 
     /**
@@ -71,7 +71,7 @@ class RefrigeratorPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_engineering::maintenance::refrigerator::refrigerator');
+        return $user->can('{{ ForceDeleteAny }}');
     }
 
     /**
@@ -79,7 +79,7 @@ class RefrigeratorPolicy
      */
     public function restore(User $user, Refrigerator $refrigerator): bool
     {
-        return $user->can('restore_engineering::maintenance::refrigerator::refrigerator');
+        return $user->can('{{ Restore }}');
     }
 
     /**
@@ -87,7 +87,7 @@ class RefrigeratorPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_engineering::maintenance::refrigerator::refrigerator');
+        return $user->can('{{ RestoreAny }}');
     }
 
     /**
@@ -95,7 +95,7 @@ class RefrigeratorPolicy
      */
     public function replicate(User $user, Refrigerator $refrigerator): bool
     {
-        return $user->can('replicate_engineering::maintenance::refrigerator::refrigerator');
+        return $user->can('{{ Replicate }}');
     }
 
     /**
@@ -103,6 +103,6 @@ class RefrigeratorPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_engineering::maintenance::refrigerator::refrigerator');
+        return $user->can('{{ Reorder }}');
     }
 }

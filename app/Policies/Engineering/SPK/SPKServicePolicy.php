@@ -63,7 +63,7 @@ class SPKServicePolicy
      */
     public function forceDelete(User $user, SPKService $sPKService): bool
     {
-        return $user->can('force_delete_engineering::s::p::k::s::p::k::service');
+        return $user->can('{{ ForceDelete }}');
     }
 
     /**
@@ -71,7 +71,7 @@ class SPKServicePolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_engineering::s::p::k::s::p::k::service');
+        return $user->can('{{ ForceDeleteAny }}');
     }
 
     /**
@@ -79,7 +79,7 @@ class SPKServicePolicy
      */
     public function restore(User $user, SPKService $sPKService): bool
     {
-        return $user->can('restore_engineering::s::p::k::s::p::k::service');
+        return $user->can('{{ Restore }}');
     }
 
     /**
@@ -87,7 +87,7 @@ class SPKServicePolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_engineering::s::p::k::s::p::k::service');
+        return $user->can('{{ RestoreAny }}');
     }
 
     /**
@@ -95,7 +95,7 @@ class SPKServicePolicy
      */
     public function replicate(User $user, SPKService $sPKService): bool
     {
-        return $user->can('replicate_engineering::s::p::k::s::p::k::service');
+        return $user->can('{{ Replicate }}');
     }
 
     /**
@@ -103,6 +103,6 @@ class SPKServicePolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_engineering::s::p::k::s::p::k::service');
+        return $user->can('{{ Reorder }}');
     }
 }

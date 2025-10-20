@@ -33,7 +33,7 @@ use Ysfkaya\FilamentPhoneInput\Forms\PhoneInput;
 class ComplainResource extends Resource
 {
     protected static ?string $model = Complain::class;
-    protected static ?int $navigationSort = 30;
+    protected static ?int $navigationSort = 20;
     protected static ?string $navigationGroup = 'Engineering';
     protected static ?string $navigationLabel = 'Complaint';
     protected static ?string $pluralLabel = 'Complaint';

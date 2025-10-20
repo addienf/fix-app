@@ -60,7 +60,7 @@
                 $formattedDateTime2 = $combined->translatedFormat('d/m/Y H:i');
             @endphp
 
-            <div class="flex justify-between items-center mb-4">
+            <div class="flex items-center justify-between mb-4">
                 <h2 class="text-xl font-bold">Incoming Complaint Report</h2>
                 <span class="text-sm font-bold">
                     {{ $formattedDateTime }}
@@ -120,7 +120,7 @@
         </div>
 
         <table class="w-full max-w-4xl pt-4 mx-auto text-sm border border-black table-fixed">
-            <thead class="bg-gray-300 text-black">
+            <thead class="text-black bg-gray-300">
                 <tr>
                     <th class="p-2 border border-black">No</th>
                     <th class="p-2 border border-black">Unit Name</th>
