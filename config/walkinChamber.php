@@ -8,7 +8,7 @@ return [
             'Pressure analyzer (......Psi - ......Psi)*',
             'Normal (......A to ......A)*',
             'Clean the condenser',
-            'Clean the evaporator'
+            'Clean the evaporator',
         ]
     ],
     [
@@ -17,12 +17,13 @@ return [
             'Measure the resistance of the water heater',
             'Water Heater  3000 W (15-16 Ohm)',
             'Water Heater  2500 W (18-19,3Ohm)',
-            'Water Heater  2500 W (18-19,3Ohm)',
+            'Water Heater  2500 W (9-9,6hm)',
             'Clean the container of humidifier',
             'Clean Water heater surface',
             'Clean & Check Level switch sensor',
             'Clean the water inlet',
-            'Check the function of humidification system ',
+            'Check the function of humidification system',
+            'Take the photo of the water heater condition and resistance in Ampere Meter',
         ]
     ],
     [
@@ -33,6 +34,7 @@ return [
             'Air Heater 2500 W (19-19,3 Ohm)',
             'Air Heater 3000 W (15-16 Ohm)',
             'Clean the air heater',
+            'Take the photo of the water heater condition and resistance in Ampere Meter',
         ]
     ],
     [

@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Production\PermintaanBahanProduksi;
 
 use App\Filament\Resources\Production\PermintaanBahanProduksi\PermintaanAlatDanBahanResource\Pages;
 use App\Filament\Resources\Production\PermintaanBahanProduksi\PermintaanAlatDanBahanResource\RelationManagers;
+use App\Models\Production\Jadwal\JadwalProduksi;
 use App\Models\Production\PermintaanBahanProduksi\PermintaanAlatDanBahan;
 use App\Models\Sales\SPKMarketings\SPKMarketing;
 use App\Services\SignatureUploader;
@@ -152,8 +153,6 @@ class PermintaanAlatDanBahanResource extends Resource
                                                 'readonly' => true,
                                                 'style' => 'pointer-events: none;'
                                             ]),
-
-                                        // self::textInput('dibuat_name', 'Dibuat Oleh'),
 
                                         self::signatureInput('dibuat_signature', ''),
 
@@ -332,13 +331,26 @@ class PermintaanAlatDanBahanResource extends Resource
                 if (!$state)
                     return;
 
-                // Ambil data SPK dan relasi yang dibutuhkan
-                $spk = SPKMarketing::find($state);
-                if (!$spk)
-                    return;
+                $spk = SPKMarketing::with('jadwalProduksi.sumbers')->find($state);
+                if (!$spk) return;
 
                 $set('dari', $spk->dari);
                 $set('kepada', $spk->kepada);
+
+                $jadwal = $spk->jadwalProduksi;
+
+                if ($jadwal && $jadwal->sumbers) {
+                    $sumbers = $jadwal->sumbers->map(function ($sumber) {
+                        return [
+                            'bahan_baku' => $sumber->bahan_baku ?? '-',
+                            'spesifikasi' => $sumber->spesifikasi ?? '-',
+                            'jumlah' => $sumber->jumlah ?? '-',
+                            'keperluan_barang' => $sumber->keperluan ?? '-',
+                        ];
+                    })->toArray();
+
+                    $set('details', $sumbers);
+                }
             });
     }
 

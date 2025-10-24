@@ -12,6 +12,7 @@ use Filament\Actions\ActionGroup;
 use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Fieldset;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Placeholder;
@@ -66,62 +67,124 @@ class JadwalProduksiResource extends Resource
                         Grid::make(2)
                             ->schema([
 
-                                self::textInput('pic_name', 'Penanggung Jawab'),
-
                                 self::datePicker('tanggal', 'Tanggal')
                                     ->required(),
 
+                                self::textInput('pic_name', 'Penanggung Jawab'),
+
+                                self::textInput('no_surat', 'No Surat'),
+
+                                self::selectInput('spk_marketing_id', 'No SPK', 'spk', 'no_spk')
+                                    ->hiddenOn('edit')
+                                    ->placeholder('Pilih Nomor SPK')
                             ])
+
+                    ]),
+
+                Section::make('Identifikasi Produk')
+                    ->schema([
+                        TableRepeater::make('identifikasiProduks')
+                            ->relationship('identifikasiProduks')
+                            ->label('')
+                            ->schema([
+
+                                self::textInput('nama_alat', 'Nama Alat'),
+
+                                self::textInput('tipe', 'Tipe/Model'),
+
+                                self::textInput('no_seri', 'Nomor Seri'),
+
+                                self::textInput('custom_standar', 'Custom/Stardar'),
+
+                                self::textInput('jumlah', 'Quantity')->numeric(),
+
+                            ])
+                            ->deletable(true)
+                            ->addable(true)
+                            ->reorderable(false)
+                            ->columnSpanFull(),
 
                     ]),
 
                 Section::make('Detail Jadwal Produksi')
                     ->schema([
-
-                        self::selectInput('spk_marketing_id', 'No SPK', 'spk', 'no_spk')
-                            ->hiddenOn('edit')
-                            ->placeholder('Pilih Nomor SPK')
-                            ->columnSpanFull(),
-
-                        Repeater::make('details')
+                        TableRepeater::make('details')
                             ->relationship('details')
                             ->label('')
                             ->schema([
 
-                                Grid::make(6)
-                                    ->schema([
+                                self::textInput('pekerjaan', 'Pekerjaan'),
 
-                                        self::textInput('nama_produk', 'Nama Produk')
-                                            ->extraAttributes([
-                                                'readonly' => true,
-                                                'style' => 'pointer-events: none;'
-                                            ]),
+                                self::textInput('pekerja', 'Yang Mengerjakan'),
 
-                                        self::textInput('tipe', 'Tipe/Model'),
+                                self::datePicker('tanggal_mulai', 'Tanggal Mulai')
+                                    ->required(),
 
-                                        self::textInput('volume', 'Volume'),
-
-                                        self::textInput('jumlah', 'Jumlah')
-                                            ->extraAttributes([
-                                                'readonly' => true,
-                                                'style' => 'pointer-events: none;'
-                                            ]),
-
-                                        self::datePicker('tanggal_mulai', 'Tanggal Mulai')
-                                            ->required(),
-
-                                        self::datePicker('tanggal_selesai', 'Tanggal Selesai')
-                                            ->required()
-
-                                    ])
-
+                                self::datePicker('tanggal_selesai', 'Tanggal Selesai')
+                                    ->required(),
                             ])
-                            ->deletable(false)
+                            ->deletable(true)
+                            ->addable(true)
                             ->reorderable(false)
-                            ->addable(false)
                             ->columnSpanFull(),
-
                     ]),
+
+                Section::make('Standard')
+                    ->schema([
+                        FileUpload::make('file_upload')
+                            ->label('File Pendukung')
+                            ->directory('Production/Jadwal/Files')
+                            ->acceptedFileTypes(['application/pdf'])
+                            ->maxSize(10240)
+                            ->required()
+                            ->columnSpanFull()
+                            ->helperText('Drawing wajib dilampirkan'),
+                    ]),
+
+                Section::make('Kebutuhan bahan/alat')
+                    ->schema([
+                        TableRepeater::make('sumbers')
+                            ->relationship('sumbers')
+                            ->label('')
+                            ->schema([
+
+                                self::textInput('bahan_baku', 'Nama Bahan Baku'),
+
+                                self::textInput('spesifikasi', 'Spesifikasi'),
+
+                                self::textInput('jumlah', 'Quantity'),
+
+                                self::textInput('status', 'Status (Diterima atau Belum)'),
+
+                                self::textInput('keperluan', 'Keperluan'),
+                            ])
+                            ->deletable(true)
+                            ->reorderable(false)
+                            ->addable(true)
+                            ->columnSpanFull(),
+                    ]),
+
+                Section::make('Timeline Produksi')
+                    ->schema([
+                        TableRepeater::make('timelines')
+                            ->relationship('timelines')
+                            ->label('')
+                            ->schema([
+
+                                self::textInput('task', 'Task'),
+
+                                self::datePicker('tanggal_mulai', 'Tanggal Mulai')
+                                    ->required(),
+
+                                self::datePicker('tanggal_selesai', 'Tanggal Selesai')
+                                    ->required(),
+                            ])
+                            ->deletable(true)
+                            ->addable(true)
+                            ->reorderable(false)
+                            ->columnSpanFull(),
+                    ]),
+
 
                 Section::make('PIC')
                     ->collapsible()

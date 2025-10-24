@@ -23,24 +23,24 @@ class EditJadwalProduksi extends EditRecord
         return $this->getResource()::getUrl('index');
     }
 
-    protected function afterSave(): void
-    {
-        if ($this->record && $this->record->id) {
-            SendGenericNotif::dispatch(
-                $this->record,
-                'jadwal_produksi_pics',
-                'jadwal_produksi_id',
-                'approve_signature',
-                'approve_name',
-                GenericNotification::class,
-                '/admin/produksi/jadwal-produksi',
-                'Data jadwal produksi berhasil dibuat',
-                'Ada data jadwal produksi yang telah Anda tanda tangani.'
-            );
-        } else {
-            Log::error('afterCreate dipanggil tapi record belum lengkap.');
-        }
-    }
+    // protected function afterSave(): void
+    // {
+    //     if ($this->record && $this->record->id) {
+    //         SendGenericNotif::dispatch(
+    //             $this->record,
+    //             'jadwal_produksi_pics',
+    //             'jadwal_produksi_id',
+    //             'approve_signature',
+    //             'approve_name',
+    //             GenericNotification::class,
+    //             '/admin/produksi/jadwal-produksi',
+    //             'Data jadwal produksi berhasil dibuat',
+    //             'Ada data jadwal produksi yang telah Anda tanda tangani.'
+    //         );
+    //     } else {
+    //         Log::error('afterCreate dipanggil tapi record belum lengkap.');
+    //     }
+    // }
 
     protected function getHeaderActions(): array
     {

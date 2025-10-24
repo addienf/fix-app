@@ -29,12 +29,12 @@
                         </tr>
                         <tr>
                             <td class="px-3 py-2 border-b border-black dark:border-white">Tanggal Rilis</td>
-                            <td class="px-3 py-2 font-semibold border-b border-black dark:border-white"> : 12 Maret 2025
+                            <td class="px-3 py-2 font-semibold border-b border-black dark:border-white"> : 25 Juni 2025
                             </td>
                         </tr>
                         <tr>
                             <td class="px-3 py-2">Revisi</td>
-                            <td class="px-3 py-2 font-semibold"> : 0</td>
+                            <td class="px-3 py-2 font-semibold"> : 01</td>
                         </tr>
                     </table>
                 </td>
@@ -45,6 +45,7 @@
         <div class="w-full max-w-4xl pt-4 mx-auto space-y-4 text-sm">
             @php
                 $fields = [
+                    ['label' => 'No QC :', 'value' => $incomingNonSS->no_qc],
                     ['label' => 'No PO :', 'value' => $incomingNonSS->no_po],
                     ['label' => 'Supplier  :', 'value' => $incomingNonSS->supplier],
                 ];
@@ -118,7 +119,7 @@
             </table>
 
             <!-- Summary Table -->
-            <table class="w-full text-sm border border-collapse border-black">
+            {{-- <table class="w-full text-sm border border-collapse border-black">
                 <thead class="bg-gray-100">
                     <tr>
                         <th class="px-3 py-2 text-left border border-black">Summary</th>
@@ -154,7 +155,41 @@
                         </tr>
                     </tbody>
                 @endforeach
-            </table>
+            </table> --}}
+            <div class="w-full overflow-hidden border rounded-lg shadow-sm">
+                <table class="w-full text-sm text-left border-collapse">
+                    <thead>
+                        <tr class="bg-gray-100">
+                            <th class="w-1/2 px-4 py-2 border">Summary</th>
+                            <th class="w-1/2 px-4 py-2 border">Quantity</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="px-4 py-2 border">Total Received</td>
+                            <td class="px-4 py-2 border">{{ $incomingNonSS->summary['summary']['total_received'] ?? '-' }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-2 border">Return to Supplier</td>
+                            <td class="px-4 py-2 border">
+                                {{ $incomingNonSS->summary['summary']['return_to_supplier'] ?? '-' }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-2 border">Total Rejected</td>
+                            <td class="px-4 py-2 border">{{ $incomingNonSS->summary['summary']['total_rejected'] ?? '-' }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-2 border">Total Acceptable Quantity</td>
+                            <td class="px-4 py-2 border">
+                                {{ $incomingNonSS->summary['summary']['total_acceptable'] ?? '-' }}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
 
             <!-- Batch No -->
             <div class="w-full max-w-4xl mx-auto mb-4">

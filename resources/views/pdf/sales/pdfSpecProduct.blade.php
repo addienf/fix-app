@@ -70,6 +70,7 @@
                     @foreach ($chunk as $detail)
                         <div class="p-4 space-y-5 bg-white border border-gray-400 rounded-md shadow-sm">
 
+                            {{-- NAMA ITEM --}}
                             <div class="grid items-center grid-cols-4 gap-2">
                                 <label class="col-span-1 font-medium">Nama Item :</label>
                                 <input type="text" disabled
@@ -77,6 +78,7 @@
                                     value="{{ $detail->product->name }}" />
                             </div>
 
+                            {{-- QUANTITY --}}
                             <div class="grid items-center grid-cols-4 gap-2">
                                 <label class="col-span-1 font-medium">Quantity :</label>
                                 <input type="text" disabled
@@ -84,7 +86,9 @@
                                     value="{{ $detail->quantity }}" />
                             </div>
 
+                            {{-- KHUSUS PRODUK QLAB --}}
                             @if ($detail->product->category?->id === 1)
+                                {{-- Spesifikasi utama Qlab --}}
                                 @foreach ($detail->specification ?? [] as $spec)
                                     <div class="grid items-center grid-cols-4 gap-2">
                                         <label class="col-span-1 font-medium">{{ $spec['name'] }} :</label>
@@ -98,7 +102,14 @@
                                             } }}" />
                                     </div>
                                 @endforeach
+                                <div class="flex flex-col pt-2">
+                                    <label class="mb-1 font-medium">Detail Specification :</label>
+                                    <input type="text" disabled
+                                        class="w-full px-2 py-1 text-black bg-white border border-gray-300 rounded cursor-not-allowed"
+                                        value="{{ $spesifikasi->detail_specification ?? '-' }}" />
+                                </div>
                             @else
+                                {{-- Untuk produk lain (misalnya Mecmesin, Ohaus, dll) --}}
                                 @foreach ($detail->specification_mecmesin ?? [] as $spec)
                                     <div class="grid grid-cols-2 gap-4">
                                         <div>
@@ -126,10 +137,38 @@
                         </div>
                     @endforeach
                 @endforeach
-
             </div>
 
-            <!-- Penanggung Jawab -->
+            @php
+                $status = ucfirst($spesifikasi->status_penerimaan_order);
+                $fields = [
+                    [
+                        'label' => 'Estimated Delivery Date',
+                        'value' => \Carbon\Carbon::parse($spesifikasi->estimasi_pengiriman)->translatedFormat('d F Y'),
+                    ],
+                    ['label' => 'Receive Order', 'value' => $status],
+                ];
+            @endphp
+
+            <div class="flex flex-col max-w-4xl gap-4 pt-6 mx-auto text-sm">
+                @foreach ($fields as $field)
+                    <div class="flex flex-col">
+                        <label class="mb-1 font-medium">{{ $field['label'] }} :</label>
+                        <input type="text" disabled
+                            class="w-full px-2 py-1 text-black bg-white border border-gray-300 rounded-md"
+                            value="{{ $field['value'] }}" />
+                    </div>
+                @endforeach
+
+                @if (strtolower($spesifikasi->status_penerimaan_order) === 'no')
+                    <div class="flex flex-col">
+                        <label class="mb-1 font-medium">Reason :</label>
+                        <textarea readonly rows="3"
+                            class="w-full px-3 py-2 text-sm text-black bg-white border border-gray-300 rounded-md resize-none">{{ $spesifikasi->alasan ?? '-' }}</textarea>
+                    </div>
+                @endif
+            </div>
+
             @php
                 $roles = [
                     'Signed by Sales Dept' => [

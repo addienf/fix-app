@@ -178,7 +178,7 @@ class SpesifikasiProductResource extends Resource
                                     ->label('Spesifikasi Mecmesin')
                                     ->visible(
                                         fn($get) =>
-                                        optional(Product::find($get('product_id')))?->category_id === 2 // ganti dengan ID Mecmesin kamu
+                                        optional(Product::find($get('product_id')))?->category_id === 2
                                     )
                                     ->schema([
                                         Grid::make(2)
@@ -248,29 +248,6 @@ class SpesifikasiProductResource extends Resource
                     ->collapsible()
                     ->relationship('pic')
                     ->schema([
-                        // Grid::make(2)
-                        //     ->schema([
-                        //         Hidden::make('name')
-                        //             ->default(fn() => auth()->id()),
-
-                        //         self::textInput('name_display', 'Nama Pembuat')
-                        //             ->default(fn() => auth()->user()?->name)
-                        //             ->extraAttributes([
-                        //                 'readonly' => true,
-                        //                 'style' => 'pointer-events: none;'
-                        //             ]),
-
-                        //         DatePicker::make('date')
-                        //             ->label('Tanggal Dibuat')
-                        //             ->required()
-                        //             ->default(now())
-                        //             ->displayFormat('M d Y'),
-
-                        //         self::signatureInput('signature')
-                        //             ->label('Tanda Tangan')
-                        //             ->required()
-                        //             ->columnSpan(2),
-                        //     ]),
                         Grid::make(3)
                             ->schema([
                                 Grid::make(1)
@@ -377,18 +354,12 @@ class SpesifikasiProductResource extends Resource
                     ->label('Status')
                     ->badge()
                     ->color(function ($record) {
-                        $penyelesaian = $record->status;
-                        $persetujuan = $record->status_persetujuan;
-
-                        if ($penyelesaian === 'Diketahui') {
-                            return 'success';
-                        }
-
-                        if ($penyelesaian !== 'Ditanda Tangan' && $persetujuan !== 'Diketahui') {
-                            return 'danger';
-                        }
-
-                        return 'warning';
+                        return match ($record->status) {
+                            'Belum Diterima' => 'danger',
+                            'Diterima' => 'warning',
+                            'Diketahui MR' => 'success',
+                            default => 'gray',
+                        };
                     })
                     ->alignCenter(),
             ])

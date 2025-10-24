@@ -24,11 +24,11 @@
                         </tr>
                         <tr>
                             <td class="px-3 py-2 border-b border-black">Tanggal Rilis</td>
-                            <td class="px-3 py-2 font-semibold border-b border-black"> : 12 Maret 2025</td>
+                            <td class="px-3 py-2 font-semibold border-b border-black"> : 22 Mei 2025</td>
                         </tr>
                         <tr>
                             <td class="px-3 py-2">Revisi</td>
-                            <td class="px-3 py-2 font-semibold"> : 0</td>
+                            <td class="px-3 py-2 font-semibold"> : 01</td>
                         </tr>
                     </table>
                 </td>
@@ -36,7 +36,7 @@
         </table>
 
         {{-- SPK PRODUKSI --}}
-        <div class="grid w-full max-w-4xl grid-cols-1 pt-4 mx-auto mb-2 text-sm gap-y-4">
+        {{-- <div class="grid w-full max-w-4xl grid-cols-1 pt-4 mx-auto mb-2 text-sm gap-y-4">
             @php
                 $fields = [['label' => 'No SPK Produksi :', 'value' => $electrical->spk->no_spk]];
             @endphp
@@ -47,10 +47,10 @@
                         class="flex-1 px-3 py-2 text-black bg-white border border-gray-300 rounded-md cursor-not-allowed" />
                 </div>
             @endforeach
-        </div>
+        </div> --}}
 
         {{-- CHAMBER IDENTIFICATION --}}
-        <h2 class="max-w-4xl mx-auto text-xl font-bold text-start">Chamber Identification</h2>
+        <h2 class="max-w-4xl pt-4 mx-auto text-xl font-bold text-start">Product Identification</h2>
         <div class="grid w-full max-w-4xl grid-cols-1 pt-2 mx-auto mb-4 text-sm gap-y-4">
             @php
                 $fields = [

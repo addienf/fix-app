@@ -410,12 +410,12 @@ class PengecekanElectricalResource extends Resource
             ->afterStateUpdated(function ($state, callable $set, callable $get) {
                 if (!$state) return;
 
-                $spk = SPKMarketing::with('jadwalProduksi')->find($state);
+                $spk = SPKMarketing::with('jadwalProduksi', 'defect')->find($state);
 
                 if (!$spk) return;
 
-                $tipe = $spk?->jadwalProduksi?->details->first()->tipe;
-                $volume = $spk?->jadwalProduksi?->details->first()->volume;
+                $tipe = $spk?->jadwalProduksi?->identifikasiProduks->first()->tipe;
+                $volume = $spk?->defect?->volume;
 
                 $set('tipe', $tipe);
                 $set('volume', $volume);

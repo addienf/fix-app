@@ -295,13 +295,13 @@ class PenyerahanProdukJadiResource extends Resource
             ->afterStateUpdated(function ($state, callable $set) {
                 if (!$state) return;
 
-                $spk = SPKMarketing::with('spesifikasiProduct.urs', 'spesifikasiProduct.details.product', 'jadwalProduksi', 'pengecekanSS.penyerahan')->find($state);
+                $spk = SPKMarketing::with('spesifikasiProduct.urs', 'spesifikasiProduct.details.product', 'defect', 'pengecekanSS.penyerahan')->find($state);
                 if (!$spk) return;
 
                 $spesifikasi = $spk->spesifikasiProduct;
                 $no_spk = $spk->no_spk;
-                $tipe = $spk?->jadwalProduksi?->details->first()->tipe;
-                $volume = $spk?->jadwalProduksi?->details->first()->volume;
+                $tipe = $spk?->defect?->tipe;
+                $volume = $spk?->defect?->volume;
 
                 $details = $spesifikasi->details->map(function ($detail) use ($no_spk, $tipe, $volume) {
                     return [
@@ -313,7 +313,6 @@ class PenyerahanProdukJadiResource extends Resource
                     ];
                 })->toArray();
 
-                // dd($details);
                 $set('details', $details);
             })
         ;

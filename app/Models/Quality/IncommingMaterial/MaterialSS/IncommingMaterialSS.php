@@ -17,9 +17,10 @@ class IncommingMaterialSS extends Model
 
     protected $fillable = [
         'permintaan_pembelian_id',
+        'no_qc',
         'no_po',
         'supplier',
-        'remark',
+        'batch_no',
         'status_penyelesaian',
     ];
 

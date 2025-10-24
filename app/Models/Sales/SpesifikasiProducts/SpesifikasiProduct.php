@@ -59,17 +59,17 @@ class SpesifikasiProduct extends Model
     {
         static::saving(function ($model) {
             if (
-                $model->pic?->signed_signature &&
-                $model->status !== 'Ditanda Tangan'
+                $model->pic?->accepted_signature &&
+                $model->status !== 'Diterima'
             ) {
-                $model->status = 'Ditanda Tangan';
+                $model->status = 'Diterima';
             }
 
             if (
-                $model->pic?->accepted_signature &&
-                $model->status !== 'Diketahui'
+                $model->pic?->acknowledge_signature &&
+                $model->status !== 'Diketahui MR'
             ) {
-                $model->status = 'Diketahui';
+                $model->status = 'Diketahui MR';
             }
         });
 

@@ -23,6 +23,7 @@ return [
             'Clean & Check level switch sensor',
             'Clean the water inlet',
             'Check the function of humidification system',
+            'Take the photo of the water heater condition and resistance in Ampere Meter',
         ]
     ],
     [
@@ -33,6 +34,7 @@ return [
             'Air Heater 2500 W (19-19,3 Ohm)',
             'Air  Heater 1350 W (15-16 Ohm)',
             'Clean the air heater ',
+            'Take the photo of the water heater condition and resistance in Ampere Meter',
         ]
     ],
     [
