@@ -20,7 +20,7 @@ class IncommingMaterialSS extends Model
         'no_qc',
         'no_po',
         'supplier',
-        'batch_no',
+        'remarks',
         'status_penyelesaian',
     ];
 

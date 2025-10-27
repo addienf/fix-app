@@ -18,7 +18,7 @@
             <tr>
                 <td class="font-bold text-center border border-black dark:border-white dark:bg-gray-900"
                     style="font-size: 20px;">
-                    Formulir Incoming Part <br> Quality Check
+                    Formulir Incoming Production<br>Part Quality Check
                 </td>
                 <td rowspan="2" class="p-0 align-top border border-black dark:border-white dark:bg-gray-900">
                     <table class="w-full text-sm dark:bg-gray-900 dark:text-white" style="border-collapse: collapse;">
@@ -45,17 +45,17 @@
         <div class="w-full max-w-4xl pt-4 mx-auto space-y-4 text-sm">
             @php
                 $fields = [
-                    ['label' => 'No QC :', 'value' => $incomingNonSS->no_qc],
-                    ['label' => 'No PO :', 'value' => $incomingNonSS->no_po],
-                    ['label' => 'Supplier  :', 'value' => $incomingNonSS->supplier],
+                    ['label' => 'No QC', 'value' => $incomingNonSS->no_qc],
+                    ['label' => 'No PO', 'value' => $incomingNonSS->no_po],
+                    ['label' => 'Supplier', 'value' => $incomingNonSS->supplier],
                 ];
             @endphp
 
             @foreach ($fields as $field)
-                <div class="flex items-center">
-                    <label class="w-64 font-medium">{{ $field['label'] }}</label>
-                    <input type="text" readonly value="{{ $field['value'] }}"
-                        class="flex-1 px-3 py-2 text-black bg-white border border-gray-300 rounded-md cursor-not-allowed" />
+                <div class="flex mb-2">
+                    <span class="w-20 font-medium">{{ $field['label'] }}</span>
+                    <span class="w-4">:</span>
+                    <span>{{ $field['value'] }}</span>
                 </div>
             @endforeach
 

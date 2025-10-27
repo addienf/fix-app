@@ -146,11 +146,11 @@ class WalkinChamberResource extends Resource
                                         Textarea::make('part')
                                             ->rows(3)
                                             ->columnSpan(3)
-                                            ->required()
-                                            ->extraAttributes([
-                                                'readonly' => true,
-                                                'style' => 'pointer-events: none;'
-                                            ]),
+                                            ->required(),
+                                        // ->extraAttributes([
+                                        //     'readonly' => true,
+                                        //     'style' => 'pointer-events: none;'
+                                        // ]),
 
                                         TextInput::make('before')
                                             ->columnSpan(1)

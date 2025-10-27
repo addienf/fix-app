@@ -59,6 +59,7 @@ Route::get('/quality/pengecekan-electrical/{record}/pdf-pengecekan-electrical', 
 Route::get('/quality/pengecekan-performa/{record}/pdf-pengecekan-performa', [PDFController::class, 'pdfPengecekanPerforma'])->name('pdf.pengecekanPerforma');
 Route::get('/quality/defect-status/{record}/pdf-defect-status', [PDFController::class, 'pdfDefectStatus'])->name('pdf.defectStatus');
 Route::get('/quality/defect-status/{record}/download-file', [PDFController::class, 'downloadDefectStatus'])->name('defectStatus.file-download');
+Route::get('/quality/ketidaksesuaian/{record}/pdf-ketidaksesuaian', [PDFController::class, 'pdfKetidaksesuaian'])->name('pdf.ketidaksesuaian');
 
 //Engineering
 Route::get('/engineering/spk-service/{record}/pdf-spk-service', [PDFController::class, 'pdfSPKService'])->name('pdf.spkService');

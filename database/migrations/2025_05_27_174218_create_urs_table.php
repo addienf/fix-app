@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('no_urs')->unique();
             $table->foreignId('customer_id')->constrained()->cascadeOnDelete();
-            $table->text('permintaan_khusus');
+            $table->text('permintaan_khusus')->nullable();
             $table->timestamps();
         });
     }

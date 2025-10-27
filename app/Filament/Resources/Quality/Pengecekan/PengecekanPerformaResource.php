@@ -29,7 +29,6 @@ use Wallo\FilamentSelectify\Components\ButtonGroup;
 class PengecekanPerformaResource extends Resource
 {
     protected static ?string $model = PengecekanPerforma::class;
-
     protected static ?string $navigationIcon = 'heroicon-o-check-circle';
     protected static ?int $navigationSort = 19;
     protected static ?string $navigationGroup = 'Quality';

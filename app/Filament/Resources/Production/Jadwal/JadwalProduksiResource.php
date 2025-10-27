@@ -32,6 +32,7 @@ use Filament\Tables\Table;
 use Icetalker\FilamentTableRepeater\Forms\Components\TableRepeater;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Str;
 use Saade\FilamentAutograph\Forms\Components\SignaturePad;
 use Wallo\FilamentSelectify\Components\ButtonGroup;
 
@@ -92,7 +93,36 @@ class JadwalProduksiResource extends Resource
 
                                 self::textInput('tipe', 'Tipe/Model'),
 
-                                self::textInput('no_seri', 'Nomor Seri'),
+                                TextInput::make('batch_code')
+                                    ->label('Batch (A/B/C)')
+                                    ->reactive()
+                                    ->hidden(fn($operation) => $operation === 'edit')
+                                    ->afterStateUpdated(function ($state, callable $set) {
+                                        // Generate 4 random alphanum
+                                        $prefix = strtoupper(Str::random(4));
+
+                                        // Generate 4 random digits
+                                        $mid = str_pad(rand(0, 9999), 4, '0', STR_PAD_LEFT);
+
+                                        // Month code (A=Jan ... L=Dec)
+                                        $monthCode = chr(64 + now()->month); // 64 + 1 = A, 64 + 10 = J, etc.
+
+                                        // Year 2 digit
+                                        $year = now()->format('y');
+
+                                        // Combine
+                                        $generated = $prefix . $mid . strtoupper($state) . $monthCode . $year;
+
+                                        $set('no_seri', $generated);
+                                    }),
+
+                                // self::textInput('no_seri', 'Nomor Seri'),
+                                TextInput::make('no_seri')
+                                    ->label('Nomor Seri')
+                                    ->reactive()
+                                    ->default('')
+                                    ->dehydrated(true)
+                                    ->required(),
 
                                 self::textInput('custom_standar', 'Custom/Stardar'),
 

@@ -11,13 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('customers', function (Blueprint $table) {
+        Schema::create('ketidaksesuaian_snks', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->index();
-            $table->string('phone_number')->nullable();
-            $table->string('department')->nullable();
-            $table->string('company_name')->nullable()->index();
-            $table->text('company_address')->nullable();
+            $table->foreignId(column: 'ketidaksesuaian_id')->constrained('ketidaksesuaians')->cascadeOnDelete();
+            $table->text('penyebab');
+            $table->string('tindakan_kolektif');
+            $table->string('tindakan_pencegahan');
             $table->timestamps();
         });
     }
@@ -27,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('customers');
+        Schema::dropIfExists('ketidaksesuaian_snks');
     }
 };

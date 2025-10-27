@@ -102,12 +102,12 @@
                 <tr>
                     <th rowspan="2" class="w-10 px-3 py-2 text-center border border-black">No</th>
                     <th rowspan="2" class="px-3 py-2 text-left border border-black">Incompatible Part</th>
-                    <th colspan="2" class="px-3 py-2 text-center border border-black">Result</th>
-                    <th rowspan="2" class="px-3 py-2 text-left border border-black">Status</th>
+                    <th colspan="2" class="px-3 py-2 text-center border border-black">Repaired</th>
+                    <th rowspan="2" class="px-3 py-2 text-left border border-black">Attachment No.</th>
                 </tr>
                 <tr>
-                    <th class="px-3 py-2 text-center border border-black">Pass</th>
-                    <th class="px-3 py-2 text-center border border-black">Fail</th>
+                    <th class="px-3 py-2 text-center border border-black">Yes</th>
+                    <th class="px-3 py-2 text-center border border-black">No</th>
                 </tr>
             </thead>
             <tbody>
@@ -182,12 +182,12 @@
                 <tr>
                     <th rowspan="2" class="w-10 px-3 py-2 text-center border border-black">No</th>
                     <th rowspan="2" class="px-3 py-2 text-left border border-black">Incompatible Part</th>
-                    <th colspan="2" class="px-3 py-2 text-center border border-black">Result</th>
-                    <th rowspan="2" class="px-3 py-2 text-left border border-black">Status</th>
+                    <th colspan="2" class="px-3 py-2 text-center border border-black">Repaired</th>
+                    <th rowspan="2" class="px-3 py-2 text-left border border-black">Attachment No.</th>
                 </tr>
                 <tr>
-                    <th class="px-3 py-2 text-center border border-black">Pass</th>
-                    <th class="px-3 py-2 text-center border border-black">Fail</th>
+                    <th class="px-3 py-2 text-center border border-black">Yes</th>
+                    <th class="px-3 py-2 text-center border border-black">No</th>
                 </tr>
             </thead>
             <tbody>

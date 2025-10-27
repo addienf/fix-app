@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('delivery_address');
             $table->date('estimasi_pengiriman');
             $table->string('status_penerimaan_order');
-            $table->text('alasan');
+            $table->text('alasan')->nullable();
             $table->string('status');
             $table->timestamps();
         });

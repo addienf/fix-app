@@ -3,25 +3,21 @@
 namespace App\Filament\Resources\General\URS;
 
 use App\Filament\Resources\General\URS\URSResource\Pages;
-use App\Filament\Resources\General\URS\URSResource\RelationManagers;
-use App\Models\Sales\SpesifikasiProducts\SpesifikasiProduct;
 use \App\Models\Sales\URS;
 use Filament\Forms;
 use Filament\Forms\Components\Section;
-use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Actions\ActionGroup;
-use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Traits\SimpleFormResource;
 
 class URSResource extends Resource
 {
+    use SimpleFormResource;
     protected static ?string $model = URS::class;
     protected static ?int $navigationSort = 21;
     protected static ?string $navigationGroup = 'General';
@@ -43,18 +39,27 @@ class URSResource extends Resource
                             ->hint('Format: XXX/QKS/MKT/URS/MM/YY')
                             ->unique(),
 
-                        self::selectInput('customer_id', 'Nama Customer', 'customer', 'name')
-                            ->createOptionForm(fn() => self::customerFormSchema()),
+                        self::selectInput(
+                            'customer_id',
+                            'Nama Customer',
+                            'customer',
+                            'name'
+                        ),
 
-                        Textarea::make('permintaan_khusus')
-                            ->label('Remark Permintaan Khusus')
-                            ->required()
-                            ->columnSpanFull()
+                        self::textareaInput(
+                            'permintaan_khusus',
+                            'Remark Permintaan Khusus'
+                        )
 
                     ])
                     ->columns(2)
 
             ]);
+    }
+
+    protected static function getTableQuery(): Builder
+    {
+        return URS::query()->with(['customer']);
     }
 
     public static function table(Table $table): Table
@@ -95,34 +100,5 @@ class URSResource extends Resource
             'create' => Pages\CreateURS::route('/create'),
             'edit' => Pages\EditURS::route('/{record}/edit'),
         ];
-    }
-
-    protected static function textColumn(string $fieldName, string $label): TextColumn
-    {
-        return
-            TextColumn::make($fieldName)
-            ->label($label)
-            ->searchable()
-            ->sortable();
-    }
-
-    protected static function textInput(string $fieldName, string $label): TextInput
-    {
-        return TextInput::make($fieldName)
-            ->label($label)
-            ->required()
-            ->maxLength(255);
-    }
-
-    protected static function selectInput(string $fieldName, string $label, string $relation, string $title): Select
-    {
-        return
-            Select::make($fieldName)
-            ->relationship($relation, $title)
-            ->label($label)
-            ->native(false)
-            ->searchable()
-            ->preload()
-            ->required();
     }
 }

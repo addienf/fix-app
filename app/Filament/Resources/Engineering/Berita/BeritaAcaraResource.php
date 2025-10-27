@@ -68,16 +68,16 @@ class BeritaAcaraResource extends Resource
                                         $query->where('status_penyerahan', 'Diserahkan');
                                     })
                                     ->whereDoesntHave('beritaAcara')
-                                    ->where(function ($query) {
-                                        $query->whereHas('walkinChamber')
-                                            ->orWhereHas('chamberR2')
-                                            ->orWhereHas('refrigerator')
-                                            ->orWhereHas('coldRoom')
-                                            ->orWhereHas('rissing')
-                                            ->orWhereHas('walkinG2')
-                                            ->orWhereHas('chamberG2')
-                                            ->orWhereHas('service');
-                                    })
+                                    // ->where(function ($query) {
+                                    //     $query->whereHas('walkinChamber')
+                                    //         ->orWhereHas('chamberR2')
+                                    //         ->orWhereHas('refrigerator')
+                                    //         ->orWhereHas('coldRoom')
+                                    //         ->orWhereHas('rissing')
+                                    //         ->orWhereHas('walkinG2')
+                                    //         ->orWhereHas('chamberG2')
+                                    //         ->orWhereHas('service');
+                                    // })
                                     ->pluck('no_spk_service', 'id');
                             })
                             ->native(false)

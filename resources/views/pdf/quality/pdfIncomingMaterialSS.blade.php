@@ -50,10 +50,10 @@
             @endphp
 
             @foreach ($fields as $field)
-                <div class="flex items-center">
-                    <label class="w-64 font-medium">{{ $field['label'] }}</label>
-                    <input type="text" readonly value="{{ $field['value'] }}"
-                        class="flex-1 px-3 py-2 text-black bg-white border border-gray-300 rounded-md cursor-not-allowed" />
+                <div class="flex mb-2">
+                    <span class="w-20 font-medium">{{ $field['label'] }}</span>
+                    <span class="w-4">:</span>
+                    <span>{{ $field['value'] }}</span>
                 </div>
             @endforeach
         </div>

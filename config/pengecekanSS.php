@@ -4,14 +4,14 @@ return [
         'mainPart' => 'Body Chamber Welding',
         'parts' => [
             'Right Outer Side of Wall',
-            // 'Left Outer Side of Wall',
-            // 'Rear Outer Side of Wall',
-            // 'Rear Hole for Humidifier',
-            // 'Right Door of Chamber',
-            // 'Middle Door of Chamber',
-            // 'Left Door of Chamber',
-            // 'Display Side of Chamber',
-            // 'Cooling System Circular Hole',
+            'Left Outer Side of Wall',
+            'Rear Outer Side of Wall',
+            'Rear Hole for Humidifier',
+            'Right Door of Chamber',
+            'Middle Door of Chamber',
+            'Left Door of Chamber',
+            'Display Side of Chamber',
+            'Cooling System Circular Hole',
         ]
     ],
     // [

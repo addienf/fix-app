@@ -151,7 +151,7 @@
 
         @php
             $roles = [
-                'Checked By' => [
+                'Inspected By' => [
                     'name' => $pengecekanSS->pic->inspectedName->name ?? '-',
                     'signature' => $pengecekanSS->pic->inspected_signature ?? null,
                     'date' => $pengecekanSS->pic->inspected_date ?? null,

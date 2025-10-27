@@ -41,16 +41,17 @@
             <!-- FORM -->
             @php
                 $fields = [
-                    ['label' => 'No', 'value' => $spesifikasi->urs->no_urs],
-                    ['label' => 'Phone Number', 'value' => $spesifikasi->urs->customer->phone_number],
+                    // ['label' => 'No', 'value' => ],
                     ['label' => 'Nama', 'value' => $spesifikasi->urs->customer->name],
-                    ['label' => 'Company Name', 'value' => $spesifikasi->urs->customer->company_name],
                     ['label' => 'Department', 'value' => $spesifikasi->urs->customer->department],
+                    ['label' => 'Phone Number', 'value' => $spesifikasi->urs->customer->phone_number],
+                    ['label' => 'Company Name', 'value' => $spesifikasi->urs->customer->company_name],
                     ['label' => 'Company Address', 'value' => $spesifikasi->urs->customer->company_address],
                 ];
             @endphp
 
             <div class="flex flex-col max-w-4xl gap-4 pt-6 mx-auto text-sm">
+                <div><span>No. {{ $spesifikasi->urs->no_urs }}</span></div>
                 @foreach ($fields as $field)
                     <div class="flex flex-col sm:flex-row sm:items-center sm:gap-4">
                         <label class="font-medium sm:w-40">{{ $field['label'] }} :</label>

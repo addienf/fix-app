@@ -25,6 +25,7 @@ use App\Models\Quality\Defect\DefectStatus;
 use App\Models\Quality\IncommingMaterial\MaterialNonSS\IncommingMaterialNonSS;
 use App\Models\Quality\IncommingMaterial\MaterialSS\IncommingMaterialSS;
 use App\Models\Quality\KelengkapanMaterial\SS\KelengkapanMaterialSS;
+use App\Models\Quality\Ketidaksesuaian\Ketidaksesuaian;
 use App\Models\Quality\Pengecekan\PengecekanPerforma;
 use App\Models\Quality\PengecekanMaterial\Electrical\PengecekanMaterialElectrical;
 use App\Models\Quality\PengecekanMaterial\SS\PengecekanMaterialSS;
@@ -451,5 +452,12 @@ class PDFController extends Controller
         }
 
         return response()->download($zipPath)->deleteFileAfterSend(true);
+    }
+
+    public function pdfKetidaksesuaian($id)
+    {
+        $ketidaksesuaian = Ketidaksesuaian::with(['spk', 'pic', 'details', 'snk'])->findOrFail($id);
+
+        return view('pdf.quality.pdfKetidaksesuaian', compact('ketidaksesuaian'));
     }
 }
