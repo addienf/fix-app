@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('incomming_material_non_ss', function (Blueprint $table) {
             $table->id();
             $table->foreignId('permintaan_pembelian_id')->constrained('permintaan_pembelians')->onDelete('cascade');
+            $table->string('no_qc');
             $table->string('no_po');
             $table->string('supplier');
             $table->text('batch_no');

@@ -13,15 +13,16 @@ class BeritaAcaraDetail extends Model
     protected $fillable = [
         'berita_id',
         'jenis_pekerjaan',
-        'detail_pekerjaan',
-        'lokasi_pengerjaan',
-        'nama_teknisi',
+        'produk',
+        'serial_number',
+        'desc_pekerjaan',
+        'status_barang',
     ];
 
-    protected $casts = [
-        'nama_teknisi' => 'array',
-        'detail_pekerjaan' => 'array',
-    ];
+    // protected $casts = [
+    //     'nama_teknisi' => 'array',
+    //     'detail_pekerjaan' => 'array',
+    // ];
 
     public function beritaAcara()
     {

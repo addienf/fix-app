@@ -16,6 +16,8 @@ return new class extends Migration
             $table->foreignId('spk_service_id')->constrained('spk_services')->cascadeOnDelete();
             $table->string('no_surat');
             $table->date('tanggal');
+            $table->string('status_po');
+            $table->string('nomor_po');
             $table->timestamps();
         });
     }

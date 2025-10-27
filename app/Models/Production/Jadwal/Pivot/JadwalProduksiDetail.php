@@ -12,10 +12,8 @@ class JadwalProduksiDetail extends Model
     use HasFactory;
     protected $fillable = [
         'jadwal_produksi_id',
-        'nama_produk',
-        'tipe',
-        'volume',
-        'jumlah',
+        'pekerjaan',
+        'pekerja',
         'tanggal_mulai',
         'tanggal_selesai',
     ];

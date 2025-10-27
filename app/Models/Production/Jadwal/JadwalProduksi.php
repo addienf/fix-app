@@ -2,12 +2,15 @@
 
 namespace App\Models\Production\Jadwal;
 
+use App\Models\Production\Jadwal\Pivot\IdentifikasiProduk;
 use App\Models\Production\Jadwal\Pivot\JadwalProduksiDetail as PivotJadwalProduksiDetail;
 use App\Models\Production\Jadwal\Pivot\JadwalProduksiPIC;
 use App\Models\Production\Jadwal\Pivot\SumberDaya as PivotSumberDaya;
+use App\Models\Production\Jadwal\Pivot\TimelineProduksi;
 use App\Models\Sales\SPKMarketings\SPKMarketing;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * @property string|null $id
@@ -24,6 +27,8 @@ class JadwalProduksi extends Model
         'spk_marketing_id',
         'tanggal',
         'pic_name',
+        'no_surat',
+        'file_upload',
         'status_persetujuan',
     ];
 
@@ -37,14 +42,24 @@ class JadwalProduksi extends Model
         return $this->hasMany(PivotJadwalProduksiDetail::class);
     }
 
+    public function timelines()
+    {
+        return $this->hasMany(TimelineProduksi::class);
+    }
+
+    public function identifikasiProduks()
+    {
+        return $this->hasMany(IdentifikasiProduk::class);
+    }
+
+    public function sumbers()
+    {
+        return $this->hasMany(PivotSumberDaya::class);
+    }
+
     public function pic()
     {
         return $this->hasOne(JadwalProduksiPIC::class);
-    }
-
-    public function sumber()
-    {
-        return $this->hasOne(PivotSumberDaya::class);
     }
 
     protected static function booted()
@@ -55,6 +70,16 @@ class JadwalProduksi extends Model
                 $model->status_persetujuan !== 'Disetujui'
             ) {
                 $model->status_persetujuan = 'Disetujui';
+            }
+        });
+
+        static::updating(function ($model) {
+            if (
+                $model->isDirty('file_upload') &&
+                $model->getOriginal('file_upload') &&
+                Storage::disk('public')->exists($model->getOriginal('file_upload'))
+            ) {
+                Storage::disk('public')->delete($model->getOriginal('file_upload'));
             }
         });
 
@@ -69,6 +94,10 @@ class JadwalProduksi extends Model
 
             if ($model->sumber) {
                 $model->sumber->delete();
+            }
+
+            if ($model->file_upload && Storage::disk('public')->exists($model->file_upload)) {
+                Storage::disk('public')->delete($model->file_upload);
             }
         });
     }

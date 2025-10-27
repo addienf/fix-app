@@ -25,6 +25,7 @@ use App\Models\Quality\Defect\DefectStatus;
 use App\Models\Quality\IncommingMaterial\MaterialNonSS\IncommingMaterialNonSS;
 use App\Models\Quality\IncommingMaterial\MaterialSS\IncommingMaterialSS;
 use App\Models\Quality\KelengkapanMaterial\SS\KelengkapanMaterialSS;
+use App\Models\Quality\Ketidaksesuaian\Ketidaksesuaian;
 use App\Models\Quality\Pengecekan\PengecekanPerforma;
 use App\Models\Quality\PengecekanMaterial\Electrical\PengecekanMaterialElectrical;
 use App\Models\Quality\PengecekanMaterial\SS\PengecekanMaterialSS;
@@ -79,9 +80,22 @@ class PDFController extends Controller
 
     public function pdfJadwalProduksi($id)
     {
-        $jadwal = JadwalProduksi::with(['spk', 'details', 'pic', 'sumber', 'pic.createName', 'pic.approveName'])->findOrFail($id);
+        $jadwal = JadwalProduksi::with(['spk', 'details', 'pic', 'sumbers', 'identifikasiProduks', 'timelines', 'pic.createName', 'pic.approveName'])->findOrFail($id);
 
         return view('pdf.production.pdfJadwalProduksi', compact('jadwal'));
+    }
+
+    public function downloadJadwalProduksi($id)
+    {
+        $jadwalProduksi = JadwalProduksi::findOrFail($id);
+
+        $filePath = $jadwalProduksi->file_upload;
+
+        if (!$filePath || !Storage::disk('public')->exists($filePath)) {
+            return response()->json(['message' => 'File not found'], 404);
+        }
+
+        return response()->download(storage_path('app/public/' . $filePath));
     }
 
     public function pdfPermintaanAlatBahan($id)
@@ -93,7 +107,7 @@ class PDFController extends Controller
 
     public function pdfPermintaanBahan($id)
     {
-        $permintaan_bahan = PermintaanBahan::with(['permintaanBahanPro', 'details', 'pic', 'pic.createName'])->findOrFail($id);
+        $permintaan_bahan = PermintaanBahan::with(['permintaanBahanPro', 'details', 'pic', 'pic.dibuatName', 'pic.mengetahuiName', 'pic.diserahkanName'])->findOrFail($id);
 
         return view('pdf.warehouse.pdfPermintaanBahan', compact('permintaan_bahan'));
     }
@@ -133,15 +147,11 @@ class PDFController extends Controller
         $filePath = $incomingMaterial->file_upload;
 
         if (!$filePath || !Storage::disk('public')->exists($filePath)) {
-            // Respon JSON kalau file tidak ditemukan
+
             return response()->json(['message' => 'File not found'], 404);
         }
 
         return response()->download(storage_path('app/public/' . $filePath));
-
-        // $fullPath = storage_path('app/public/' . $filePath);
-
-        // return response()->download($fullPath);
     }
 
     public function pdfSerahTerima($id)
@@ -179,7 +189,6 @@ class PDFController extends Controller
         $zip = new ZipArchive;
         if ($zip->open($zipPath, ZipArchive::CREATE | ZipArchive::OVERWRITE)) {
 
-            // Tambahkan hanya gambar dari gambar_lain
             foreach ($standarisasi->detail->lampiran ?? [] as $gambarPath) {
                 $fullPath = storage_path('app/public/' . $gambarPath);
                 if (file_exists($fullPath)) {
@@ -272,6 +281,19 @@ class PDFController extends Controller
         $defect = DefectStatus::with(['spk', 'details', 'pic', 'pic.inspectedName', 'pic.acceptedName', 'pic.approvedName'])->findOrFail($id);
 
         return view('pdf.quality.pdfDefectStatus', compact('defect'));
+    }
+
+    public function downloadDefectStatus($id)
+    {
+        $defectStatus = DefectStatus::findOrFail($id);
+
+        $filePath = $defectStatus->file_upload;
+
+        if (!$filePath || !Storage::disk('public')->exists($filePath)) {
+            return response()->json(['message' => 'File not found'], 404);
+        }
+
+        return response()->download(storage_path('app/public/' . $filePath));
     }
 
     public function pdfSPKVendor($id)
@@ -430,5 +452,12 @@ class PDFController extends Controller
         }
 
         return response()->download($zipPath)->deleteFileAfterSend(true);
+    }
+
+    public function pdfKetidaksesuaian($id)
+    {
+        $ketidaksesuaian = Ketidaksesuaian::with(['spk', 'pic', 'details', 'snk'])->findOrFail($id);
+
+        return view('pdf.quality.pdfKetidaksesuaian', compact('ketidaksesuaian'));
     }
 }

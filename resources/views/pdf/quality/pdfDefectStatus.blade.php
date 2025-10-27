@@ -29,12 +29,12 @@
                         </tr>
                         <tr>
                             <td class="px-3 py-2 border-b border-black dark:border-white">Tanggal Rilis</td>
-                            <td class="px-3 py-2 font-semibold border-b border-black dark:border-white"> : 17 Juni 2025
+                            <td class="px-3 py-2 font-semibold border-b border-black dark:border-white"> : 25 Juli 2025
                             </td>
                         </tr>
                         <tr>
                             <td class="px-3 py-2">Revisi</td>
-                            <td class="px-3 py-2 font-semibold"> : 01</td>
+                            <td class="px-3 py-2 font-semibold"> : 02</td>
                         </tr>
                     </table>
                 </td>
@@ -43,7 +43,7 @@
         <div class="grid w-full max-w-4xl grid-cols-1 pt-4 mx-auto mb-3 text-sm gap-y-4">
 
             @php
-                $fields = [['label' => 'No SPK Produksi :', 'value' => $defect->spk->no_spk]];
+                $fields = [['label' => 'No Form :', 'value' => $defect->no_surat]];
             @endphp
 
             @foreach ($fields as $field)
@@ -102,12 +102,12 @@
                 <tr>
                     <th rowspan="2" class="w-10 px-3 py-2 text-center border border-black">No</th>
                     <th rowspan="2" class="px-3 py-2 text-left border border-black">Incompatible Part</th>
-                    <th colspan="2" class="px-3 py-2 text-center border border-black">Result</th>
-                    <th rowspan="2" class="px-3 py-2 text-left border border-black">Status</th>
+                    <th colspan="2" class="px-3 py-2 text-center border border-black">Repaired</th>
+                    <th rowspan="2" class="px-3 py-2 text-left border border-black">Attachment No.</th>
                 </tr>
                 <tr>
-                    <th class="px-3 py-2 text-center border border-black">Pass</th>
-                    <th class="px-3 py-2 text-center border border-black">Fail</th>
+                    <th class="px-3 py-2 text-center border border-black">Yes</th>
+                    <th class="px-3 py-2 text-center border border-black">No</th>
                 </tr>
             </thead>
             <tbody>
@@ -182,12 +182,12 @@
                 <tr>
                     <th rowspan="2" class="w-10 px-3 py-2 text-center border border-black">No</th>
                     <th rowspan="2" class="px-3 py-2 text-left border border-black">Incompatible Part</th>
-                    <th colspan="2" class="px-3 py-2 text-center border border-black">Result</th>
-                    <th rowspan="2" class="px-3 py-2 text-left border border-black">Status</th>
+                    <th colspan="2" class="px-3 py-2 text-center border border-black">Repaired</th>
+                    <th rowspan="2" class="px-3 py-2 text-left border border-black">Attachment No.</th>
                 </tr>
                 <tr>
-                    <th class="px-3 py-2 text-center border border-black">Pass</th>
-                    <th class="px-3 py-2 text-center border border-black">Fail</th>
+                    <th class="px-3 py-2 text-center border border-black">Yes</th>
+                    <th class="px-3 py-2 text-center border border-black">No</th>
                 </tr>
             </thead>
             <tbody>
@@ -310,7 +310,7 @@
     </div>
 
     <div class="mt-6 mb-3 text-center">
-        <button onclick="exportPDF()"
+        <button onclick="exportPDF('{{ $defect->id }}')"
             class="inline-flex items-center gap-2 py-3 text-sm font-semibold text-black text-white bg-blue-600 border rounded border-animated px-7 border-black-400 hover:bg-purple-600 hover:text-white">
             <!-- Icon download SVG -->
             <svg class="w-5 h-5 transition-colors duration-300" fill="none" stroke="currentColor" stroke-width="2"
@@ -325,7 +325,7 @@
 @endsection
 
 <script>
-    function exportPDF() {
+    function exportPDF(id) {
         window.scrollTo(0, 0);
 
         const element = document.getElementById("export-area");
@@ -369,7 +369,10 @@
                 pagebreak: {
                     mode: ["avoid", "css"]
                 }
-            }).from(element).save();
+                // }).from(element).save();
+            }).from(element).save().then(() => {
+                window.location.href = `/quality/defect-status/${id}/download-file`;
+            });
         }
     }
 </script>

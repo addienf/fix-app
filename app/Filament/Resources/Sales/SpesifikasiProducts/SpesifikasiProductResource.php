@@ -4,9 +4,13 @@ namespace App\Filament\Resources\Sales\SpesifikasiProducts;
 
 use App\Filament\Resources\Sales\SpesifikasiProducts\SpesifikasiProductResource\Pages;
 use App\Filament\Resources\Sales\SpesifikasiProducts\SpesifikasiProductResource\RelationManagers;
+use App\Forms\Components\PicSignatureSection;
 use App\Models\General\Product;
 use App\Models\Sales\SpesifikasiProducts\SpesifikasiProduct;
 use App\Services\SignatureUploader;
+use App\Traits\HasSignature;
+use App\Traits\PICSection;
+use App\Traits\SimpleFormResource;
 use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Fieldset;
@@ -41,6 +45,7 @@ use Wallo\FilamentSelectify\Components\ToggleButton;
 
 class SpesifikasiProductResource extends Resource
 {
+    use SimpleFormResource, HasSignature;
     protected static ?string $model = SpesifikasiProduct::class;
     protected static ?int $navigationSort = 1;
     protected static ?string $slug = 'sales/spesifikasi-produk';
@@ -178,7 +183,7 @@ class SpesifikasiProductResource extends Resource
                                     ->label('Spesifikasi Mecmesin')
                                     ->visible(
                                         fn($get) =>
-                                        optional(Product::find($get('product_id')))?->category_id === 2 // ganti dengan ID Mecmesin kamu
+                                        optional(Product::find($get('product_id')))?->category_id === 2
                                     )
                                     ->schema([
                                         Grid::make(2)
@@ -244,116 +249,117 @@ class SpesifikasiProductResource extends Resource
                             ->columnSpanFull(),
                     ]),
 
-                Section::make('PIC')
-                    ->collapsible()
-                    ->relationship('pic')
-                    ->schema([
-                        // Grid::make(2)
-                        //     ->schema([
-                        //         Hidden::make('name')
-                        //             ->default(fn() => auth()->id()),
+                // Section::make('PIC')
+                //     ->collapsible()
+                //     ->relationship('pic')
+                //     ->schema([
+                //         Grid::make(3)
+                //             ->schema([
+                //                 Grid::make(1)
+                //                     ->schema([
 
-                        //         self::textInput('name_display', 'Nama Pembuat')
-                        //             ->default(fn() => auth()->user()?->name)
-                        //             ->extraAttributes([
-                        //                 'readonly' => true,
-                        //                 'style' => 'pointer-events: none;'
-                        //             ]),
+                //                         Hidden::make('signed_name')
+                //                             ->default(fn() => auth()->id()),
 
-                        //         DatePicker::make('date')
-                        //             ->label('Tanggal Dibuat')
-                        //             ->required()
-                        //             ->default(now())
-                        //             ->displayFormat('M d Y'),
+                //                         self::textInput('signed_name_placeholder', 'Signed by Sales Dept')
+                //                             ->default(fn() => auth()->user()?->name)
+                //                             ->extraAttributes([
+                //                                 'readonly' => true,
+                //                                 'style' => 'pointer-events: none;'
+                //                             ]),
 
-                        //         self::signatureInput('signature')
-                        //             ->label('Tanda Tangan')
-                        //             ->required()
-                        //             ->columnSpan(2),
-                        //     ]),
-                        Grid::make(3)
-                            ->schema([
-                                Grid::make(1)
-                                    ->schema([
+                //                         self::signatureInput('signed_signature', ''),
 
-                                        Hidden::make('signed_name')
-                                            ->default(fn() => auth()->id()),
+                //                         self::datePicker('signed_date', '')
+                //                             ->default(now())
+                //                             ->required(),
 
-                                        self::textInput('signed_name_placeholder', 'Signed by Sales Dept')
-                                            ->default(fn() => auth()->user()?->name)
-                                            ->extraAttributes([
-                                                'readonly' => true,
-                                                'style' => 'pointer-events: none;'
-                                            ]),
+                //                     ])->hiddenOn(operations: 'edit'),
 
-                                        self::signatureInput('signed_signature', ''),
+                //                 Grid::make(1)
+                //                     ->schema([
 
-                                        self::datePicker('signed_date', '')
-                                            ->default(now())
-                                            ->required(),
+                //                         Hidden::make('accepted_name')
+                //                             ->default(fn() => auth()->id())
+                //                             ->dehydrated(true)
+                //                             ->afterStateHydrated(function ($component) {
+                //                                 $component->state(auth()->id());
+                //                             }),
 
-                                    ])->hiddenOn(operations: 'edit'),
+                //                         self::textInput('accepted_name_placeholder', 'Accepted by Production Dept')
+                //                             ->default(fn() => auth()->user()?->name)
+                //                             ->placeholder(fn() => auth()->user()?->name)
+                //                             ->required(false)
+                //                             ->extraAttributes([
+                //                                 'readonly' => true,
+                //                                 'style' => 'pointer-events: none;'
+                //                             ]),
 
-                                Grid::make(1)
-                                    ->schema([
+                //                         self::signatureInput('accepted_signature', ''),
 
-                                        Hidden::make('accepted_name')
-                                            ->default(fn() => auth()->id())
-                                            ->dehydrated(true)
-                                            ->afterStateHydrated(function ($component) {
-                                                $component->state(auth()->id());
-                                            }),
+                //                         self::datePicker('accepted_date', '')
+                //                             ->required(),
 
-                                        self::textInput('accepted_name_placeholder', 'Accepted by Production Dept')
-                                            ->default(fn() => auth()->user()?->name)
-                                            ->placeholder(fn() => auth()->user()?->name)
-                                            ->required(false)
-                                            ->extraAttributes([
-                                                'readonly' => true,
-                                                'style' => 'pointer-events: none;'
-                                            ]),
+                //                     ])->hidden(
+                //                         fn($operation, $record) =>
+                //                         $operation === 'create' || filled($record?->accepted_signature)
+                //                     ),
 
-                                        self::signatureInput('accepted_signature', ''),
+                //                 Grid::make(1)
+                //                     ->schema([
 
-                                        self::datePicker('accepted_date', '')
-                                            ->required(),
+                //                         Hidden::make('acknowledge_name')
+                //                             ->default(fn() => auth()->id())
+                //                             ->dehydrated(true)
+                //                             ->afterStateHydrated(function ($component) {
+                //                                 $component->state(auth()->id());
+                //                             }),
 
-                                    ])->hidden(
-                                        fn($operation, $record) =>
-                                        $operation === 'create' || filled($record?->accepted_signature)
-                                    ),
+                //                         self::textInput('acknowledge_name_placeholder', 'Acknowledge by MR')
+                //                             ->default(fn() => auth()->user()?->name)
+                //                             ->placeholder(fn() => auth()->user()?->name)
+                //                             ->required(false)
+                //                             ->extraAttributes([
+                //                                 'readonly' => true,
+                //                                 'style' => 'pointer-events: none;'
+                //                             ]),
 
-                                Grid::make(1)
-                                    ->schema([
+                //                         self::signatureInput('acknowledge_signature', ''),
 
-                                        Hidden::make('acknowledge_name')
-                                            ->default(fn() => auth()->id())
-                                            ->dehydrated(true)
-                                            ->afterStateHydrated(function ($component) {
-                                                $component->state(auth()->id());
-                                            }),
+                //                         self::datePicker('acknowledge_date', '')
+                //                             ->required(),
 
-                                        self::textInput('acknowledge_name_placeholder', 'Acknowledge by MR')
-                                            ->default(fn() => auth()->user()?->name)
-                                            ->placeholder(fn() => auth()->user()?->name)
-                                            ->required(false)
-                                            ->extraAttributes([
-                                                'readonly' => true,
-                                                'style' => 'pointer-events: none;'
-                                            ]),
+                //                     ])->hidden(
+                //                         fn($operation, $record) =>
+                //                         $operation === 'create' || blank($record?->accepted_signature) || filled($record?->approved_signature)
+                //                     ),
+                //             ]),
 
-                                        self::signatureInput('acknowledge_signature', ''),
+                //     ]),
 
-                                        self::datePicker('acknowledge_date', '')
-                                            ->required(),
-
-                                    ])->hidden(
-                                        fn($operation, $record) =>
-                                        $operation === 'create' || blank($record?->accepted_signature) || filled($record?->approved_signature)
-                                    ),
-                            ]),
-
-                    ]),
+                static::signatureSection(
+                    [
+                        [
+                            'prefix' => 'signed',
+                            'role' => 'Signed by Sales Dept',
+                            'hideLogic' => fn($operation) => $operation === 'edit',
+                        ],
+                        [
+                            'prefix' => 'accepted',
+                            'role' => 'Accepted by Production Dept',
+                            'hideLogic' => fn($operation, $record) =>
+                            $operation === 'create' || filled($record?->accepted_signature)
+                        ],
+                        [
+                            'prefix' => 'acknowledge',
+                            'role' => 'Acknowledge by MR',
+                            'hideLogic' => fn($operation, $record) =>
+                            $operation === 'create' || blank($record?->accepted_signature) || filled($record?->approved_signature)
+                        ],
+                    ],
+                    title: 'PIC',
+                    uploadPath: 'Sales/Spesifikasi/Signatures'
+                )
             ]);
     }
 
@@ -377,18 +383,12 @@ class SpesifikasiProductResource extends Resource
                     ->label('Status')
                     ->badge()
                     ->color(function ($record) {
-                        $penyelesaian = $record->status;
-                        $persetujuan = $record->status_persetujuan;
-
-                        if ($penyelesaian === 'Diketahui') {
-                            return 'success';
-                        }
-
-                        if ($penyelesaian !== 'Ditanda Tangan' && $persetujuan !== 'Diketahui') {
-                            return 'danger';
-                        }
-
-                        return 'warning';
+                        return match ($record->status) {
+                            'Belum Diterima' => 'danger',
+                            'Diterima' => 'warning',
+                            'Diketahui MR' => 'success',
+                            default => 'gray',
+                        };
                     })
                     ->alignCenter(),
             ])
@@ -413,9 +413,10 @@ class SpesifikasiProductResource extends Resource
                         ->icon('heroicon-o-document')
                         ->color('success')
                         ->openUrlInNewTab()
-                        ->visible(fn($record) => $record->status === 'Diketahui')
+                        ->visible(fn($record) => $record->status === 'Diketahui MR')
                         ->url(fn($record) => route('specProduct.preview', ['record' => $record->id])),
-                ])
+                ]),
+
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -441,29 +442,29 @@ class SpesifikasiProductResource extends Resource
         ];
     }
 
-    protected static function textInput(string $fieldName, string $label): TextInput
-    {
-        return TextInput::make($fieldName)
-            ->label($label)
-            ->required()
-            ->maxLength(255);
-    }
+    // protected static function textInput(string $fieldName, string $label): TextInput
+    // {
+    //     return TextInput::make($fieldName)
+    //         ->label($label)
+    //         ->required()
+    //         ->maxLength(255);
+    // }
 
-    protected static function selectInput(string $fieldName, string $label, string $relation, string $title): Select
-    {
-        return
-            Select::make($fieldName)
-            ->relationship(
-                $relation,
-                $title,
-                fn(Builder $query) => $query->orderBy($title)
-            )
-            ->label($label)
-            ->native(false)
-            ->searchable()
-            ->preload()
-            ->required();
-    }
+    // protected static function selectInput(string $fieldName, string $label, string $relation, string $title): Select
+    // {
+    //     return
+    //         Select::make($fieldName)
+    //         ->relationship(
+    //             $relation,
+    //             $title,
+    //             fn(Builder $query) => $query->orderBy($title)
+    //         )
+    //         ->label($label)
+    //         ->native(false)
+    //         ->searchable()
+    //         ->preload()
+    //         ->required();
+    // }
 
     protected static function buttonGroup(string $fieldName, string $label): ButtonGroup
     {
@@ -481,40 +482,40 @@ class SpesifikasiProductResource extends Resource
             ->default('individual');
     }
 
-    protected static function signatureInput(string $fieldName, string $labelName): SignaturePad
-    {
-        return
-            SignaturePad::make($fieldName)
-            ->label($labelName)
-            ->exportPenColor('#0118D8')
-            ->helperText('*Harap Tandatangan di tengah area yang disediakan.')
-            ->afterStateUpdated(function ($state, $set) use ($fieldName) {
-                if (blank($state))
-                    return;
-                $path = SignatureUploader::handle($state, 'ttd_', 'Quality/PengecekanMaterial/Electrical/Signatures');
-                if ($path) {
-                    $set($fieldName, $path);
-                }
-            });
-    }
+    // protected static function signatureInput(string $fieldName, string $labelName): SignaturePad
+    // {
+    //     return
+    //         SignaturePad::make($fieldName)
+    //         ->label($labelName)
+    //         ->exportPenColor('#0118D8')
+    //         ->helperText('*Harap Tandatangan di tengah area yang disediakan.')
+    //         ->afterStateUpdated(function ($state, $set) use ($fieldName) {
+    //             if (blank($state))
+    //                 return;
+    //             $path = SignatureUploader::handle($state, 'ttd_', 'Quality/PengecekanMaterial/Electrical/Signatures');
+    //             if ($path) {
+    //                 $set($fieldName, $path);
+    //             }
+    //         });
+    // }
 
-    protected static function datePicker(string $fieldName, string $label): DatePicker
-    {
-        return
-            DatePicker::make($fieldName)
-            ->label($label)
-            ->displayFormat('M d Y')
-            ->seconds(false);
-    }
+    // protected static function datePicker(string $fieldName, string $label): DatePicker
+    // {
+    //     return
+    //         DatePicker::make($fieldName)
+    //         ->label($label)
+    //         ->displayFormat('M d Y')
+    //         ->seconds(false);
+    // }
 
-    protected static function textColumn(string $fieldName, string $label): TextColumn
-    {
-        return
-            TextColumn::make($fieldName)
-            ->label($label)
-            ->searchable()
-            ->sortable();
-    }
+    // protected static function textColumn(string $fieldName, string $label): TextColumn
+    // {
+    //     return
+    //         TextColumn::make($fieldName)
+    //         ->label($label)
+    //         ->searchable()
+    //         ->sortable();
+    // }
 
     protected static function ursFormSchema(): array
     {

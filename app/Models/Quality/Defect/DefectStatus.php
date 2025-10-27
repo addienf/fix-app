@@ -9,6 +9,7 @@ use App\Models\Quality\PengecekanMaterial\SS\PengecekanMaterialSS;
 use App\Models\Sales\SPKMarketings\SPKMarketing;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 
 class DefectStatus extends Model
@@ -17,11 +18,13 @@ class DefectStatus extends Model
 
     protected $fillable = [
         'spk_marketing_id',
+        'no_surat',
         'tipe_sumber',
         'sumber_id',
         'tipe',
         'volume',
         'serial_number',
+        'file_upload',
         'note',
         'status_penyelesaian',
     ];
@@ -68,10 +71,24 @@ class DefectStatus extends Model
             }
         });
 
+        static::updating(function ($model) {
+            if (
+                $model->isDirty('file_upload') &&
+                $model->getOriginal('file_upload') &&
+                Storage::disk('public')->exists($model->getOriginal('file_upload'))
+            ) {
+                Storage::disk('public')->delete($model->getOriginal('file_upload'));
+            }
+        });
+
         static::deleting(function ($model) {
 
             if ($model->pic) {
                 $model->pic->delete();
+            }
+
+            if ($model->file_upload && Storage::disk('public')->exists($model->file_upload)) {
+                Storage::disk('public')->delete($model->file_upload);
             }
         });
     }

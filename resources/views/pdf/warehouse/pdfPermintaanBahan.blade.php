@@ -28,12 +28,12 @@
                         </tr>
                         <tr>
                             <td class="px-3 py-2 border-b border-black dark:border-white">Tanggal Rilis</td>
-                            <td class="px-3 py-2 font-semibold border-b border-black dark:border-white"> : 12 Maret 2025
+                            <td class="px-3 py-2 font-semibold border-b border-black dark:border-white"> : 16 Juli 2025
                             </td>
                         </tr>
                         <tr>
                             <td class="px-3 py-2">Revisi</td>
-                            <td class="px-3 py-2 font-semibold"> : 0</td>
+                            <td class="px-3 py-2 font-semibold"> : 01</td>
                         </tr>
                     </table>
                 </td>
@@ -103,18 +103,69 @@
             </table>
         </div>
 
-        <div class="max-w-4xl mx-auto mt-10 text-sm">
-            <div class="flex items-start justify-between gap-4">
-                <div class="flex flex-col items-center">
-                    <p class="mb-2 dark:text-white">Terima Kasih</p>
-                    <p class="mb-2 dark:text-white">Dibuat Oleh</p>
-                    <img src="{{ asset('storage/' . $permintaan_bahan->pic->create_signature) }}" alt="Create Signature"
-                        class="h-20 w-80" />
-                    <div class="mt-2 font-medium">
-                        {{ $permintaan_bahan->pic->createName->name }}
-                    </div>
-                </div>
-            </div>
+        @php
+            $roles = [
+                'Dibuat Oleh,' => [
+                    'name' => $permintaan_bahan->pic->dibuatName->name ?? '-',
+                    'signature' => $permintaan_bahan->pic->dibuat_signature ?? null,
+                    'date' => $permintaan_bahan->pic->dibuat_date ?? null,
+                ],
+                'Mengetahui' => [
+                    'name' => $permintaan_bahan->pic->mengetahuiName->name ?? '-',
+                    'signature' => $permintaan_bahan->pic->mengetahui_signature ?? null,
+                    'date' => $permintaan_bahan->pic->mengetahui_date ?? null,
+                ],
+                'Diserahkan Ke,' => [
+                    'name' => $permintaan_bahan->pic->diserahkanName->name ?? '-',
+                    'signature' => $permintaan_bahan->pic->diserahkan_signature ?? null,
+                    'date' => $permintaan_bahan->pic->diserahkan_date ?? null,
+                ],
+            ];
+        @endphp
+
+        <div class="max-w-4xl pt-10 mx-auto text-sm ttd">
+            <table class="w-full text-sm border-collapse">
+                <thead>
+                    <tr class="font-semibold text-center bg-gray-100">
+                        @foreach ($roles as $role => $data)
+                            <th class="border border-gray-300 border-[1px] py-2">{{ $role }}</th>
+                        @endforeach
+                    </tr>
+                </thead>
+                <tbody>
+
+                    <tr>
+                        @foreach ($roles as $data)
+                            <td class="border border-gray-300 border-[1px] px-2 py-4">
+                                <div class="flex items-center justify-center h-24">
+                                    @if ($data['signature'])
+                                        <img src="{{ asset('storage/' . $data['signature']) }}"
+                                            class="object-contain h-full" />
+                                    @else
+                                        <span class="text-sm text-gray-400">No Signature</span>
+                                    @endif
+                                </div>
+                            </td>
+                        @endforeach
+                    </tr>
+
+                    <tr>
+                        @foreach ($roles as $data)
+                            <td class="border border-gray-300 border-[1px] px-2 py-2 text-center font-medium">
+                                {{ $data['name'] }}
+                            </td>
+                        @endforeach
+                    </tr>
+
+                    <tr>
+                        @foreach ($roles as $data)
+                            <td class="border border-gray-300 border-[1px] px-2 py-2 text-center">
+                                {{ $data['date'] ? \Carbon\Carbon::parse($data['date'])->format('d M Y') : '-' }}
+                            </td>
+                        @endforeach
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
     <div class="mt-6 mb-3 text-center">

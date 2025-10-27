@@ -108,15 +108,16 @@ class PengecekanMaterialSSResource extends Resource
                             ->label('')
                             ->default($defaultParts)
                             ->schema([
-
                                 Grid::make(3)
                                     ->schema([
                                         TextInput::make('mainPart')
                                             ->label('Main Part')
-                                            ->extraAttributes([
-                                                'readonly' => true,
-                                                'style' => 'pointer-events: none;'
-                                            ]),
+                                            ->readonly(fn($get) => filled($get('mainPart')))
+                                            ->extraAttributes(
+                                                fn($get) => filled($get('mainPart'))
+                                                    ? ['style' => 'pointer-events: none; background-color: #f3f4f6;']
+                                                    : []
+                                            ),
 
                                         ButtonGroup::make('mainPart_result')
                                             ->label('Result')
@@ -126,11 +127,10 @@ class PengecekanMaterialSSResource extends Resource
                                             ])
                                             ->onColor('primary')
                                             ->offColor('gray')
-                                            ->gridDirection('row')
-                                            ->default('individual'),
+                                            ->gridDirection('row'),
 
                                         Select::make('mainPart_status')
-                                            ->label('Status')
+                                            ->label("Attachment Defect and\nRepaired Status")
                                             ->options([
                                                 'ok' => 'OK',
                                                 'h' => 'Hold',
@@ -142,43 +142,39 @@ class PengecekanMaterialSSResource extends Resource
                                 TableRepeater::make('parts')
                                     ->label('')
                                     ->schema([
-
                                         TextInput::make('part')
                                             ->label('Part')
-                                            ->extraAttributes([
-                                                'readonly' => true,
-                                                'style' => 'pointer-events: none;'
-                                            ]),
+                                            ->readonly(fn($get) => filled($get('part')))
+                                            ->extraAttributes(
+                                                fn($get) => filled($get('part'))
+                                                    ? ['style' => 'pointer-events: none; background-color: #f3f4f6;']
+                                                    : []
+                                            ),
 
                                         ButtonGroup::make('result')
+                                            ->label('Result')
                                             ->options([
                                                 1 => 'Yes',
                                                 0 => 'No',
                                             ])
                                             ->onColor('primary')
                                             ->offColor('gray')
-                                            ->gridDirection('row')
-                                            ->default('individual'),
+                                            ->gridDirection('row'),
 
                                         Select::make('status')
-                                            ->label('Status')
+                                            ->label('Attachment Defect and Repaired Status')
                                             ->options([
                                                 'ok' => 'OK',
                                                 'h' => 'Hold',
                                                 'r' => 'Repaired',
                                             ])
                                             ->required(),
-
                                     ])
-                                    ->addable(false)
-                                    ->deletable(false)
+                                    ->addActionLabel('Tambah Detail Part Pengecekan Material')
                                     ->reorderable(false),
-
                             ])
-                            ->addable(false)
-                            ->deletable(false)
+                            ->addActionLabel('Tambah Detail Main Part Pengecekan Material')
                             ->reorderable(false)
-
                     ]),
 
                 Card::make('')

@@ -16,6 +16,8 @@ return new class extends Migration
             $table->foreignId('spk_marketing_id')->constrained('spk_marketings')->onDelete('cascade');
             $table->date('tanggal');
             $table->string('pic_name');
+            $table->string('no_surat');
+            $table->string('file_upload');
             $table->string('status_persetujuan');
             $table->timestamps();
         });
