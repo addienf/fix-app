@@ -10,6 +10,7 @@ use App\Models\Production\SPK\SPKQuality;
 use App\Models\Production\SPK\SPKVendor;
 use App\Models\Quality\Defect\DefectStatus;
 use App\Models\Quality\KelengkapanMaterial\SS\KelengkapanMaterialSS;
+use App\Models\Quality\Ketidaksesuaian\Ketidaksesuaian;
 use App\Models\Quality\Pengecekan\PengecekanPerforma;
 use App\Models\Quality\PengecekanMaterial\Electrical\PengecekanMaterialElectrical;
 use App\Models\Quality\PengecekanMaterial\SS\PengecekanMaterialSS;
@@ -118,6 +119,11 @@ class SPKMarketing extends Model
     public function spkVendor()
     {
         return $this->hasOne(SPKVendor::class, 'spk_marketing_id');
+    }
+
+    public function ketidaksesuaian()
+    {
+        return $this->hasOne(Ketidaksesuaian::class, 'spk_marketing_id');
     }
 
     protected static function booted()

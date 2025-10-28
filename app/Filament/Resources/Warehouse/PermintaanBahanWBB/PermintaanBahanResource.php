@@ -3,17 +3,13 @@
 namespace App\Filament\Resources\Warehouse\PermintaanBahanWBB;
 
 use App\Filament\Resources\Warehouse\PermintaanBahanWBB\PermintaanBahanResource\Pages;
-use App\Filament\Resources\Warehouse\PermintaanBahanWBB\PermintaanBahanResource\RelationManagers;
 use App\Models\Production\PermintaanBahanProduksi\PermintaanAlatDanBahan;
 use App\Models\Warehouse\PermintaanBahanWBB\PermintaanBahan;
 use App\Services\SignatureUploader;
 use Filament\Forms\Components\Section;
-use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Hidden;
-use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -22,12 +18,9 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\ActionGroup;
-use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Icetalker\FilamentTableRepeater\Forms\Components\TableRepeater;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Saade\FilamentAutograph\Forms\Components\SignaturePad;
 
 class PermintaanBahanResource extends Resource
@@ -48,6 +41,9 @@ class PermintaanBahanResource extends Resource
         return $form
             ->schema([
                 //
+                Hidden::make('status')
+                    ->default('Belum Diketahui'),
+
                 Section::make('Nomor Surat')
                     ->collapsible()
                     ->schema([
@@ -122,25 +118,114 @@ class PermintaanBahanResource extends Resource
                                     ->columnSpanFull()
                             ])
                     ]),
+
+                // Section::make('PIC')
+                //     ->collapsible()
+                //     ->relationship('pic')
+                //     ->schema([
+                //         Grid::make(1)
+                //             ->schema([
+
+                //                 Hidden::make('create_name')
+                //                     ->default(fn() => auth()->id()),
+
+                //                 self::textInput('create_name_placeholder', 'Dibuat Oleh')
+                //                     ->default(fn() => auth()->user()?->name)
+                //                     ->extraAttributes([
+                //                         'readonly' => true,
+                //                         'style' => 'pointer-events: none;'
+                //                     ]),
+
+                //                 self::signatureInput('create_signature', ''),
+                //             ])
+                //     ]),
+
                 Section::make('PIC')
                     ->collapsible()
                     ->relationship('pic')
                     ->schema([
-                        Grid::make(1)
+                        Grid::make(3)
                             ->schema([
+                                Grid::make(1)
+                                    ->schema([
 
-                                Hidden::make('create_name')
-                                    ->default(fn() => auth()->id()),
+                                        Hidden::make('dibuat_name')
+                                            ->default(fn() => auth()->id()),
 
-                                self::textInput('create_name_placeholder', 'Dibuat Oleh')
-                                    ->default(fn() => auth()->user()?->name)
-                                    ->extraAttributes([
-                                        'readonly' => true,
-                                        'style' => 'pointer-events: none;'
-                                    ]),
+                                        self::textInput('dibuat_name_placeholder', 'Dibuat Oleh')
+                                            ->default(fn() => auth()->user()?->name)
+                                            ->extraAttributes([
+                                                'readonly' => true,
+                                                'style' => 'pointer-events: none;'
+                                            ]),
 
-                                self::signatureInput('create_signature', ''),
-                            ])
+                                        self::signatureInput('dibuat_signature', ''),
+
+                                        self::datePicker('dibuat_date', '')
+                                            ->default(now())
+                                            ->required(),
+
+                                    ])->hiddenOn(operations: 'edit'),
+
+                                Grid::make(1)
+                                    ->schema([
+
+                                        Hidden::make('mengetahui_name')
+                                            ->default(fn() => auth()->id())
+                                            ->dehydrated(true)
+                                            ->afterStateHydrated(function ($component) {
+                                                $component->state(auth()->id());
+                                            }),
+
+                                        self::textInput('mengetahui_name_placeholder', 'Mengetahui')
+                                            ->default(fn() => auth()->user()?->name)
+                                            ->placeholder(fn() => auth()->user()?->name)
+                                            ->required(false)
+                                            ->extraAttributes([
+                                                'readonly' => true,
+                                                'style' => 'pointer-events: none;'
+                                            ]),
+
+                                        self::signatureInput('mengetahui_signature', ''),
+
+                                        self::datePicker('mengetahui_date', '')
+                                            ->required(),
+
+                                    ])->hidden(
+                                        fn($operation, $record) =>
+                                        $operation === 'create' || filled($record?->mengetahui_signature)
+                                    ),
+
+                                Grid::make(1)
+                                    ->schema([
+
+                                        Hidden::make('diserahkan_name')
+                                            ->default(fn() => auth()->id())
+                                            ->dehydrated(true)
+                                            ->afterStateHydrated(function ($component) {
+                                                $component->state(auth()->id());
+                                            }),
+
+                                        self::textInput('diserahkan_name_placeholder', 'Diserahkan Ke')
+                                            ->default(fn() => auth()->user()?->name)
+                                            ->placeholder(fn() => auth()->user()?->name)
+                                            ->required(false)
+                                            ->extraAttributes([
+                                                'readonly' => true,
+                                                'style' => 'pointer-events: none;'
+                                            ]),
+
+                                        self::signatureInput('diserahkan_signature', ''),
+
+                                        self::datePicker('diserahkan_date', '')
+                                            ->required(),
+
+                                    ])->hidden(
+                                        fn($operation, $record) =>
+                                        $operation === 'create' || blank($record?->mengetahui_signature) || filled($record?->diserahkan_signature)
+                                    ),
+                            ]),
+
                     ]),
             ]);
     }
@@ -151,10 +236,22 @@ class PermintaanBahanResource extends Resource
             ->columns([
                 //
                 self::textColumn('permintaanBahanPro.no_surat', 'No Surat Production'),
-                self::textColumn('no_surat', 'Nomor Surat Warehouse'),
+                // self::textColumn('no_surat', 'Nomor Surat Warehouse'),
                 self::textColumn('tanggal', 'Tanggal Dibuat')->date('d M Y'),
-                self::textColumn('dari', 'Dari'),
-                self::textColumn('kepada', 'Kepada'),
+                // self::textColumn('dari', 'Dari'),
+                // self::textColumn('kepada', 'Kepada'),
+                TextColumn::make('status')
+                    ->label('Status')
+                    ->badge()
+                    ->color(function ($record) {
+                        return match ($record->status) {
+                            'Belum Diketahui' => 'danger',
+                            'Diketahui' => 'warning',
+                            'Diserahkan' => 'success',
+                            default => 'gray',
+                        };
+                    })
+                    ->alignCenter(),
             ])
             ->filters([
                 //

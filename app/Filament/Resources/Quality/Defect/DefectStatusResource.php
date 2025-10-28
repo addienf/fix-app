@@ -4,7 +4,6 @@ namespace App\Filament\Resources\Quality\Defect;
 
 use App\Filament\Resources\Quality\Defect\DefectStatusResource\Pages;
 use App\Filament\Resources\Quality\Defect\DefectStatusResource\Pages\pdfDefectStatus;
-use App\Filament\Resources\Quality\Defect\DefectStatusResource\RelationManagers;
 use App\Models\Quality\Defect\DefectStatus;
 use App\Models\Quality\PengecekanMaterial\Electrical\PengecekanMaterialElectrical;
 use App\Models\Quality\PengecekanMaterial\SS\PengecekanMaterialSS;
@@ -15,6 +14,7 @@ use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Card;
 use Filament\Forms\Components\Fieldset;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Repeater;
@@ -29,9 +29,6 @@ use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Icetalker\FilamentTableRepeater\Forms\Components\TableRepeater;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Illuminate\Support\Str;
 use Saade\FilamentAutograph\Forms\Components\SignaturePad;
 use Wallo\FilamentSelectify\Components\ButtonGroup;
 
@@ -79,11 +76,9 @@ class DefectStatusResource extends Resource
                                 'style' => 'pointer-events: none;'
                             ]),
 
-                        self::textInput('volume', 'Volume')
-                            ->extraAttributes([
-                                'readonly' => true,
-                                'style' => 'pointer-events: none;'
-                            ]),
+                        self::textInput('no_surat', 'No Surat'),
+
+                        self::textInput('volume', 'Volume'),
 
                         self::textInput('serial_number', 'S/N'),
 
@@ -140,6 +135,15 @@ class DefectStatusResource extends Resource
                             ->columnSpanFull()
                     ]),
 
+                FileUpload::make('file_upload')
+                    ->label('File Pendukung')
+                    ->directory('Quality/DefectStatus/Files')
+                    ->acceptedFileTypes(['application/pdf'])
+                    ->maxSize(10240)
+                    ->required()
+                    ->columnSpanFull()
+                    ->helperText('Hanya file PDF yang diperbolehkan. Maksimal ukuran 10 MB.'),
+
                 Section::make('PIC')
                     ->collapsible()
                     ->relationship('pic')
@@ -158,8 +162,6 @@ class DefectStatusResource extends Resource
                                                 'readonly' => true,
                                                 'style' => 'pointer-events: none;'
                                             ]),
-
-                                        // self::textInput('inspected_name', 'Inspected By'),
 
                                         self::signatureInput('inspected_signature', ''),
 
@@ -402,14 +404,45 @@ class DefectStatusResource extends Resource
         return
             Select::make('sumber_id')
             ->label('Data Pengecekan')
+            // ->options(function (callable $get) {
+            //     $tipe = $get('tipe_sumber');
+
+            //     return match ($tipe) {
+            //         'electrical' => PengecekanMaterialElectrical::whereDoesntHave('defectStatus')->get()
+            //             ->mapWithKeys(fn($item) => [$item->id => $item->spk->no_spk]),
+
+            //         'stainless_steel' => PengecekanMaterialSS::whereDoesntHave('defectStatus')->get()
+            //             ->mapWithKeys(fn($item) => [$item->id => $item->spk->no_spk]),
+
+            //         default => [],
+            //     };
+            // })
             ->options(function (callable $get) {
                 $tipe = $get('tipe_sumber');
 
                 return match ($tipe) {
-                    'electrical' => PengecekanMaterialElectrical::whereDoesntHave('defectStatus')->get()
+                    'electrical' => PengecekanMaterialElectrical::whereDoesntHave('defectStatus')
+                        ->get()
+                        ->filter(
+                            fn($item) => collect($item->detail->details ?? [])
+                                ->contains(function ($d) {
+                                    $hasMainPartNo = ($d['mainPart_result'] ?? '') === '0';
+                                    $hasPartNo = collect($d['parts'] ?? [])->contains(fn($p) => ($p['result'] ?? '') === '0');
+                                    return $hasMainPartNo || $hasPartNo;
+                                })
+                        )
                         ->mapWithKeys(fn($item) => [$item->id => $item->spk->no_spk]),
 
-                    'stainless_steel' => PengecekanMaterialSS::whereDoesntHave('defectStatus')->get()
+                    'stainless_steel' => PengecekanMaterialSS::whereDoesntHave('defectStatus')
+                        ->get()
+                        ->filter(
+                            fn($item) => collect($item->detail->details ?? [])
+                                ->contains(function ($d) {
+                                    $hasMainPartNo = ($d['mainPart_result'] ?? '') === '0';
+                                    $hasPartNo = collect($d['parts'] ?? [])->contains(fn($p) => ($p['result'] ?? '') === '0');
+                                    return $hasMainPartNo || $hasPartNo;
+                                })
+                        )
                         ->mapWithKeys(fn($item) => [$item->id => $item->spk->no_spk]),
 
                     default => [],
@@ -434,8 +467,7 @@ class DefectStatusResource extends Resource
 
                 $spk = SPKMarketing::with('jadwalProduksi')->find($no_spk);
 
-                $tipeProduk = $spk?->jadwalProduksi?->details->first()->tipe;
-                $volume = $spk?->jadwalProduksi?->details->first()->volume;
+                $tipeProduk = $spk?->jadwalProduksi?->identifikasiProduks->first()->tipe;
 
                 $ditolak = collect($model->detail->details)
                     ->map(function ($item) {
@@ -470,7 +502,6 @@ class DefectStatusResource extends Resource
 
                 $set('spk_marketing_id', $no_spk);
                 $set('tipe', $tipeProduk);
-                $set('volume', $volume);
             })
             ->reactive()
             ->required()

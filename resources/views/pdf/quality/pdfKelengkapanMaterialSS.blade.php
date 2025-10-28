@@ -28,12 +28,12 @@
                         </tr>
                         <tr>
                             <td class="px-3 py-2 border-b border-black dark:border-white">Tanggal Rilis</td>
-                            <td class="px-3 py-2 font-semibold border-b border-black dark:border-white"> : 12 Maret 2025
+                            <td class="px-3 py-2 font-semibold border-b border-black dark:border-white"> : 22 Mei 2025
                             </td>
                         </tr>
                         <tr>
                             <td class="px-3 py-2">Revisi</td>
-                            <td class="px-3 py-2 font-semibold"> : 0</td>
+                            <td class="px-3 py-2 font-semibold"> : 01</td>
                         </tr>
                     </table>
                 </td>
@@ -137,7 +137,7 @@
 
         @php
             $roles = [
-                'Checked By' => [
+                'Inspected By' => [
                     'name' => $kelengkapan->pic->inspectedName->name ?? '-',
                     'signature' => $kelengkapan->pic->inspected_signature ?? null,
                     'date' => $kelengkapan->pic->inspected_date ?? null,

@@ -14,10 +14,8 @@ return new class extends Migration
         Schema::create('jadwal_produksi_details', function (Blueprint $table) {
             $table->id();
             $table->foreignId('jadwal_produksi_id')->constrained('jadwal_produksis')->onDelete('cascade');
-            $table->string('nama_produk');
-            $table->string('tipe');
-            $table->string('volume');
-            $table->integer('jumlah');
+            $table->string('pekerjaan');
+            $table->string('pekerja');
             $table->date('tanggal_mulai');
             $table->date('tanggal_selesai');
             $table->timestamps();

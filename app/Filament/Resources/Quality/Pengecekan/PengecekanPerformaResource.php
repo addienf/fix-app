@@ -3,15 +3,12 @@
 namespace App\Filament\Resources\Quality\Pengecekan;
 
 use App\Filament\Resources\Quality\Pengecekan\PengecekanPerformaResource\Pages;
-use App\Filament\Resources\Quality\Pengecekan\PengecekanPerformaResource\RelationManagers;
 use App\Models\Quality\Pengecekan\PengecekanPerforma;
 use App\Models\Sales\SPKMarketings\SPKMarketing;
 use App\Services\SignatureUploader;
 use Filament\Actions\Action;
-use Filament\Forms;
 use Filament\Forms\Components\Card;
 use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Repeater;
@@ -23,19 +20,15 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Actions\ActionGroup;
-use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Icetalker\FilamentTableRepeater\Forms\Components\TableRepeater;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Saade\FilamentAutograph\Forms\Components\SignaturePad;
 use Wallo\FilamentSelectify\Components\ButtonGroup;
 
 class PengecekanPerformaResource extends Resource
 {
     protected static ?string $model = PengecekanPerforma::class;
-
     protected static ?string $navigationIcon = 'heroicon-o-check-circle';
     protected static ?int $navigationSort = 19;
     protected static ?string $navigationGroup = 'Quality';
@@ -398,8 +391,8 @@ class PengecekanPerformaResource extends Resource
 
                 if (!$spk) return;
 
-                $tipe = $spk?->jadwalProduksi?->details->first()->tipe;
-                $volume = $spk?->jadwalProduksi?->details->first()->volume;
+                $tipe = $spk?->defect->tipe;
+                $volume = $spk?->defect->volume;
                 $s_n = $spk?->defect->serial_number;
 
                 $set('tipe', $tipe);

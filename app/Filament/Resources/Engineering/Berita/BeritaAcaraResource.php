@@ -31,6 +31,7 @@ use Icetalker\FilamentTableRepeater\Forms\Components\TableRepeater;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Saade\FilamentAutograph\Forms\Components\SignaturePad;
+use Wallo\FilamentSelectify\Components\ButtonGroup;
 
 class BeritaAcaraResource extends Resource
 {
@@ -67,16 +68,16 @@ class BeritaAcaraResource extends Resource
                                         $query->where('status_penyerahan', 'Diserahkan');
                                     })
                                     ->whereDoesntHave('beritaAcara')
-                                    ->where(function ($query) {
-                                        $query->whereHas('walkinChamber')
-                                            ->orWhereHas('chamberR2')
-                                            ->orWhereHas('refrigerator')
-                                            ->orWhereHas('coldRoom')
-                                            ->orWhereHas('rissing')
-                                            ->orWhereHas('walkinG2')
-                                            ->orWhereHas('chamberG2')
-                                            ->orWhereHas('service');
-                                    })
+                                    // ->where(function ($query) {
+                                    //     $query->whereHas('walkinChamber')
+                                    //         ->orWhereHas('chamberR2')
+                                    //         ->orWhereHas('refrigerator')
+                                    //         ->orWhereHas('coldRoom')
+                                    //         ->orWhereHas('rissing')
+                                    //         ->orWhereHas('walkinG2')
+                                    //         ->orWhereHas('chamberG2')
+                                    //         ->orWhereHas('service');
+                                    // })
                                     ->pluck('no_spk_service', 'id');
                             })
                             ->native(false)
@@ -102,7 +103,6 @@ class BeritaAcaraResource extends Resource
                                 $alamat = $complain->spkService->alamat;
                                 $department = $complain->department;
 
-                                // dd($nama_teknisi);
                                 $set('detail.nama_teknisi', $nama_teknisi);
                                 $set('pelanggan.nama', $namaComplain);
                                 $set('pelanggan.perusahaan', $companyName);
@@ -124,6 +124,25 @@ class BeritaAcaraResource extends Resource
 
                         DatePicker::make('tanggal')
                             ->required(),
+
+                        ButtonGroup::make('status_po')
+                            ->label('Status PO')
+                            ->required()
+                            ->options([
+                                'yes' => 'Received',
+                                'no' => 'Not Received',
+                            ])
+                            ->reactive()
+                            ->onColor('primary')
+                            ->offColor('gray')
+                            ->gridDirection('row'),
+
+                        TextInput::make('nomor_po')
+                            ->label('Nomor PO')
+                            ->unique(ignoreRecord: true)
+                            ->required(),
+
+
                     ])
                     ->columns(2),
 
@@ -170,40 +189,36 @@ class BeritaAcaraResource extends Resource
                     ->relationship('detail')
                     ->collapsible()
                     ->schema([
-                        Grid::make(2)
-                            ->schema([
-                                Select::make('jenis_pekerjaan')
-                                    ->required()
-                                    ->label('Jenis Pekerjaan')
-                                    ->placeholder('Pilih Jenis Pekerjaan')
-                                    ->options([
-                                        'service' => 'Service',
-                                        'maintenance' => 'Maintenance'
-                                    ]),
 
-                                TextInput::make('lokasi_pengerjaan')
-                                    ->required()
-                                    ->label('Lokasi Pengerjaan'),
+                        Select::make('jenis_pekerjaan')
+                            ->required()
+                            ->label('Jenis Pekerjaan')
+                            ->placeholder('Pilih Jenis Pekerjaan')
+                            ->options([
+                                'service' => 'Service',
+                                'maintenance' => 'Maintenance'
                             ]),
 
-                        TextInput::make('nama_teknisi')
+                        TextInput::make('produk')
                             ->required()
-                            ->label('Nama Teknisi')
-                            ->extraAttributes([
-                                'readonly' => true,
-                                'style' => 'pointer-events: none;'
-                            ])
-                            ->columnSpanFull(),
+                            ->label('Produk'),
 
-                        Repeater::make('detail_pekerjaan')
-                            ->label('Detail Pekerjaan')
-                            ->schema([
-                                TextInput::make('deskripsi')
-                                    ->required()
-                                    ->label('Deskripsi Pekerjaan'),
+                        TextInput::make('serial_number')
+                            ->required()
+                            ->label('Serial Number'),
+
+                        Select::make('status_barang')
+                            ->label('Status Barang')
+                            ->options([
+                                'yes' => 'Installed',
+                                'wait' => 'Delivered',
+                                'na' => 'N/A',
                             ])
-                            ->reorderable(false)
-                            ->addActionLabel('Tambah Deskripsi Pekerjaan')
+                            ->required(),
+
+                        Textarea::make('desc_pekerjaan')
+                            ->required()
+                            ->label('Deskripsi Pekerjaan')
                             ->columnSpanFull(),
                     ])
                     ->columns(2),

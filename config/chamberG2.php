@@ -8,6 +8,7 @@ return [
             'Normal 3,46 - 3,71A in 220-240V/50Hz',
             'Normal 3,4 - 3,56A in 203-230V/60Hz',
             'Check the freon leak with halogen leak detector',
+            'Cleaning evaporator sample must be unloaded 50 minutes (racks from row number 1 & 2)',
         ]
     ],
     [
@@ -20,6 +21,7 @@ return [
             'Clean Water heater surface',
             'Clean & Check Level switch sensor',
             'Clean the water inlet',
+            'Take the photo of the water heater condition and resistance in Ampere Meter',
         ]
     ],
     [
@@ -29,6 +31,7 @@ return [
             'Air Heater 1500 W (30-38 Ohm)',
             'Air Heater 2500 W  (46-53 Ohm)',
             'Air  Heater 1350 W (33-40 Ohm)',
+            'Take the photo of the water heater condition and resistance in Ampere Meter',
         ]
     ],
     [

@@ -367,7 +367,7 @@ class PenyerahanElectricalResource extends Resource
                 $namaProduk = $spesifikasi->details->first()?->product?->name ?? '-';
                 $jumlah = $spesifikasi->details->first()?->quantity ?? '-';
                 $tgl_selesai = $selesai->details->first()->tanggal_selesai->format('d M Y') ?? '-';
-                $tipe = $selesai->details->first()->tipe ?? '-';
+                $tipe = $selesai->identifikasiProduks->first()->tipe ?? '-';
                 $spk = $spesifikasi->spk->no_spk ?? '-';
 
                 $set('nama_produk', $namaProduk);

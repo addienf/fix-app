@@ -26,4 +26,9 @@ class URS extends Model
     {
         return $this->hasMany(SpesifikasiProduct::class);
     }
+
+    public function getDisplayNameAttribute()
+    {
+        return "{$this->no_urs} - {$this->customer->name}";
+    }
 }

@@ -14,9 +14,10 @@ return new class extends Migration
         Schema::create('incomming_material_ss', function (Blueprint $table) {
             $table->id();
             $table->foreignId('permintaan_pembelian_id')->constrained('permintaan_pembelians')->onDelete('cascade');
+            $table->string('no_qc');
             $table->string('no_po');
             $table->string('supplier');
-            $table->text('remark');
+            $table->text('remarks');
             $table->string('status_penyelesaian');
             $table->timestamps();
         });

@@ -18,6 +18,8 @@ class BeritaAcara extends Model
         'spk_service_id',
         'no_surat',
         'tanggal',
+        'status_po',
+        'nomor_po',
     ];
 
 

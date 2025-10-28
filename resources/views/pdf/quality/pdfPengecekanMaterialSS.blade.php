@@ -28,12 +28,12 @@
                         </tr>
                         <tr>
                             <td class="px-3 py-2 border-b border-black dark:border-white">Tanggal Rilis</td>
-                            <td class="px-3 py-2 font-semibold border-b border-black dark:border-white"> : 12 Maret 2025
+                            <td class="px-3 py-2 font-semibold border-b border-black dark:border-white"> : 25 Juli 2025
                             </td>
                         </tr>
                         <tr>
                             <td class="px-3 py-2">Revisi</td>
-                            <td class="px-3 py-2 font-semibold"> : 0</td>
+                            <td class="px-3 py-2 font-semibold"> : 02</td>
                         </tr>
                     </table>
                 </td>
@@ -54,7 +54,7 @@
             @endforeach
         </div>
 
-        <h2 class="max-w-4xl mx-auto text-xl font-bold text-start">Chamber Identification</h2>
+        <h2 class="max-w-4xl mx-auto text-xl font-bold text-start">Product Identification</h2>
 
         <div class="grid w-full max-w-4xl grid-cols-1 pt-4 mx-auto mb-2 text-sm gap-y-4">
             @php
@@ -92,9 +92,11 @@
             <thead class="bg-gray-100">
                 <tr>
                     <th class="w-5 px-2 py-2 text-center border border-black" rowspan="2">No</th>
-                    <th class="px-2 py-2 text-left border border-black" rowspan="2">Part</th>
+                    <th class="px-2 py-2 text-center border border-black" rowspan="2">Part</th>
                     <th class="px-2 py-2 text-center border border-black" colspan="2">Result</th>
-                    <th class="px-2 py-2 text-left border border-black" rowspan="2">Status</th>
+                    <th class="px-2 py-2 text-center border border-black" rowspan="2">
+                        Attachment Defect and<br>Repaired Status
+                    </th>
                 </tr>
                 <tr>
                     <th class="px-2 text-center border border-black">Pass</th>
@@ -103,11 +105,10 @@
             </thead>
 
             <tbody>
-                @php $rowNumber = 1; @endphp
                 @foreach ($details as $group)
+                    {{-- Baris untuk Main Part (tanpa nomor) --}}
                     <tr>
-                        <td class="px-3 py-2 font-semibold text-center bg-gray-200 border border-black">{{ $rowNumber++ }}
-                        </td>
+                        <td class="px-3 py-2 font-semibold text-center bg-gray-200 border border-black"></td>
                         <td class="px-3 py-2 font-semibold bg-gray-200 border border-black">
                             {{ $group['mainPart'] ?? '-' }}
                         </td>
@@ -117,13 +118,15 @@
                         <td class="px-3 py-2 font-semibold text-center bg-gray-200 border border-black">
                             {{ ($group['mainPart_result'] ?? '0') == '0' ? '✘' : '' }}
                         </td>
-                        <td class="px-3 py-2 font-semibold bg-gray-200 border border-black">
+                        <td class="px-3 py-2 font-semibold text-center bg-gray-200 border border-black">
                             {{ statusLabel($group['mainPart_status'] ?? '-') }}
                         </td>
                     </tr>
+
+                    @php $partNumber = 1; @endphp
                     @foreach ($group['parts'] as $part)
                         <tr>
-                            <td class="px-3 py-2 text-center border border-black">{{ $rowNumber++ }}</td>
+                            <td class="px-3 py-2 text-center border border-black">{{ $partNumber++ }}</td>
                             <td class="px-3 py-2 border border-black">{{ $part['part'] ?? '-' }}</td>
                             <td class="px-3 py-2 text-center border border-black">
                                 {{ ($part['result'] ?? '0') == '1' ? '✔' : '' }}
@@ -131,7 +134,7 @@
                             <td class="px-3 py-2 text-center border border-black">
                                 {{ ($part['result'] ?? '0') == '0' ? '✘' : '' }}
                             </td>
-                            <td class="px-3 py-2 border border-black">
+                            <td class="px-3 py-2 text-center border border-black">
                                 {{ statusLabel($part['status'] ?? '-') }}
                             </td>
                         </tr>
@@ -148,7 +151,7 @@
 
         @php
             $roles = [
-                'Checked By' => [
+                'Inspected By' => [
                     'name' => $pengecekanSS->pic->inspectedName->name ?? '-',
                     'signature' => $pengecekanSS->pic->inspected_signature ?? null,
                     'date' => $pengecekanSS->pic->inspected_date ?? null,

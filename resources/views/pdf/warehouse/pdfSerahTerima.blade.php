@@ -17,7 +17,7 @@
             <tr>
                 <td class="font-bold text-center border border-black dark:border-white dark:bg-gray-900"
                     style="font-size: 20px;">
-                    Formulir Serah Terima Barang
+                    Formulir Serah Terima Barang <br> & Sparepart
                 </td>
                 <td rowspan="2" class="p-0 align-top border border-black dark:border-white dark:bg-gray-900">
                     <table class="w-full text-sm dark:bg-gray-900 dark:text-white" style="border-collapse: collapse;">

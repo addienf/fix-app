@@ -101,12 +101,20 @@ class KelengkapanMaterialSSResource extends Resource
                             ->label('')
                             ->schema([
 
+                                // TextInput::make('part')
+                                //     ->label('Part'),
+                                // ->extraAttributes([
+                                //     'readonly' => true,
+                                //     'style' => 'pointer-events: none;'
+                                // ]),
                                 TextInput::make('part')
                                     ->label('Part')
-                                    ->extraAttributes([
-                                        'readonly' => true,
-                                        'style' => 'pointer-events: none;'
-                                    ]),
+                                    ->readonly(fn($get) => filled($get('part')))
+                                    ->extraAttributes(
+                                        fn($get) => filled($get('part'))
+                                            ? ['style' => 'pointer-events: none; background-color: #f3f4f6;']
+                                            : []
+                                    ),
 
                                 self::buttonGroup('result', 'Result'),
 
@@ -122,9 +130,10 @@ class KelengkapanMaterialSSResource extends Resource
                             ])
                             ->default($defaultParts)
                             ->columns(3)
-                            ->addable(false)
+                            ->addable(true)
                             ->reorderable(false)
-                            ->deletable(false),
+                            ->deletable(false)
+                            ->addActionLabel('Tambah Detail Kelengkapan Material'),
                     ]),
 
                 Card::make('')
@@ -349,7 +358,7 @@ class KelengkapanMaterialSSResource extends Resource
                 if (!$spk) return;
 
                 $no_order = $spk->no_order ?? '-';
-                $tipe = $spk->jadwalProduksi->details->first()?->tipe ?? '-';
+                $tipe = $spk->jadwalProduksi->identifikasiProduks->first()?->tipe ?? '-';
 
                 $set('no_order_temp', $no_order);
                 $set('tipe', $tipe);

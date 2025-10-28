@@ -29,11 +29,12 @@
                         </tr>
                         <tr>
                             <td class="px-3 py-2 border-b border-black dark:border-white">Tanggal Rilis</td>
-                            <td class="px-3 py-2 font-semibold border-b border-black dark:border-white">: 17 Juni 2025</td>
+                            <td class="px-3 py-2 font-semibold border-b border-black dark:border-white">: 29 September 2025
+                            </td>
                         </tr>
                         <tr>
                             <td class="px-3 py-2">Revisi</td>
-                            <td class="px-3 py-2 font-semibold">: 1</td>
+                            <td class="px-3 py-2 font-semibold">: 02</td>
                         </tr>
                     </table>
                 </td>
@@ -43,24 +44,45 @@
         <div class="w-full max-w-4xl pt-4 mx-auto text-sm">
             <h2 class="mb-4 text-xl font-bold text-center">BERITA ACARA PENYELESAIAN SERVICE & MAINTENANCE</h2>
 
-            @php
-                $fields = [
-                    ['label' => 'No Surat :', 'value' => $berita->no_surat],
-                    [
-                        'label' => 'Tanggal :',
-                        'value' => \Carbon\Carbon::parse($berita->tanggal)->translatedFormat('d M Y'),
-                    ],
-                ];
-            @endphp
-
             <div class="grid gap-2 mb-6">
-                @foreach ($fields as $field)
-                    <div class="flex items-center">
-                        <label class="w-32 font-medium">{{ $field['label'] }}</label>
-                        <input type="text" readonly value="{{ $field['value'] }}"
-                            class="flex-1 px-3 py-2 text-black bg-white border border-gray-300 rounded-md cursor-not-allowed" />
+                {{-- Nomor Surat --}}
+                <div class="flex items-center">
+                    <label class="w-32 font-medium">Nomor Surat :</label>
+                    <input type="text" readonly value="{{ $berita->no_surat }}"
+                        class="flex-1 px-3 py-2 text-black bg-white border border-gray-300 rounded-md cursor-not-allowed" />
+                </div>
+
+                {{-- Tanggal --}}
+                <div class="flex items-center">
+                    <label class="w-32 font-medium">Tanggal :</label>
+                    <input type="text" readonly
+                        value="{{ \Carbon\Carbon::parse($berita->tanggal)->translatedFormat('d F Y') }}"
+                        class="flex-1 px-3 py-2 text-black bg-white border border-gray-300 rounded-md cursor-not-allowed" />
+                </div>
+
+                {{-- Status PO --}}
+                <div class="flex items-center">
+                    <label class="w-32 font-medium">Status PO :</label>
+                    <div class="flex items-center gap-8">
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" class="text-blue-600 form-checkbox"
+                                {{ strtolower($berita->status_po) === 'yes' ? 'checked' : '' }} disabled>
+                            <span>Received</span>
+                        </label>
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" class="text-blue-600 form-checkbox"
+                                {{ strtolower($berita->status_po) === 'no' ? 'checked' : '' }} disabled>
+                            <span>Not Received</span>
+                        </label>
                     </div>
-                @endforeach
+                </div>
+
+                {{-- Nomor PO --}}
+                <div class="flex items-center">
+                    <label class="w-32 font-medium">Nomor PO :</label>
+                    <input type="text" readonly value="{{ $berita->nomor_po }}"
+                        class="flex-1 px-3 py-2 text-black bg-white border border-gray-300 rounded-md cursor-not-allowed" />
+                </div>
             </div>
 
             @php
@@ -121,6 +143,7 @@
 
             @php
                 $jenis = strtolower($berita->detail->jenis_pekerjaan);
+                $status = strtolower($berita->detail->status_barang);
             @endphp
 
             <p class="mt-2">
@@ -133,52 +156,54 @@
                 telah diselesaikan dengan rincian sebagai berikut: (*coret yang tidak perlu)
             </p>
 
-            <div class="pt-4 mb-4 space-y-2 text-sm">
-                {{-- 1. Detail Pekerjaan --}}
-                <div>
-                    <label class="font-semibold">1. Detail Pekerjaan yang telah diselesaikan:</label>
-                    <ul class="mt-2 text-sm text-black list-disc list-inside">
-                        @foreach ($berita->detail->detail_pekerjaan as $item)
-                            <li>{{ $item['deskripsi'] }}</li>
-                        @endforeach
-                    </ul>
-                </div>
+            <ul class="mt-2 ml-6 space-y-1 list-disc">
+                <li>Produk/Model<span class="ml-2">:</span>{{ $berita->detail->produk }}</li>
+                <li>Serial Number<span class="ml-2">:</span>{{ $berita->detail->serial_number }}</li>
+                <li>Deskripsi Pekerjaan/Barang<span class="ml-2">:</span>{{ $berita->detail->desc_pekerjaan }}</li>
+                <li class="flex items-center gap-4">
+                    Status Barang<span class="ml-2">:</span>
+                    <div class="flex items-center gap-6">
+                        <label class="flex items-center gap-1">
+                            <input type="checkbox" class="text-blue-600 form-checkbox"
+                                {{ $status === 'yes' ? 'checked' : '' }} disabled>
+                            <span>Installed</span>
+                        </label>
+                        <label class="flex items-center gap-1">
+                            <input type="checkbox" class="text-blue-600 form-checkbox"
+                                {{ $status === 'wait' ? 'checked' : '' }} disabled>
+                            <span>Delivered</span>
+                        </label>
+                        <label class="flex items-center gap-1">
+                            <input type="checkbox" class="text-blue-600 form-checkbox"
+                                {{ $status === 'na' ? 'checked' : '' }} disabled>
+                            <span>N/A</span>
+                        </label>
+                    </div>
+                </li>
+            </ul>
 
-                {{-- 2. Lokasi Pekerjaan --}}
-                <div class="flex items-center">
-                    <label class="w-48 font-semibold">2. Lokasi Pekerjaan</label>
-                    <span class="mx-2">:</span>
-                    <input type="text" class="flex-1 border-b border-dotted focus:outline-none"
-                        value="{{ $berita->detail->lokasi_pengerjaan }}" />
-                </div>
-
-                {{-- 3. Teknisi yang Bertugas --}}
-                <div class="flex items-center">
-                    <label class="w-48 font-semibold">3. Teknisi yang bertugas</label>
-                    <span class="mx-2">:</span>
-                    <input type="text" class="flex-1 border-b border-dotted focus:outline-none"
-                        value="{{ $berita->detail->nama_teknisi }}" />
-                </div>
-            </div>
-            <p class="mb-3"> Setelah dilakukan pemeriksaan, kedua belah pihak sepakat bahwa pekerjaan telah selesai sesuai
-                dengan ketentuan yang
-                disepakati dan dalam kondisi baik. Demikian berita acara ini dibuat untuk dipergunakan sebagaimana mestinya.
+            <p class="mt-3">
+                Setelah dilakukan pemeriksaan, kedua belah pihak sepakat bahwa pekerjaan telah selesai sesuai
+                dengan ketentuan yang disepakati dan dalam kondisi baik. Demikian berita acara ini dibuat untuk
+                dipergunakan sebagaimana mestinya.
             </p>
 
-            <div class="flex items-start justify-between gap-4">
-                <!-- Kiri -->
+            <div class="flex items-start justify-between gap-4 mt-6">
+                <!-- Pihak 1 -->
                 <div class="flex flex-col items-center">
                     <p class="mb-2 dark:text-white">( Pihak 1 Penyedia Jasa )</p>
-                    <img src="{{ asset('storage/' . $berita->pic->jasa_ttd) }}" alt="Product Signature"
+                    <img src="{{ asset('storage/' . $berita->pic->jasa_ttd) }}" alt="Tanda Tangan Penyedia Jasa"
                         class="h-20 w-80" />
                     <p class="mt-4 font-semibold dark:text-white">( {{ $berita->penyediaJasa->nama }} )</p>
                 </div>
-                <!-- Kanan -->
+
+                <!-- Pihak 2 -->
                 <div class="flex flex-col items-center">
                     <p class="mb-20 dark:text-white">( Pihak 2 Pelanggan )</p>
                     <p class="mt-4 font-semibold dark:text-white">( {{ $berita->pelanggan->nama }} )</p>
                 </div>
             </div>
+
         </div>
     </div>
     <div class="mt-6 mb-3 text-center">

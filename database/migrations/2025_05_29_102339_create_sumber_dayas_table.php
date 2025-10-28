@@ -14,9 +14,11 @@ return new class extends Migration
         Schema::create('sumber_dayas', function (Blueprint $table) {
             $table->id();
             $table->foreignId('jadwal_produksi_id')->constrained('jadwal_produksis')->onDelete('cascade');
-            $table->string('mesin_yang_digunakan');
-            $table->string('tenaga_kerja');
-            $table->json('bahan_baku');
+            $table->string('bahan_baku');
+            $table->string('spesifikasi');
+            $table->integer('jumlah');
+            $table->string('status');
+            $table->string('keperluan');
             $table->timestamps();
         });
     }

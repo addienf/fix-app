@@ -20,6 +20,6 @@ class Customer extends Model
 
     public function urs()
     {
-        return $this->hasOne(URS::class);
+        return $this->hasMany(URS::class);
     }
 }

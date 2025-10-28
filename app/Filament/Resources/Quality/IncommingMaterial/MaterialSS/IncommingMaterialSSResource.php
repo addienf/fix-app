@@ -3,37 +3,27 @@
 namespace App\Filament\Resources\Quality\IncommingMaterial\MaterialSS;
 
 use App\Filament\Resources\Quality\IncommingMaterial\MaterialSS\IncommingMaterialSSResource\Pages;
-use App\Filament\Resources\Quality\IncommingMaterial\MaterialSS\IncommingMaterialSSResource\RelationManagers;
 use App\Models\Purchasing\Permintaan\PermintaanPembelian;
 use App\Models\Quality\IncommingMaterial\MaterialSS\IncommingMaterialSS;
 use App\Services\SignatureUploader;
 use Filament\Actions\Action;
-use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Card;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Hidden;
-use Filament\Forms\Components\KeyValue;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Split;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Actions\ActionGroup;
-use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Support\HtmlString;
-use Icetalker\FilamentTableRepeater\Forms\Components\TableRepeater;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Saade\FilamentAutograph\Forms\Components\SignaturePad;
-use Wallo\FilamentSelectify\Components\ButtonGroup;
 
 class IncommingMaterialSSResource extends Resource
 {
@@ -71,6 +61,10 @@ class IncommingMaterialSSResource extends Resource
                             ->placeholder('Pilih Nomor Permintaan Pembelian')
                             ->hiddenOn('edit')
                             ->required(),
+
+                        self::textInput('no_qc', 'No. QC SS'),
+                        // ->placeholder($lastValue ? "Data Terakhir : {$lastValue}" : 'Data Belum Tersedia')
+                        // ->hint('Format: XXX/QKS/WBB/PERMINTAAN/MM/YY'),
 
                         self::textInput('no_po', 'No. PO')
                             ->placeholder($lastValue ? "Data Terakhir : {$lastValue}" : 'Data Belum Tersedia')
@@ -159,19 +153,6 @@ class IncommingMaterialSSResource extends Resource
                     ->label('')
                     ->relationship('summary')
                     ->schema([
-                        Grid::make(2),
-                        // ->schema([
-                        //     // Header kiri
-                        //     Placeholder::make('summary_title')
-                        //         ->content(new HtmlString('<div class="px-5 py-4 text-lg font-bold rounded-md"></div>'))
-                        //         ->disableLabel(),
-
-                        //     // Header kanan
-                        //     Placeholder::make('quantity_title')
-                        //         ->content(new HtmlString('<div class="px-3 py-4 text-lg font-bold rounded-md"></div>'))
-                        //         ->disableLabel(),
-                        // ]),
-
                         Grid::make(2)
                             ->schema(
                                 collect(config('summarySS.fields'))->map(function ($label, $key) {
@@ -198,8 +179,7 @@ class IncommingMaterialSSResource extends Resource
                     ->collapsible()
                     ->schema([
 
-                        // self::textInput('remark', 'Remarks'),
-                        Textarea::make('remark')
+                        Textarea::make('remarks')
                             ->required()
                             ->label('Remarks')
 
@@ -223,8 +203,6 @@ class IncommingMaterialSSResource extends Resource
                                                 'readonly' => true,
                                                 'style' => 'pointer-events: none;'
                                             ]),
-
-                                        // self::textInput('checked_name', 'Checked By'),
 
                                         self::signatureInput('checked_signature', ''),
 
@@ -252,8 +230,6 @@ class IncommingMaterialSSResource extends Resource
                                                 'readonly' => true,
                                                 'style' => 'pointer-events: none;'
                                             ]),
-
-                                        // self::textInput('accepted_name', 'Accepted By'),
 
                                         self::signatureInput('accepted_signature', ''),
 
@@ -284,8 +260,6 @@ class IncommingMaterialSSResource extends Resource
                                                 'style' => 'pointer-events: none;'
                                             ]),
 
-                                        // self::textInput('approved_name', 'Approved By'),
-
                                         self::signatureInput('approved_signature', ''),
 
                                         self::datePicker('approved_date', '')
@@ -305,6 +279,8 @@ class IncommingMaterialSSResource extends Resource
         return $table
             ->columns([
                 //
+
+                self::textColumn('no_qc', 'No QC'),
 
                 self::textColumn('no_po', 'No PO'),
 

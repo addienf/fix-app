@@ -22,6 +22,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
 use Filament\Resources\Resource;
+use Illuminate\Support\HtmlString;
 use Filament\Tables;
 use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Columns\ImageColumn;
@@ -76,6 +77,10 @@ class IncommingMaterialNonSSResource extends Resource
                             ->placeholder('Pilih Nomor Permintaan Pembelian')
                             ->hiddenOn('edit')
                             ->required(),
+
+                        self::textInput('no_qc', 'No. QC SS'),
+                        // ->placeholder($lastValue ? "Data Terakhir : {$lastValue}" : 'Data Belum Tersedia')
+                        // ->hint('Format: XXX/QKS/WBB/PERMINTAAN/MM/YY'),
 
                         self::textInput('no_po', 'No. PO')
                             ->placeholder($lastValue ? "Data Terakhir : {$lastValue}" : 'Data Belum Tersedia')
@@ -143,114 +148,140 @@ class IncommingMaterialNonSSResource extends Resource
 
                     ]),
 
-                Section::make('Summary')
+                // Section::make('Summary')
+                //     ->relationship('summary')
+                //     ->collapsible()
+                //     ->schema([
+
+                //         Repeater::make('summary')
+                //             ->label('')
+                //             ->schema([
+
+                //                 Grid::make(4)
+                //                     ->schema([
+                //                         Placeholder::make('summary_header')
+                //                             ->label('')
+                //                             ->content('Summary')
+                //                             ->extraAttributes(['class' => 'font-semibold text-center bg-gray-50 border py-2 rounded-md']),
+
+                //                         Placeholder::make('critical_header')
+                //                             ->label('')
+                //                             ->content('Critical')
+                //                             ->extraAttributes(['class' => 'font-semibold text-center bg-gray-50 border py-2 rounded-md']),
+
+                //                         Placeholder::make('major_header')
+                //                             ->label('')
+                //                             ->content('Major')
+                //                             ->extraAttributes(['class' => 'font-semibold text-center bg-gray-50 border py-2 rounded-md']),
+
+                //                         Placeholder::make('minor_header')
+                //                             ->label('')
+                //                             ->content('Minor')
+                //                             ->extraAttributes(['class' => 'font-semibold text-center bg-gray-50 border py-2 rounded-md']),
+                //                     ]),
+
+                //                 Grid::make(4)
+                //                     ->schema([
+
+                //                         Placeholder::make("summary_labels")
+                //                             ->label('')
+                //                             ->content("Total Received Quantity")
+                //                             ->columns(1)
+                //                             ->extraAttributes(['class' => 'font-semibold text-center bg-gray-50 border py-2 rounded-md']),
+
+                //                         self::textInput('critical_1', '')
+                //                             ->required(false),
+
+                //                         self::textInput('major_1', '')
+                //                             ->required(false),
+
+
+                //                         self::textInput('minor_1', '')
+                //                             ->required(false),
+
+
+                //                         Placeholder::make("summary_labels")
+                //                             ->label('')
+                //                             ->content("Return Quantity to Supplier")
+                //                             ->columns(1)
+                //                             ->extraAttributes(['class' => 'font-semibold text-center bg-gray-50 border py-2 rounded-md']),
+
+                //                         self::textInput('critical_2', '')
+                //                             ->required(false),
+
+
+                //                         self::textInput('major_2', '')
+                //                             ->required(false),
+
+
+                //                         self::textInput('minor_2', '')
+                //                             ->required(false),
+
+
+                //                         Placeholder::make("summary_labels")
+                //                             ->label('')
+                //                             ->content("Total Rejected Quantity")
+                //                             ->columns(1)
+                //                             ->extraAttributes(['class' => 'font-semibold text-center bg-gray-50 border py-2 rounded-md']),
+
+                //                         self::textInput('critical_3', '')
+                //                             ->required(false),
+
+
+                //                         self::textInput('major_3', '')
+                //                             ->required(false),
+
+
+                //                         self::textInput('minor_3', '')
+                //                             ->required(false),
+
+                //                     ]),
+
+                //                 Grid::make(4)
+                //                     ->schema([
+
+                //                         Placeholder::make("summary_labels")
+                //                             ->label('')
+                //                             ->content("Total Acceptable Quantity")
+                //                             ->columns(1)
+                //                             ->extraAttributes(['class' => 'font-semibold text-center bg-gray-50 border py-2 rounded-md']),
+
+                //                         self::textInput('total_acceptable_quantity', '')
+                //                             ->required(false)
+                //                             ->columnSpan(3),
+
+                //                     ]),
+
+                //             ])y
+                //             ->reorderable(false)
+                //             ->deletable(false)
+                //             ->addable(false),
+                //     ]),
+
+                Section::make('Summary & Quantity')
+                    ->label('')
                     ->relationship('summary')
-                    ->collapsible()
                     ->schema([
+                        Grid::make(2)
+                            ->schema(
+                                collect(config('summaryNonSS.fields'))->map(function ($label, $key) {
+                                    return [
+                                        // Kolom kiri: label
+                                        Placeholder::make("summary_label_{$key}")
+                                            ->content(new HtmlString('<div class="px-1 py-4 rounded-md text-md">' . e($label) . '</div>'))
+                                            ->disableLabel(),
 
-                        Repeater::make('summary')
-                            ->label('')
-                            ->schema([
-
-                                Grid::make(4)
-                                    ->schema([
-                                        Placeholder::make('summary_header')
+                                        // Kolom kanan: input
+                                        TextInput::make("summary.{$key}")
+                                            ->numeric()
                                             ->label('')
-                                            ->content('Summary')
-                                            ->extraAttributes(['class' => 'font-semibold text-center bg-gray-50 border py-2 rounded-md']),
-
-                                        Placeholder::make('critical_header')
-                                            ->label('')
-                                            ->content('Critical')
-                                            ->extraAttributes(['class' => 'font-semibold text-center bg-gray-50 border py-2 rounded-md']),
-
-                                        Placeholder::make('major_header')
-                                            ->label('')
-                                            ->content('Major')
-                                            ->extraAttributes(['class' => 'font-semibold text-center bg-gray-50 border py-2 rounded-md']),
-
-                                        Placeholder::make('minor_header')
-                                            ->label('')
-                                            ->content('Minor')
-                                            ->extraAttributes(['class' => 'font-semibold text-center bg-gray-50 border py-2 rounded-md']),
-                                    ]),
-
-                                Grid::make(4)
-                                    ->schema([
-
-                                        Placeholder::make("summary_labels")
-                                            ->label('')
-                                            ->content("Total Received Quantity")
-                                            ->columns(1)
-                                            ->extraAttributes(['class' => 'font-semibold text-center bg-gray-50 border py-2 rounded-md']),
-
-                                        self::textInput('critical_1', '')
-                                            ->required(false),
-
-                                        self::textInput('major_1', '')
-                                            ->required(false),
-
-
-                                        self::textInput('minor_1', '')
-                                            ->required(false),
-
-
-                                        Placeholder::make("summary_labels")
-                                            ->label('')
-                                            ->content("Return Quantity to Supplier")
-                                            ->columns(1)
-                                            ->extraAttributes(['class' => 'font-semibold text-center bg-gray-50 border py-2 rounded-md']),
-
-                                        self::textInput('critical_2', '')
-                                            ->required(false),
-
-
-                                        self::textInput('major_2', '')
-                                            ->required(false),
-
-
-                                        self::textInput('minor_2', '')
-                                            ->required(false),
-
-
-                                        Placeholder::make("summary_labels")
-                                            ->label('')
-                                            ->content("Total Rejected Quantity")
-                                            ->columns(1)
-                                            ->extraAttributes(['class' => 'font-semibold text-center bg-gray-50 border py-2 rounded-md']),
-
-                                        self::textInput('critical_3', '')
-                                            ->required(false),
-
-
-                                        self::textInput('major_3', '')
-                                            ->required(false),
-
-
-                                        self::textInput('minor_3', '')
-                                            ->required(false),
-
-                                    ]),
-
-                                Grid::make(4)
-                                    ->schema([
-
-                                        Placeholder::make("summary_labels")
-                                            ->label('')
-                                            ->content("Total Acceptable Quantity")
-                                            ->columns(1)
-                                            ->extraAttributes(['class' => 'font-semibold text-center bg-gray-50 border py-2 rounded-md']),
-
-                                        self::textInput('total_acceptable_quantity', '')
-                                            ->required(false)
-                                            ->columnSpan(3),
-
-                                    ]),
-
-                            ])
-                            ->reorderable(false)
-                            ->deletable(false)
-                            ->addable(false),
+                                            ->placeholder('0')
+                                            ->extraAttributes([
+                                                'class' => 'px-3 py-1 border border-gray-300 text-sm w-full',
+                                            ]),
+                                    ];
+                                })->flatten(1)->toArray()
+                            ),
                     ]),
 
                 Section::make('Nomor Batch')
@@ -445,69 +476,69 @@ class IncommingMaterialNonSSResource extends Resource
     {
         return
             Select::make($fieldName)
-                ->relationship($relation, $title)
-                ->options(function () {
-                    return
-                        PermintaanPembelian::with('permintaanBahanWBB')
-                            ->whereDoesntHave('materialNonSS')
-                            ->get()
-                            ->mapWithKeys(function ($item) {
-                                return [$item->id => $item->permintaanBahanWBB->no_surat ?? 'Tanpa No Surat'];
-                            });
-                })
-                ->label($label)
-                ->native(false)
-                ->searchable()
-                ->preload()
-                ->required()
-                ->reactive();
+            ->relationship($relation, $title)
+            ->options(function () {
+                return
+                    PermintaanPembelian::with('permintaanBahanWBB')
+                    ->whereDoesntHave('materialNonSS')
+                    ->get()
+                    ->mapWithKeys(function ($item) {
+                        return [$item->id => $item->permintaanBahanWBB->no_surat ?? 'Tanpa No Surat'];
+                    });
+            })
+            ->label($label)
+            ->native(false)
+            ->searchable()
+            ->preload()
+            ->required()
+            ->reactive();
     }
 
     protected static function selectInputOptions(string $fieldName, string $label, string $config): Select
     {
         return
             Select::make($fieldName)
-                ->options(config($config))
-                ->label($label)
-                ->native(false)
-                ->searchable()
-                ->preload()
-                ->required()
-                ->reactive();
+            ->options(config($config))
+            ->label($label)
+            ->native(false)
+            ->searchable()
+            ->preload()
+            ->required()
+            ->reactive();
     }
 
     protected static function datePicker(string $fieldName, string $label): DatePicker
     {
         return
             DatePicker::make($fieldName)
-                ->label($label)
-                ->displayFormat('M d Y')
-                ->seconds(false);
+            ->label($label)
+            ->displayFormat('M d Y')
+            ->seconds(false);
     }
 
     protected static function signatureInput(string $fieldName, string $labelName): SignaturePad
     {
         return
             SignaturePad::make($fieldName)
-                ->label($labelName)
-                ->exportPenColor('#0118D8')
-                ->helperText('*Harap Tandatangan di tengah area yang disediakan.')
-                ->afterStateUpdated(function ($state, $set) use ($fieldName) {
-                    if (blank($state))
-                        return;
-                    $path = SignatureUploader::handle($state, 'ttd_', 'Quality/IncommingMaterial/NonSS/Signatures');
-                    if ($path) {
-                        $set($fieldName, $path);
-                    }
-                });
+            ->label($labelName)
+            ->exportPenColor('#0118D8')
+            ->helperText('*Harap Tandatangan di tengah area yang disediakan.')
+            ->afterStateUpdated(function ($state, $set) use ($fieldName) {
+                if (blank($state))
+                    return;
+                $path = SignatureUploader::handle($state, 'ttd_', 'Quality/IncommingMaterial/NonSS/Signatures');
+                if ($path) {
+                    $set($fieldName, $path);
+                }
+            });
     }
 
     protected static function textColumn(string $fieldName, string $label): TextColumn
     {
         return
             TextColumn::make($fieldName)
-                ->label($label)
-                ->searchable()
-                ->sortable();
+            ->label($label)
+            ->searchable()
+            ->sortable();
     }
 }

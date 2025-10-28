@@ -19,6 +19,7 @@ class PermintaanBahan extends Model
         'no_surat',
         'dari',
         'kepada',
+        'status'
     ];
 
     protected $casts = [
@@ -47,6 +48,22 @@ class PermintaanBahan extends Model
 
     protected static function booted()
     {
+        static::saving(function ($model) {
+            if (
+                $model->pic?->mengetahui_signature &&
+                $model->status !== 'Diketahui'
+            ) {
+                $model->status = 'Diketahui';
+            }
+
+            if (
+                $model->pic?->diserahkan_signature &&
+                $model->status !== 'Diserahkan'
+            ) {
+                $model->status = 'Diserahkan';
+            }
+        });
+
         static::deleting(function ($model) {
             foreach ($model->details as $detail) {
                 $detail->delete();
