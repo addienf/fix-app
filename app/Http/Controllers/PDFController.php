@@ -417,14 +417,12 @@ class PDFController extends Controller
 
         return view('pdf.engineering.pdfServiceReport', compact('serviceReport'));
     }
-
     public function pdfCatatanPelanggan($id)
     {
         $complaint = Complain::with(['details', 'pic', 'pic.reportedBy'])->findOrFail($id);
 
         return view('pdf.engineering.pdfCatatanPelanggan', compact('complaint'));
     }
-
     public function downloadZipserviceReport($id)
     {
         $serviceReport = ServiceReport::with(['spkService', 'details', 'produkServices', 'pic', 'pic.approvedBy', 'pic.checkedBy'])->findOrFail($id);
@@ -452,12 +450,5 @@ class PDFController extends Controller
         }
 
         return response()->download($zipPath)->deleteFileAfterSend(true);
-    }
-
-    public function pdfKetidaksesuaian($id)
-    {
-        $ketidaksesuaian = Ketidaksesuaian::with(['spk', 'pic', 'details', 'snk'])->findOrFail($id);
-
-        return view('pdf.quality.pdfKetidaksesuaian', compact('ketidaksesuaian'));
     }
 }
