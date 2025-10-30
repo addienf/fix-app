@@ -2,14 +2,11 @@
 
 namespace App\Models\Sales\SpesifikasiProducts;
 
-use App\Models\General\ApprovalStage;
 use App\Models\General\Customer;
 use App\Models\Sales\SpesifikasiProducts\Pivot\SpesifikasiProductDetail;
 use App\Models\Sales\SpesifikasiProducts\Pivot\SpesifikasiProductPIC;
 use App\Models\Sales\SPKMarketings\SPKMarketing;
 use App\Models\Sales\URS;
-use App\Services\SignatureUploader;
-use App\Traits\Approval;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
@@ -66,34 +63,19 @@ class SpesifikasiProduct extends Model
         return $this->hasOneThrough(Customer::class, URS::class, 'id', 'id', 'urs_id', 'customer_id');
     }
 
+    public function getSelectCacheConfig(): array
+    {
+        return [
+            [
+                'relation' => 'urs',
+                'title' => 'no_urs',
+                'limit' => 10,
+            ],
+        ];
+    }
+
     protected static function booted()
     {
-        // static::saving(function ($model) {
-        //     if (
-        //         $model->pic?->accepted_signature &&
-        //         $model->status !== 'Diterima'
-        //     ) {
-        //         $model->status = 'Diterima';
-        //     }
-
-        //     if (
-        //         $model->pic?->acknowledge_signature &&
-        //         $model->status !== 'Diketahui MR'
-        //     ) {
-        //         $model->status = 'Diketahui MR';
-        //     }
-        // });
-
-        // static::deleting(function ($model) {
-        //     foreach ($model->details as $detail) {
-        //         $detail->delete();
-        //     }
-
-        //     if ($model->pic) {
-        //         $model->pic->delete();
-        //     }
-        // });
-
         static::saving(function ($model) {
             if ($model->relationLoaded('pic') && $model->pic) {
                 if ($model->pic->accepted_signature && $model->status !== 'Diterima') {
@@ -110,8 +92,6 @@ class SpesifikasiProduct extends Model
             }
 
             $model->pic?->delete();
-
-            // $model->approvals?->delete();
         });
     }
 }

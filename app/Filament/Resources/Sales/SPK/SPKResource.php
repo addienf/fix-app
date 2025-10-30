@@ -4,9 +4,14 @@ namespace App\Filament\Resources\Sales\SPK;
 
 use App\Filament\Resources\Sales\SPK\SPKResource\Pages;
 use App\Filament\Resources\Sales\SPK\SPKResource\RelationManagers;
+use App\Filament\Resources\Sales\SPK\Traits\DetailProduk;
+use App\Filament\Resources\Sales\SPK\Traits\InformasiUmum;
 use App\Models\Sales\SpesifikasiProducts\SpesifikasiProduct;
 use App\Models\Sales\SPKMarketings\SPKMarketing;
 use App\Services\SignatureUploader;
+use App\Traits\HasAutoNumber;
+use App\Traits\HasSignature;
+use App\Traits\SimpleFormResource;
 use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Hidden;
@@ -31,6 +36,7 @@ use Saade\FilamentAutograph\Forms\Components\SignaturePad;
 
 class SPKResource extends Resource
 {
+    use SimpleFormResource, HasSignature, HasAutoNumber, InformasiUmum, DetailProduk;
     protected static ?string $model = SPKMarketing::class;
     protected static ?int $navigationSort = 2;
     protected static ?string $slug = 'sales/spk-marketing';
@@ -54,129 +60,154 @@ class SPKResource extends Resource
 
     public static function form(Form $form): Form
     {
-        $lastValue = SPKMarketing::latest('no_spk')->value('no_spk');
+        // $lastValue = SPKMarketing::latest('no_spk')->value('no_spk');
 
         return $form
             ->schema([
+                Hidden::make('status_penerimaan')
+                    ->default('Belum Diterima'),
+
+                self::informasiUmumSection(),
+
+                self::detailProdukSection(),
+
+                static::signatureSection(
+                    [
+                        [
+                            'prefix' => 'create',
+                            'role' => 'Yang Membuat',
+                            'hideLogic' => fn($operation) => $operation === 'edit',
+                        ],
+                        [
+                            'prefix' => 'receive',
+                            'role' => 'Yang Menerima',
+                            'hideLogic' => fn($operation, $record) =>
+                            $operation === 'create' || filled($record?->receive_signature)
+                        ],
+                    ],
+                    title: 'PIC',
+                    uploadPath: 'Sales/SPK/Signatures'
+                )
+
                 //
-                Section::make('Informasi Umum')
-                    ->collapsible()
-                    ->schema([
+                // Section::make('Informasi Umum')
+                //     ->collapsible()
+                //     ->schema([
 
-                        Grid::make(2)
-                            ->schema([
+                //         Grid::make(2)
+                //             ->schema([
 
-                                DatePicker::make('tanggal')
-                                    ->label('Rencana Pengiriman')
-                                    ->required()
-                                    ->displayFormat('M d Y'),
+                //                 DatePicker::make('tanggal')
+                //                     ->label('Rencana Pengiriman')
+                //                     ->required()
+                //                     ->displayFormat('M d Y'),
 
-                                self::textInput('no_spk', 'Nomor SPK')
-                                    ->hint('Format: XXX/QKS/MKT/SPK/MM/YY')
-                                    ->placeholder($lastValue ? "Data Terakhir : {$lastValue}" : 'Data Belum Tersedia')
-                                    ->hiddenOn('edit')
-                                    ->unique(ignoreRecord: true),
+                //                 self::textInput('no_spk', 'Nomor SPK')
+                //                     ->hint('Format: XXX/QKS/MKT/SPK/MM/YY')
+                //                     ->placeholder($lastValue ? "Data Terakhir : {$lastValue}" : 'Data Belum Tersedia')
+                //                     ->hiddenOn('edit')
+                //                     ->unique(ignoreRecord: true),
 
-                                self::selectSpecInput()
-                                    ->hiddenOn('edit'),
+                //                 self::selectSpecInput()
+                //                     ->hiddenOn('edit'),
 
-                                self::textInput('dari', 'Dari'),
+                //                 self::textInput('dari', 'Dari'),
 
-                                self::textInput('no_order', 'Nomor Order')
-                                    ->unique(ignoreRecord: true),
+                //                 self::textInput('no_order', 'Nomor Order')
+                //                     ->unique(ignoreRecord: true),
 
-                                self::textInput('kepada', 'Kepada'),
+                //                 self::textInput('kepada', 'Kepada'),
 
-                                Hidden::make('status_penerimaan')
-                                    ->default('Belum Diterima'),
+                //                 Hidden::make('status_penerimaan')
+                //                     ->default('Belum Diterima'),
 
-                            ]),
+                //             ]),
 
-                    ]),
+                //     ]),
 
-                Section::make('Detail Produk Yang Dipesan')
-                    ->hiddenOn(operations: 'edit')
-                    ->collapsible()
-                    ->schema([
+                // Section::make('Detail Produk Yang Dipesan')
+                //     ->hiddenOn(operations: 'edit')
+                //     ->collapsible()
+                //     ->schema([
 
-                        TableRepeater::make('details')
-                            ->label('')
-                            ->schema([
+                //         TableRepeater::make('details')
+                //             ->label('')
+                //             ->schema([
 
-                                self::textInput('name', 'Nama Produk')
-                                    ->extraAttributes([
-                                        'readonly' => true,
-                                        'style' => 'pointer-events: none;'
-                                    ]),
+                //                 self::textInput('name', 'Nama Produk')
+                //                     ->extraAttributes([
+                //                         'readonly' => true,
+                //                         'style' => 'pointer-events: none;'
+                //                     ]),
 
-                                self::textInput('quantity', 'Jumlah Pesanan')
-                                    ->extraAttributes([
-                                        'readonly' => true,
-                                        'style' => 'pointer-events: none;'
-                                    ]),
+                //                 self::textInput('quantity', 'Jumlah Pesanan')
+                //                     ->extraAttributes([
+                //                         'readonly' => true,
+                //                         'style' => 'pointer-events: none;'
+                //                     ]),
 
-                                self::textInput('no_urs', 'No URS')
-                                    ->extraAttributes([
-                                        'readonly' => true,
-                                        'style' => 'pointer-events: none;'
-                                    ]),
+                //                 self::textInput('no_urs', 'No URS')
+                //                     ->extraAttributes([
+                //                         'readonly' => true,
+                //                         'style' => 'pointer-events: none;'
+                //                     ]),
 
-                            ])
-                            ->deletable(false)
-                            ->reorderable(false)
-                            ->addable(false)
-                            ->helperText('*Salinan URS Wajib diberikan kepada Departemen Produksi'),
+                //             ])
+                //             ->deletable(false)
+                //             ->reorderable(false)
+                //             ->addable(false)
+                //             ->helperText('*Salinan URS Wajib diberikan kepada Departemen Produksi'),
 
-                    ]),
+                //     ]),
 
-                Section::make('PIC')
-                    ->collapsible()
-                    ->relationship('pic')
-                    ->schema([
+                // Section::make('PIC')
+                //     ->collapsible()
+                //     ->relationship('pic')
+                //     ->schema([
 
-                        Grid::make(2)
-                            ->schema([
+                //         Grid::make(2)
+                //             ->schema([
 
-                                Grid::make(1)
-                                    ->schema([
-                                        Hidden::make('create_name')
-                                            ->default(fn() => auth()->id()),
+                //                 Grid::make(1)
+                //                     ->schema([
+                //                         Hidden::make('create_name')
+                //                             ->default(fn() => auth()->id()),
 
-                                        self::textInput('create_name_placeholder', 'Yang Membuat')
-                                            ->default(fn() => auth()->user()?->name)
-                                            ->extraAttributes([
-                                                'readonly' => true,
-                                                'style' => 'pointer-events: none;'
-                                            ]),
+                //                         self::textInput('create_name_placeholder', 'Yang Membuat')
+                //                             ->default(fn() => auth()->user()?->name)
+                //                             ->extraAttributes([
+                //                                 'readonly' => true,
+                //                                 'style' => 'pointer-events: none;'
+                //                             ]),
 
-                                        self::signatureInput('create_signature', ''),
+                //                         self::signatureInput('create_signature', ''),
 
-                                    ])->hiddenOn(operations: 'edit'),
+                //                     ])->hiddenOn(operations: 'edit'),
 
-                                Grid::make(1)
-                                    ->schema([
-                                        Hidden::make('receive_name')
-                                            ->default(fn() => auth()->id())
-                                            ->dehydrated(true)
-                                            ->afterStateHydrated(function ($component) {
-                                                $component->state(auth()->id());
-                                            }),
+                //                 Grid::make(1)
+                //                     ->schema([
+                //                         Hidden::make('receive_name')
+                //                             ->default(fn() => auth()->id())
+                //                             ->dehydrated(true)
+                //                             ->afterStateHydrated(function ($component) {
+                //                                 $component->state(auth()->id());
+                //                             }),
 
-                                        self::textInput('receive_name_placeholder', 'Yang Menerima')
-                                            ->placeholder(fn() => auth()->user()?->name)
-                                            ->required(false)
-                                            ->extraAttributes([
-                                                'readonly' => true,
-                                                'style' => 'pointer-events: none;'
-                                            ]),
+                //                         self::textInput('receive_name_placeholder', 'Yang Menerima')
+                //                             ->placeholder(fn() => auth()->user()?->name)
+                //                             ->required(false)
+                //                             ->extraAttributes([
+                //                                 'readonly' => true,
+                //                                 'style' => 'pointer-events: none;'
+                //                             ]),
 
-                                        self::signatureInput('receive_signature', ''),
+                //                         self::signatureInput('receive_signature', ''),
 
-                                    ])->hiddenOn(operations: 'create'),
+                //                     ])->hiddenOn(operations: 'create'),
 
-                            ]),
+                //             ]),
 
-                    ]),
+                //     ]),
 
             ]);
     }
@@ -204,10 +235,16 @@ class SPKResource extends Resource
             ])
             ->actions([
                 ActionGroup::make([
-                    Tables\Actions\EditAction::make(),
-                    Tables\Actions\DeleteAction::make(),
+                    Tables\Actions\EditAction::make()
+                        ->icon('heroicon-o-pencil-square')
+                        ->tooltip('Edit Data SPK Marketing')
+                        ->color('info'),
+                    Tables\Actions\DeleteAction::make()
+                        ->icon('heroicon-o-trash')
+                        ->tooltip('Hapus Data'),
                     Action::make('pdf_view')
                         ->label(_('Lihat PDF'))
+                        ->tooltip('Lihat Dokumen PDF')
                         ->icon('heroicon-o-document')
                         ->color('success')
                         ->url(fn($record) => route('pdf.SPKMarketing', ['record' => $record->id]))
@@ -238,88 +275,98 @@ class SPKResource extends Resource
         ];
     }
 
-    protected static function textInput(string $fieldName, string $label): TextInput
+    public static function getEloquentQuery(): Builder
     {
-        return TextInput::make($fieldName)
-            ->label($label)
-            ->required()
-            ->maxLength(255);
+        return parent::getEloquentQuery()
+            ->with([
+                // 'spesifikasiProduct.urs.no_urs',
+                'spesifikasiProduct.urs',
+                'pic',
+            ]);
     }
 
-    protected static function selectInput(string $fieldName, string $label, string $relation, string $title): Select
-    {
-        return
-            Select::make($fieldName)
-            ->relationship($relation, $title)
-            ->label($label)
-            ->native(false)
-            ->searchable()
-            ->preload()
-            ->required();
-    }
+    // protected static function textInput(string $fieldName, string $label): TextInput
+    // {
+    //     return TextInput::make($fieldName)
+    //         ->label($label)
+    //         ->required()
+    //         ->maxLength(255);
+    // }
 
-    protected static function selectSpecInput(): Select
-    {
-        return
-            Select::make('spesifikasi_product_id')
-            ->label('Nama Customer')
-            ->placeholder('Pilih Nama Customer')
-            ->reactive()
-            ->required()
-            ->options(function () {
-                return
-                    SpesifikasiProduct::with('urs.customer')
-                    ->whereDoesntHave('spk')
-                    ->get()
-                    ->mapWithKeys(function ($item) {
-                        $noUrs = $item->urs->no_urs ?? '-';
-                        $customerName = $item->urs->customer->name ?? '-';
-                        return [$item->id => "{$noUrs} - {$customerName}"];
-                    });
-            })
-            ->afterStateUpdated(function ($state, callable $set) {
-                if (!$state) return;
+    // protected static function selectInput(string $fieldName, string $label, string $relation, string $title): Select
+    // {
+    //     return
+    //         Select::make($fieldName)
+    //         ->relationship($relation, $title)
+    //         ->label($label)
+    //         ->native(false)
+    //         ->searchable()
+    //         ->preload()
+    //         ->required();
+    // }
 
-                $spesifikasi = SpesifikasiProduct::with(['urs.customer', 'details.product'])->find($state);
-                if (!$spesifikasi) return;
+    // protected static function selectSpecInput(): Select
+    // {
+    //     return
+    //         Select::make('spesifikasi_product_id')
+    //         ->label('Nama Customer')
+    //         ->placeholder('Pilih Nama Customer')
+    //         ->reactive()
+    //         ->required()
+    //         ->options(function () {
+    //             return
+    //                 SpesifikasiProduct::with('urs.customer')
+    //                 ->whereDoesntHave('spk')
+    //                 ->get()
+    //                 ->mapWithKeys(function ($item) {
+    //                     $noUrs = $item->urs->no_urs ?? '-';
+    //                     $customerName = $item->urs->customer->name ?? '-';
+    //                     return [$item->id => "{$noUrs} - {$customerName}"];
+    //                 });
+    //         })
+    //         ->afterStateUpdated(function ($state, callable $set) {
+    //             if (!$state) return;
 
-                $noUrs = $spesifikasi->urs?->no_urs ?? '-';
+    //             $spesifikasi = SpesifikasiProduct::with(['urs.customer', 'details.product'])->find($state);
+    //             if (!$spesifikasi) return;
 
-                // Ubah details ke bentuk array yang bisa ditangkap Repeater
-                $details = $spesifikasi->details->map(function ($detail) use ($noUrs) {
-                    return [
-                        'name' => $detail->product?->name ?? '-',
-                        'quantity' => $detail?->quantity ?? '-',
-                        'no_urs' => $noUrs,
-                    ];
-                })->toArray();
-                $set('details', $details);
-            });
-    }
+    //             $noUrs = $spesifikasi->urs?->no_urs ?? '-';
 
-    protected static function signatureInput(string $fieldName, string $labelName): SignaturePad
-    {
-        return
-            SignaturePad::make($fieldName)
-            ->label($labelName)
-            ->exportPenColor('#0118D8')
-            ->helperText('*Harap Tandatangan di tengah area yang disediakan.')
-            ->afterStateUpdated(function ($state, $set) use ($fieldName) {
-                if (blank($state))
-                    return;
-                $path = SignatureUploader::handle($state, 'ttd_', 'Sales/SPK/Signatures');
-                if ($path) {
-                    $set($fieldName, $path);
-                }
-            });
-    }
+    //             // Ubah details ke bentuk array yang bisa ditangkap Repeater
+    //             $details = $spesifikasi->details->map(function ($detail) use ($noUrs) {
+    //                 return [
+    //                     'name' => $detail->product?->name ?? '-',
+    //                     'quantity' => $detail?->quantity ?? '-',
+    //                     'no_urs' => $noUrs,
+    //                 ];
+    //             })->toArray();
+    //             $set('details', $details);
+    //         });
+    // }
 
-    protected static function textColumn(string $fieldName, string $label): TextColumn
-    {
-        return
-            TextColumn::make($fieldName)
-            ->label($label)
-            ->searchable()
-            ->sortable();
-    }
+    // protected static function signatureInput(string $fieldName, string $labelName): SignaturePad
+    // {
+    //     return
+    //         SignaturePad::make($fieldName)
+    //         ->label($labelName)
+    //         ->exportPenColor('#0118D8')
+    //         ->helperText('*Harap Tandatangan di tengah area yang disediakan.')
+    //         ->afterStateUpdated(function ($state, $set) use ($fieldName) {
+    //             if (blank($state))
+    //                 return;
+    //             $path = SignatureUploader::handle($state, 'ttd_', 'Sales/SPK/Signatures');
+    //             if ($path) {
+    //                 $set($fieldName, $path);
+    //             }
+    //         });
+    // }
+
+    // protected static function textColumn(string $fieldName, string $label): TextColumn
+    // {
+    //     return
+    //         TextColumn::make($fieldName)
+    //         ->label($label)
+    //         ->searchable()
+    //         ->sortable();
+    // }
 }

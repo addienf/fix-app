@@ -31,4 +31,15 @@ class URS extends Model
     {
         return "{$this->no_urs} - {$this->customer->name}";
     }
+
+    public function getSelectCacheConfig(): array
+    {
+        return [
+            [
+                'relation' => 'customer',
+                'title' => 'name',
+                'limit' => 10,
+            ],
+        ];
+    }
 }
