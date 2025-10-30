@@ -4,6 +4,8 @@ namespace App\Filament\Resources\General\URS;
 
 use App\Filament\Resources\General\URS\URSResource\Pages;
 use \App\Models\Sales\URS;
+use App\Traits\HasAutoNumber;
+use App\Traits\HasSelectCache;
 use Filament\Forms;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Textarea;
@@ -14,10 +16,11 @@ use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use App\Traits\SimpleFormResource;
+use Illuminate\Support\Facades\DB;
 
 class URSResource extends Resource
 {
-    use SimpleFormResource;
+    use SimpleFormResource, HasAutoNumber, HasSelectCache;
     protected static ?string $model = URS::class;
     protected static ?int $navigationSort = 21;
     protected static ?string $navigationGroup = 'General';
@@ -35,22 +38,17 @@ class URSResource extends Resource
                     ->collapsible()
                     ->schema([
 
-                        self::textInput('no_urs', 'Nomor URS')
-                            ->hint('Format: XXX/QKS/MKT/URS/MM/YY')
-                            ->unique(),
+                        self::autoNumberField('no_urs', 'Nomor URS', [
+                            'prefix' => 'QKS',
+                            'section' => 'MKT',
+                            'type' => 'URS',
+                            'table' => 'urs',
+                        ]),
 
-                        self::selectInput(
-                            'customer_id',
-                            'Nama Customer',
-                            'customer',
-                            'name'
-                        ),
+                        self::selectInputCache('customer_id', 'Nama Customer', 'customer', 'name')
+                            ->placeholder('Pilih Data Customer'),
 
-                        self::textareaInput(
-                            'permintaan_khusus',
-                            'Remark Permintaan Khusus'
-                        )
-
+                        self::textareaInput('permintaan_khusus', 'Remark Permintaan Khusus')
                     ])
                     ->columns(2)
 

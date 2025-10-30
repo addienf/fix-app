@@ -3,49 +3,36 @@
 namespace App\Filament\Resources\Sales\SpesifikasiProducts;
 
 use App\Filament\Resources\Sales\SpesifikasiProducts\SpesifikasiProductResource\Pages;
-use App\Filament\Resources\Sales\SpesifikasiProducts\SpesifikasiProductResource\RelationManagers;
-use App\Forms\Components\PicSignatureSection;
-use App\Models\General\Product;
+use App\Filament\Resources\Sales\SpesifikasiProducts\Traits\InformasiUmum;
+use App\Filament\Resources\Sales\SpesifikasiProducts\Traits\ItemRequest;
+use App\Filament\Resources\Sales\SpesifikasiProducts\Traits\PenjelasanTambahan;
 use App\Models\Sales\SpesifikasiProducts\SpesifikasiProduct;
-use App\Services\SignatureUploader;
+use App\Traits\HasAutoNumber;
+use App\Traits\HasSelectCache;
 use App\Traits\HasSignature;
-use App\Traits\PICSection;
 use App\Traits\SimpleFormResource;
-use Filament\Forms;
-use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Fieldset;
-use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Hidden;
-use Filament\Forms\Components\Repeater;
-use Filament\Forms\Components\Section;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Toggle;
-use Filament\Forms\Components\ToggleButtons;
 use Filament\Forms\Form;
-use Filament\Forms\Set;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\ActionGroup;
-use Filament\Tables\Columns\ImageColumn;
-use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
-use Icetalker\FilamentTableRepeater\Forms\Components\TableRepeater;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Illuminate\Support\Str;
-use Saade\FilamentAutograph\Forms\Components\SignaturePad;
-use Wallo\FilamentSelectify\Components\ButtonGroup;
-use Wallo\FilamentSelectify\Components\ToggleButton;
 
 class SpesifikasiProductResource extends Resource
 {
-    use SimpleFormResource, HasSignature;
+    use SimpleFormResource,
+        HasSignature,
+        HasAutoNumber,
+        HasSelectCache,
+        InformasiUmum,
+        ItemRequest,
+        PenjelasanTambahan;
+
     protected static ?string $model = SpesifikasiProduct::class;
     protected static ?int $navigationSort = 1;
     protected static ?string $slug = 'sales/spesifikasi-produk';
@@ -65,277 +52,11 @@ class SpesifikasiProductResource extends Resource
                 Hidden::make('status')
                     ->default('Belum Diterima'),
 
-                Section::make('Informasi Umum')
-                    ->schema([
-                        self::selectInput('urs_id', 'No URS', 'urs', 'no_urs')
-                            ->placeholder('Pilih Data URS')
-                            ->hiddenOn('edit')
-                            ->createOptionForm(fn() => self::ursFormSchema()),
-                        self::textInput('delivery_address', 'Alamat Pengiriman'),
-                        self::buttonGroup('is_stock', 'Untuk Stock ?'),
-                    ])
-                    ->columns($isEdit ? 2 : 3)
-                    ->collapsible(),
+                self::informasiUmumSection($isEdit),
 
-                Section::make('Item Request')
-                    ->collapsible()
-                    ->schema([
-                        Repeater::make('details')
-                            ->label('')
-                            ->relationship('details')
-                            ->schema([
-                                Grid::make(2)
-                                    ->schema([
+                self::itemRequestSection(),
 
-                                        self::selectInput('product_id', 'Pilih Produk', 'product', 'name')
-                                            ->required()
-                                            ->reactive(),
-
-                                        self::textInput('quantity', 'Banyak Produk')
-                                            ->numeric()
-                                            ->required(),
-                                    ]),
-
-                                Grid::make()
-                                    ->relationship('file')
-                                    ->schema([
-                                        FileUpload::make('file_path')
-                                            ->label('File Pendukung')
-                                            ->directory('Sales/Spesifikasi/Files')
-                                            ->acceptedFileTypes(['application/pdf'])
-                                            ->maxSize(10240)
-                                            ->required()
-                                            ->columnSpanFull()
-                                            ->helperText('Hanya file PDF yang diperbolehkan. Maksimal ukuran 10 MB.'),
-                                    ]),
-
-                                TableRepeater::make('specification')
-                                    ->label('Spesifikasi')
-                                    ->visible(
-                                        fn($get) =>
-                                        optional(Product::find($get('product_id')))?->category_id === 1
-                                    )
-                                    ->schema([
-                                        Select::make('name')
-                                            ->reactive()
-                                            ->required()
-                                            ->label('')
-                                            ->options(config('spec.spesifikasi'))
-                                            ->columnSpan(1)
-                                            ->placeholder('Pilih Jenis Spesifikasi'),
-
-                                        ButtonGroup::make('value_bool')
-                                            ->label('')
-                                            ->required()
-                                            ->options(function (callable $get) {
-                                                $name = $get('name');
-
-                                                if ($name === 'Tipe Chamber') {
-                                                    return [
-                                                        'knockdown' => 'Knockdown',
-                                                        'regular' => 'Regular',
-                                                    ];
-                                                } elseif ($name === 'Software') {
-                                                    return [
-                                                        'with' => 'With Software',
-                                                        'without' => 'Without Software',
-                                                    ];
-                                                } else {
-                                                    return [
-                                                        '1' => 'Yes',
-                                                        '0' => 'No',
-                                                    ];
-                                                }
-                                            })
-                                            ->reactive()
-                                            ->onColor('primary')
-                                            ->offColor('gray')
-                                            ->gridDirection('row')
-                                            ->visible(fn($get) => in_array(
-                                                $get('name'),
-                                                [
-                                                    'Water Feeding System',
-                                                    'Software',
-                                                    'Tipe Chamber',
-                                                ]
-                                            )),
-
-                                        TextInput::make('value_str')
-                                            ->required()
-                                            ->label('')
-                                            ->placeholder('Masukkan Nilai')
-                                            ->visible(fn($get) => !in_array(
-                                                $get('name'),
-                                                [
-                                                    'Water Feeding System',
-                                                    'Software',
-                                                    'Tipe Chamber',
-                                                ]
-                                            ))
-                                            ->columnSpan(1),
-                                    ])
-                                    ->columns(2)
-                                    ->defaultItems(1)
-                                    ->columnSpanFull()
-                                    ->addActionLabel('Tambah Spesifikasi'),
-
-                                Repeater::make('specification_mecmesin')
-                                    ->label('Spesifikasi Mecmesin')
-                                    ->visible(
-                                        fn($get) =>
-                                        optional(Product::find($get('product_id')))?->category_id === 2
-                                    )
-                                    ->schema([
-                                        Grid::make(2)
-                                            ->schema([
-                                                Select::make('test_type')
-                                                    ->label('Test Type')
-                                                    ->options([
-                                                        'tensile' => 'Tensile Test',
-                                                        'compression' => 'Compression Test',
-                                                        'torque' => 'Torque Test',
-                                                    ])
-                                                    ->required()
-                                                    ->reactive(),
-
-                                                ButtonGroup::make('jenis_tes')
-                                                    ->label('Jenis Tes')
-                                                    ->gridDirection('row')
-                                                    ->options([
-                                                        'digital' => 'Digital',
-                                                        'computerised' => 'Computerised'
-                                                    ]),
-                                            ]),
-                                        Grid::make(2)
-                                            ->schema([
-                                                TextInput::make('capacity')->label('Capacity'),
-                                                TextInput::make('sample')->label('Sample to test'),
-                                            ])
-                                    ])
-                                    ->columns(2)
-                                    ->addActionLabel('Tambah Test'),
-                            ])
-                            ->defaultItems(1)
-                            ->reorderable()
-                            ->collapsible()
-                            ->columnSpanFull()
-                            ->addActionLabel('Tambah Data Detail Produk'),
-                    ]),
-
-                Section::make('Penjelasan Tambahan')
-                    ->collapsible()
-                    ->schema([
-                        Textarea::make('detail_specification')
-                            ->label('Detail Spesifikasi')
-                            ->required()
-                            ->columnSpanFull(),
-
-                        DatePicker::make('estimasi_pengiriman')
-                            ->label('Estimasi Pengiriman')
-                            ->required()
-                            ->displayFormat('M d Y'),
-
-                        ButtonGroup::make('status_penerimaan_order')
-                            ->label('Penerimaan Order')
-                            ->gridDirection('row')
-                            ->options([
-                                'yes' => 'Ya',
-                                'no' => 'Tidak'
-                            ]),
-
-                        Textarea::make('alasan')
-                            ->label('Alasan Pilihan Tidak')
-                            ->required()
-                            ->columnSpanFull(),
-                    ]),
-
-                // Section::make('PIC')
-                //     ->collapsible()
-                //     ->relationship('pic')
-                //     ->schema([
-                //         Grid::make(3)
-                //             ->schema([
-                //                 Grid::make(1)
-                //                     ->schema([
-
-                //                         Hidden::make('signed_name')
-                //                             ->default(fn() => auth()->id()),
-
-                //                         self::textInput('signed_name_placeholder', 'Signed by Sales Dept')
-                //                             ->default(fn() => auth()->user()?->name)
-                //                             ->extraAttributes([
-                //                                 'readonly' => true,
-                //                                 'style' => 'pointer-events: none;'
-                //                             ]),
-
-                //                         self::signatureInput('signed_signature', ''),
-
-                //                         self::datePicker('signed_date', '')
-                //                             ->default(now())
-                //                             ->required(),
-
-                //                     ])->hiddenOn(operations: 'edit'),
-
-                //                 Grid::make(1)
-                //                     ->schema([
-
-                //                         Hidden::make('accepted_name')
-                //                             ->default(fn() => auth()->id())
-                //                             ->dehydrated(true)
-                //                             ->afterStateHydrated(function ($component) {
-                //                                 $component->state(auth()->id());
-                //                             }),
-
-                //                         self::textInput('accepted_name_placeholder', 'Accepted by Production Dept')
-                //                             ->default(fn() => auth()->user()?->name)
-                //                             ->placeholder(fn() => auth()->user()?->name)
-                //                             ->required(false)
-                //                             ->extraAttributes([
-                //                                 'readonly' => true,
-                //                                 'style' => 'pointer-events: none;'
-                //                             ]),
-
-                //                         self::signatureInput('accepted_signature', ''),
-
-                //                         self::datePicker('accepted_date', '')
-                //                             ->required(),
-
-                //                     ])->hidden(
-                //                         fn($operation, $record) =>
-                //                         $operation === 'create' || filled($record?->accepted_signature)
-                //                     ),
-
-                //                 Grid::make(1)
-                //                     ->schema([
-
-                //                         Hidden::make('acknowledge_name')
-                //                             ->default(fn() => auth()->id())
-                //                             ->dehydrated(true)
-                //                             ->afterStateHydrated(function ($component) {
-                //                                 $component->state(auth()->id());
-                //                             }),
-
-                //                         self::textInput('acknowledge_name_placeholder', 'Acknowledge by MR')
-                //                             ->default(fn() => auth()->user()?->name)
-                //                             ->placeholder(fn() => auth()->user()?->name)
-                //                             ->required(false)
-                //                             ->extraAttributes([
-                //                                 'readonly' => true,
-                //                                 'style' => 'pointer-events: none;'
-                //                             ]),
-
-                //                         self::signatureInput('acknowledge_signature', ''),
-
-                //                         self::datePicker('acknowledge_date', '')
-                //                             ->required(),
-
-                //                     ])->hidden(
-                //                         fn($operation, $record) =>
-                //                         $operation === 'create' || blank($record?->accepted_signature) || filled($record?->approved_signature)
-                //                     ),
-                //             ]),
-
-                //     ]),
+                self::penjelasanTambahanSection(),
 
                 static::signatureSection(
                     [
@@ -369,37 +90,51 @@ class SpesifikasiProductResource extends Resource
             ->columns([
                 //
                 self::textColumn('urs.no_urs', 'No URS'),
+
                 self::textColumn('urs.customer.name', 'Nama Customer'),
-                self::textColumn('is_stock', 'Status Stock')
+
+                self::textColumn('is_stock', 'Status Produk')
                     ->badge()
                     ->formatStateUsing(function ($state) {
-                        return $state ? 'Stock' : 'Not Stock';
+                        return $state ? 'Untuk Stock' : 'Bukan Stock';
                     })
                     ->color(function ($state) {
                         return $state ? 'danger' : 'success';
                     }),
 
-                TextColumn::make('status')
-                    ->label('Status')
+                self::textColumn('status', 'Status')
                     ->badge()
-                    ->color(function ($record) {
-                        return match ($record->status) {
-                            'Belum Diterima' => 'danger',
-                            'Diterima' => 'warning',
-                            'Diketahui MR' => 'success',
-                            default => 'gray',
-                        };
-                    })
+                    ->color(fn($state) => [
+                        'Belum Diterima' => 'danger',
+                        'Diterima' => 'warning',
+                        'Diketahui MR' => 'success',
+                    ][$state] ?? 'gray')
                     ->alignCenter(),
+
             ])
             ->filters([
                 //
+                SelectFilter::make('status')
+                    ->options([
+                        'Belum Diterima' => 'Belum Diterima',
+                        'Diterima' => 'Diterima',
+                        'Diketahui MR' => 'Diketahui MR',
+                    ])
+                    ->label('Filter Status'),
+
+                Filter::make('is_stock')
+                    ->label('Untuk Stock')
+                    ->query(fn(Builder $query) => $query->where('is_stock', true)),
             ])
             ->actions([
                 ActionGroup::make([
                     Tables\Actions\EditAction::make()
+                        ->icon('heroicon-o-pencil-square')
+                        ->tooltip('Edit Data Spesifikasi')
                         ->color('info'),
                     Tables\Actions\DeleteAction::make()
+                        ->icon('heroicon-o-trash')
+                        ->tooltip('Hapus Data')
                         ->successNotification(null)
                         ->after(function ($record) {
                             Notification::make()
@@ -410,6 +145,7 @@ class SpesifikasiProductResource extends Resource
                         }),
                     Action::make('pdf_view')
                         ->label(_('Lihat PDF'))
+                        ->tooltip('Lihat Dokumen PDF')
                         ->icon('heroicon-o-document')
                         ->color('success')
                         ->openUrlInNewTab()
@@ -442,101 +178,14 @@ class SpesifikasiProductResource extends Resource
         ];
     }
 
-    // protected static function textInput(string $fieldName, string $label): TextInput
-    // {
-    //     return TextInput::make($fieldName)
-    //         ->label($label)
-    //         ->required()
-    //         ->maxLength(255);
-    // }
-
-    // protected static function selectInput(string $fieldName, string $label, string $relation, string $title): Select
-    // {
-    //     return
-    //         Select::make($fieldName)
-    //         ->relationship(
-    //             $relation,
-    //             $title,
-    //             fn(Builder $query) => $query->orderBy($title)
-    //         )
-    //         ->label($label)
-    //         ->native(false)
-    //         ->searchable()
-    //         ->preload()
-    //         ->required();
-    // }
-
-    protected static function buttonGroup(string $fieldName, string $label): ButtonGroup
+    public static function getEloquentQuery(): Builder
     {
-        return
-            ButtonGroup::make($fieldName)
-            ->label($label)
-            ->required()
-            ->options([
-                1 => 'Yes',
-                0 => 'No',
-            ])
-            ->onColor('primary')
-            ->offColor('gray')
-            ->gridDirection('row')
-            ->default('individual');
-    }
-
-    // protected static function signatureInput(string $fieldName, string $labelName): SignaturePad
-    // {
-    //     return
-    //         SignaturePad::make($fieldName)
-    //         ->label($labelName)
-    //         ->exportPenColor('#0118D8')
-    //         ->helperText('*Harap Tandatangan di tengah area yang disediakan.')
-    //         ->afterStateUpdated(function ($state, $set) use ($fieldName) {
-    //             if (blank($state))
-    //                 return;
-    //             $path = SignatureUploader::handle($state, 'ttd_', 'Quality/PengecekanMaterial/Electrical/Signatures');
-    //             if ($path) {
-    //                 $set($fieldName, $path);
-    //             }
-    //         });
-    // }
-
-    // protected static function datePicker(string $fieldName, string $label): DatePicker
-    // {
-    //     return
-    //         DatePicker::make($fieldName)
-    //         ->label($label)
-    //         ->displayFormat('M d Y')
-    //         ->seconds(false);
-    // }
-
-    // protected static function textColumn(string $fieldName, string $label): TextColumn
-    // {
-    //     return
-    //         TextColumn::make($fieldName)
-    //         ->label($label)
-    //         ->searchable()
-    //         ->sortable();
-    // }
-
-    protected static function ursFormSchema(): array
-    {
-        return [
-            self::textInput('no_urs', 'Nomor URS')
-                ->helperText('Format: XXX/QKS/MKT/URS/MM/YY')
-                ->unique(),
-            self::selectInput('customer_id', 'Nama Customer', 'customer', 'name')
-                ->createOptionForm(fn() => self::customerFormSchema()),
-            Textarea::make('permintaan_khusus')->label('Remark Permintaan Khusus')
-        ];
-    }
-
-    protected static function customerFormSchema(): array
-    {
-        return [
-            self::textInput('name', 'Nama Customer'),
-            self::textInput('phone_number', 'No Telpon'),
-            self::textInput('department', 'Department'),
-            self::textInput('company_name', 'Nama Perusahaan'),
-            self::textInput('company_address', 'Alamat Perusahaan'),
-        ];
+        return parent::getEloquentQuery()
+            ->with([
+                'urs.customer',
+                'details.product',
+                'details.file',
+                'pic',
+            ]);
     }
 }

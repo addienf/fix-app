@@ -19,6 +19,7 @@
         "laravel/sanctum": "^3.3",
         "laravel/tinker": "^2.8",
         "saade/filament-autograph": "^3.2",
+        "spatie/laravel-image-optimizer": "^1.8",
         "suleymanozev/filament-radio-button-field": "^2.0",
         "ysfkaya/filament-phone-input": "^3.2"
     },
