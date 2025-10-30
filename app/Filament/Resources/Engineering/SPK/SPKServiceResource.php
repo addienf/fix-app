@@ -308,4 +308,34 @@ class SPKServiceResource extends Resource
                 }
             });
     }
+
+    protected static function selectSpecInput(): Select
+    {
+        return
+            Select::make('complain_id')
+            ->label('Nomor Complaint Form')
+            ->placeholder('Pilih Nomor Complaint Form')
+            ->reactive()
+            ->required()
+            ->options(function () {
+                return
+                    Complain::whereDoesntHave('spkService')
+                    ->get()
+                    ->mapWithKeys(function ($item) {
+                        $noForm = $item->form_no ?? '-';
+                        $customerName = $item->name_complain ?? '-';
+                        return [$item->id => "{$noForm} - {$customerName}"];
+                    });
+            })
+            ->afterStateUpdated(function ($state, callable $set) {
+                if (!$state) return;
+
+                $complain = Complain::find($state);
+                if (!$complain) return;
+
+                $companyName = $complain->company_name ?? '-';
+
+                $set('perusahaan', $companyName);
+            });
+    }
 }
