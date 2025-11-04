@@ -44,12 +44,12 @@
         <div class="w-full max-w-4xl pt-4 mx-auto text-sm">
             <h2 class="mb-4 text-xl font-bold text-center">BERITA ACARA PENYELESAIAN SERVICE & MAINTENANCE</h2>
 
-            <div class="grid gap-2 mb-6">
+            <div class="grid gap-2 mb-3">
                 {{-- Nomor Surat --}}
                 <div class="flex items-center">
                     <label class="w-32 font-medium">Nomor Surat :</label>
                     <input type="text" readonly value="{{ $berita->no_surat }}"
-                        class="flex-1 px-3 py-2 text-black bg-white border border-gray-300 rounded-md cursor-not-allowed" />
+                        class="flex-1 px-3 text-black cursor-not-allowed" />
                 </div>
 
                 {{-- Tanggal --}}
@@ -57,7 +57,7 @@
                     <label class="w-32 font-medium">Tanggal :</label>
                     <input type="text" readonly
                         value="{{ \Carbon\Carbon::parse($berita->tanggal)->translatedFormat('d F Y') }}"
-                        class="flex-1 px-3 py-2 text-black bg-white border border-gray-300 rounded-md cursor-not-allowed" />
+                        class="flex-1 px-3 text-black cursor-not-allowed" />
                 </div>
 
                 {{-- Status PO --}}
@@ -81,7 +81,7 @@
                 <div class="flex items-center">
                     <label class="w-32 font-medium">Nomor PO :</label>
                     <input type="text" readonly value="{{ $berita->nomor_po }}"
-                        class="flex-1 px-3 py-2 text-black bg-white border border-gray-300 rounded-md cursor-not-allowed" />
+                        class="flex-1 px-3 cursor-not-allowed" />
                 </div>
             </div>
 
@@ -92,7 +92,7 @@
                 $tanggalFormatted = $tanggal->format('d/m/Y');
             @endphp
 
-            <div class="max-w-4xl mx-auto mb-6 text-sm leading-relaxed">
+            <div class="max-w-4xl mx-auto mb-2 text-sm leading-relaxed">
                 <p>
                     <span>Pada Hari {{ $hari }} Tanggal {{ $tanggalFormatted }} kami yang bertanda tangan di bawah
                         ini:</span>
@@ -115,7 +115,7 @@
                     <div class="flex items-center">
                         <label class="w-32 font-medium">{{ $field['label'] }}</label>
                         <input type="text" readonly value="{{ $field['value'] }}"
-                            class="flex-1 px-3 py-2 text-black bg-white border border-gray-300 rounded-md cursor-not-allowed" />
+                            class="flex-1 px-3 cursor-not-allowed" />
                     </div>
                 @endforeach
             </div>
@@ -136,7 +136,7 @@
                     <div class="flex items-center">
                         <label class="w-32 font-medium">{{ $field['label'] }}</label>
                         <input type="text" readonly value="{{ $field['value'] }}"
-                            class="flex-1 px-3 py-2 text-black bg-white border border-gray-300 rounded-md cursor-not-allowed" />
+                            class="flex-1 px-3 cursor-not-allowed" />
                     </div>
                 @endforeach
             </div>
