@@ -5,12 +5,9 @@ namespace App\Traits;
 use App\Services\SignatureUploader;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\Select;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Section;
-use Filament\Tables\Columns\TextColumn;
 use Saade\FilamentAutograph\Forms\Components\SignaturePad;
 
 trait HasSignature
@@ -44,22 +41,27 @@ trait HasSignature
                                             $component->state(auth()->id());
                                         }),
 
-                                    TextInput::make("{$prefix}_name_placeholder")
-                                        ->label($role)
-                                        ->default(fn() => auth()->user()?->name)
-                                        ->placeholder(fn() => auth()->user()?->name)
-                                        ->extraAttributes([
-                                            'readonly' => true,
-                                            'style' => 'pointer-events: none;',
+                                    Grid::make(2)
+                                        ->schema([
+                                            TextInput::make("{$prefix}_name_placeholder")
+                                                ->label($role)
+                                                ->default(fn() => auth()->user()?->name)
+                                                ->placeholder(fn() => auth()->user()?->name)
+                                                ->extraAttributes([
+                                                    'readonly' => true,
+                                                    'style' => 'pointer-events: none;',
+                                                ]),
+
+                                            DatePicker::make("{$prefix}_date")
+                                                ->label('Tanggal')
+                                                ->default(now())
+                                                ->required(),
                                         ]),
 
                                     // 👇 kirim $uploadPath ke helper
                                     self::signatureInput("{$prefix}_signature", '', $uploadPath),
 
-                                    DatePicker::make("{$prefix}_date")
-                                        ->label('')
-                                        ->default(now())
-                                        ->required(),
+
                                 ])
                                 ->hidden($hideLogic ?? fn() => false);
                         })->toArray()

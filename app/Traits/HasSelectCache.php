@@ -3,9 +3,7 @@
 namespace App\Traits;
 
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
 
 trait HasSelectCache
 {

@@ -7,6 +7,7 @@ use App\Models\Production\PermintaanBahanProduksi\Pivot\PermintaanAlatDanBahanPI
 use App\Models\Sales\SPKMarketings\SPKMarketing;
 use App\Models\Warehouse\PermintaanBahanWBB\PermintaanBahan;
 use App\Models\Warehouse\SerahTerima\SerahTerimaBahan;
+use App\Traits\HasCacheManager;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -22,7 +23,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class PermintaanAlatDanBahan extends Model
 {
-    use HasFactory;
+    use HasFactory, HasCacheManager;
 
     protected $fillable = [
         'spk_marketing_id',
@@ -63,6 +64,10 @@ class PermintaanAlatDanBahan extends Model
         return $this->hasOne(SerahTerimaBahan::class, 'permintaan_bahan_pro_id');
     }
 
+    public static array $CACHE_KEYS = [
+        'permintaanBahanWBB' => 'permintaan_produksi_warehouse',
+    ];
+
     protected static function booted()
     {
         static::saving(function ($model) {
@@ -93,6 +98,14 @@ class PermintaanAlatDanBahan extends Model
             if ($model->permintaanBahanWBB) {
                 $model->permintaanBahanWBB->delete();
             }
+        });
+
+        static::saved(function () {
+            SPKMarketing::clearModelCaches();
+        });
+
+        static::deleted(function () {
+            SPKMarketing::clearModelCaches();
         });
     }
 }

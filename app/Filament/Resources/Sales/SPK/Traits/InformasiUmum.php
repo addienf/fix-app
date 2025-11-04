@@ -9,6 +9,7 @@ use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
+use Illuminate\Support\Facades\Cache;
 use Wallo\FilamentSelectify\Components\ButtonGroup;
 
 trait InformasiUmum
@@ -58,24 +59,61 @@ trait InformasiUmum
             ]);
     }
 
+    // protected static function selectSpecInput(): Select
+    // {
+    //     return
+    //         Select::make('spesifikasi_product_id')
+    //         ->label('Nama Customer')
+    //         ->placeholder('Pilih Nama Customer')
+    //         ->reactive()
+    //         ->required()
+    //         ->options(function () {
+    //             return
+    //                 SpesifikasiProduct::with('urs.customer')
+    //                 ->whereDoesntHave('spk')
+    //                 ->get()
+    //                 ->mapWithKeys(function ($item) {
+    //                     $noUrs = $item->urs->no_urs ?? '-';
+    //                     $customerName = $item->urs->customer->name ?? '-';
+    //                     return [$item->id => "{$noUrs} - {$customerName}"];
+    //                 });
+    //         })
+    //         ->afterStateUpdated(function ($state, callable $set) {
+    //             if (!$state) return;
+
+    //             $spesifikasi = SpesifikasiProduct::with(['urs.customer', 'details.product'])->find($state);
+    //             if (!$spesifikasi) return;
+
+    //             $noUrs = $spesifikasi->urs?->no_urs ?? '-';
+
+    //             $details = $spesifikasi->details->map(function ($detail) use ($noUrs) {
+    //                 return [
+    //                     'name' => $detail->product?->name ?? '-',
+    //                     'quantity' => $detail?->quantity ?? '-',
+    //                     'no_urs' => $noUrs,
+    //                 ];
+    //             })->toArray();
+    //             $set('details', $details);
+    //         });
+    // }
     protected static function selectSpecInput(): Select
     {
-        return
-            Select::make('spesifikasi_product_id')
+        return Select::make('spesifikasi_product_id')
             ->label('Nama Customer')
             ->placeholder('Pilih Nama Customer')
             ->reactive()
             ->required()
             ->options(function () {
-                return
-                    SpesifikasiProduct::with('urs.customer')
-                    ->whereDoesntHave('spk')
-                    ->get()
-                    ->mapWithKeys(function ($item) {
-                        $noUrs = $item->urs->no_urs ?? '-';
-                        $customerName = $item->urs->customer->name ?? '-';
-                        return [$item->id => "{$noUrs} - {$customerName}"];
-                    });
+                return Cache::rememberForever(SpesifikasiProduct::$CACHE_KEY_SELECT, function () {
+                    return SpesifikasiProduct::with('urs.customer')
+                        ->whereDoesntHave('spk')
+                        ->get()
+                        ->mapWithKeys(function ($item) {
+                            $noUrs = $item->urs->no_urs ?? '-';
+                            $customerName = $item->urs->customer->name ?? '-';
+                            return [$item->id => "{$noUrs} - {$customerName}"];
+                        });
+                });
             })
             ->afterStateUpdated(function ($state, callable $set) {
                 if (!$state) return;
@@ -84,8 +122,6 @@ trait InformasiUmum
                 if (!$spesifikasi) return;
 
                 $noUrs = $spesifikasi->urs?->no_urs ?? '-';
-
-                // Ubah details ke bentuk array yang bisa ditangkap Repeater
                 $details = $spesifikasi->details->map(function ($detail) use ($noUrs) {
                     return [
                         'name' => $detail->product?->name ?? '-',
@@ -93,6 +129,7 @@ trait InformasiUmum
                         'no_urs' => $noUrs,
                     ];
                 })->toArray();
+
                 $set('details', $details);
             });
     }

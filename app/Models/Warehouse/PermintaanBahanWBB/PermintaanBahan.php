@@ -6,12 +6,13 @@ use App\Models\Production\PermintaanBahanProduksi\PermintaanAlatDanBahan;
 use App\Models\Purchasing\Permintaan\PermintaanPembelian;
 use App\Models\Warehouse\PermintaanBahanWBB\Pivot\PermintaanBahanDetail;
 use App\Models\Warehouse\PermintaanBahanWBB\Pivot\PermintaanBahanPIC;
+use App\Traits\HasCacheManager;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class PermintaanBahan extends Model
 {
-    use HasFactory;
+    use HasFactory, HasCacheManager;
 
     protected $fillable = [
         'permintaan_bahan_pro_id',
@@ -46,6 +47,10 @@ class PermintaanBahan extends Model
         return $this->hasOne(PermintaanPembelian::class, 'permintaan_bahan_wbb_id');
     }
 
+    public static array $CACHE_KEYS = [
+        'pembelian' => 'permintaan_warehouse_pembelian',
+    ];
+
     protected static function booted()
     {
         static::saving(function ($model) {
@@ -76,6 +81,14 @@ class PermintaanBahan extends Model
             if ($model->pembelian) {
                 $model->pembelian->delete();
             }
+        });
+
+        static::saved(function () {
+            PermintaanAlatDanBahan::clearModelCaches();
+        });
+
+        static::deleted(function () {
+            PermintaanAlatDanBahan::clearModelCaches();
         });
     }
 }

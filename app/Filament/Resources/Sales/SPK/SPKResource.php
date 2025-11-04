@@ -279,7 +279,6 @@ class SPKResource extends Resource
     {
         return parent::getEloquentQuery()
             ->with([
-                // 'spesifikasiProduct.urs.no_urs',
                 'spesifikasiProduct.urs',
                 'pic',
             ]);

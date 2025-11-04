@@ -18,8 +18,10 @@ use App\Models\Quality\Standarisasi\StandarisasiDrawing;
 use App\Models\Sales\SpesifikasiProducts\SpesifikasiProduct;
 use App\Models\Sales\SPKMarketings\Pivot\SPKMarketingPIC;
 use App\Models\Warehouse\Pelabelan\QCPassed;
+use App\Traits\HasCacheManager;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Cache;
 
 /**
  * @property string|null $id
@@ -33,7 +35,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class SPKMarketing extends Model
 {
-    use HasFactory;
+    use HasFactory, HasCacheManager;
 
     protected $table = 'spk_marketings';
 
@@ -126,6 +128,93 @@ class SPKMarketing extends Model
         return $this->hasOne(Ketidaksesuaian::class, 'spk_marketing_id');
     }
 
+    public function getSelectCacheConfig(): array
+    {
+        return [
+            [
+                'relation' => 'urs',
+                'title' => 'no_urs',
+                'limit' => 10,
+            ],
+        ];
+    }
+
+    // protected static function booted()
+    // {
+    //     static::saving(function ($model) {
+    //         if (
+    //             $model->pic?->receive_signature &&
+    //             $model->status_penerimaan !== 'Diterima'
+    //         ) {
+    //             $model->status_penerimaan = 'Diterima';
+    //         }
+    //     });
+
+    //     static::deleting(function ($spesifikasi) {
+    //         if ($spesifikasi->pic) {
+    //             $spesifikasi->pic->delete();
+    //         }
+    //     });
+
+    //     static::saved(fn() => Cache::forget(SpesifikasiProduct::CACHE_KEY_SELECT));
+    //     static::deleted(fn() => Cache::forget(SpesifikasiProduct::CACHE_KEY_SELECT));
+    // }
+
+    // public static string $CACHE_KEY_SELECT_PERMINTAAN = 'select_spk_marketing_disetujui_no_permintaan';
+
+    // public static array $CACHE_KEYS = [
+    //     'jadwal_produksi'      => 'spk_marketing_ke_jadwal',
+    //     'permintaan_bahan'     => 'spk_marketing_ke_permintaan',
+    //     'pengecekan_ss'        => 'spk_marketing_ke_ss',
+    //     'pengecekan_electrical' => 'spk_marketing_ke_electrical',
+    //     'produk_jadi'          => 'spk_marketing_ke_produk_jadi',
+    //     'pengecekan_performa'  => 'spk_marketing_ke_performa',
+    //     'qc_passed'            => 'spk_marketing_ke_qc_passed',
+    //     'vendor'               => 'spk_marketing_ke_vendor',
+    //     'ketidaksesuaian'      => 'spk_marketing_ke_ketidaksesuaian',
+    // ];
+
+    // protected static function booted()
+    // {
+    //     static::saving(function ($model) {
+    //         if (
+    //             $model->pic?->receive_signature &&
+    //             $model->status_penerimaan !== 'Diterima'
+    //         ) {
+    //             $model->status_penerimaan = 'Diterima';
+    //         }
+    //     });
+
+    //     static::deleting(function ($spk) {
+    //         if ($spk->pic) {
+    //             $spk->pic->delete();
+    //         }
+    //     });
+
+    //     // 🔁 Reset cache dropdown Spesifikasi Product
+    //     static::saved(function () {
+    //         SpesifikasiProduct::clearModelCaches();
+    //         static::clearDependentCaches();
+    //     });
+
+    //     static::deleted(function () {
+    //         SpesifikasiProduct::clearModelCaches();
+    //         static::clearDependentCaches();
+    //     });
+    // }
+
+    public static array $CACHE_KEYS = [
+        'jadwal_produksi'       => 'spk_marketing_ke_jadwal',
+        'permintaan_bahan'      => 'spk_marketing_ke_permintaan',
+        'pengecekan_ss'         => 'spk_marketing_ke_ss',
+        'pengecekan_electrical' => 'spk_marketing_ke_electrical',
+        'produk_jadi'           => 'spk_marketing_ke_produk_jadi',
+        'pengecekan_performa'   => 'spk_marketing_ke_performa',
+        'qc_passed'             => 'spk_marketing_ke_qc_passed',
+        'vendor'                => 'spk_marketing_ke_vendor',
+        'ketidaksesuaian'       => 'spk_marketing_ke_ketidaksesuaian',
+    ];
+
     protected static function booted()
     {
         static::saving(function ($model) {
@@ -137,10 +226,16 @@ class SPKMarketing extends Model
             }
         });
 
-        static::deleting(function ($spesifikasi) {
-            if ($spesifikasi->pic) {
-                $spesifikasi->pic->delete();
-            }
+        static::deleting(function ($spk) {
+            $spk->pic?->delete();
+        });
+
+        static::saved(function () {
+            SpesifikasiProduct::clearModelCaches();
+        });
+
+        static::deleted(function () {
+            SpesifikasiProduct::clearModelCaches();
         });
     }
 }
