@@ -8,6 +8,7 @@ use App\Models\Production\Jadwal\Pivot\JadwalProduksiPIC;
 use App\Models\Production\Jadwal\Pivot\SumberDaya as PivotSumberDaya;
 use App\Models\Production\Jadwal\Pivot\TimelineProduksi;
 use App\Models\Sales\SPKMarketings\SPKMarketing;
+use App\Traits\HasCacheManager;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;

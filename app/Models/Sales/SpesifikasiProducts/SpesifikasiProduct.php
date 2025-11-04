@@ -7,9 +7,11 @@ use App\Models\Sales\SpesifikasiProducts\Pivot\SpesifikasiProductDetail;
 use App\Models\Sales\SpesifikasiProducts\Pivot\SpesifikasiProductPIC;
 use App\Models\Sales\SPKMarketings\SPKMarketing;
 use App\Models\Sales\URS;
+use App\Traits\HasCacheManager;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Cache;
 
 /**
  * @property string|null $id
@@ -20,7 +22,7 @@ use Illuminate\Notifications\Notifiable;
  */
 class SpesifikasiProduct extends Model
 {
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, HasCacheManager;
     protected $fillable = [
         'urs_id',
         'is_stock',
@@ -73,6 +75,63 @@ class SpesifikasiProduct extends Model
             ],
         ];
     }
+
+    // protected static function booted()
+    // {
+    //     static::saving(function ($model) {
+    //         if ($model->relationLoaded('pic') && $model->pic) {
+    //             if ($model->pic->accepted_signature && $model->status !== 'Diterima') {
+    //                 $model->status = 'Diterima';
+    //             } elseif ($model->pic->acknowledge_signature && $model->status !== 'Diketahui MR') {
+    //                 $model->status = 'Diketahui MR';
+    //             }
+    //         }
+    //     });
+
+    //     static::deleting(function ($model) {
+    //         foreach ($model->details as $detail) {
+    //             $detail->delete();
+    //         }
+
+    //         $model->pic?->delete();
+    //     });
+
+    //     static::saved(fn() => Cache::forget(self::CACHE_KEY_SELECT));
+    //     static::deleted(fn() => Cache::forget(self::CACHE_KEY_SELECT));
+    // }
+
+    // public static string $CACHE_KEY_SELECT = 'spesifikasi_ke_spk';
+
+    // protected static function booted()
+    // {
+    //     static::saving(function ($model) {
+    //         if ($model->relationLoaded('pic') && $model->pic) {
+    //             if ($model->pic->accepted_signature && $model->status !== 'Diterima') {
+    //                 $model->status = 'Diterima';
+    //             } elseif ($model->pic->acknowledge_signature && $model->status !== 'Diketahui MR') {
+    //                 $model->status = 'Diketahui MR';
+    //             }
+    //         }
+    //     });
+
+    //     static::deleting(function ($model) {
+    //         foreach ($model->details as $detail) {
+    //             $detail->delete();
+    //         }
+
+    //         $model->pic?->delete();
+    //     });
+
+    //     static::saved(function () {
+    //         static::clearModelCaches();
+    //     });
+
+    //     static::deleted(function () {
+    //         static::clearModelCaches();
+    //     });
+    // }
+
+    public static string $CACHE_KEY_SELECT = 'spesifikasi_ke_spk';
 
     protected static function booted()
     {

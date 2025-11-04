@@ -3,16 +3,11 @@
 namespace App\Filament\Resources\Warehouse\PermintaanBahanWBB;
 
 use App\Filament\Resources\Warehouse\PermintaanBahanWBB\PermintaanBahanResource\Pages;
-use App\Models\Production\PermintaanBahanProduksi\PermintaanAlatDanBahan;
+use App\Filament\Resources\Warehouse\PermintaanBahanWBB\Traits\DetailBahanBaku;
+use App\Filament\Resources\Warehouse\PermintaanBahanWBB\Traits\InformasiUmum;
 use App\Models\Warehouse\PermintaanBahanWBB\PermintaanBahan;
-use App\Services\SignatureUploader;
-use Filament\Forms\Components\Section;
-use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Grid;
+use App\Traits\HasSignature;
 use Filament\Forms\Components\Hidden;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -20,11 +15,11 @@ use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Icetalker\FilamentTableRepeater\Forms\Components\TableRepeater;
-use Saade\FilamentAutograph\Forms\Components\SignaturePad;
+use Illuminate\Database\Eloquent\Builder;
 
 class PermintaanBahanResource extends Resource
 {
+    use HasSignature, InformasiUmum, DetailBahanBaku;
     protected static ?string $model = PermintaanBahan::class;
     protected static ?string $slug = 'warehouse/permintaan-bahan-warehouse';
     protected static ?string $navigationIcon = 'heroicon-o-cog-6-tooth';
@@ -36,197 +31,39 @@ class PermintaanBahanResource extends Resource
 
     public static function form(Form $form): Form
     {
-        $lastValue = PermintaanBahan::latest('no_surat')->value('no_surat');
-
         return $form
             ->schema([
                 //
                 Hidden::make('status')
                     ->default('Belum Diketahui'),
 
-                Section::make('Nomor Surat')
-                    ->collapsible()
-                    ->schema([
+                self::informasiUmumSection(),
 
-                        self::selectInput('permintaan_bahan_pro_id', 'permintaanBahanPro', 'no_surat', 'Pilih Nomor Surat')
-                            ->placeholder('Pilin No Surat Dari Permintaan Alat dan Bahan Produksi')
-                            ->columnSpanFull(),
+                self::detailBahanBakuSection(),
 
-                    ])
-                    ->hiddenOn('edit'),
-
-                Section::make('Informasi Umum')
-                    ->collapsible()
-                    ->schema([
-
-                        Grid::make(2)
-                            ->schema([
-
-                                self::textInput('no_surat', 'No Surat')
-                                    ->unique(ignoreRecord: true)
-                                    ->placeholder($lastValue ? "Data Terakhir : {$lastValue}" : 'Data Belum Tersedia')
-                                    ->hint('Format: XXX/QKS/WBB/PERMINTAAN/MM/YY'),
-
-                                self::datePicker('tanggal', 'Tanggal')
-                                    ->required(),
-
-                                self::textInput('dari', 'Dari')
-                                    ->placeholder('Warehouse'),
-
-                                self::textInput('kepada', 'Kepada')
-                                    ->placeholder('Purchasing'),
-
-                            ])
-                    ]),
-
-                Section::make('List Detail Bahan Baku')
-                    ->collapsible()
-                    ->schema([
-                        Grid::make(2)
-                            ->schema([
-                                TableRepeater::make('details')
-                                    ->label('')
-                                    ->relationship('details')
-                                    ->schema([
-                                        self::textInput('bahan_baku', 'Bahan Baku')
-                                            ->extraAttributes([
-                                                'readonly' => true,
-                                                'style' => 'pointer-events: none;'
-                                            ]),
-                                        self::textInput('spesifikasi', 'Spesifikasi')
-                                            ->extraAttributes([
-                                                'readonly' => true,
-                                                'style' => 'pointer-events: none;'
-                                            ]),
-                                        self::textInput('jumlah', 'Jumlah')->numeric()
-                                            ->extraAttributes([
-                                                'readonly' => true,
-                                                'style' => 'pointer-events: none;'
-                                            ]),
-                                        Textarea::make('keperluan_barang')
-                                            ->label('Keperluan Barang')
-                                            ->rows(1)
-                                            ->extraAttributes([
-                                                'readonly' => true,
-                                                'style' => 'pointer-events: none;'
-                                            ])
-                                    ])
-                                    ->columns(4)
-                                    ->deletable(false)
-                                    ->reorderable(false)
-                                    ->addable(false)
-                                    ->columnSpanFull()
-                            ])
-                    ]),
-
-                // Section::make('PIC')
-                //     ->collapsible()
-                //     ->relationship('pic')
-                //     ->schema([
-                //         Grid::make(1)
-                //             ->schema([
-
-                //                 Hidden::make('create_name')
-                //                     ->default(fn() => auth()->id()),
-
-                //                 self::textInput('create_name_placeholder', 'Dibuat Oleh')
-                //                     ->default(fn() => auth()->user()?->name)
-                //                     ->extraAttributes([
-                //                         'readonly' => true,
-                //                         'style' => 'pointer-events: none;'
-                //                     ]),
-
-                //                 self::signatureInput('create_signature', ''),
-                //             ])
-                //     ]),
-
-                Section::make('PIC')
-                    ->collapsible()
-                    ->relationship('pic')
-                    ->schema([
-                        Grid::make(3)
-                            ->schema([
-                                Grid::make(1)
-                                    ->schema([
-
-                                        Hidden::make('dibuat_name')
-                                            ->default(fn() => auth()->id()),
-
-                                        self::textInput('dibuat_name_placeholder', 'Dibuat Oleh')
-                                            ->default(fn() => auth()->user()?->name)
-                                            ->extraAttributes([
-                                                'readonly' => true,
-                                                'style' => 'pointer-events: none;'
-                                            ]),
-
-                                        self::signatureInput('dibuat_signature', ''),
-
-                                        self::datePicker('dibuat_date', '')
-                                            ->default(now())
-                                            ->required(),
-
-                                    ])->hiddenOn(operations: 'edit'),
-
-                                Grid::make(1)
-                                    ->schema([
-
-                                        Hidden::make('mengetahui_name')
-                                            ->default(fn() => auth()->id())
-                                            ->dehydrated(true)
-                                            ->afterStateHydrated(function ($component) {
-                                                $component->state(auth()->id());
-                                            }),
-
-                                        self::textInput('mengetahui_name_placeholder', 'Mengetahui')
-                                            ->default(fn() => auth()->user()?->name)
-                                            ->placeholder(fn() => auth()->user()?->name)
-                                            ->required(false)
-                                            ->extraAttributes([
-                                                'readonly' => true,
-                                                'style' => 'pointer-events: none;'
-                                            ]),
-
-                                        self::signatureInput('mengetahui_signature', ''),
-
-                                        self::datePicker('mengetahui_date', '')
-                                            ->required(),
-
-                                    ])->hidden(
-                                        fn($operation, $record) =>
-                                        $operation === 'create' || filled($record?->mengetahui_signature)
-                                    ),
-
-                                Grid::make(1)
-                                    ->schema([
-
-                                        Hidden::make('diserahkan_name')
-                                            ->default(fn() => auth()->id())
-                                            ->dehydrated(true)
-                                            ->afterStateHydrated(function ($component) {
-                                                $component->state(auth()->id());
-                                            }),
-
-                                        self::textInput('diserahkan_name_placeholder', 'Diserahkan Ke')
-                                            ->default(fn() => auth()->user()?->name)
-                                            ->placeholder(fn() => auth()->user()?->name)
-                                            ->required(false)
-                                            ->extraAttributes([
-                                                'readonly' => true,
-                                                'style' => 'pointer-events: none;'
-                                            ]),
-
-                                        self::signatureInput('diserahkan_signature', ''),
-
-                                        self::datePicker('diserahkan_date', '')
-                                            ->required(),
-
-                                    ])->hidden(
-                                        fn($operation, $record) =>
-                                        $operation === 'create' || blank($record?->mengetahui_signature) || filled($record?->diserahkan_signature)
-                                    ),
-                            ]),
-
-                    ]),
+                static::signatureSection(
+                    [
+                        [
+                            'prefix' => 'dibuat',
+                            'role' => 'Dibuat Oleh',
+                            'hideLogic' => fn($operation) => $operation === 'edit',
+                        ],
+                        [
+                            'prefix' => 'mengetahui',
+                            'role' => 'Mengetahui',
+                            'hideLogic' => fn($operation, $record) =>
+                            $operation === 'create' || filled($record?->mengetahui_signature)
+                        ],
+                        [
+                            'prefix' => 'diserahkan',
+                            'role' => 'Diserahkan Kepada',
+                            'hideLogic' => fn($operation, $record) =>
+                            $operation === 'create' || blank($record?->mengetahui_signature) || filled($record?->diserahkan_signature)
+                        ],
+                    ],
+                    title: 'PIC',
+                    uploadPath: 'Warehouse/PermintaanBahan/Signatures'
+                )
             ]);
     }
 
@@ -236,12 +73,10 @@ class PermintaanBahanResource extends Resource
             ->columns([
                 //
                 self::textColumn('permintaanBahanPro.no_surat', 'No Surat Production'),
-                // self::textColumn('no_surat', 'Nomor Surat Warehouse'),
-                self::textColumn('tanggal', 'Tanggal Dibuat')->date('d M Y'),
-                // self::textColumn('dari', 'Dari'),
-                // self::textColumn('kepada', 'Kepada'),
-                TextColumn::make('status')
-                    ->label('Status')
+
+                self::textColumn('tanggal', 'Tanggal Dibuat')->date('d F Y'),
+
+                self::textColumn('status', 'Status')
                     ->badge()
                     ->color(function ($record) {
                         return match ($record->status) {
@@ -258,10 +93,16 @@ class PermintaanBahanResource extends Resource
             ])
             ->actions([
                 ActionGroup::make([
-                    Tables\Actions\EditAction::make(),
-                    Tables\Actions\DeleteAction::make(),
+                    Tables\Actions\EditAction::make()
+                        ->icon('heroicon-o-pencil-square')
+                        ->tooltip('Edit Data SPK Marketing')
+                        ->color('info'),
+                    Tables\Actions\DeleteAction::make()
+                        ->icon('heroicon-o-trash')
+                        ->tooltip('Hapus Data'),
                     Action::make('pdf_view')
                         ->label(_('Lihat PDF'))
+                        ->tooltip('Lihat Dokumen PDF')
                         ->icon('heroicon-o-document')
                         ->color('success')
                         ->url(fn($record) => route('pdf.permintaanBahan', ['record' => $record->id])),
@@ -291,88 +132,14 @@ class PermintaanBahanResource extends Resource
         ];
     }
 
-    protected static function textInput(string $fieldName, string $label): TextInput
+    public static function getEloquentQuery(): Builder
     {
-        return TextInput::make($fieldName)
-            ->label($label)
-            ->required()
-            ->maxLength(255);
-    }
-
-    protected static function selectInput($fieldName, $relation, $title, $label): Select
-    {
-        return
-            Select::make($fieldName)
-            // ->relationship($relation, $title)
-            ->relationship(
-                $relation,
-                $title,
-                fn($query) => $query
-                    ->where('status_penyerahan', 'Diserahkan')
-                    ->where('status', 'Tidak Tersedia')
-                    ->whereDoesntHave('permintaanBahanWBB')
-            )
-            ->label($label)
-            ->native(false)
-            ->searchable()
-            ->preload()
-            ->required()
-            ->reactive()
-            ->afterStateUpdated(function ($state, callable $set) {
-                if (!$state)
-                    return;
-
-                $pab = PermintaanAlatDanBahan::with('details')->find($state);
-
-                if (!$pab)
-                    return;
-
-                $detailBahan = $pab->details?->map(function ($detail) {
-                    return [
-                        'bahan_baku' => $detail->bahan_baku ?? '',
-                        'spesifikasi' => $detail->spesifikasi ?? '',
-                        'jumlah' => $detail->jumlah ?? 0,
-                        'keperluan_barang' => $detail->keperluan_barang ?? '',
-                    ];
-                })->toArray();
-
-                $set('details', $detailBahan);
-            })
-        ;
-    }
-
-    protected static function datePicker(string $fieldName, string $label): DatePicker
-    {
-        return
-            DatePicker::make($fieldName)
-            ->label($label)
-            ->displayFormat('M d Y')
-            ->seconds(false);
-    }
-
-    protected static function signatureInput(string $fieldName, string $labelName): SignaturePad
-    {
-        return
-            SignaturePad::make($fieldName)
-            ->label($labelName)
-            ->exportPenColor('#0118D8')
-            ->helperText('*Harap Tandatangan di tengah area yang disediakan.')
-            ->afterStateUpdated(function ($state, $set) use ($fieldName) {
-                if (blank($state))
-                    return;
-                $path = SignatureUploader::handle($state, 'ttd_', 'Warehouse/PermintaanBahan/Signatures');
-                if ($path) {
-                    $set($fieldName, $path);
-                }
-            });
-    }
-
-    protected static function textColumn(string $fieldName, string $label): TextColumn
-    {
-        return
-            TextColumn::make($fieldName)
-            ->label($label)
-            ->searchable()
-            ->sortable();
+        return parent::getEloquentQuery()
+            ->with([
+                'permintaanBahanPro',
+                'details',
+                'pic',
+                'pembelian',
+            ]);
     }
 }

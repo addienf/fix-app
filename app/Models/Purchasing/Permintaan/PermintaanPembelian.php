@@ -6,15 +6,15 @@ use App\Models\Purchasing\Permintaan\Pivot\PermintaanPembelianDetail;
 use App\Models\Purchasing\Permintaan\Pivot\PermintaanPembelianPIC;
 use App\Models\Quality\IncommingMaterial\MaterialNonSS\IncommingMaterialNonSS;
 use App\Models\Quality\IncommingMaterial\MaterialSS\IncommingMaterialSS;
-use App\Models\Quality\IncommingProduk\ProductNonSS\IncommingProductNonSS;
 use App\Models\Warehouse\Incomming\IncommingMaterial;
 use App\Models\Warehouse\PermintaanBahanWBB\PermintaanBahan;
+use App\Traits\HasCacheManager;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class PermintaanPembelian extends Model
 {
-    use HasFactory;
+    use HasFactory, HasCacheManager;
 
     protected $fillable = [
         'permintaan_bahan_wbb_id',
@@ -52,6 +52,10 @@ class PermintaanPembelian extends Model
         return $this->hasOne(IncommingMaterial::class);
     }
 
+    public static array $CACHE_KEYS = [
+        'materialNonSS' => 'permintaan_pembelian_material_non_ss',
+    ];
+
     protected static function booted()
     {
         static::saving(function ($model) {
@@ -71,6 +75,14 @@ class PermintaanPembelian extends Model
             if ($model->pic) {
                 $model->pic->delete();
             }
+        });
+
+        static::saved(function () {
+            PermintaanBahan::clearModelCaches();
+        });
+
+        static::deleted(function () {
+            PermintaanBahan::clearModelCaches();
         });
     }
 }

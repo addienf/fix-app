@@ -2,7 +2,6 @@
 
 namespace App\Traits;
 
-use App\Models\User;
 use Filament\Forms\Components\TextInput;
 use Illuminate\Support\Facades\DB;
 
@@ -61,7 +60,6 @@ trait HasAutoNumber
                 $month = now()->format('m');
                 $year = now()->format('y');
 
-                // ambil kolom sesuai nama field (contoh: no_urs, no_spk, no_spec)
                 $last = DB::table($table)
                     ->select($name)
                     ->whereNotNull($name)
@@ -78,7 +76,7 @@ trait HasAutoNumber
 
                 return "{$num}/{$prefix}/{$section}/{$type}/{$month}/{$year}";
             })
-            ->unique(ignorable: fn($record) => $record) // biar aman waktu edit
+            ->unique(ignorable: fn($record) => $record)
             ->required()
             ->extraAttributes([
                 'readonly' => true,
