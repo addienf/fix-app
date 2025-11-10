@@ -75,3 +75,10 @@ Route::get('/engineering/maintenance-cold-room/{record}/pdf-cold-room', [PDFCont
 Route::get('/engineering/service-report/{record}/pdf-service-report', [PDFController::class, 'pdfServiceReport'])->name('pdf.serviceReport');
 Route::get('/engineering/service-report/{record}/download-zip', [PDFController::class, 'downloadZipserviceReport'])->name('serviceReport.download-zip');
 Route::get('/engineering/catatan-keluhan-pelanggan/{record}/pdfCatatanPelanggan', [PDFController::class, 'pdfCatatanPelanggan'])->name('pdf.CatatanPelanggan');
+
+Route::get('/customercare/pdfPermintaanPelayanan', function () {
+    return view('pdf.customercare.pdfPermintaanPelayanan');
+});
+Route::get('/customercare/pdfSuratPerintahKerja', function () {
+    return view('pdf.customercare.pdfSuratPerintahKerja');
+});
