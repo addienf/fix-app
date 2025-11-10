@@ -1,6 +1,5 @@
 @extends('pdf.layout.layout')
 @section('title', 'Permintaan Pelayanan Pelanggan')
-
 @section('content')
     <div id="export-area" class="p-2 text-black bg-white">
 
