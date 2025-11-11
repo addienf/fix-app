@@ -47,4 +47,15 @@ class BeritaAcara extends Model
     {
         return $this->hasOne(PenyediaJasa::class, 'berita_id');
     }
+
+    protected static function booted()
+    {
+        static::saved(function () {
+            SPKService::clearModelCaches();
+        });
+
+        static::deleted(function () {
+            SPKService::clearModelCaches();
+        });
+    }
 }

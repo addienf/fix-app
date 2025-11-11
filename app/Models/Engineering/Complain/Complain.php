@@ -5,12 +5,13 @@ namespace App\Models\Engineering\Complain;
 use App\Models\Engineering\Complain\Pivot\ComplainDetail;
 use App\Models\Engineering\Complain\Pivot\ComplainPIC;
 use App\Models\Engineering\SPK\SPKService;
+use App\Traits\HasCacheManager;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Complain extends Model
 {
-    use HasFactory;
+    use HasFactory, HasCacheManager;
 
     protected $fillable = [
         'form_no',
@@ -38,4 +39,8 @@ class Complain extends Model
     {
         return $this->hasOne(ComplainPIC::class, 'complain_id');
     }
+
+    public static array $CACHE_KEYS = [
+        'spkService'       => 'complain_spk_service',
+    ];
 }

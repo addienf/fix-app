@@ -16,10 +16,10 @@ class SPKServicePIC extends Model
 
     protected $fillable = [
         'spk_service_id',
-        'dikonfirmasi_ttd',
-        'dikonfirmasi_nama',
-        'diketahui_ttd',
-        'diketahui_nama',
+        'dikonfirmasi_signature',
+        'dikonfirmasi_name',
+        'diketahui_signature',
+        'diketahui_name',
     ];
 
     public function spkService()
@@ -29,41 +29,41 @@ class SPKServicePIC extends Model
 
     public function dikonfirmasiNama()
     {
-        return $this->belongsTo(User::class, 'dikonfirmasi_nama');
+        return $this->belongsTo(User::class, 'dikonfirmasi_name');
     }
 
     public function diketahuiNama()
     {
-        return $this->belongsTo(User::class, 'diketahui_nama');
+        return $this->belongsTo(User::class, 'diketahui_name');
     }
 
     protected static function booted(): void
     {
         static::updating(function ($model) {
             if (
-                $model->isDirty('dikonfirmasi_ttd') &&
-                $model->getOriginal('dikonfirmasi_ttd') &&
-                Storage::disk('public')->exists($model->getOriginal('dikonfirmasi_ttd'))
+                $model->isDirty('dikonfirmasi_signature') &&
+                $model->getOriginal('dikonfirmasi_signature') &&
+                Storage::disk('public')->exists($model->getOriginal('dikonfirmasi_signature'))
             ) {
-                Storage::disk('public')->delete($model->getOriginal('dikonfirmasi_ttd'));
+                Storage::disk('public')->delete($model->getOriginal('dikonfirmasi_signature'));
             }
 
             if (
-                $model->isDirty('diketahui_ttd') &&
-                $model->getOriginal('diketahui_ttd') &&
-                Storage::disk('public')->exists($model->getOriginal('diketahui_ttd'))
+                $model->isDirty('diketahui_signature') &&
+                $model->getOriginal('diketahui_signature') &&
+                Storage::disk('public')->exists($model->getOriginal('diketahui_signature'))
             ) {
-                Storage::disk('public')->delete($model->getOriginal('diketahui_ttd'));
+                Storage::disk('public')->delete($model->getOriginal('diketahui_signature'));
             }
         });
 
         static::deleting(function ($model) {
-            if ($model->dikonfirmasi_ttd && Storage::disk('public')->exists($model->dikonfirmasi_ttd)) {
-                Storage::disk('public')->delete($model->dikonfirmasi_ttd);
+            if ($model->dikonfirmasi_signature && Storage::disk('public')->exists($model->dikonfirmasi_signature)) {
+                Storage::disk('public')->delete($model->dikonfirmasi_signature);
             }
 
-            if ($model->diketahui_ttd && Storage::disk('public')->exists($model->diketahui_ttd)) {
-                Storage::disk('public')->delete($model->diketahui_ttd);
+            if ($model->diketahui_signature && Storage::disk('public')->exists($model->diketahui_signature)) {
+                Storage::disk('public')->delete($model->diketahui_signature);
             }
         });
     }

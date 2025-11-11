@@ -14,10 +14,10 @@ return new class extends Migration
         Schema::create('spk_service_pics', function (Blueprint $table) {
             $table->id();
             $table->foreignId('spk_service_id')->constrained('spk_services')->cascadeOnDelete();
-            $table->string('dikonfirmasi_ttd');
-            $table->string('dikonfirmasi_nama');
-            $table->string('diketahui_ttd')->nullable();
-            $table->string('diketahui_nama')->nullable();
+            $table->string('dikonfirmasi_signature');
+            $table->string('dikonfirmasi_name');
+            $table->string('diketahui_signature')->nullable();
+            $table->string('diketahui_name')->nullable();
             $table->timestamps();
         });
     }

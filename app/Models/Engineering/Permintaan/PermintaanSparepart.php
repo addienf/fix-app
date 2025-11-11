@@ -40,14 +40,14 @@ class PermintaanSparepart extends Model
     {
         static::saving(function ($model) {
             if (
-                $model->pic?->diketahui_ttd &&
+                $model->pic?->diketahui_signature &&
                 $model->status_penyerahan !== 'Diketahui'
             ) {
                 $model->status_penyerahan = 'Diketahui';
             }
 
             if (
-                $model->pic?->diserahkan_ttd &&
+                $model->pic?->diserahkan_signature &&
                 $model->status_penyerahan !== 'Diserahkan'
             ) {
                 $model->status_penyerahan = 'Diserahkan';
@@ -62,6 +62,14 @@ class PermintaanSparepart extends Model
             if ($model->pic) {
                 $model->pic->delete();
             }
+        });
+
+        static::saved(function () {
+            SPKService::clearModelCaches();
+        });
+
+        static::deleted(function () {
+            SPKService::clearModelCaches();
         });
     }
 }

@@ -75,7 +75,7 @@ class SpesifikasiProductResource extends Resource
                             'prefix' => 'acknowledge',
                             'role' => 'Acknowledge by MR',
                             'hideLogic' => fn($operation, $record) =>
-                            $operation === 'create' || blank($record?->accepted_signature) || filled($record?->approved_signature)
+                            $operation === 'create' || blank($record?->accepted_signature) || filled($record?->acknowledge_signature)
                         ],
                     ],
                     title: 'PIC',

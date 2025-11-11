@@ -206,6 +206,7 @@ class SPKMarketing extends Model
     public static array $CACHE_KEYS = [
         'jadwal_produksi'       => 'spk_marketing_ke_jadwal',
         'permintaan_bahan'      => 'spk_marketing_ke_permintaan',
+        'standarisasi'          => 'spk_marketing_ke_stadarisasi',
         'pengecekan_ss'         => 'spk_marketing_ke_ss',
         'pengecekan_electrical' => 'spk_marketing_ke_electrical',
         'produk_jadi'           => 'spk_marketing_ke_produk_jadi',

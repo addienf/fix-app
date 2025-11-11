@@ -16,12 +16,13 @@ use App\Models\Engineering\Service\ServiceReport;
 use App\Models\Engineering\SPK\SPKService\Pivot\PemeriksaanPersetujuan;
 use App\Models\Engineering\SPK\SPKService\Pivot\Petugas;
 use App\Models\Engineering\SPK\SPKService\Pivot\SPKServicePIC;
+use App\Traits\HasCacheManager;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class SPKService extends Model
 {
-    use HasFactory;
+    use HasFactory, HasCacheManager;
 
     protected $table = 'spk_services';
 
@@ -113,11 +114,24 @@ class SPKService extends Model
         return $this->hasOne(ServiceReport::class, 'spk_service_id');
     }
 
+    public static array $CACHE_KEYS = [
+        'permintaanSparepart'       => 'spk_service_permintaan_sparepart',
+        'walkinChamber'             => 'spk_service_walking_chamber',
+        'chamberR2'                 => 'spk_service_chamber_r2',
+        'refrigerator'              => 'spk_service_refrigerator',
+        'coldRoom'                  => 'spk_service_cold_room',
+        'rissing'                   => 'spk_service_rissing',
+        'walkinG2'                  => 'spk_service_walking_g2',
+        'chamberG2'                 => 'spk_service_chamber_g2',
+        'service'                   => 'spk_service_service',
+        'beritaAcara'                   => 'spk_service_berita_acara',
+    ];
+
     protected static function booted()
     {
         static::saving(function ($model) {
             if (
-                $model->pic?->diketahui_ttd &&
+                $model->pic?->diketahui_signature &&
                 $model->status_penyelesaian !== 'Selesai'
             ) {
                 $model->status_penyelesaian = 'Selesai';
@@ -129,5 +143,13 @@ class SPKService extends Model
         //         $spesifikasi->pic->delete();
         //     }
         // });
+
+        static::saved(function () {
+            Complain::clearModelCaches();
+        });
+
+        static::deleted(function () {
+            Complain::clearModelCaches();
+        });
     }
 }

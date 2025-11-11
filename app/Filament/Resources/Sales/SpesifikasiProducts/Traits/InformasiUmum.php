@@ -16,7 +16,6 @@ trait InformasiUmum
                 self::selectInputCache('urs_id', 'No URS', 'urs', 'no_urs')
                     ->placeholder('Pilih Data URS')
                     ->hiddenOn('edit'),
-                // ->createOptionForm(fn() => self::ursFormSchema()),
 
                 self::textInput('delivery_address', 'Alamat Pengiriman'),
 

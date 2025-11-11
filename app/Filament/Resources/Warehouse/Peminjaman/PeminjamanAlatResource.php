@@ -4,8 +4,11 @@ namespace App\Filament\Resources\Warehouse\Peminjaman;
 
 use App\Filament\Resources\Warehouse\Peminjaman\PeminjamanAlatResource\Pages;
 use App\Filament\Resources\Warehouse\Peminjaman\PeminjamanAlatResource\RelationManagers;
+use App\Filament\Resources\Warehouse\Peminjaman\Traits\DataPeminjamAlat;
+use App\Filament\Resources\Warehouse\Peminjaman\Traits\Peminjaman;
 use App\Models\Warehouse\Peminjaman\PeminjamanAlat;
 use App\Services\SignatureUploader;
+use App\Traits\HasSignature;
 use Filament\Actions\Action;
 use Filament\Forms\Components\Section;
 use Filament\Forms;
@@ -31,8 +34,8 @@ use Saade\FilamentAutograph\Forms\Components\SignaturePad;
 
 class PeminjamanAlatResource extends Resource
 {
+    use DataPeminjamAlat, Peminjaman, HasSignature;
     protected static ?string $model = PeminjamanAlat::class;
-
     protected static ?string $navigationIcon = 'heroicon-o-cog-6-tooth';
     protected static ?int $navigationSort = 6;
     protected static ?string $navigationGroup = 'Warehouse';
@@ -45,53 +48,10 @@ class PeminjamanAlatResource extends Resource
     {
         return $form
             ->schema([
-                //
-                Section::make('Data Peminjaman Alat')
-                    ->schema([
-                        Grid::make(2)
-                            ->schema([
-                                self::datePicker('tanggal_pinjam', 'Tanggal Pinjam')
-                                    ->required(),
-                                self::datePicker('tanggal_kembali', 'Tanggal Kembali')
-                                    ->required(),
-                                TableRepeater::make('details')
-                                    ->relationship('details')
-                                    ->label('Barang')
-                                    ->schema([
-                                        self::textInput('nama_sparepart', 'Nama Sparepart'),
-                                        self::textInput('model', 'Model'),
-                                        self::textInput('jumlah', 'Jumlah')->numeric(),
-                                    ])
-                                    ->columns(3)
-                                    ->defaultItems(1)
-                                    ->addActionLabel('Tambah Barang')
-                                    ->columnSpanFull(),
-                            ])
-                    ]),
-                Section::make('Peminjaman')
-                    ->relationship('pic')
-                    ->schema([
-                        Grid::make()
-                            ->columns(2) // Membagi dua kolom
-                            ->schema([
-                                self::textInput('department', 'Departemen')
-                                    ->default(fn() => Str::headline(auth()->user()->roles->first()?->name ?? '')),
 
-                                Hidden::make('nama_peminjam')
-                                    ->default(fn() => auth()->id()),
+                self::dataPeminjamanSection(),
 
-                                self::textInput('nama_peminjam_placeholder', 'Nama Peminjam')
-                                    ->default(fn() => auth()->user()?->name)
-                                    ->extraAttributes([
-                                        'readonly' => true,
-                                        'style' => 'pointer-events: none;'
-                                    ]),
-
-                                // self::textInput('nama_peminjam', 'Nama Peminjam')
-                                //     ->default(auth()->user()->name),
-                            ]),
-                        self::signatureInput('signature', 'Tanda Tangan')->columnSpanFull(),
-                    ])
+                self::peminjamanSection(),
             ]);
     }
 
@@ -119,8 +79,13 @@ class PeminjamanAlatResource extends Resource
             ])
             ->actions([
                 ActionGroup::make([
-                    Tables\Actions\EditAction::make(),
-                    Tables\Actions\DeleteAction::make(),
+                    Tables\Actions\EditAction::make()
+                        ->icon('heroicon-o-pencil-square')
+                        ->tooltip('Edit Data Spesifikasi')
+                        ->color('info'),
+                    Tables\Actions\DeleteAction::make()
+                        ->icon('heroicon-o-trash')
+                        ->tooltip('Hapus Data'),
                     Action::make('pdf_view')
                         ->label(_('Lihat PDF'))
                         ->icon('heroicon-o-document')
@@ -151,46 +116,12 @@ class PeminjamanAlatResource extends Resource
         ];
     }
 
-    protected static function textInput(string $fieldName, string $label): TextInput
+    public static function getEloquentQuery(): Builder
     {
-        return TextInput::make($fieldName)
-            ->label($label)
-            ->required()
-            ->maxLength(255);
-    }
-
-    protected static function datePicker(string $fieldName, string $label): DatePicker
-    {
-        return
-            DatePicker::make($fieldName)
-            ->label($label)
-            ->displayFormat('M d Y')
-            ->seconds(false);
-    }
-
-    protected static function signatureInput(string $fieldName, string $labelName): SignaturePad
-    {
-        return
-            SignaturePad::make($fieldName)
-            ->label($labelName)
-            ->exportPenColor('#0118D8')
-            ->helperText('*Harap Tandatangan di tengah area yang disediakan.')
-            ->afterStateUpdated(function ($state, $set) use ($fieldName) {
-                if (blank($state))
-                    return;
-                $path = SignatureUploader::handle($state, 'ttd_', 'Warehouse/PeminjamanAlat/Signatures');
-                if ($path) {
-                    $set($fieldName, $path);
-                }
-            });
-    }
-
-    protected static function textColumn(string $fieldName, string $label): TextColumn
-    {
-        return
-            TextColumn::make($fieldName)
-            ->label($label)
-            ->searchable()
-            ->sortable();
+        return parent::getEloquentQuery()
+            ->with([
+                'details',
+                'pic'
+            ]);
     }
 }

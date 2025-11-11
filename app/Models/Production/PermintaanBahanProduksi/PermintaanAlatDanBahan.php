@@ -66,6 +66,7 @@ class PermintaanAlatDanBahan extends Model
 
     public static array $CACHE_KEYS = [
         'permintaanBahanWBB' => 'permintaan_produksi_warehouse',
+        'serahTerimaBahan' => 'serah_terima_warehouse',
     ];
 
     protected static function booted()

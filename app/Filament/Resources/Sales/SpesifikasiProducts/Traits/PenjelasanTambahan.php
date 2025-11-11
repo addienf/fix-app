@@ -2,16 +2,10 @@
 
 namespace App\Filament\Resources\Sales\SpesifikasiProducts\Traits;
 
-use App\Models\General\Product;
 use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Grid;
-use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Section;
-use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\TextInput;
-use Icetalker\FilamentTableRepeater\Forms\Components\TableRepeater;
 use Wallo\FilamentSelectify\Components\ButtonGroup;
 
 trait PenjelasanTambahan
