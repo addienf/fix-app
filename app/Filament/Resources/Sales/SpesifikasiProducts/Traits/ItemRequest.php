@@ -3,7 +3,6 @@
 namespace App\Filament\Resources\Sales\SpesifikasiProducts\Traits;
 
 use App\Models\General\Product;
-use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Section;
@@ -35,7 +34,11 @@ trait ItemRequest
 
                                 self::textInput('quantity', 'Banyak Produk')
                                     ->numeric()
-                                    ->required(),
+                                    ->required()
+                                    ->minValue(0)
+                                    ->maxValue(9)
+                                    ->rule('integer|max:9|min:0')
+                                // ->helperText('Masukkan angka 0 sampai 9 saja.')
                             ]),
 
                         Grid::make()

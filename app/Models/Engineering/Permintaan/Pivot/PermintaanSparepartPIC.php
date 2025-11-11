@@ -16,11 +16,11 @@ class PermintaanSparepartPIC extends Model
 
     protected $fillable = [
         'sparepart_id',
-        'dibuat_ttd',
+        'dibuat_signature',
         'dibuat_name',
-        'diketahui_ttd',
+        'diketahui_signature',
         'diketahui_name',
-        'diserahkan_ttd',
+        'diserahkan_signature',
         'diserahkan_name',
     ];
 
@@ -48,41 +48,41 @@ class PermintaanSparepartPIC extends Model
     {
         static::updating(function ($model) {
             if (
-                $model->isDirty('dibuat_ttd') &&
-                $model->getOriginal('dibuat_ttd') &&
-                Storage::disk('public')->exists($model->getOriginal('dibuat_ttd'))
+                $model->isDirty('dibuat_signature') &&
+                $model->getOriginal('dibuat_signature') &&
+                Storage::disk('public')->exists($model->getOriginal('dibuat_signature'))
             ) {
-                Storage::disk('public')->delete($model->getOriginal('dibuat_ttd'));
+                Storage::disk('public')->delete($model->getOriginal('dibuat_signature'));
             }
 
             if (
-                $model->isDirty('diketahui_ttd') &&
-                $model->getOriginal('diketahui_ttd') &&
-                Storage::disk('public')->exists($model->getOriginal('diketahui_ttd'))
+                $model->isDirty('diketahui_signature') &&
+                $model->getOriginal('diketahui_signature') &&
+                Storage::disk('public')->exists($model->getOriginal('diketahui_signature'))
             ) {
-                Storage::disk('public')->delete($model->getOriginal('diketahui_ttd'));
+                Storage::disk('public')->delete($model->getOriginal('diketahui_signature'));
             }
 
             if (
-                $model->isDirty('diserahkan_ttd') &&
-                $model->getOriginal('diserahkan_ttd') &&
-                Storage::disk('public')->exists($model->getOriginal('diserahkan_ttd'))
+                $model->isDirty('diserahkan_signature') &&
+                $model->getOriginal('diserahkan_signature') &&
+                Storage::disk('public')->exists($model->getOriginal('diserahkan_signature'))
             ) {
-                Storage::disk('public')->delete($model->getOriginal('diserahkan_ttd'));
+                Storage::disk('public')->delete($model->getOriginal('diserahkan_signature'));
             }
         });
 
         static::deleting(function ($model) {
-            if ($model->dibuat_ttd && Storage::disk('public')->exists($model->dibuat_ttd)) {
-                Storage::disk('public')->delete($model->dibuat_ttd);
+            if ($model->dibuat_signature && Storage::disk('public')->exists($model->dibuat_signature)) {
+                Storage::disk('public')->delete($model->dibuat_signature);
             }
 
-            if ($model->diketahui_ttd && Storage::disk('public')->exists($model->diketahui_ttd)) {
-                Storage::disk('public')->delete($model->diketahui_ttd);
+            if ($model->diketahui_signature && Storage::disk('public')->exists($model->diketahui_signature)) {
+                Storage::disk('public')->delete($model->diketahui_signature);
             }
 
-            if ($model->diserahkan_ttd && Storage::disk('public')->exists($model->diserahkan_ttd)) {
-                Storage::disk('public')->delete($model->diserahkan_ttd);
+            if ($model->diserahkan_signature && Storage::disk('public')->exists($model->diserahkan_signature)) {
+                Storage::disk('public')->delete($model->diserahkan_signature);
             }
         });
     }

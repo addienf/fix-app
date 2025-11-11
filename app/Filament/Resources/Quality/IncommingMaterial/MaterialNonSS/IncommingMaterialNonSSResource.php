@@ -123,25 +123,6 @@ class IncommingMaterialNonSSResource extends Resource
                         'Disetujui' => 'success',
                     ][$state] ?? 'gray')
                     ->alignCenter(),
-
-                // TextColumn::make('status_penyelesaian')
-                //     ->label('Status Penyelesaian')
-                //     ->badge()
-                //     ->color(function ($record) {
-                //         $penyelesaian = $record->status_penyelesaian;
-                //         $persetujuan = $record->status_persetujuan;
-
-                //         if ($penyelesaian === 'Disetujui') {
-                //             return 'success';
-                //         }
-
-                //         if ($penyelesaian !== 'Diterima' && $persetujuan !== 'Disetujui') {
-                //             return 'danger';
-                //         }
-
-                //         return 'warning';
-                //     })
-                //     ->alignCenter(),
             ])
             ->filters([
                 //

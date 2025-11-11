@@ -55,7 +55,7 @@ class IncommingMaterial extends Model
                     ?->permintaanBahanPro;
 
                 if ($permintaanBahanPro) {
-                    $permintaanBahanPro->status = 'Tersedia'; // contoh status
+                    $permintaanBahanPro->status = 'Tersedia';
                     $permintaanBahanPro->save();
                 }
             }
@@ -69,6 +69,14 @@ class IncommingMaterial extends Model
             if ($model->pic) {
                 $model->pic->delete();
             }
+        });
+
+        static::saved(function () {
+            PermintaanPembelian::clearModelCaches();
+        });
+
+        static::deleted(function () {
+            PermintaanPembelian::clearModelCaches();
         });
     }
 }

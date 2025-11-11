@@ -4,9 +4,14 @@ namespace App\Filament\Resources\Engineering\SPK;
 
 use App\Filament\Resources\Engineering\SPK\SPKServiceResource\Pages;
 use App\Filament\Resources\Engineering\SPK\SPKServiceResource\RelationManagers;
+use App\Filament\Resources\Engineering\SPK\Traits\DeskripsiPekerjaan;
+use App\Filament\Resources\Engineering\SPK\Traits\InformasiUmum;
+use App\Filament\Resources\Engineering\SPK\Traits\Pemeriksaan;
+use App\Filament\Resources\Engineering\SPK\Traits\Petugas;
 use App\Models\Engineering\Complain\Complain;
 use App\Models\Engineering\SPK\SPKService;
 use App\Services\SignatureUploader;
+use App\Traits\HasSignature;
 use Carbon\Carbon;
 use Filament\Actions\Action;
 use Filament\Forms;
@@ -33,6 +38,7 @@ use Wallo\FilamentSelectify\Components\ButtonGroup;
 
 class SPKServiceResource extends Resource
 {
+    use InformasiUmum, DeskripsiPekerjaan, Pemeriksaan, Petugas, HasSignature;
     protected static ?string $model = SPKService::class;
     protected static ?int $navigationSort = 20;
     protected static ?string $navigationGroup = 'Engineering';
@@ -51,8 +57,8 @@ class SPKServiceResource extends Resource
 
     public static function form(Form $form): Form
     {
-        $lastValue = SPKService::latest('no_spk_service')->value('no_spk_service');
-        $isEdit = $form->getOperation() === 'edit';
+        // $lastValue = SPKService::latest('no_spk_service')->value('no_spk_service');
+        // $isEdit = $form->getOperation() === 'edit';
 
         return $form
             ->schema([
@@ -60,148 +66,32 @@ class SPKServiceResource extends Resource
                 Hidden::make('status_penyelesaian')
                     ->default('Belum Diselesaikan'),
 
-                Section::make('Informasi Umum')
-                    ->collapsible()
-                    ->schema([
-                        self::selectSpecInput()
-                            ->columnSpanFull()
-                            ->hiddenOn('edit'),
+                self::getInformasiUmumSection($form),
 
-                        TextInput::make('no_spk_service')
-                            ->label('Nomor SPK Service')
-                            ->hint('Format: XXX/QKS/ENG/SPK/MM/YY')
-                            ->placeholder($lastValue ? "Data Terakhir : {$lastValue}" : 'Data Belum Tersedia')
-                            ->hiddenOn('edit')
-                            ->unique(ignoreRecord: true)
-                            ->required(),
+                self::getDeskripsiPekerjaanSection(),
 
-                        DatePicker::make('tanggal')
-                            ->required(),
+                self::getPetugasSection(),
 
-                        TextInput::make('alamat')
-                            ->required(),
+                self::getPemeriksaanSection(),
 
-                        TextInput::make('perusahaan')
-                            ->label('Nama Perusahaan')
-                            ->required()
-                    ])->columns($isEdit ? 3 : 2),
+                static::signatureSection(
+                    [
+                        [
+                            'prefix' => 'dikonfirmasi',
+                            'role' => 'Dikonfirmasi Oleh',
+                            'hideLogic' => fn($operation) => $operation === 'edit',
+                        ],
+                        [
+                            'prefix' => 'diketahui',
+                            'role' => 'Diketahui Oleh',
+                            'hideLogic' => fn($operation, $record) =>
+                            $operation === 'create' || filled($record?->diketahui_signature)
+                        ],
+                    ],
+                    title: 'PIC',
+                    uploadPath: 'Engineering/SPK/Signatures'
+                ),
 
-                Section::make('Deskripsi Pekerjaan')
-                    ->collapsible()
-                    ->schema([
-                        Select::make('deskripsi_pekerjaan')
-                            ->multiple()
-                            ->options([
-                                'service' => 'Service',
-                                'maintenance' => 'Maintenance',
-                                'lainya' => 'Lainnya'
-                            ])
-                            ->columnSpanFull(),
-
-                        DatePicker::make('jadwal_pelaksana')
-                            ->required(),
-
-                        DatePicker::make('waktu_selesai')
-                            ->required(),
-                    ])
-                    ->columns(2),
-
-                Section::make('Petugas')
-                    ->collapsible()
-                    ->schema([
-                        Repeater::make('petugas')
-                            ->label('')
-                            ->relationship('petugas')
-                            ->schema([
-                                TextInput::make('nama_teknisi')
-                                    ->label('Nama Teknisi')
-                                    ->required(),
-
-                                TextInput::make('jabatan')
-                                    ->required(),
-
-                                self::signatureInput('ttd', 'Tanda Tangan')
-                                    ->columnSpanFull(),
-                            ])
-                            ->columns(2)
-                            ->defaultItems(1)
-                            ->collapsible()
-                            ->columnSpanFull()
-                            ->addActionLabel('Tambah Data Petugas'),
-                    ]),
-
-                Section::make('Pemeriksaan dan Persetujuan')
-                    ->collapsible()
-                    ->hiddenOn('create')
-                    ->relationship('pemeriksaanPersetujuan')
-                    ->schema([
-                        ButtonGroup::make('status_pekerjaan')
-                            ->label('Pekerjaan Telah Selesai ? (Ya/Tidak)')
-                            ->required()
-                            ->gridDirection('row')
-                            ->options([
-                                'ya' => 'Ya',
-                                'tidak' => 'Tidak'
-                            ]),
-
-                        Textarea::make('catatan_tambahan')
-                            ->required()
-                            ->label('Catatan Tambahan')
-                    ]),
-
-                Section::make('PIC')
-                    ->collapsible()
-                    ->relationship('pic')
-                    ->schema([
-
-                        Grid::make(2)
-                            ->schema([
-
-                                Grid::make(1)
-                                    ->schema([
-                                        Hidden::make('dikonfirmasi_nama')
-                                            ->default(fn() => auth()->id()),
-
-                                        self::textInput('dikonfirmasi_nama_placeholder', 'Dikonfirmasi Oleh,')
-                                            ->default(fn() => auth()->user()?->name)
-                                            ->extraAttributes([
-                                                'readonly' => true,
-                                                'style' => 'pointer-events: none;'
-                                            ]),
-
-                                        // self::textInput('dikonfirmasi_nama', 'Dikonfirmasi Oleh,'),
-
-                                        self::signatureInput('dikonfirmasi_ttd', ''),
-
-                                    ])->hiddenOn(operations: 'edit'),
-
-                                Grid::make(1)
-                                    ->schema([
-
-                                        Hidden::make('diketahui_nama')
-                                            ->default(fn() => auth()->id())
-                                            ->dehydrated(true)
-                                            ->afterStateHydrated(function ($component) {
-                                                $component->state(auth()->id());
-                                            }),
-
-                                        self::textInput('diketahui_nama_placeholder', 'Diketahui Oleh,')
-                                            ->placeholder(fn() => auth()->user()?->name)
-                                            ->required(false)
-                                            ->extraAttributes([
-                                                'readonly' => true,
-                                                'style' => 'pointer-events: none;'
-                                            ]),
-
-                                        // self::textInput('diketahui_nama', 'Diketahui Oleh,'),
-
-                                        self::signatureInput('diketahui_ttd', ''),
-
-                                    ])->hiddenOn(operations: 'create'),
-
-                            ]),
-
-                    ]),
             ]);
     }
 
@@ -210,17 +100,13 @@ class SPKServiceResource extends Resource
         return $table
             ->columns([
                 //
-                TextColumn::make('complain.form_no')
-                    ->label('No Compaint Form'),
+                self::textColumn('complain.form_no', 'No Compaint Form'),
 
-                TextColumn::make('no_spk_service')
-                    ->label('No SPK Service'),
+                self::textColumn('no_spk_service', 'No SPK Service'),
 
-                TextColumn::make('tanggal')
-                    ->date('d M Y'),
+                self::textColumn('tanggal', 'Tanggal')->date('d F Y'),
 
-                TextColumn::make('perusahaan')
-                    ->label('Nama Perusahaan'),
+                self::textColumn('perusahaan', 'Nama Perusahaan'),
 
                 TextColumn::make('pemeriksaanPersetujuan.status_pekerjaan')
                     ->label('Status Pengerjaan')
@@ -251,8 +137,13 @@ class SPKServiceResource extends Resource
             ])
             ->actions([
                 ActionGroup::make([
-                    Tables\Actions\EditAction::make(),
-                    Tables\Actions\DeleteAction::make(),
+                    Tables\Actions\EditAction::make()
+                        ->icon('heroicon-o-pencil-square')
+                        ->tooltip('Edit Data Spesifikasi')
+                        ->color('info'),
+                    Tables\Actions\DeleteAction::make()
+                        ->icon('heroicon-o-trash')
+                        ->tooltip('Hapus Data'),
                     Action::make('pdf_view')
                         ->label(_('Lihat PDF'))
                         ->icon('heroicon-o-document')
@@ -284,58 +175,24 @@ class SPKServiceResource extends Resource
         ];
     }
 
-    protected static function textInput(string $fieldName, string $label): TextInput
+    public static function getEloquentQuery(): Builder
     {
-        return TextInput::make($fieldName)
-            ->label($label)
-            ->required()
-            ->maxLength(255);
-    }
-
-    protected static function signatureInput(string $fieldName, string $labelName): SignaturePad
-    {
-        return
-            SignaturePad::make($fieldName)
-            ->label($labelName)
-            ->exportPenColor('#0118D8')
-            ->helperText('*Harap Tandatangan di tengah area yang disediakan.')
-            ->afterStateUpdated(function ($state, $set) use ($fieldName) {
-                if (blank($state))
-                    return;
-                $path = SignatureUploader::handle($state, 'ttd_', 'Engineering/SPK/Signatures');
-                if ($path) {
-                    $set($fieldName, $path);
-                }
-            });
-    }
-
-    protected static function selectSpecInput(): Select
-    {
-        return
-            Select::make('complain_id')
-            ->label('Nomor Complaint Form')
-            ->placeholder('Pilih Nomor Complaint Form')
-            ->reactive()
-            ->required()
-            ->options(function () {
-                return
-                    Complain::whereDoesntHave('spkService')
-                    ->get()
-                    ->mapWithKeys(function ($item) {
-                        $noForm = $item->form_no ?? '-';
-                        $customerName = $item->name_complain ?? '-';
-                        return [$item->id => "{$noForm} - {$customerName}"];
-                    });
-            })
-            ->afterStateUpdated(function ($state, callable $set) {
-                if (!$state) return;
-
-                $complain = Complain::find($state);
-                if (!$complain) return;
-
-                $companyName = $complain->company_name ?? '-';
-
-                $set('perusahaan', $companyName);
-            });
+        return parent::getEloquentQuery()
+            ->with([
+                'complain',
+                'petugas',
+                'pemeriksaanPersetujuan',
+                'beritaAcara',
+                'pic',
+                'permintaanSparepart',
+                'walkinChamber',
+                'chamberR2',
+                'refrigerator',
+                'coldRoom',
+                'rissing',
+                'walkinG2',
+                'chamberG2',
+                'service',
+            ]);
     }
 }

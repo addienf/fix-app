@@ -14,11 +14,11 @@ return new class extends Migration
         Schema::create('permintaan_sparepart_pics', function (Blueprint $table) {
             $table->id();
             $table->foreignId('sparepart_id')->constrained('permintaan_spareparts')->cascadeOnDelete();
-            $table->string('dibuat_ttd');
+            $table->string('dibuat_signature');
             $table->string('dibuat_name');
-            $table->string('diketahui_ttd')->nullable();
+            $table->string('diketahui_signature')->nullable();
             $table->string('diketahui_name')->nullable();
-            $table->string('diserahkan_ttd')->nullable();
+            $table->string('diserahkan_signature')->nullable();
             $table->string('diserahkan_name')->nullable();
             $table->timestamps();
         });

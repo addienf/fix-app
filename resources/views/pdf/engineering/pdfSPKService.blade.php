@@ -181,7 +181,7 @@
 
                     <div class="flex items-center justify-center w-40 h-24 mx-auto mb-2 bg-white ">
                         {{-- <span class="text-sm text-gray-400">Tanda Tangan</span> --}}
-                        <img src="{{ asset('storage/' . $service->pic->dikonfirmasi_ttd) }}" alt="Product Signature"
+                        <img src="{{ asset('storage/' . $service->pic->dikonfirmasi_signature) }}" alt="Product Signature"
                             class="h-20 w-80" />
                     </div>
                     <p class="font-semibold underline">{{ $service->pic->dikonfirmasiNama->name }}</p>
@@ -190,7 +190,7 @@
                     <p class="mb-2">Diketahui Oleh,</p>
                     <div class="flex items-center justify-center w-40 h-24 mx-auto mb-2 bg-white ">
                         {{-- <span class="text-sm text-gray-400">Tanda Tangan</span> --}}
-                        <img src="{{ asset('storage/' . $service->pic->diketahui_ttd) }}" alt="Product Signature"
+                        <img src="{{ asset('storage/' . $service->pic->diketahui_signature) }}" alt="Product Signature"
                             class="h-20 w-80" />
                     </div>
                     <p class="font-semibold underline">{{ $service->pic->diketahuiNama->name }}</p>

@@ -3,9 +3,13 @@
 namespace App\Filament\Resources\Quality\IncommingMaterial\MaterialSS;
 
 use App\Filament\Resources\Quality\IncommingMaterial\MaterialSS\IncommingMaterialSSResource\Pages;
+use App\Filament\Resources\Quality\IncommingMaterial\MaterialSS\Traits\ChecklistTable;
+use App\Filament\Resources\Quality\IncommingMaterial\MaterialSS\Traits\InformasiUmum;
+use App\Filament\Resources\Quality\IncommingMaterial\MaterialSS\Traits\Summary;
 use App\Models\Purchasing\Permintaan\PermintaanPembelian;
 use App\Models\Quality\IncommingMaterial\MaterialSS\IncommingMaterialSS;
 use App\Services\SignatureUploader;
+use App\Traits\HasSignature;
 use Filament\Actions\Action;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Grid;
@@ -22,11 +26,13 @@ use Filament\Tables;
 use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\HtmlString;
 use Saade\FilamentAutograph\Forms\Components\SignaturePad;
 
 class IncommingMaterialSSResource extends Resource
 {
+    use InformasiUmum, ChecklistTable, Summary, HasSignature;
     protected static ?string $model = IncommingMaterialSS::class;
     protected static ?string $slug = 'quality/incoming-material-stainless-steel';
     protected static ?string $navigationIcon = 'heroicon-o-check-circle';
@@ -45,7 +51,7 @@ class IncommingMaterialSSResource extends Resource
 
     public static function form(Form $form): Form
     {
-        $lastValue = IncommingMaterialSS::latest('no_po')->value('no_po');
+        // $lastValue = IncommingMaterialSS::latest('no_po')->value('no_po');
 
         return $form
             ->schema([
@@ -53,224 +59,37 @@ class IncommingMaterialSSResource extends Resource
                 Hidden::make('status_penyelesaian')
                     ->default('Belum Diterima'),
 
-                Section::make('Informasi Umum')
-                    ->collapsible()
-                    ->schema([
+                self::informasiUmumSection(),
 
-                        self::selectInput('permintaan_pembelian_id', 'Permintaan Pembelian', 'permintaanPembelian', 'id')
-                            ->placeholder('Pilih Nomor Permintaan Pembelian')
-                            ->hiddenOn('edit')
-                            ->required(),
+                self::checklistTableSection(),
 
-                        self::textInput('no_qc', 'No. QC SS'),
-                        // ->placeholder($lastValue ? "Data Terakhir : {$lastValue}" : 'Data Belum Tersedia')
-                        // ->hint('Format: XXX/QKS/WBB/PERMINTAAN/MM/YY'),
+                self::summarySection(),
 
-                        self::textInput('no_po', 'No. PO')
-                            ->placeholder($lastValue ? "Data Terakhir : {$lastValue}" : 'Data Belum Tersedia')
-                            ->hint('Format: XXX/QKS/WBB/PERMINTAAN/MM/YY'),
+                self::remarksSection(),
 
-                        self::textInput('supplier', 'Supplier'),
-
-                    ]),
-
-                Section::make('Checklist Table')
-                    ->relationship('detail')
-                    ->schema([
-
-                        Repeater::make('checklists')
-                            ->label('')
-                            ->schema([
-
-                                Textarea::make('procedures')
-                                    ->disabled()
-                                    ->rows(6)
-                                    ->label('Procedures')
-                                    ->formatStateUsing(fn($state) => $state ??
-                                        "- Wipe of the dust, dirt, oil, and water on the surface of material\n- Make a mark on the upper, middle and buttom side of the material surface\n- Make a mark on the upper, middle and buttom side of the material surface"),
-
-                                Textarea::make('expected_result')
-                                    ->disabled()
-                                    ->rows(6)
-                                    ->label('Expected Result')
-                                    ->formatStateUsing(fn($state) => $state ?? "There was no color change within 3 minutes after the liquid dropped on the surface that indicating materials is genuine SS304"),
-
-                                Textarea::make('actual_result_1')
-                                    ->rows(6)
-                                    ->label('Actual Result')
-                                    ->placeholder('Masukan Penjelasan Keadaan Sebenarnya...'),
-
-                                Textarea::make('procedures_2')
-                                    ->disabled()
-                                    ->rows(1)
-                                    ->formatStateUsing(fn($state) => $state ?? 'Visual check'),
-
-                                Textarea::make('expected_result_2')
-                                    ->disabled()
-                                    ->rows(1)
-                                    ->label('Expected Result')
-                                    ->formatStateUsing(fn($state) => $state ?? 'No defect and rust found'),
-
-                                Textarea::make('actual_result_2')
-                                    ->rows(1)
-                                    ->label('Actual Result')
-                                    ->placeholder('Masukan Penjelasan Keadaan Sebenarnya...'),
-
-
-                            ])
-                            ->columns(3)
-                            ->deletable(false)
-                            ->reorderable(false)
-                            ->addable(false),
-
-                        Repeater::make('details_tambahan')
-                            ->label('Checklist Tambahan')
-                            ->schema([
-
-                                Textarea::make('procedures')
-                                    // ->disabled()
-                                    ->rows(3)
-                                    ->label('Procedures'),
-
-                                Textarea::make('expected_result')
-                                    // ->disabled()
-                                    ->rows(3)
-                                    ->label('Expected Result'),
-
-                                Textarea::make('actual_result_1')
-                                    ->rows(3)
-                                    ->label('Actual Result')
-                                    ->placeholder('Masukan Penjelasan Keadaan Sebenarnya...'),
-
-                            ])
-                            ->default([])
-                            ->addActionLabel('Tambah Checklist')
-                            ->columns(3)
-
-                    ]),
-
-                Section::make('Summary & Quantity')
-                    ->label('')
-                    ->relationship('summary')
-                    ->schema([
-                        Grid::make(2)
-                            ->schema(
-                                collect(config('summarySS.fields'))->map(function ($label, $key) {
-                                    return [
-                                        // Kolom kiri: label
-                                        Placeholder::make("summary_label_{$key}")
-                                            ->content(new HtmlString('<div class="px-1 py-4 rounded-md text-md">' . e($label) . '</div>'))
-                                            ->disableLabel(),
-
-                                        // Kolom kanan: input
-                                        TextInput::make("summary.{$key}")
-                                            ->numeric()
-                                            ->label('')
-                                            ->placeholder('0')
-                                            ->extraAttributes([
-                                                'class' => 'px-3 py-1 border border-gray-300 text-sm w-full',
-                                            ]),
-                                    ];
-                                })->flatten(1)->toArray()
-                            ),
-                    ]),
-
-                Section::make('Catatan')
-                    ->collapsible()
-                    ->schema([
-
-                        Textarea::make('remarks')
-                            ->required()
-                            ->label('Remarks')
-
-                    ]),
-
-                Section::make('PIC')
-                    ->collapsible()
-                    ->relationship('pic')
-                    ->schema([
-                        Grid::make(3)
-                            ->schema([
-                                Grid::make(1)
-                                    ->schema([
-
-                                        Hidden::make('checked_name')
-                                            ->default(fn() => auth()->id()),
-
-                                        self::textInput('checked_name_placeholder', 'Checked By')
-                                            ->default(fn() => auth()->user()?->name)
-                                            ->extraAttributes([
-                                                'readonly' => true,
-                                                'style' => 'pointer-events: none;'
-                                            ]),
-
-                                        self::signatureInput('checked_signature', ''),
-
-                                        self::datePicker('checked_date', '')
-                                            ->default(now())
-                                            ->required(),
-
-                                    ])->hiddenOn(operations: 'edit'),
-
-                                Grid::make(1)
-                                    ->schema([
-
-                                        Hidden::make('accepted_name')
-                                            ->default(fn() => auth()->id())
-                                            ->dehydrated(true)
-                                            ->afterStateHydrated(function ($component) {
-                                                $component->state(auth()->id());
-                                            }),
-
-                                        self::textInput('accepted_name_placeholder', 'Accepted By')
-                                            ->default(fn() => auth()->user()?->name)
-                                            ->placeholder(fn() => auth()->user()?->name)
-                                            ->required(false)
-                                            ->extraAttributes([
-                                                'readonly' => true,
-                                                'style' => 'pointer-events: none;'
-                                            ]),
-
-                                        self::signatureInput('accepted_signature', ''),
-
-                                        self::datePicker('accepted_date', '')
-                                            ->required(),
-
-                                    ])->hidden(
-                                        fn($operation, $record) =>
-                                        $operation === 'create' || filled($record?->accepted_signature)
-                                    ),
-
-                                Grid::make(1)
-                                    ->schema([
-
-                                        Hidden::make('approved_name')
-                                            ->default(fn() => auth()->id())
-                                            ->dehydrated(true)
-                                            ->afterStateHydrated(function ($component) {
-                                                $component->state(auth()->id());
-                                            }),
-
-                                        self::textInput('approved_name_placeholder', 'Approved By')
-                                            ->default(fn() => auth()->user()?->name)
-                                            ->placeholder(fn() => auth()->user()?->name)
-                                            ->required(false)
-                                            ->extraAttributes([
-                                                'readonly' => true,
-                                                'style' => 'pointer-events: none;'
-                                            ]),
-
-                                        self::signatureInput('approved_signature', ''),
-
-                                        self::datePicker('approved_date', '')
-                                            ->required(),
-
-                                    ])->hidden(
-                                        fn($operation, $record) =>
-                                        $operation === 'create' || blank($record?->accepted_signature) || filled($record?->approved_signature)
-                                    ),
-                            ]),
-                    ]),
+                static::signatureSection(
+                    [
+                        [
+                            'prefix' => 'checked',
+                            'role' => 'Checked By',
+                            'hideLogic' => fn($operation) => $operation === 'edit',
+                        ],
+                        [
+                            'prefix' => 'accepted',
+                            'role' => 'Accepted By',
+                            'hideLogic' => fn($operation, $record) =>
+                            $operation === 'create' || filled($record?->accepted_signature)
+                        ],
+                        [
+                            'prefix' => 'approved',
+                            'role' => 'Approved By',
+                            'hideLogic' => fn($operation, $record) =>
+                            $operation === 'create' || blank($record?->accepted_signature) || filled($record?->approved_signature)
+                        ],
+                    ],
+                    title: 'PIC',
+                    uploadPath: 'Quality/IncommingMaterial/SS/Signatures'
+                ),
             ]);
     }
 
@@ -286,23 +105,13 @@ class IncommingMaterialSSResource extends Resource
 
                 self::textColumn('supplier', 'Supplier'),
 
-                TextColumn::make('status_penyelesaian')
-                    ->label('Status Penyelesaian')
+                self::textColumn('status_penyelesaian', 'Status')
                     ->badge()
-                    ->color(function ($record) {
-                        $penyelesaian = $record->status_penyelesaian;
-                        $persetujuan = $record->status_persetujuan;
-
-                        if ($penyelesaian === 'Disetujui') {
-                            return 'success';
-                        }
-
-                        if ($penyelesaian !== 'Diterima' && $persetujuan !== 'Disetujui') {
-                            return 'danger';
-                        }
-
-                        return 'warning';
-                    })
+                    ->color(fn($state) => [
+                        'Belum Diterima' => 'danger',
+                        'Diterima' => 'warning',
+                        'Disetujui' => 'success',
+                    ][$state] ?? 'gray')
                     ->alignCenter(),
 
             ])
@@ -311,10 +120,16 @@ class IncommingMaterialSSResource extends Resource
             ])
             ->actions([
                 ActionGroup::make([
-                    Tables\Actions\EditAction::make(),
-                    Tables\Actions\DeleteAction::make(),
+                    Tables\Actions\EditAction::make()
+                        ->icon('heroicon-o-pencil-square')
+                        ->tooltip('Edit Data Spesifikasi')
+                        ->color('info'),
+                    Tables\Actions\DeleteAction::make()
+                        ->icon('heroicon-o-trash')
+                        ->tooltip('Hapus Data'),
                     Action::make('pdf_view')
                         ->label(_('Lihat PDF'))
+                        ->tooltip('Lihat Dokumen PDF')
                         ->icon('heroicon-o-document')
                         ->color('success')
                         ->visible(fn($record) => $record->status_penyelesaian === 'Disetujui')
@@ -345,89 +160,14 @@ class IncommingMaterialSSResource extends Resource
         ];
     }
 
-    protected static function textInput(string $fieldName, string $label): TextInput
+    public static function getEloquentQuery(): Builder
     {
-        return TextInput::make($fieldName)
-            ->label($label)
-            ->required()
-            ->maxLength(255);
-    }
-
-    protected static function textArea(string $fieldName, string $label): Textarea
-    {
-        return Textarea::make($fieldName)
-            ->label($label)
-            ->required()
-            ->maxLength(255);
-    }
-
-    protected static function selectInput(string $fieldName, string $label, string $relation, string $title): Select
-    {
-        return
-            Select::make($fieldName)
-            ->relationship($relation, $title)
-            ->options(function () {
-                return
-                    PermintaanPembelian::with('permintaanBahanWBB')
-                    ->whereDoesntHave('materialSS')
-                    ->get()
-                    ->mapWithKeys(function ($item) {
-                        return [$item->id => $item->permintaanBahanWBB->no_surat ?? 'Tanpa No Surat'];
-                    });
-            })
-            ->label($label)
-            ->native(false)
-            ->searchable()
-            ->preload()
-            ->required()
-            ->reactive();
-    }
-
-    protected static function selectInputOptions(string $fieldName, string $label, string $config): Select
-    {
-        return
-            Select::make($fieldName)
-            ->options(config($config))
-            ->label($label)
-            ->native(false)
-            ->searchable()
-            ->preload()
-            ->required()
-            ->reactive();
-    }
-
-    protected static function datePicker(string $fieldName, string $label): DatePicker
-    {
-        return
-            DatePicker::make($fieldName)
-            ->label($label)
-            ->displayFormat('M d Y')
-            ->seconds(false);
-    }
-
-    protected static function signatureInput(string $fieldName, string $labelName): SignaturePad
-    {
-        return
-            SignaturePad::make($fieldName)
-            ->label($labelName)
-            ->exportPenColor('#0118D8')
-            ->helperText('*Harap Tandatangan di tengah area yang disediakan.')
-            ->afterStateUpdated(function ($state, $set) use ($fieldName) {
-                if (blank($state))
-                    return;
-                $path = SignatureUploader::handle($state, 'ttd_', 'Quality/IncommingMaterial/SS/Signatures');
-                if ($path) {
-                    $set($fieldName, $path);
-                }
-            });
-    }
-
-    protected static function textColumn(string $fieldName, string $label): TextColumn
-    {
-        return
-            TextColumn::make($fieldName)
-            ->label($label)
-            ->searchable()
-            ->sortable();
+        return parent::getEloquentQuery()
+            ->with([
+                'permintaanPembelian',
+                'detail',
+                'pic',
+                'summary',
+            ]);
     }
 }

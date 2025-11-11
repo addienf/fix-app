@@ -4,9 +4,12 @@ namespace App\Filament\Resources\Engineering\Permintaan;
 
 use App\Filament\Resources\Engineering\Permintaan\PermintaanSparepartResource\Pages;
 use App\Filament\Resources\Engineering\Permintaan\PermintaanSparepartResource\RelationManagers;
+use App\Filament\Resources\Engineering\Permintaan\Traits\InformasiUmum;
+use App\Filament\Resources\Engineering\Permintaan\Traits\ListSparepart;
 use App\Models\Engineering\Permintaan\PermintaanSparepart;
 use App\Models\Engineering\SPK\SPKService;
 use App\Services\SignatureUploader;
+use App\Traits\HasSignature;
 use Filament\Actions\Action;
 use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
@@ -28,6 +31,7 @@ use Saade\FilamentAutograph\Forms\Components\SignaturePad;
 
 class PermintaanSparepartResource extends Resource
 {
+    use InformasiUmum, ListSparepart, HasSignature;
     protected static ?string $model = PermintaanSparepart::class;
     protected static ?int $navigationSort = 21;
     protected static ?string $navigationGroup = 'Engineering';
@@ -46,164 +50,39 @@ class PermintaanSparepartResource extends Resource
 
     public static function form(Form $form): Form
     {
-        $lastValue = PermintaanSparepart::latest('no_surat')->value('no_surat');
-        $isEdit = $form->getOperation() === 'edit';
         return $form
             ->schema([
                 //
                 Hidden::make('status_penyerahan')
                     ->default('Belum Diketahui'),
 
-                Section::make('Informasi Umum')
-                    ->collapsible()
-                    ->schema([
+                self::getInformasiUmumSection($form),
 
-                        Select::make('spk_service_id')
-                            ->label('Nomor SPK Service')
-                            ->options(function () {
-                                return SPKService::where('status_penyelesaian', 'Selesai')
-                                    ->whereDoesntHave('permintaanSparepart')
-                                    ->pluck('no_spk_service', 'id');
-                            })
-                            ->native(false)
-                            ->searchable()
-                            ->preload()
-                            ->required()
-                            ->columnSpanFull()
-                            ->hiddenOn(operations: 'edit'),
+                self::getListSparepartSection(),
 
-                        TextInput::make('no_surat')
-                            ->label('Nomor Surat')
-                            ->hint('Format: No Surat')
-                            ->placeholder($lastValue ? "Data Terakhir : {$lastValue}" : 'Data Belum Tersedia')
-                            ->hiddenOn('edit')
-                            ->unique(ignoreRecord: true)
-                            ->required(),
-
-                        DatePicker::make('tanggal')
-                            ->required(),
-
-                        TextInput::make('dari')
-                            ->required()
-                            ->placeholder('Engineer'),
-
-                        TextInput::make('kepada')
-                            ->required()
-                            ->placeholder('Warehouse')
-                    ])
-                    ->columns($isEdit ? 3 : 2),
-
-                Section::make('List Spareparts')
-                    ->collapsible()
-                    ->schema([
-                        TableRepeater::make('details')
-                            ->relationship('details')
-                            ->label('')
-                            ->schema([
-                                TextInput::make('bahan_baku')
-                                    ->required()
-                                    ->label('Nama Barang'),
-
-                                TextInput::make('spesifikasi')
-                                    ->required(),
-
-                                TextInput::make('jumlah')
-                                    ->required()
-                                    ->numeric(),
-
-                                TextInput::make('keperluan_barang')
-                                    ->required()
-                                    ->label('Keperluan Barang'),
-                            ])
-                            ->columns(4)
-                            ->defaultItems(1)
-                            ->collapsible()
-                            ->columnSpanFull()
-                            ->addActionLabel('Tambah Data Petugas'),
-                    ]),
-
-                Section::make('PIC')
-                    ->collapsible()
-                    ->relationship('pic')
-                    ->schema([
-                        Grid::make(3)
-                            ->schema([
-                                Grid::make(1)
-                                    ->schema([
-
-                                        Hidden::make('dibuat_name')
-                                            ->default(fn() => auth()->id()),
-
-                                        self::textInput('dibuat_name_placeholder', 'Dibuat Oleh')
-                                            ->default(fn() => auth()->user()?->name)
-                                            ->extraAttributes([
-                                                'readonly' => true,
-                                                'style' => 'pointer-events: none;'
-                                            ]),
-
-                                        // self::textInput('dibuat_name', 'Dibuat Oleh'),
-
-                                        self::signatureInput('dibuat_ttd', ''),
-
-                                    ])->hiddenOn(operations: 'edit'),
-
-                                Grid::make(1)
-                                    ->schema([
-
-                                        Hidden::make('diketahui_name')
-                                            ->default(fn() => auth()->id())
-                                            ->dehydrated(true)
-                                            ->afterStateHydrated(function ($component) {
-                                                $component->state(auth()->id());
-                                            }),
-
-                                        self::textInput('diketahui_name_placeholder', 'Diketahui Oleh')
-                                            ->default(fn() => auth()->user()?->name)
-                                            ->placeholder(fn() => auth()->user()?->name)
-                                            ->required(false)
-                                            ->extraAttributes([
-                                                'readonly' => true,
-                                                'style' => 'pointer-events: none;'
-                                            ]),
-
-                                        // self::textInput('diketahui_name', 'Diketahui Oleh'),
-
-                                        self::signatureInput('diketahui_ttd', ''),
-
-                                    ])->hidden(
-                                        fn($operation, $record) =>
-                                        $operation === 'create' || filled($record?->diketahui_ttd)
-                                    ),
-
-                                Grid::make(1)
-                                    ->schema([
-
-                                        Hidden::make('diserahkan_name')
-                                            ->default(fn() => auth()->id())
-                                            ->dehydrated(true)
-                                            ->afterStateHydrated(function ($component) {
-                                                $component->state(auth()->id());
-                                            }),
-
-                                        self::textInput('diserahkan_name_placeholder', 'Diserahkan Kepada')
-                                            ->default(fn() => auth()->user()?->name)
-                                            ->placeholder(fn() => auth()->user()?->name)
-                                            ->required(false)
-                                            ->extraAttributes([
-                                                'readonly' => true,
-                                                'style' => 'pointer-events: none;'
-                                            ]),
-
-                                        // self::textInput('diserahkan_name', 'Diserahkan Kepada'),
-
-                                        self::signatureInput('diserahkan_ttd', ''),
-
-                                    ])->hidden(
-                                        fn($operation, $record) =>
-                                        $operation === 'create' || blank($record?->diketahui_ttd) || filled($record?->diserahkan_ttd)
-                                    ),
-                            ]),
-                    ]),
+                static::signatureSection(
+                    [
+                        [
+                            'prefix' => 'dibuat',
+                            'role' => 'Dibuat Oleh',
+                            'hideLogic' => fn($operation) => $operation === 'edit',
+                        ],
+                        [
+                            'prefix' => 'diketahui',
+                            'role' => 'Diketahui Oleh',
+                            'hideLogic' => fn($operation, $record) =>
+                            $operation === 'create' || filled($record?->diketahui_signature)
+                        ],
+                        [
+                            'prefix' => 'diserahkan',
+                            'role' => 'Diserahkan Kepada',
+                            'hideLogic' => fn($operation, $record) =>
+                            $operation === 'create' || blank($record?->diketahui_signature) || filled($record?->diserahkan_signature)
+                        ],
+                    ],
+                    title: 'PIC',
+                    uploadPath: 'Engineering/PermintaanSparepart/Signatures'
+                )
             ]);
     }
 
@@ -212,29 +91,18 @@ class PermintaanSparepartResource extends Resource
         return $table
             ->columns([
                 //
-                TextColumn::make('spkService.no_spk_service')
-                    ->label('No SPK Service'),
 
-                TextColumn::make('tanggal')
-                    ->date('d M Y'),
+                self::textColumn('spkService.no_spk_service', 'No SPK Service'),
 
-                TextColumn::make('status_penyerahan')
-                    ->label('Status')
+                self::textColumn('tanggal', 'Tanggal')->date('d F Y'),
+
+                self::textColumn('status_penyerahan', 'Status')
                     ->badge()
-                    ->color(function ($record) {
-                        $penyerahan = $record->status_penyerahan;
-                        $persetujuan = $record->status_persetujuan;
-
-                        if ($penyerahan === 'Diserahkan') {
-                            return 'success';
-                        }
-
-                        if ($penyerahan !== 'Diketahui' && $persetujuan !== 'Diserahkan') {
-                            return 'danger';
-                        }
-
-                        return 'warning';
-                    })
+                    ->color(fn($state) => [
+                        'Belum Diketahui' => 'danger',
+                        'Diketahui' => 'warning',
+                        'Diserahkan' => 'success',
+                    ][$state] ?? 'gray')
                     ->alignCenter(),
             ])
             ->filters([
@@ -242,8 +110,13 @@ class PermintaanSparepartResource extends Resource
             ])
             ->actions([
                 ActionGroup::make([
-                    Tables\Actions\EditAction::make(),
-                    Tables\Actions\DeleteAction::make(),
+                    Tables\Actions\EditAction::make()
+                        ->icon('heroicon-o-pencil-square')
+                        ->tooltip('Edit Data Spesifikasi')
+                        ->color('info'),
+                    Tables\Actions\DeleteAction::make()
+                        ->icon('heroicon-o-trash')
+                        ->tooltip('Hapus Data'),
                     Action::make('pdf_view')
                         ->label(_('Lihat PDF'))
                         ->icon('heroicon-o-document')
@@ -275,28 +148,13 @@ class PermintaanSparepartResource extends Resource
         ];
     }
 
-    protected static function textInput(string $fieldName, string $label): TextInput
+    public static function getEloquentQuery(): Builder
     {
-        return TextInput::make($fieldName)
-            ->label($label)
-            ->required()
-            ->maxLength(255);
-    }
-
-    protected static function signatureInput(string $fieldName, string $labelName): SignaturePad
-    {
-        return
-            SignaturePad::make($fieldName)
-            ->label($labelName)
-            ->exportPenColor('#0118D8')
-            ->helperText('*Harap Tandatangan di tengah area yang disediakan.')
-            ->afterStateUpdated(function ($state, $set) use ($fieldName) {
-                if (blank($state))
-                    return;
-                $path = SignatureUploader::handle($state, 'ttd_', 'Engineering/PermintaanSparepart/Signatures');
-                if ($path) {
-                    $set($fieldName, $path);
-                }
-            });
+        return parent::getEloquentQuery()
+            ->with([
+                'spkService',
+                'details',
+                'pic',
+            ]);
     }
 }

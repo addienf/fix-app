@@ -127,15 +127,15 @@
             $roles = [
                 'Dibuat Oleh,' => [
                     'name' => $sparepart->pic->dibuatName->name,
-                    'signature' => $sparepart->pic->dibuat_ttd,
+                    'signature' => $sparepart->pic->dibuat_signature,
                 ],
                 'Diketahui Oleh,' => [
                     'name' => $sparepart->pic->diketahuiName->name,
-                    'signature' => $sparepart->pic->diketahui_ttd,
+                    'signature' => $sparepart->pic->diketahui_signature,
                 ],
                 'Diserahkan Kepada,' => [
                     'name' => $sparepart->pic->diserahkanName->name,
-                    'signature' => $sparepart->pic->diserahkan_ttd,
+                    'signature' => $sparepart->pic->diserahkan_signature,
                 ],
             ];
         @endphp

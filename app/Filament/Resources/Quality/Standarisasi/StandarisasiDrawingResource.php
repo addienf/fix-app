@@ -4,9 +4,15 @@ namespace App\Filament\Resources\Quality\Standarisasi;
 
 use App\Filament\Resources\Quality\Standarisasi\StandarisasiDrawingResource\Pages;
 use App\Filament\Resources\Quality\Standarisasi\StandarisasiDrawingResource\RelationManagers;
+use App\Filament\Resources\Quality\Standarisasi\Traits\Details;
+use App\Filament\Resources\Quality\Standarisasi\Traits\IdentitasGambarKerja;
+use App\Filament\Resources\Quality\Standarisasi\Traits\InformasiUmum;
+use App\Filament\Resources\Quality\Standarisasi\Traits\KomponenGambar;
+use App\Filament\Resources\Quality\Standarisasi\Traits\SpesifikasiTeknis;
 use App\Models\Quality\Standarisasi\StandarisasiDrawing;
 use App\Models\Sales\SPKMarketings\SPKMarketing;
 use App\Services\SignatureUploader;
+use App\Traits\HasSignature;
 use Closure;
 use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
@@ -35,6 +41,7 @@ use Wallo\FilamentSelectify\Components\ButtonGroup;
 
 class StandarisasiDrawingResource extends Resource
 {
+    use InformasiUmum, IdentitasGambarKerja, Details, KomponenGambar, SpesifikasiTeknis, HasSignature;
     protected static ?string $model = StandarisasiDrawing::class;
     protected static ?string $navigationIcon = 'heroicon-o-check-circle';
     protected static ?int $navigationSort = 7;
@@ -53,7 +60,7 @@ class StandarisasiDrawingResource extends Resource
 
     public static function form(Form $form): Form
     {
-        $isEdit = $form->getOperation() === 'edit';
+        // $isEdit = $form->getOperation() === 'edit';
 
         return $form
             ->schema([
@@ -61,140 +68,161 @@ class StandarisasiDrawingResource extends Resource
                 Hidden::make('status_pemeriksaan')
                     ->default('Belum Diperiksa'),
 
-                Section::make('Informasi Umum')
-                    ->collapsible()
-                    ->schema([
-                        Grid::make($isEdit ? 1 : 2)
-                            ->schema([
+                static::informasiUmumSection($form),
+                static::identifikasiGambarKerjaSection(),
+                static::spesifikasiTeknisSection(),
+                static::detailsSection(),
+                static::signatureSection(
+                    [
+                        [
+                            'prefix' => 'create',
+                            'role' => 'Dibuat Oleh',
+                            'hideLogic' => fn($operation) => $operation === 'edit',
+                        ],
+                        [
+                            'prefix' => 'check',
+                            'role' => 'Diperiksa Oleh',
+                            'hideLogic' => fn($operation, $record) =>
+                            $operation === 'create' || filled($record?->check_signature)
+                        ],
+                    ],
+                    title: 'PIC',
+                    uploadPath: 'Quality/StandarisasiDrawing/Signatures'
+                ),
+                // Section::make('Informasi Umum')
+                //     ->collapsible()
+                //     ->schema([
+                //         Grid::make($isEdit ? 1 : 2)
+                //             ->schema([
 
-                                self::selectInputSPK()
-                                    ->hiddenOn('edit'),
+                //                 self::selectInputSPK()
+                //                     ->hiddenOn('edit'),
 
-                                self::datePicker('tanggal', 'Tanggal'),
+                //                 self::datePicker('tanggal', 'Tanggal'),
 
-                            ]),
-                    ]),
+                //             ]),
+                //     ]),
 
-                Section::make('Identitas Gambar Kerja')
-                    ->collapsible()
-                    ->relationship('identitas')
-                    ->schema([
+                // Section::make('Identitas Gambar Kerja')
+                //     ->collapsible()
+                //     ->relationship('identitas')
+                //     ->schema([
 
-                        self::textInput('judul_gambar', 'Judul Gambar'),
+                //         self::textInput('judul_gambar', 'Judul Gambar'),
 
-                        self::textInput('no_gambar', 'No Gambar'),
+                //         self::textInput('no_gambar', 'No Gambar'),
 
-                        self::datePicker('tanggal_pembuatan', 'Tanggal Pembuatan'),
+                //         self::datePicker('tanggal_pembuatan', 'Tanggal Pembuatan'),
 
-                        self::buttonGroup('revisi', 'Revisi')
-                            ->helperText('*Jika Ya Revisi Ke ')
-                            ->reactive()
-                            ->columnSpanFull(),
+                //         self::buttonGroup('revisi', 'Revisi')
+                //             ->helperText('*Jika Ya Revisi Ke ')
+                //             ->reactive()
+                //             ->columnSpanFull(),
 
-                        self::textInput('revisi_ke', 'Revisi Ke')
-                            ->hidden(fn(Get $get) => $get('revisi') != 1),
+                //         self::textInput('revisi_ke', 'Revisi Ke')
+                //             ->hidden(fn(Get $get) => $get('revisi') != 1),
 
-                        self::textInput('nama_pembuat', 'Nama Pembuat'),
+                //         self::textInput('nama_pembuat', 'Nama Pembuat'),
 
-                        self::textInput('nama_pemeriksa', 'Nama Pemeriksa'),
+                //         self::textInput('nama_pemeriksa', 'Nama Pemeriksa'),
 
-                    ]),
+                //     ]),
 
-                Section::make('Spesifikasi Teknis')
-                    ->collapsible()
-                    ->schema([
+                // Section::make('Spesifikasi Teknis')
+                //     ->collapsible()
+                //     ->schema([
 
-                        self::selectInputOptions('jenis_gambar', 'Jenis Gambar', 'standarisasi.jenis_gambar')
-                            ->placeholder('Pilih Jenis Gambar')
-                            ->multiple()
-                            ->required(),
+                //         self::selectInputOptions('jenis_gambar', 'Jenis Gambar', 'standarisasi.jenis_gambar')
+                //             ->placeholder('Pilih Jenis Gambar')
+                //             ->multiple()
+                //             ->required(),
 
-                        self::selectInputOptions('format_gambar', 'Format Gambar', 'standarisasi.format_gambar')
-                            ->placeholder('Pilih Format Gambar')
-                            ->multiple()
-                            ->required(),
+                //         self::selectInputOptions('format_gambar', 'Format Gambar', 'standarisasi.format_gambar')
+                //             ->placeholder('Pilih Format Gambar')
+                //             ->multiple()
+                //             ->required(),
 
-                    ])->columns(2),
+                //     ])->columns(2),
 
-                Section::make('Detail')
-                    ->relationship('detail')
-                    ->collapsible()
-                    ->schema([
+                // Section::make('Detail')
+                //     ->relationship('detail')
+                //     ->collapsible()
+                //     ->schema([
 
-                        FileUpload::make('lampiran')
-                            ->label('Lampiran')
-                            ->directory('Quality/StandarisasiDrawing/Files')
-                            ->acceptedFileTypes(['image/png', 'image/jpeg'])
-                            ->helperText('*Hanya file gambar (PNG, JPG, JPEG) yang diperbolehkan. Maksimal ukuran 10 MB.')
-                            ->multiple()
-                            ->image()
-                            ->downloadable()
-                            ->reorderable()
-                            ->maxSize(10240)
-                            ->columnSpanFull()
-                            ->required(),
+                //         FileUpload::make('lampiran')
+                //             ->label('Lampiran')
+                //             ->directory('Quality/StandarisasiDrawing/Files')
+                //             ->acceptedFileTypes(['image/png', 'image/jpeg'])
+                //             ->helperText('*Hanya file gambar (PNG, JPG, JPEG) yang diperbolehkan. Maksimal ukuran 10 MB.')
+                //             ->multiple()
+                //             ->image()
+                //             ->downloadable()
+                //             ->reorderable()
+                //             ->maxSize(10240)
+                //             ->columnSpanFull()
+                //             ->required(),
 
-                        Textarea::make('catatan')
-                            ->label('Catatan atau Koreksi yang Dibutuhkan')
-                            ->required(),
+                //         Textarea::make('catatan')
+                //             ->label('Catatan atau Koreksi yang Dibutuhkan')
+                //             ->required(),
 
-                    ]),
+                //     ]),
 
-                Section::make('Komponen Gambar Yang Diperiksa')
-                    ->collapsible()
-                    ->relationship('pemeriksaan')
-                    ->schema([
-                        Select::make('pemeriksaan_komponen')
-                            ->label('Komponen Gamber Yang Diperksa')
-                            ->multiple()
-                            ->options([
-                                'keselarasan_spesifikasi' => 'Keselarasan Dengan Spesifikasi',
-                                'ketepatan_skala' => 'Ketepatan Dimensi Dengan Skala',
-                                'kesesuaian' => 'Kesesuaian Dengan Gambar Produk'
-                            ])
-                    ]),
+                // Section::make('Komponen Gambar Yang Diperiksa')
+                //     ->collapsible()
+                //     ->relationship('pemeriksaan')
+                //     ->schema([
+                //         Select::make('pemeriksaan_komponen')
+                //             ->label('Komponen Gamber Yang Diperksa')
+                //             ->multiple()
+                //             ->options([
+                //                 'keselarasan_spesifikasi' => 'Keselarasan Dengan Spesifikasi',
+                //                 'ketepatan_skala' => 'Ketepatan Dimensi Dengan Skala',
+                //                 'kesesuaian' => 'Kesesuaian Dengan Gambar Produk'
+                //             ])
+                //     ]),
 
-                Section::make('Detail PIC')
-                    ->collapsible()
-                    ->relationship('pic')
-                    ->schema([
-                        Grid::make(2)
-                            ->schema([
-                                Grid::make(1)
-                                    ->schema([
-                                        Hidden::make('create_name')
-                                            ->default(fn() => auth()->id()),
+                // Section::make('Detail PIC')
+                //     ->collapsible()
+                //     ->relationship('pic')
+                //     ->schema([
+                //         Grid::make(2)
+                //             ->schema([
+                //                 Grid::make(1)
+                //                     ->schema([
+                //                         Hidden::make('create_name')
+                //                             ->default(fn() => auth()->id()),
 
-                                        self::textInput('create_name_placeholder', 'Dibuat Oleh')
-                                            ->default(fn() => auth()->user()?->name)
-                                            ->extraAttributes([
-                                                'readonly' => true,
-                                                'style' => 'pointer-events: none;'
-                                            ]),
+                //                         self::textInput('create_name_placeholder', 'Dibuat Oleh')
+                //                             ->default(fn() => auth()->user()?->name)
+                //                             ->extraAttributes([
+                //                                 'readonly' => true,
+                //                                 'style' => 'pointer-events: none;'
+                //                             ]),
 
-                                        self::signatureInput('create_signature', ''),
-                                    ])->hiddenOn(operations: 'edit'),
-                                Grid::make(1)
-                                    ->schema([
-                                        Hidden::make('check_name')
-                                            ->default(fn() => auth()->id())
-                                            ->dehydrated(true)
-                                            ->afterStateHydrated(function ($component) {
-                                                $component->state(auth()->id());
-                                            }),
+                //                         self::signatureInput('create_signature', ''),
+                //                     ])->hiddenOn(operations: 'edit'),
+                //                 Grid::make(1)
+                //                     ->schema([
+                //                         Hidden::make('check_name')
+                //                             ->default(fn() => auth()->id())
+                //                             ->dehydrated(true)
+                //                             ->afterStateHydrated(function ($component) {
+                //                                 $component->state(auth()->id());
+                //                             }),
 
-                                        self::textInput('check_name_placeholder', 'Diperiksa Oleh')
-                                            ->placeholder(fn() => auth()->user()?->name)
-                                            ->required(false)
-                                            ->extraAttributes([
-                                                'readonly' => true,
-                                                'style' => 'pointer-events: none;'
-                                            ]),
+                //                         self::textInput('check_name_placeholder', 'Diperiksa Oleh')
+                //                             ->placeholder(fn() => auth()->user()?->name)
+                //                             ->required(false)
+                //                             ->extraAttributes([
+                //                                 'readonly' => true,
+                //                                 'style' => 'pointer-events: none;'
+                //                             ]),
 
-                                        self::signatureInput('check_signature', ''),
-                                    ])->hiddenOn(operations: 'create'),
-                            ]),
-                    ]),
+                //                         self::signatureInput('check_signature', ''),
+                //                     ])->hiddenOn(operations: 'create'),
+                //             ]),
+                //     ]),
             ]);
     }
 
@@ -269,111 +297,123 @@ class StandarisasiDrawingResource extends Resource
         ];
     }
 
-    protected static function textInput(string $fieldName, string $label): TextInput
+    public static function getEloquentQuery(): Builder
     {
-        return TextInput::make($fieldName)
-            ->label($label)
-            ->required()
-            ->maxLength(255);
-    }
-
-    protected static function selectInputSPK(): Select
-    {
-        return
-            Select::make('spk_marketing_id')
-            ->label('Nomor SPK')
-            ->relationship(
+        return parent::getEloquentQuery()
+            ->with([
                 'spk',
-                'no_spk',
-                fn($query) => $query
-                    ->whereHas('permintaan.serahTerimaBahan', function ($query) {
-                        $query->where('status_penerimaan', 'Diterima');
-                    })->whereDoesntHave('standarisasi')
-            )
-            ->placeholder('Pilin No SPK')
-            ->native(false)
-            ->searchable()
-            ->preload()
-            ->required()
-            ->reactive();
+                'identitas',
+                'pic',
+                'detail',
+                'pemeriksaan',
+            ]);
     }
 
-    protected static function selectInput(string $fieldName, string $label, string $relation, string $title): Select
-    {
-        return
-            Select::make($fieldName)
-            ->relationship($relation, $title)
-            ->label($label)
-            ->native(false)
-            ->searchable()
-            ->preload()
-            ->required()
-            ->reactive();
-    }
+    // protected static function textInput(string $fieldName, string $label): TextInput
+    // {
+    //     return TextInput::make($fieldName)
+    //         ->label($label)
+    //         ->required()
+    //         ->maxLength(255);
+    // }
 
-    protected static function selectInputOptions(string $fieldName, string $label, string $config): Select
-    {
-        return
-            Select::make($fieldName)
-            ->options(config($config))
-            ->label($label)
-            ->native(false)
-            ->searchable()
-            ->preload()
-            ->required()
-            ->reactive();
-    }
+    // protected static function selectInputSPK(): Select
+    // {
+    //     return
+    //         Select::make('spk_marketing_id')
+    //         ->label('Nomor SPK')
+    //         ->relationship(
+    //             'spk',
+    //             'no_spk',
+    //             fn($query) => $query
+    //                 ->whereHas('permintaan.serahTerimaBahan', function ($query) {
+    //                     $query->where('status_penerimaan', 'Diterima');
+    //                 })->whereDoesntHave('standarisasi')
+    //         )
+    //         ->placeholder('Pilin No SPK')
+    //         ->native(false)
+    //         ->searchable()
+    //         ->preload()
+    //         ->required()
+    //         ->reactive();
+    // }
+
+    // protected static function selectInput(string $fieldName, string $label, string $relation, string $title): Select
+    // {
+    //     return
+    //         Select::make($fieldName)
+    //         ->relationship($relation, $title)
+    //         ->label($label)
+    //         ->native(false)
+    //         ->searchable()
+    //         ->preload()
+    //         ->required()
+    //         ->reactive();
+    // }
+
+    // protected static function selectInputOptions(string $fieldName, string $label, string $config): Select
+    // {
+    //     return
+    //         Select::make($fieldName)
+    //         ->options(config($config))
+    //         ->label($label)
+    //         ->native(false)
+    //         ->searchable()
+    //         ->preload()
+    //         ->required()
+    //         ->reactive();
+    // }
 
 
-    protected static function buttonGroup(string $fieldName, string $label): ButtonGroup
-    {
-        return
-            ButtonGroup::make($fieldName)
-            ->label($label)
-            ->required()
-            ->options([
-                1 => 'Ya',
-                0 => 'Tidak',
-            ])
-            ->onColor('primary')
-            ->offColor('gray')
-            ->gridDirection('row')
-            ->default('individual');
-    }
+    // protected static function buttonGroup(string $fieldName, string $label): ButtonGroup
+    // {
+    //     return
+    //         ButtonGroup::make($fieldName)
+    //         ->label($label)
+    //         ->required()
+    //         ->options([
+    //             1 => 'Ya',
+    //             0 => 'Tidak',
+    //         ])
+    //         ->onColor('primary')
+    //         ->offColor('gray')
+    //         ->gridDirection('row')
+    //         ->default('individual');
+    // }
 
-    protected static function datePicker(string $fieldName, string $label): DatePicker
-    {
-        return
-            DatePicker::make($fieldName)
-            ->label($label)
-            ->displayFormat('M d Y')
-            ->seconds(false)
-            ->required();
-    }
+    // protected static function datePicker(string $fieldName, string $label): DatePicker
+    // {
+    //     return
+    //         DatePicker::make($fieldName)
+    //         ->label($label)
+    //         ->displayFormat('M d Y')
+    //         ->seconds(false)
+    //         ->required();
+    // }
 
-    protected static function signatureInput(string $fieldName, string $labelName): SignaturePad
-    {
-        return
-            SignaturePad::make($fieldName)
-            ->label($labelName)
-            ->exportPenColor('#0118D8')
-            ->helperText('*Harap Tandatangan di tengah area yang disediakan.')
-            ->afterStateUpdated(function ($state, $set) use ($fieldName) {
-                if (blank($state))
-                    return;
-                $path = SignatureUploader::handle($state, 'ttd_', 'Quality/StandarisasiDrawing/Signatures');
-                if ($path) {
-                    $set($fieldName, $path);
-                }
-            });
-    }
+    // protected static function signatureInput(string $fieldName, string $labelName): SignaturePad
+    // {
+    //     return
+    //         SignaturePad::make($fieldName)
+    //         ->label($labelName)
+    //         ->exportPenColor('#0118D8')
+    //         ->helperText('*Harap Tandatangan di tengah area yang disediakan.')
+    //         ->afterStateUpdated(function ($state, $set) use ($fieldName) {
+    //             if (blank($state))
+    //                 return;
+    //             $path = SignatureUploader::handle($state, 'ttd_', 'Quality/StandarisasiDrawing/Signatures');
+    //             if ($path) {
+    //                 $set($fieldName, $path);
+    //             }
+    //         });
+    // }
 
-    protected static function textColumn(string $fieldName, string $label): TextColumn
-    {
-        return
-            TextColumn::make($fieldName)
-            ->label($label)
-            ->searchable()
-            ->sortable();
-    }
+    // protected static function textColumn(string $fieldName, string $label): TextColumn
+    // {
+    //     return
+    //         TextColumn::make($fieldName)
+    //         ->label($label)
+    //         ->searchable()
+    //         ->sortable();
+    // }
 }

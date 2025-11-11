@@ -54,6 +54,8 @@ class PermintaanPembelian extends Model
 
     public static array $CACHE_KEYS = [
         'materialNonSS' => 'permintaan_pembelian_material_non_ss',
+        'materialSS' => 'permintaan_pembelian_material_ss',
+        'incomingMaterial' => 'permintaan_pembelian_incoming_material',
     ];
 
     protected static function booted()
