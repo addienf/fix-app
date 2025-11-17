@@ -89,8 +89,10 @@ class JadwalProduksiResource extends Resource
 
                 self::textColumn('pic_name', 'Nama PIC'),
 
+                self::textColumn('identifikasiProduks.no_seri', 'Nomor Seri'),
+
                 self::textColumn('tanggal', 'Tanggal Dibuat')
-                    ->formatStateUsing(fn($state) => \Carbon\Carbon::parse($state)->format('d M Y')),
+                    ->formatStateUsing(fn($state) => \Carbon\Carbon::parse($state)->format('d F Y')),
 
                 TextColumn::make('status_persetujuan')
                     ->label('Status Persetujuan')

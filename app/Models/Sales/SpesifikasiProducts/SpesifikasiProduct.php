@@ -2,16 +2,16 @@
 
 namespace App\Models\Sales\SpesifikasiProducts;
 
-use App\Models\General\Customer;
 use App\Models\Sales\SpesifikasiProducts\Pivot\SpesifikasiProductDetail;
 use App\Models\Sales\SpesifikasiProducts\Pivot\SpesifikasiProductPIC;
 use App\Models\Sales\SPKMarketings\SPKMarketing;
 use App\Models\Sales\URS;
 use App\Traits\HasCacheManager;
+use Database\Factories\Sales\SpesifikasiProducts\SpesifikasiProductFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 
 /**
  * @property string|null $id
@@ -23,6 +23,8 @@ use Illuminate\Support\Facades\Cache;
 class SpesifikasiProduct extends Model
 {
     use HasFactory, Notifiable, HasCacheManager;
+
+    protected static $factory = SpesifikasiProductFactory::class;
     protected $fillable = [
         'urs_id',
         'is_stock',
@@ -38,11 +40,9 @@ class SpesifikasiProduct extends Model
         'estimasi_pengiriman' => 'date',
     ];
 
-    protected $with = ['urs', 'pic'];
-
     public function urs()
     {
-        return $this->belongsTo(URS::class);
+        return $this->belongsTo(URS::class, 'urs_id');
     }
 
     public function details()
@@ -60,88 +60,23 @@ class SpesifikasiProduct extends Model
         return $this->hasOne(SPKMarketing::class);
     }
 
-    public function customer()
-    {
-        return $this->hasOneThrough(Customer::class, URS::class, 'id', 'id', 'urs_id', 'customer_id');
-    }
-
-    public function getSelectCacheConfig(): array
-    {
-        return [
-            [
-                'relation' => 'urs',
-                'title' => 'no_urs',
-                'limit' => 10,
-            ],
-        ];
-    }
-
-    // protected static function booted()
-    // {
-    //     static::saving(function ($model) {
-    //         if ($model->relationLoaded('pic') && $model->pic) {
-    //             if ($model->pic->accepted_signature && $model->status !== 'Diterima') {
-    //                 $model->status = 'Diterima';
-    //             } elseif ($model->pic->acknowledge_signature && $model->status !== 'Diketahui MR') {
-    //                 $model->status = 'Diketahui MR';
-    //             }
-    //         }
-    //     });
-
-    //     static::deleting(function ($model) {
-    //         foreach ($model->details as $detail) {
-    //             $detail->delete();
-    //         }
-
-    //         $model->pic?->delete();
-    //     });
-
-    //     static::saved(fn() => Cache::forget(self::CACHE_KEY_SELECT));
-    //     static::deleted(fn() => Cache::forget(self::CACHE_KEY_SELECT));
-    // }
-
-    // public static string $CACHE_KEY_SELECT = 'spesifikasi_ke_spk';
-
-    // protected static function booted()
-    // {
-    //     static::saving(function ($model) {
-    //         if ($model->relationLoaded('pic') && $model->pic) {
-    //             if ($model->pic->accepted_signature && $model->status !== 'Diterima') {
-    //                 $model->status = 'Diterima';
-    //             } elseif ($model->pic->acknowledge_signature && $model->status !== 'Diketahui MR') {
-    //                 $model->status = 'Diketahui MR';
-    //             }
-    //         }
-    //     });
-
-    //     static::deleting(function ($model) {
-    //         foreach ($model->details as $detail) {
-    //             $detail->delete();
-    //         }
-
-    //         $model->pic?->delete();
-    //     });
-
-    //     static::saved(function () {
-    //         static::clearModelCaches();
-    //     });
-
-    //     static::deleted(function () {
-    //         static::clearModelCaches();
-    //     });
-    // }
-
     public static string $CACHE_KEY_SELECT = 'spesifikasi_ke_spk';
 
     protected static function booted()
     {
         static::saving(function ($model) {
-            if ($model->relationLoaded('pic') && $model->pic) {
-                if ($model->pic->accepted_signature && $model->status !== 'Diterima') {
-                    $model->status = 'Diterima';
-                } elseif ($model->pic->acknowledge_signature && $model->status !== 'Diketahui MR') {
-                    $model->status = 'Diketahui MR';
-                }
+            if (
+                $model->pic?->accepted_signature &&
+                $model->status !== 'Diterima'
+            ) {
+                $model->status = 'Diterima';
+            }
+
+            if (
+                $model->pic?->acknowledge_signature &&
+                $model->status !== 'Diketahui MR'
+            ) {
+                $model->status = 'Diketahui MR';
             }
         });
 
@@ -151,6 +86,16 @@ class SpesifikasiProduct extends Model
             }
 
             $model->pic?->delete();
+        });
+
+        static::saved(function () {
+            static::newClearModelCaches();
+            Log::info("Spesifikasi Produk cache cleared (saved)");
+        });
+
+        static::deleted(function () {
+            static::newClearModelCaches();
+            Log::info("Spesifikasi Produk cache cleared (deleted)");
         });
     }
 }

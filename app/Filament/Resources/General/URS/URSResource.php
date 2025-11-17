@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\General\URS;
 
 use App\Filament\Resources\General\URS\URSResource\Pages;
+use App\Models\General\Customer;
 use \App\Models\Sales\URS;
 use App\Traits\HasAutoNumber;
 use App\Traits\HasSelectCache;
@@ -16,7 +17,10 @@ use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use App\Traits\SimpleFormResource;
+use Filament\Forms\Components\Select;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class URSResource extends Resource
 {
@@ -45,8 +49,7 @@ class URSResource extends Resource
                             'table' => 'urs',
                         ]),
 
-                        self::selectInputCache('customer_id', 'Nama Customer', 'customer', 'name')
-                            ->placeholder('Pilih Data Customer'),
+                        self::select(),
 
                         self::textareaInput('permintaan_khusus', 'Remark Permintaan Khusus')
                     ])
@@ -98,5 +101,38 @@ class URSResource extends Resource
             'create' => Pages\CreateURS::route('/create'),
             'edit' => Pages\EditURS::route('/{record}/edit'),
         ];
+    }
+
+    private static function select()
+    {
+        return
+            Select::make('customer_id')
+            ->label('Customer')
+            ->placeholder('Pilih Data Customer')
+            ->searchable()
+            ->getSearchResultsUsing(function (string $search) {
+                $key = Customer::$CACHE_PREFIXES['search_customer'] . md5($search);
+
+                return Cache::rememberForever($key, function () use ($search) {
+                    return Customer::query()
+                        ->where('name', 'like', "%{$search}%")
+                        ->orderBy('id', 'desc')
+                        ->limit(10)
+                        ->pluck('name', 'id');
+                });
+            })
+            ->options(function () {
+                $keySelect = Customer::$CACHE_KEYS['select_customer'];
+
+                return Cache::rememberForever($keySelect, function () {
+                    return Customer::query()
+                        ->orderBy('id', 'desc')
+                        ->limit(10)
+                        ->pluck('name', 'id');
+                });
+            })
+            ->native(false)
+            ->preload(false)
+            ->required();
     }
 }

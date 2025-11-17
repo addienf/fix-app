@@ -14,6 +14,8 @@ return new class extends Migration
         Schema::create('kelengkapan_material_ss_details', function (Blueprint $table) {
             $table->id();
             $table->foreignId('kelengkapan_material_id')->constrained('kelengkapan_material_ss')->onDelete('cascade');
+            $table->string('nama_alat');
+            $table->string('nomor_seri');
             $table->json('details');
             $table->timestamps();
         });

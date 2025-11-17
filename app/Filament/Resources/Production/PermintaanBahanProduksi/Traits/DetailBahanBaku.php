@@ -36,15 +36,8 @@ trait DetailBahanBaku
 
                                 self::textareaInput('keperluan_barang', 'Keperluan Barang')->rows(1),
 
-                                // Textarea::make('keperluan_barang')
-                                //     ->required()
-                                //     ->rows(1)
-                                //     ->label('Keperluan Barang')
-
                             ])
-                            // ->deletable(false)
                             ->reorderable(false)
-                            // ->addable(false)
                             ->columnSpanFull()
                     ])
             ]);

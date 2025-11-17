@@ -7,6 +7,7 @@ use App\Models\Production\Jadwal\Pivot\JadwalProduksiDetail as PivotJadwalProduk
 use App\Models\Production\Jadwal\Pivot\JadwalProduksiPIC;
 use App\Models\Production\Jadwal\Pivot\SumberDaya as PivotSumberDaya;
 use App\Models\Production\Jadwal\Pivot\TimelineProduksi;
+use App\Models\Production\PermintaanBahanProduksi\PermintaanAlatDanBahan;
 use App\Models\Sales\SPKMarketings\SPKMarketing;
 use App\Traits\HasCacheManager;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -22,7 +23,7 @@ use Illuminate\Support\Facades\Storage;
  */
 class JadwalProduksi extends Model
 {
-    use HasFactory;
+    use HasFactory, HasCacheManager;
 
     protected $fillable = [
         'spk_marketing_id',
@@ -36,6 +37,11 @@ class JadwalProduksi extends Model
     public function spk()
     {
         return $this->belongsTo(SPKMarketing::class, 'spk_marketing_id');
+    }
+
+    public function permintaanBahanProduksi()
+    {
+        return $this->hasOne(PermintaanAlatDanBahan::class, 'jadwal_id');
     }
 
     public function details()
@@ -62,6 +68,10 @@ class JadwalProduksi extends Model
     {
         return $this->hasOne(JadwalProduksiPIC::class);
     }
+
+    public static array $CACHE_KEYS = [
+        'permintaanBahanProduksi' => 'jadwal_permintaan_produksi',
+    ];
 
     protected static function booted()
     {

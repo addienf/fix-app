@@ -32,9 +32,9 @@ class KelengkapanMaterialSS extends Model
         return $this->hasOne(KelengkapanMaterialSSPIC::class, 'kelengkapan_material_id');
     }
 
-    public function detail()
+    public function details()
     {
-        return $this->hasOne(KelengkapanMaterialSSDetail::class, 'kelengkapan_material_id');
+        return $this->hasMany(KelengkapanMaterialSSDetail::class, 'kelengkapan_material_id');
     }
 
     protected static function booted()
@@ -67,6 +67,14 @@ class KelengkapanMaterialSS extends Model
             if ($model->identitas) {
                 $model->identitas->delete();
             }
+        });
+
+        static::saved(function () {
+            SPKMarketing::clearModelCaches();
+        });
+
+        static::deleted(function () {
+            SPKMarketing::clearModelCaches();
         });
     }
 }
