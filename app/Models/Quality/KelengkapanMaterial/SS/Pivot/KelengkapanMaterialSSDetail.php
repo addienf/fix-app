@@ -14,6 +14,8 @@ class KelengkapanMaterialSSDetail extends Model
 
     protected $fillable = [
         'kelengkapan_material_id',
+        'nama_alat',
+        'nomor_seri',
         'details',
     ];
 

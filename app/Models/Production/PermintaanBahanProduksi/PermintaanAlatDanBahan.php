@@ -2,6 +2,7 @@
 
 namespace App\Models\Production\PermintaanBahanProduksi;
 
+use App\Models\Production\Jadwal\JadwalProduksi;
 use App\Models\Production\PermintaanBahanProduksi\Pivot\PermintaanAlatDanBahanDetail;
 use App\Models\Production\PermintaanBahanProduksi\Pivot\PermintaanAlatDanBahanPIC;
 use App\Models\Sales\SPKMarketings\SPKMarketing;
@@ -26,7 +27,7 @@ class PermintaanAlatDanBahan extends Model
     use HasFactory, HasCacheManager;
 
     protected $fillable = [
-        'spk_marketing_id',
+        'jadwal_id',
         'tanggal',
         'no_surat',
         'dari',
@@ -39,9 +40,14 @@ class PermintaanAlatDanBahan extends Model
         'tanggal' => 'date',
     ];
 
-    public function spk()
+    // public function spk()
+    // {
+    //     return $this->belongsTo(SPKMarketing::class, 'spk_marketing_id');
+    // }
+
+    public function jadwalProduksi()
     {
-        return $this->belongsTo(SPKMarketing::class, 'spk_marketing_id');
+        return $this->belongsTo(JadwalProduksi::class, 'jadwal_id');
     }
 
     public function details()
@@ -102,11 +108,11 @@ class PermintaanAlatDanBahan extends Model
         });
 
         static::saved(function () {
-            SPKMarketing::clearModelCaches();
+            JadwalProduksi::clearModelCaches();
         });
 
         static::deleted(function () {
-            SPKMarketing::clearModelCaches();
+            JadwalProduksi::clearModelCaches();
         });
     }
 }

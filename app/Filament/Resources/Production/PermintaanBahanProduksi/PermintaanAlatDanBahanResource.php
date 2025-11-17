@@ -49,7 +49,7 @@ class PermintaanAlatDanBahanResource extends Resource
                     ->disabledOn('edit')
                     ->default('Belum Diproses'),
 
-                self::informasiUmumSection(),
+                self::informasiUmumSection($form),
 
                 self::detailBahanBakuSection(),
 
@@ -84,52 +84,28 @@ class PermintaanAlatDanBahanResource extends Resource
         return $table
             ->columns([
                 //
-                self::textColumn('spk.no_spk', 'No SPK'),
+                self::textColumn('jadwalProduksi.no_surat', 'Nomor Surat Perencanaan Produksi')->alignCenter(),
 
-                self::textColumn('no_surat', 'Nomor Surat'),
+                self::textColumn('no_surat', 'Nomor Surat')->alignCenter(),
 
-                self::textColumn('tanggal', 'Tanggal Dibuat')->date('d M Y'),
+                self::textColumn('tanggal', 'Tanggal Dibuat')->date('d F Y')->alignCenter(),
 
-                TextColumn::make('status')
-                    ->label('Status Stock Barang')
+                self::textColumn('status', 'Status Stock Barang')
                     ->badge()
-                    ->color(function ($state) {
-                        return match ($state) {
-                            'Tersedia' => 'success',
-                            'Tidak Tersedia' => 'danger',
-                            default => 'gray',
-                        };
-                    })
+                    ->color(fn($state) => [
+                        'Tidak Tersedia' => 'danger',
+                        'Tersedia' => 'success',
+                    ][$state] ?? 'gray')
                     ->alignCenter(),
 
                 self::textColumn('status_penyerahan', 'Status')
                     ->badge()
                     ->color(fn($state) => [
-                        'Diketahui' => 'danger',
-                        'Diterima' => 'warning',
+                        'Belum Diserahkan' => 'danger',
+                        'Diketahui' => 'warning',
                         'Diserahkan' => 'success',
                     ][$state] ?? 'gray')
                     ->alignCenter(),
-
-                // TextColumn::make('status_penyerahan')
-                //     ->label('Status Penyerahan')
-                //     ->badge()
-                //     ->color(function ($record) {
-                //         $penyelesaian = $record->status_penyerahan;
-                //         $persetujuan = $record->status_persetujuan;
-
-                //         if ($penyelesaian === 'Diserahkan') {
-                //             return 'success';
-                //         }
-
-                //         if ($penyelesaian !== 'Diketahui') {
-                //             return 'danger';
-                //         }
-
-                //         return 'warning';
-                //     })
-                //     ->alignCenter(),
-
             ])
             ->filters([
                 //
@@ -180,9 +156,11 @@ class PermintaanAlatDanBahanResource extends Resource
     {
         return parent::getEloquentQuery()
             ->with([
-                'spk',
+                'jadwalProduksi',
                 'details',
                 'pic',
+                'permintaanBahanWBB',
+                'serahTerimaBahan'
             ]);
     }
 }

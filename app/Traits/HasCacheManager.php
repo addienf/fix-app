@@ -12,6 +12,7 @@ use App\Models\Sales\SpesifikasiProducts\SpesifikasiProduct;
 use App\Models\Sales\SPKMarketings\SPKMarketing;
 use App\Models\Warehouse\Pelabelan\QCPassed;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 
 trait HasCacheManager
 {
@@ -28,29 +29,27 @@ trait HasCacheManager
         }
     }
 
-    public static function clearDependentCaches(): void
+    public static function newClearModelCaches(): void
     {
-        $dependents = [
-            SpesifikasiProduct::class,
-            SPKMarketing::class,
-            JadwalProduksi::class,
-            // PermintaanAlatDanBahan::class,
-            // PengecekanMaterialSS::class,
-            // PengecekanMaterialElectrical::class,
-            // PenyerahanProdukJadi::class,
-            // QCPassed::class,
-            // Ketidaksesuaian::class,
-        ];
-
-        foreach ($dependents as $model) {
-            if (method_exists($model, 'clearModelCaches')) {
-                $model::clearModelCaches();
+        // Hapus key static biasa
+        if (isset(static::$CACHE_KEYS) && is_array(static::$CACHE_KEYS)) {
+            foreach (static::$CACHE_KEYS as $key) {
+                Cache::forget($key);
             }
         }
-    }
-    protected static function bootHasCacheManager(): void
-    {
-        static::saved(fn() => static::clearDependentCaches());
-        static::deleted(fn() => static::clearDependentCaches());
+
+        // Hapus semua cache search berdasarkan prefix
+        if (isset(static::$CACHE_PREFIXES) && is_array(static::$CACHE_PREFIXES)) {
+
+            foreach (static::$CACHE_PREFIXES as $prefix) {
+                $files = glob(storage_path("framework/cache/data/*{$prefix}*"));
+
+                if ($files) {
+                    foreach ($files as $file) {
+                        @unlink($file);
+                    }
+                }
+            }
+        }
     }
 }

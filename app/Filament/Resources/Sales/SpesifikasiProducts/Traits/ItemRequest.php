@@ -35,10 +35,6 @@ trait ItemRequest
                                 self::textInput('quantity', 'Banyak Produk')
                                     ->numeric()
                                     ->required()
-                                    ->minValue(0)
-                                    ->maxValue(9)
-                                    ->rule('integer|max:9|min:0')
-                                // ->helperText('Masukkan angka 0 sampai 9 saja.')
                             ]),
 
                         Grid::make()
