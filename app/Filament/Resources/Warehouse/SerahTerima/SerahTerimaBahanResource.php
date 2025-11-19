@@ -45,7 +45,7 @@ class SerahTerimaBahanResource extends Resource
                 Hidden::make('status_penerimaan')
                     ->default('Belum Diterima'),
 
-                self::informasiUmumSection(),
+                self::informasiUmumSection($form),
 
                 self::detailBahanSection(),
 
@@ -74,11 +74,16 @@ class SerahTerimaBahanResource extends Resource
         return $table
             ->columns([
                 //
-                self::textColumn('permintaanBahanPro.no_surat', 'No Surat Production'),
+                // self::textColumn('permintaanBahanPro.no_surat', 'No Surat Production'),
+                TextColumn::make('peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.spk.no_spk')
+                    ->label('No SPK Marketing'),
+
+                TextColumn::make('peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.identifikasiProduks.no_seri')
+                    ->label('No Seri'),
 
                 self::textColumn('no_surat', 'Nomor Surat Serah Terima Bahan'),
 
-                self::textColumn('tanggal', 'Tanggal Dibuat')->date('d M Y'),
+                self::textColumn('tanggal', 'Tanggal Dibuat')->date('d F Y'),
 
                 TextColumn::make('status_penerimaan')
                     ->label('Status Penerimaan')
@@ -137,9 +142,11 @@ class SerahTerimaBahanResource extends Resource
     {
         return parent::getEloquentQuery()
             ->with([
-                'permintaanBahanPro',
+                // 'permintaanBahanPro',
+                'peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.spk',
+                'peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.identifikasiProduks',
                 'details',
-                'pic'
+                'pic',
             ]);
     }
 }

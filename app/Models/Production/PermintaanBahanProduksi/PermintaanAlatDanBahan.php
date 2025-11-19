@@ -5,6 +5,7 @@ namespace App\Models\Production\PermintaanBahanProduksi;
 use App\Models\Production\Jadwal\JadwalProduksi;
 use App\Models\Production\PermintaanBahanProduksi\Pivot\PermintaanAlatDanBahanDetail;
 use App\Models\Production\PermintaanBahanProduksi\Pivot\PermintaanAlatDanBahanPIC;
+use App\Models\Production\SPK\SPKVendor;
 use App\Models\Sales\SPKMarketings\SPKMarketing;
 use App\Models\Warehouse\PermintaanBahanWBB\PermintaanBahan;
 use App\Models\Warehouse\SerahTerima\SerahTerimaBahan;
@@ -68,6 +69,11 @@ class PermintaanAlatDanBahan extends Model
     public function serahTerimaBahan()
     {
         return $this->hasOne(SerahTerimaBahan::class, 'permintaan_bahan_pro_id');
+    }
+
+    public function spkVendor()
+    {
+        return $this->hasOne(SPKVendor::class, 'permintaan_bahan_pro_id');
     }
 
     public static array $CACHE_KEYS = [

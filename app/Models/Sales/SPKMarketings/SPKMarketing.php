@@ -132,18 +132,26 @@ class SPKMarketing extends Model
     }
 
     public static array $CACHE_KEYS = [
-        'jadwal_produksi'       => 'spk_marketing_ke_jadwal',
-        'permintaan_bahan'      => 'spk_marketing_ke_permintaan',
-        'standarisasi'          => 'spk_marketing_ke_stadarisasi',
-        'kelengkapanSS'          => 'spk_marketing_ke_kelengkapan_ss',
-        'pengecekan_ss'         => 'spk_marketing_ke_ss',
-        'pengecekan_electrical' => 'spk_marketing_ke_electrical',
-        'produk_jadi'           => 'spk_marketing_ke_produk_jadi',
-        'pengecekan_performa'   => 'spk_marketing_ke_performa',
-        'qc_passed'             => 'spk_marketing_ke_qc_passed',
-        'vendor'                => 'spk_marketing_ke_vendor',
-        'ketidaksesuaian'       => 'spk_marketing_ke_ketidaksesuaian',
+        'select_spk' => 'spk_select_default',
     ];
+
+    public static array $CACHE_PREFIXES = [
+        'search_spk' => 'spk_search_',
+    ];
+
+    // public static array $CACHE_KEYS = [
+    //     'jadwal_produksi'       => 'spk_marketing_ke_jadwal',
+    //     'permintaan_bahan'      => 'spk_marketing_ke_permintaan',
+    //     'standarisasi'          => 'spk_marketing_ke_stadarisasi',
+    //     'kelengkapanSS'          => 'spk_marketing_ke_kelengkapan_ss',
+    //     'pengecekan_ss'         => 'spk_marketing_ke_ss',
+    //     'pengecekan_electrical' => 'spk_marketing_ke_electrical',
+    //     'produk_jadi'           => 'spk_marketing_ke_produk_jadi',
+    //     'pengecekan_performa'   => 'spk_marketing_ke_performa',
+    //     'qc_passed'             => 'spk_marketing_ke_qc_passed',
+    //     'vendor'                => 'spk_marketing_ke_vendor',
+    //     'ketidaksesuaian'       => 'spk_marketing_ke_ketidaksesuaian',
+    // ];
 
     protected static function booted()
     {
@@ -160,13 +168,6 @@ class SPKMarketing extends Model
             $spk->pic?->delete();
         });
 
-        // static::saved(function () {
-        //     SpesifikasiProduct::clearModelCaches();
-        // });
-
-        // static::deleted(function () {
-        //     SpesifikasiProduct::clearModelCaches();
-        // });
         static::saved(function () {
             static::newClearModelCaches();
             Log::info("SPK Marketing cache cleared (saved)");

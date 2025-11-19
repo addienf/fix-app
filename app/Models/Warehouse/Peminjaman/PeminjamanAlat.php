@@ -2,8 +2,10 @@
 
 namespace App\Models\Warehouse\Peminjaman;
 
+use App\Models\Production\SPK\SPKVendor;
 use App\Models\Warehouse\Peminjaman\Pivot\PeminjamanAlatDetail;
 use App\Models\Warehouse\Peminjaman\Pivot\PeminjamanAlatPIC;
+use App\Models\Warehouse\SerahTerima\SerahTerimaBahan;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -11,6 +13,7 @@ class PeminjamanAlat extends Model
 {
     use HasFactory;
     protected $fillable = [
+        'spk_vendor_id',
         'tanggal_pinjam',
         'tanggal_kembali',
     ];
@@ -19,6 +22,16 @@ class PeminjamanAlat extends Model
         'tanggal_pinjam' => 'date',
         'tanggal_kembali' => 'date',
     ];
+
+    public function spkVendor()
+    {
+        return $this->belongsTo(SPKVendor::class, 'spk_vendor_id');
+    }
+
+    public function serahTerimaBahan()
+    {
+        return $this->hasOne(SerahTerimaBahan::class, 'peminjaman_alat_id');
+    }
 
     public function details()
     {

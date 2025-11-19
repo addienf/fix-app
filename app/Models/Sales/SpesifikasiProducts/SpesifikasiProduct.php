@@ -60,7 +60,13 @@ class SpesifikasiProduct extends Model
         return $this->hasOne(SPKMarketing::class);
     }
 
-    public static string $CACHE_KEY_SELECT = 'spesifikasi_ke_spk';
+    public static array $CACHE_KEYS = [
+        'select_spesifikasi' => 'spesifikasi_select_default',
+    ];
+
+    public static array $CACHE_PREFIXES = [
+        'search_spesifikasi' => 'spesifikasi_search_',
+    ];
 
     protected static function booted()
     {
@@ -90,12 +96,12 @@ class SpesifikasiProduct extends Model
 
         static::saved(function () {
             static::newClearModelCaches();
-            Log::info("Spesifikasi Produk cache cleared (saved)");
+            // Log::info("Spesifikasi Produk cache cleared (saved)");
         });
 
         static::deleted(function () {
             static::newClearModelCaches();
-            Log::info("Spesifikasi Produk cache cleared (deleted)");
+            // Log::info("Spesifikasi Produk cache cleared (deleted)");
         });
     }
 }

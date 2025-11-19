@@ -36,8 +36,8 @@ class SPKMarketingFactory extends Factory
             $folder = 'Sales/SPK/Signatures/' . $spk->id;
 
             /** Generate file */
-            $createName = $this->faker->name();
-            $receiveName = $this->faker->name();
+            $createName = 1;
+            $receiveName = 1;
 
             $createFile = $folder . '/create-' . uniqid() . '.png';
             $receiveFile = $folder . '/receive-' . uniqid() . '.png';

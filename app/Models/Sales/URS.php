@@ -41,12 +41,12 @@ class URS extends Model
     {
         static::saved(function () {
             static::newClearModelCaches();
-            Log::info("URS cache cleared (saved)");
+            // Log::info("URS cache cleared (saved)");
         });
 
         static::deleted(function () {
             static::newClearModelCaches();
-            Log::info("URS cache cleared (deleted)");
+            // Log::info("URS cache cleared (deleted)");
         });
     }
 }
