@@ -47,7 +47,7 @@ class JadwalProduksiResource extends Resource
                 Hidden::make('status_persetujuan')
                     ->default('Belum Disetujui'),
 
-                self::informasiUmumSection(),
+                self::informasiUmumSection($form),
 
                 self::identifikasiProdukSection(),
 

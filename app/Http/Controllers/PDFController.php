@@ -100,7 +100,7 @@ class PDFController extends Controller
 
     public function pdfPermintaanAlatBahan($id)
     {
-        $permintaan_alat_bahan = PermintaanAlatDanBahan::with(['spk', 'details', 'pic', 'pic.dibuatName', 'pic.diketahuiName', 'pic.diserahkanName'])->findOrFail($id);
+        $permintaan_alat_bahan = PermintaanAlatDanBahan::with(['jadwalProduksi', 'details', 'pic', 'pic.dibuatName', 'pic.diketahuiName', 'pic.diserahkanName'])->findOrFail($id);
 
         return view('pdf.production.pdfPermintaanAlatBahan', compact('permintaan_alat_bahan'));
     }

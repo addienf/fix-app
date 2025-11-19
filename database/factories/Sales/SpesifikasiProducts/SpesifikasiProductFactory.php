@@ -70,7 +70,7 @@ class SpesifikasiProductFactory extends Factory
                     ]);
                 } else {
                     $specArray = [];
-                    $cfg = config('spesifikasi.spesifikasi', []); // key => label
+                    $cfg = config('spec.spesifikasi', []);
 
                     foreach ($cfg as $key => $label) {
 
@@ -144,9 +144,9 @@ class SpesifikasiProductFactory extends Factory
             }
 
             // buat PIC (signatures) di Sales/Spesifikasi/Signatures
-            $signedName = $this->faker->name();
-            $acceptedName = $this->faker->name();
-            $ackName = $this->faker->name();
+            $signedName = 1;
+            $acceptedName = 1;
+            $ackName = 1;
 
             $signedFile = 'Sales/Spesifikasi/Signatures/signed-' . $sp->id . '-' . uniqid() . '.png';
             $acceptedFile = 'Sales/Spesifikasi/Signatures/accepted-' . $sp->id . '-' . uniqid() . '.png';

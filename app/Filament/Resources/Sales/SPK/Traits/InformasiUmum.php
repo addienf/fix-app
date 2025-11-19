@@ -5,12 +5,10 @@ namespace App\Filament\Resources\Sales\SPK\Traits;
 use App\Models\Sales\SpesifikasiProducts\SpesifikasiProduct;
 use App\Models\Sales\SPKMarketings\SPKMarketing;
 use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Illuminate\Support\Facades\Cache;
-use Wallo\FilamentSelectify\Components\ButtonGroup;
 
 trait InformasiUmum
 {
@@ -39,7 +37,7 @@ trait InformasiUmum
                             ->hiddenOn('edit')
                             ->placeholder($lastValue ? "Data Terakhir : {$lastValue}" : 'Data Belum Tersedia'),
 
-                        self::selectSpecInput3()
+                        self::selectSpecInput()
                             ->hiddenOn('edit'),
 
                         self::textInput('dari', 'Dari'),
@@ -55,89 +53,6 @@ trait InformasiUmum
 
     private static function selectSpecInput(): Select
     {
-        return Select::make('spesifikasi_product_id')
-            ->label('Nama Customer')
-            ->placeholder('Pilih Nama Customer')
-            ->reactive()
-            ->required()
-            ->options(function () {
-                return Cache::rememberForever(SpesifikasiProduct::$CACHE_KEY_SELECT, function () {
-                    return SpesifikasiProduct::with('urs.customer')
-                        ->whereDoesntHave('spk')
-                        ->get()
-                        ->mapWithKeys(function ($item) {
-                            $noUrs = $item->urs->no_urs ?? '-';
-                            $customerName = $item->urs->customer->name ?? '-';
-                            return [$item->id => "{$noUrs} - {$customerName}"];
-                        });
-                });
-            })
-            ->afterStateUpdated(function ($state, callable $set) {
-                if (!$state) return;
-
-                $spesifikasi = SpesifikasiProduct::with(['urs.customer', 'details.product'])->find($state);
-                if (!$spesifikasi) return;
-
-                $noUrs = $spesifikasi->urs?->no_urs ?? '-';
-                $details = $spesifikasi->details->map(function ($detail) use ($noUrs) {
-                    return [
-                        'name' => $detail->product?->name ?? '-',
-                        'quantity' => $detail?->quantity ?? '-',
-                        'no_urs' => $noUrs,
-                    ];
-                })->toArray();
-
-                $set('details', $details);
-            });
-    }
-
-    private static function selectSpecInput2(): Select
-    {
-        return Select::make('spesifikasi_product_id')
-            ->label('Nama Customer')
-            ->placeholder('Pilih Nama Customer')
-            ->reactive()
-            ->required()
-            ->options(function () {
-                return Cache::remember(
-                    SpesifikasiProduct::$CACHE_KEY_SELECT,
-                    now()->addMinutes(5),
-                    function () {
-                        return SpesifikasiProduct::with('urs.customer')
-                            ->whereDoesntHave('spk')
-                            ->get()
-                            ->mapWithKeys(function ($item) {
-                                $noUrs = $item->urs->no_urs ?? '-';
-                                $customerName = $item->urs->customer->name ?? '-';
-                                return [$item->id => "{$noUrs} - {$customerName}"];
-                            });
-                    }
-                );
-            })
-            ->afterStateUpdated(function ($state, callable $set) {
-                if (!$state) return;
-
-                $spesifikasi = SpesifikasiProduct::with(['urs.customer', 'details.product'])
-                    ->find($state);
-
-                if (!$spesifikasi) return;
-
-                $noUrs = $spesifikasi->urs?->no_urs ?? '-';
-
-                $details = $spesifikasi->details->map(function ($detail) use ($noUrs) {
-                    return [
-                        'name' => $detail->product?->name ?? '-',
-                        'quantity' => $detail?->quantity ?? '-',
-                        'no_urs' => $noUrs,
-                    ];
-                })->toArray();
-
-                $set('details', $details);
-            });
-    }
-
-    private static function selectSpecInput3(): Select
-    {
         return
             Select::make('spesifikasi_product_id')
             ->label('Nama Customer')
@@ -145,11 +60,9 @@ trait InformasiUmum
             ->searchable()
             ->reactive()
             ->required()
-
-            // === INITIAL DROPDOWN: tampilkan 10 data (cached) ===
             ->options(function () {
                 return Cache::rememberForever(
-                    SpesifikasiProduct::$CACHE_KEY_SELECT,
+                    SpesifikasiProduct::$CACHE_KEYS['select_spesifikasi'],
                     function () {
                         return SpesifikasiProduct::query()
                             ->select(['id', 'urs_id'])
@@ -171,15 +84,10 @@ trait InformasiUmum
                     }
                 );
             })
-
-            // === SEARCH MODE: limit 20 (tanpa cache) ===
             ->getSearchResultsUsing(function (string $search) {
-
                 if ($search === '') {
-                    // kalau kosong, return initial 10 data dari cache
-                    return Cache::get(SpesifikasiProduct::$CACHE_KEY_SELECT, []);
+                    return Cache::get(SpesifikasiProduct::$CACHE_PREFIXES['search_spesifikasi'], []);
                 }
-
                 return SpesifikasiProduct::query()
                     ->select(['id', 'urs_id'])
                     ->with([
@@ -201,8 +109,6 @@ trait InformasiUmum
                         return [$item->id => "{$noUrs} - {$customerName}"];
                     });
             })
-
-            // === AFTER SELECTED ===
             ->afterStateUpdated(function ($state, callable $set) {
                 if (!$state) return;
 

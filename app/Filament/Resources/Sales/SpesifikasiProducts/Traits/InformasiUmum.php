@@ -2,14 +2,12 @@
 
 namespace App\Filament\Resources\Sales\SpesifikasiProducts\Traits;
 
-use App\Models\General\Customer;
 use App\Models\Sales\URS;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Log;
 use Wallo\FilamentSelectify\Components\ButtonGroup;
 
 trait InformasiUmum

@@ -3,34 +3,18 @@
 namespace App\Filament\Resources\Warehouse\Peminjaman;
 
 use App\Filament\Resources\Warehouse\Peminjaman\PeminjamanAlatResource\Pages;
-use App\Filament\Resources\Warehouse\Peminjaman\PeminjamanAlatResource\RelationManagers;
 use App\Filament\Resources\Warehouse\Peminjaman\Traits\DataPeminjamAlat;
 use App\Filament\Resources\Warehouse\Peminjaman\Traits\Peminjaman;
 use App\Models\Warehouse\Peminjaman\PeminjamanAlat;
-use App\Services\SignatureUploader;
 use App\Traits\HasSignature;
 use Filament\Actions\Action;
-use Filament\Forms\Components\Section;
-use Filament\Forms;
-use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Fieldset;
-use Filament\Forms\Components\Grid;
-use Filament\Forms\Components\Hidden;
-use Filament\Forms\Components\Repeater;
-use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Actions\ActionGroup;
-use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Icetalker\FilamentTableRepeater\Forms\Components\TableRepeater;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Illuminate\Support\Str;
-use Saade\FilamentAutograph\Forms\Components\SignaturePad;
 
 class PeminjamanAlatResource extends Resource
 {
@@ -60,17 +44,20 @@ class PeminjamanAlatResource extends Resource
         return $table
             ->columns([
                 //
-                self::textColumn('tanggal_pinjam', 'Tanggal Pinjam')->date('d M Y'),
+                TextColumn::make('spkVendor.permintaanBahanProduksi.jadwalProduksi.spk.no_spk')
+                    ->label('No SPK Marketing'),
+
+                // TextColumn::make('spkVendor.no_spk_vendor')
+                //     ->label('No SPK Vendor'),
+
+                TextColumn::make('spkVendor.permintaanBahanProduksi.jadwalProduksi.identifikasiProduks.no_seri')
+                    ->label('No Seri'),
 
                 self::textColumn('pic.department', 'Department'),
 
-                self::textColumn('details.nama_sparepart', 'Nama Sparepart'),
+                self::textColumn('tanggal_pinjam', 'Tanggal Pinjam')->date('d F Y'),
 
-                self::textColumn('details.model', 'Model'),
-
-                self::textColumn('details.jumlah', 'Jumlah'),
-
-                self::textColumn('tanggal_kembali', 'Tanggal Kembali')->date('d M Y'),
+                self::textColumn('tanggal_kembali', 'Tanggal Kembali')->date('d F Y'),
 
                 self::textColumn('pic.nama_peminjam', 'Nama Peminjam'),
             ])
@@ -120,8 +107,10 @@ class PeminjamanAlatResource extends Resource
     {
         return parent::getEloquentQuery()
             ->with([
+                'spkVendor.permintaanBahanProduksi.jadwalProduksi.spk',
+                'spkVendor.permintaanBahanProduksi.jadwalProduksi.identifikasiProduks',
                 'details',
-                'pic'
+                'pic',
             ]);
     }
 }

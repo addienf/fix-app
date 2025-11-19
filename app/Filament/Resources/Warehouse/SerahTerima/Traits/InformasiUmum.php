@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Warehouse\SerahTerima\Traits;
 
 use App\Models\Production\PermintaanBahanProduksi\PermintaanAlatDanBahan;
+use App\Models\Warehouse\Peminjaman\PeminjamanAlat;
 use App\Models\Warehouse\SerahTerima\SerahTerimaBahan;
 use App\Traits\HasAutoNumber;
 use App\Traits\SimpleFormResource;
@@ -14,22 +15,26 @@ use Illuminate\Support\Facades\Cache;
 trait InformasiUmum
 {
     use SimpleFormResource, HasAutoNumber;
-    protected static function informasiUmumSection(): Section
+    protected static function informasiUmumSection($form): Section
     {
+        $isEdit = $form->getOperation() === 'edit';
+
         return Section::make('Informasi Umum')
             ->collapsible()
             ->schema([
 
-                Grid::make(2)
+                Grid::make($isEdit ? 3 : 2)
                     ->schema([
-                        self::select(),
+                        self::select()
+                            ->columnSpanFull()
+                            ->hiddenOn('edit'),
 
                         self::autoNumberField2('no_surat', 'No Surat', [
                             'prefix' => 'QKS',
                             'section' => 'WBB',
                             'type' => 'SERAHTERIMA',
                             'table' => 'serah_terima_bahans',
-                        ]),
+                        ])->hiddenOn('edit'),
 
                         self::dateInput('tanggal', 'Tanggal')
                             ->required(),
@@ -44,46 +49,98 @@ trait InformasiUmum
 
     protected static function select(): Select
     {
-        return Select::make('permintaan_bahan_pro_id')
-            ->relationship(
-                'permintaanBahanPro',
-                'no_surat',
-                fn($query) => $query->whereIn('id', Cache::rememberForever(
-                    PermintaanAlatDanBahan::$CACHE_KEYS['serahTerimaBahan'],
-                    fn() => PermintaanAlatDanBahan::where('status_penyerahan', 'Diserahkan')
-                        ->where('status', 'Tersedia')
-                        ->whereDoesntHave('serahTerimaBahan')
-                        ->pluck('id')
-                        ->toArray()
-                ))
-            )
-            ->label('Nomor Surat')
-            ->placeholder('Pilih No Surat Dari Permintaan Alat dan Bahan Produksi')
-            ->columnSpanFull()
-            ->native(false)
+        return
+            Select::make('peminjaman_alat_id')
+            ->label('Nomor Surat / No Seri')
+            ->placeholder('Pilih Nomor Peminjaman')
             ->searchable()
+            ->native(false)
             ->preload()
             ->required()
             ->reactive()
+            ->options(function () {
+                return PeminjamanAlat::with([
+                    'spkVendor.permintaanBahanProduksi.jadwalProduksi.spk',
+                    'spkVendor.permintaanBahanProduksi.jadwalProduksi.identifikasiProduks'
+                ])
+                    ->whereDoesntHave('serahTerimaBahan')
+                    ->latest()
+                    ->get()
+                    ->mapWithKeys(function ($pinjam) {
+
+                        $jadwal = $pinjam->spkVendor->permintaanBahanProduksi->jadwalProduksi;
+
+                        $spkNo = $jadwal->spk->no_spk ?? '-';
+                        $noSeri = $jadwal->identifikasiProduks
+                            ->pluck('no_seri')
+                            ->filter()
+                            ->implode(', ') ?: '-';
+
+                        return [
+                            $pinjam->id => "{$spkNo} - {$noSeri}",
+                        ];
+                    });
+            })
             ->afterStateUpdated(function ($state, callable $set) {
-                if (!$state)
-                    return;
+                if (!$state) return;
 
-                $pab = PermintaanAlatDanBahan::with('details')->find($state);
+                $pinjam = PeminjamanAlat::with('spkVendor.permintaanBahanProduksi.details')->find($state);
+                if (!$pinjam) return;
 
-                if (!$pab)
-                    return;
+                // dd($pinjam);
 
-                $detailBahan = $pab->details?->map(function ($detail) {
-                    return [
-                        'bahan_baku' => $detail->bahan_baku ?? '',
-                        'spesifikasi' => $detail->spesifikasi ?? '',
-                        'jumlah' => $detail->jumlah ?? 0,
-                        'keperluan_barang' => $detail->keperluan_barang ?? '',
-                    ];
-                })->toArray();
+                $details = $pinjam->spkVendor->permintaanBahanProduksi->details
+                    ->map(fn($d) => [
+                        'bahan_baku' => $d->bahan_baku ?? '',
+                        'spesifikasi' => $d->spesifikasi ?? '',
+                        'jumlah' => $d->jumlah ?? 0,
+                        'keperluan_barang' => $d->keperluan_barang ?? '',
+                    ])
+                    ->toArray();
 
-                $set('details', $detailBahan);
+                $set('details', $details);
             });
+
+        // Select::make('permintaan_bahan_pro_id')
+        // ->relationship(
+        //     'permintaanBahanPro',
+        //     'no_surat',
+        //     fn($query) => $query->whereIn('id', Cache::rememberForever(
+        //         PermintaanAlatDanBahan::$CACHE_KEYS['serahTerimaBahan'],
+        //         fn() => PermintaanAlatDanBahan::where('status_penyerahan', 'Diserahkan')
+        //             ->where('status', 'Tersedia')
+        //             ->whereDoesntHave('serahTerimaBahan')
+        //             ->pluck('id')
+        //             ->toArray()
+        //     ))
+        // )
+        // ->label('Nomor Surat')
+        // ->placeholder('Pilih No Surat Dari Permintaan Alat dan Bahan Produksi')
+        // ->columnSpanFull()
+        // ->native(false)
+        // ->searchable()
+        // ->preload()
+        // ->required()
+        // ->reactive()
+        // ->afterStateUpdated(function ($state, callable $set) {
+        //     if (!$state)
+        //         return;
+
+        //     $pab = PermintaanAlatDanBahan::with('details')->find($state);
+
+        //     if (!$pab)
+        //         return;
+
+        //     $detailBahan = $pab->details?->map(function ($detail) {
+        //         return [
+        //             'bahan_baku' => $detail->bahan_baku ?? '',
+        //             'spesifikasi' => $detail->spesifikasi ?? '',
+        //             'jumlah' => $detail->jumlah ?? 0,
+        //             'keperluan_barang' => $detail->keperluan_barang ?? '',
+        //         ];
+        //     })->toArray();
+
+        //     $set('details', $detailBahan);
+        // });
     }
 }

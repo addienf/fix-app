@@ -18,7 +18,7 @@ class DatabaseSeeder extends Seeder
             ProductSeeder::class,
             CustomerSeeder::class,
             URSSeeder::class,
-            SpecProSeeder::class,
+            // SpecProSeeder::class,
             // SPKMarketingSeeder::class
         ]);
     }

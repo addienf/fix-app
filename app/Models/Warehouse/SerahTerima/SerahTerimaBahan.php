@@ -3,6 +3,7 @@
 namespace App\Models\Warehouse\SerahTerima;
 
 use App\Models\Production\PermintaanBahanProduksi\PermintaanAlatDanBahan;
+use App\Models\Warehouse\Peminjaman\PeminjamanAlat;
 use App\Models\Warehouse\SerahTerima\Pivot\SerahTerimaBahanDetail;
 use App\Models\Warehouse\SerahTerima\Pivot\SerahTerimaBahanPIC;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -13,7 +14,7 @@ class SerahTerimaBahan extends Model
     use HasFactory;
 
     protected $fillable = [
-        'permintaan_bahan_pro_id',
+        'peminjaman_alat_id',
         'tanggal',
         'no_surat',
         'dari',
@@ -25,9 +26,14 @@ class SerahTerimaBahan extends Model
         'tanggal' => 'date',
     ];
 
-    public function permintaanBahanPro()
+    // public function permintaanBahanPro()
+    // {
+    //     return $this->belongsTo(PermintaanAlatDanBahan::class, 'permintaan_bahan_pro_id');
+    // }
+
+    public function peminjamanAlat()
     {
-        return $this->belongsTo(PermintaanAlatDanBahan::class, 'permintaan_bahan_pro_id');
+        return $this->belongsTo(PeminjamanAlat::class, 'peminjaman_alat_id');
     }
 
     public function details()

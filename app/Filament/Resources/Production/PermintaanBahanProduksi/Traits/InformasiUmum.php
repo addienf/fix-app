@@ -63,82 +63,182 @@ trait InformasiUmum
             ]);
     }
 
+    // protected static function selectInputPermintaanBahan(): Select
+    // {
+    //     return
+    //         Select::make('jadwal_id')
+    //         ->label('Nomor Surat Perencanaan Produksi')
+    //         ->searchable()
+    //         ->native(false)
+    //         ->lazy()
+    //         ->preload()
+    //         ->required()
+    //         ->options(function () {
+    //             return Cache::rememberForever(JadwalProduksi::$CACHE_KEYS['permintaanBahanProduksi'], function () {
+    //                 return JadwalProduksi::with(['spk', 'identifikasiProduks'])
+    //                     ->where('status_persetujuan', 'Disetujui')
+    //                     ->whereDoesntHave('permintaanBahanProduksi')
+    //                     ->latest()
+    //                     ->take(10)
+    //                     ->get()
+    //                     ->mapWithKeys(function ($jadwal) {
+    //                         $spkNo = $jadwal->spk->no_spk ?? '-';
+    //                         $no_surat = $jadwal->no_surat ?? '-';
+    //                         $noSeri = $jadwal->identifikasiProduks->pluck('no_seri')->filter()->implode(', ') ?: '-';
+    //                         return [$jadwal->id => "{$no_surat} - {$spkNo} - {$noSeri}"];
+    //                     });
+    //             });
+    //         })
+    //         ->getSearchResultsUsing(function (string $search) {
+    //             return JadwalProduksi::with(['spk', 'identifikasiProduks'])
+    //                 ->where('status_persetujuan', 'Disetujui')
+    //                 ->whereDoesntHave('permintaanBahanProduksi')
+    //                 ->where(function ($query) use ($search) {
+    //                     $query->where('no_surat', 'like', "%{$search}%")
+    //                         ->orWhereHas('spk', fn($q) => $q->where('no_spk', 'like', "%{$search}%"))
+    //                         ->orWhereHas('identifikasiProduks', fn($q) => $q->where('no_seri', 'like', "%{$search}%"));
+    //                 })
+    //                 ->latest()
+    //                 ->limit(20)
+    //                 ->get()
+    //                 ->mapWithKeys(function ($jadwal) {
+    //                     $spkNo = $jadwal->spk->no_spk ?? '-';
+    //                     $no_surat = $jadwal->no_surat ?? '-';
+    //                     $noSeri = $jadwal->identifikasiProduks->pluck('no_seri')->filter()->implode(', ') ?: '-';
+    //                     return [$jadwal->id => "{$no_surat} - {$spkNo} - {$noSeri}"];
+    //                 })
+    //                 ->toArray();
+    //         })
+    //         ->getOptionLabelUsing(function ($value) {
+    //             $jadwal = JadwalProduksi::with(['spk', 'identifikasiProduks'])->find($value);
+    //             if (!$jadwal) return '-';
+    //             $spkNo = $jadwal->spk->no_spk ?? '-';
+    //             $no_surat = $jadwal->no_surat ?? '-';
+    //             $noSeri = $jadwal->identifikasiProduks->pluck('no_seri')->filter()->implode(', ') ?: '-';
+    //             return "{$no_surat} - {$spkNo} - {$noSeri}";
+    //         })
+    //         ->afterStateUpdated(function ($state, callable $set) {
+    //             if (!$state)
+    //                 return;
+
+    //             $jadwal = JadwalProduksi::with('spk')->find($state);
+
+    //             $set('dari', $jadwal->spk->dari);
+    //             $set('kepada', $jadwal->spk->kepada);
+
+    //             if ($jadwal) {
+    //                 $sumbers = $jadwal->sumbers->map(function ($sumber) {
+    //                     return [
+    //                         'bahan_baku' => $sumber->bahan_baku ?? '-',
+    //                         'spesifikasi' => $sumber->spesifikasi ?? '-',
+    //                         'jumlah' => $sumber->jumlah ?? '-',
+    //                         'keperluan_barang' => $sumber->keperluan ?? '-',
+    //                     ];
+    //                 })->toArray();
+    //                 $set('details', $sumbers);
+    //             }
+    //         });
+    // }
     protected static function selectInputPermintaanBahan(): Select
     {
         return
             Select::make('jadwal_id')
             ->label('Nomor Surat Perencanaan Produksi')
+            ->placeholder('Pilih Nomor Surat')
             ->searchable()
             ->native(false)
             ->lazy()
             ->preload()
             ->required()
             ->options(function () {
-                return Cache::rememberForever(JadwalProduksi::$CACHE_KEYS['permintaanBahanProduksi'], function () {
+                return Cache::rememberForever(JadwalProduksi::$CACHE_KEYS['select_jadwal'], function () {
                     return JadwalProduksi::with(['spk', 'identifikasiProduks'])
                         ->where('status_persetujuan', 'Disetujui')
                         ->whereDoesntHave('permintaanBahanProduksi')
                         ->latest()
-                        ->take(10)
+                        ->limit(10)
                         ->get()
                         ->mapWithKeys(function ($jadwal) {
                             $spkNo = $jadwal->spk->no_spk ?? '-';
-                            $no_surat = $jadwal->no_surat ?? '-';
-                            $noSeri = $jadwal->identifikasiProduks->pluck('no_seri')->filter()->implode(', ') ?: '-';
-                            return [$jadwal->id => "{$no_surat} - {$spkNo} - {$noSeri}"];
+                            $noSurat = $jadwal->no_surat ?? '-';
+                            $noSeri   = $jadwal->identifikasiProduks
+                                ->pluck('no_seri')
+                                ->filter()
+                                ->implode(', ') ?: '-';
+
+                            return [
+                                $jadwal->id => "{$noSurat} - {$spkNo} - {$noSeri}"
+                            ];
                         });
                 });
             })
             ->getSearchResultsUsing(function (string $search) {
+                if ($search === '') {
+                    return Cache::get(JadwalProduksi::$CACHE_PREFIXES['search_jadwal'], []);
+                }
+
                 return JadwalProduksi::with(['spk', 'identifikasiProduks'])
                     ->where('status_persetujuan', 'Disetujui')
                     ->whereDoesntHave('permintaanBahanProduksi')
                     ->where(function ($query) use ($search) {
-                        $query->where('no_surat', 'like', "%{$search}%")
-                            ->orWhereHas('spk', fn($q) => $q->where('no_spk', 'like', "%{$search}%"))
-                            ->orWhereHas('identifikasiProduks', fn($q) => $q->where('no_seri', 'like', "%{$search}%"));
+                        $query->where('no_surat', 'LIKE', "%{$search}%")
+                            ->orWhereHas('spk', fn($q) => $q->where('no_spk', 'LIKE', "%{$search}%"))
+                            ->orWhereHas('identifikasiProduks', fn($q) => $q->where('no_seri', 'LIKE', "%{$search}%"));
                     })
                     ->latest()
                     ->limit(20)
                     ->get()
                     ->mapWithKeys(function ($jadwal) {
                         $spkNo = $jadwal->spk->no_spk ?? '-';
-                        $no_surat = $jadwal->no_surat ?? '-';
-                        $noSeri = $jadwal->identifikasiProduks->pluck('no_seri')->filter()->implode(', ') ?: '-';
-                        return [$jadwal->id => "{$no_surat} - {$spkNo} - {$noSeri}"];
+                        $noSurat = $jadwal->no_surat ?? '-';
+                        $noSeri   = $jadwal->identifikasiProduks
+                            ->pluck('no_seri')
+                            ->filter()
+                            ->implode(', ') ?: '-';
+
+                        return [
+                            $jadwal->id => "{$noSurat} - {$spkNo} - {$noSeri}"
+                        ];
                     })
                     ->toArray();
             })
             ->getOptionLabelUsing(function ($value) {
                 $jadwal = JadwalProduksi::with(['spk', 'identifikasiProduks'])->find($value);
+
                 if (!$jadwal) return '-';
+
                 $spkNo = $jadwal->spk->no_spk ?? '-';
-                $no_surat = $jadwal->no_surat ?? '-';
-                $noSeri = $jadwal->identifikasiProduks->pluck('no_seri')->filter()->implode(', ') ?: '-';
-                return "{$no_surat} - {$spkNo} - {$noSeri}";
+                $noSurat = $jadwal->no_surat ?? '-';
+                $noSeri   = $jadwal->identifikasiProduks
+                    ->pluck('no_seri')
+                    ->filter()
+                    ->implode(', ') ?: '-';
+
+                return "{$noSurat} - {$spkNo} - {$noSeri}";
             })
             ->afterStateUpdated(function ($state, callable $set) {
-                if (!$state)
-                    return;
+                if (!$state) return;
 
-                $jadwal = JadwalProduksi::with('spk')->find($state);
+                $jadwal = JadwalProduksi::with(['spk', 'sumbers'])->find($state);
 
-                $set('dari', $jadwal->spk->dari);
-                $set('kepada', $jadwal->spk->kepada);
+                if (!$jadwal) return;
 
-                if ($jadwal) {
-                    $sumbers = $jadwal->sumbers->map(function ($sumber) {
-                        return [
-                            'bahan_baku' => $sumber->bahan_baku ?? '-',
-                            'spesifikasi' => $sumber->spesifikasi ?? '-',
-                            'jumlah' => $sumber->jumlah ?? '-',
-                            'keperluan_barang' => $sumber->keperluan ?? '-',
-                        ];
-                    })->toArray();
-                    $set('details', $sumbers);
-                }
+                $set('dari', $jadwal->spk->dari ?? '-');
+                $set('kepada', $jadwal->spk->kepada ?? '-');
+
+                $details = $jadwal->sumbers->map(function ($sumber) {
+                    return [
+                        'bahan_baku'       => $sumber->bahan_baku ?? '-',
+                        'spesifikasi'      => $sumber->spesifikasi ?? '-',
+                        'jumlah'           => $sumber->jumlah ?? '-',
+                        'keperluan_barang' => $sumber->keperluan ?? '-',
+                    ];
+                })->toArray();
+
+                $set('details', $details);
             });
     }
+
 
     protected static function buttonGroup(string $fieldName, string $label): ButtonGroup
     {
