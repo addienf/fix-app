@@ -3,39 +3,23 @@
 namespace App\Filament\Resources\Quality\PengecekanMaterial\SS;
 
 use App\Filament\Resources\Quality\PengecekanMaterial\SS\PengecekanMaterialSSResource\Pages;
-use App\Filament\Resources\Quality\PengecekanMaterial\SS\PengecekanMaterialSSResource\RelationManagers;
+use App\Filament\Resources\Quality\PengecekanMaterial\SS\Traits\ChamberIdentification;
+use App\Filament\Resources\Quality\PengecekanMaterial\SS\Traits\TabelKelengkapanMaterial;
 use App\Models\Quality\PengecekanMaterial\SS\PengecekanMaterialSS;
-use App\Models\Sales\SPKMarketings\SPKMarketing;
-use App\Services\SignatureUploader;
+use App\Traits\HasSignature;
 use Filament\Actions\Action;
-use Filament\Forms;
-use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Card;
-use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Hidden;
-use Filament\Forms\Components\Radio;
-use Filament\Forms\Components\Repeater;
-use Filament\Forms\Components\Section;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Actions\ActionGroup;
-use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Icetalker\FilamentTableRepeater\Forms\Components\TableRepeater;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Saade\FilamentAutograph\Forms\Components\SignaturePad;
-use Suleymanozev\FilamentRadioButtonField\Forms\Components\RadioButton;
-use Wallo\FilamentSelectify\Components\ButtonGroup;
-use Wallo\FilamentSelectify\Components\ToggleButton;
 
 class PengecekanMaterialSSResource extends Resource
 {
+    use ChamberIdentification, TabelKelengkapanMaterial, HasSignature;
     protected static ?string $model = PengecekanMaterialSS::class;
     protected static ?string $navigationIcon = 'heroicon-o-check-circle';
     protected static ?int $navigationSort = 15;
@@ -54,232 +38,41 @@ class PengecekanMaterialSSResource extends Resource
 
     public static function form(Form $form): Form
     {
-        $defaultParts = collect(config('pengecekanSS'))
-            ->map(function ($group) {
-                return [
-                    'mainPart' => $group['mainPart'],
-                    'parts' => collect($group['parts'])
-                        ->map(fn($part) => ['part' => $part])
-                        ->toArray(),
-                ];
-            })
-            ->toArray();
-
-        $isEdit = $form->getOperation() === 'edit';
-
         return $form
             ->schema([
                 //
                 Hidden::make('status_penyelesaian')
                     ->default('Belum Diterima'),
 
-                Section::make('Chamber Identification')
-                    ->collapsible()
-                    ->schema([
+                self::getChamberIdentificationSection($form),
 
-                        Grid::make($isEdit ? 2 : 3)
-                            ->schema([
+                self::getTabelKelengkapanMaterialSection(),
 
-                                self::selectInputSPK()
-                                    ->hiddenOn('edit'),
+                self::getNote(),
 
-                                self::textInput('tipe', 'Type/Model')
-                                    ->extraAttributes([
-                                        'readonly' => true,
-                                        'style' => 'pointer-events: none;'
-                                    ]),
-
-                                self::textInput('ref_document', 'Ref Document')
-                                    ->extraAttributes([
-                                        'readonly' => true,
-                                        'style' => 'pointer-events: none;'
-                                    ]),
-
-                            ]),
-
-                    ]),
-
-                Section::make('Tabel Kelengkapan Material')
-                    ->collapsible()
-                    ->relationship('detail')
-                    ->schema([
-
-                        Repeater::make('details')
-                            ->label('')
-                            ->default($defaultParts)
-                            ->schema([
-                                Grid::make(3)
-                                    ->schema([
-                                        TextInput::make('mainPart')
-                                            ->label('Main Part')
-                                            ->readonly(fn($get) => filled($get('mainPart')))
-                                            ->extraAttributes(
-                                                fn($get) => filled($get('mainPart'))
-                                                    ? ['style' => 'pointer-events: none; background-color: #f3f4f6;']
-                                                    : []
-                                            ),
-
-                                        ButtonGroup::make('mainPart_result')
-                                            ->label('Result')
-                                            ->options([
-                                                1 => 'Yes',
-                                                0 => 'No',
-                                            ])
-                                            ->onColor('primary')
-                                            ->offColor('gray')
-                                            ->gridDirection('row'),
-
-                                        Select::make('mainPart_status')
-                                            ->label("Attachment Defect and\nRepaired Status")
-                                            ->options([
-                                                'ok' => 'OK',
-                                                'h' => 'Hold',
-                                                'r' => 'Repaired',
-                                            ])
-                                            ->required(),
-                                    ]),
-
-                                TableRepeater::make('parts')
-                                    ->label('')
-                                    ->schema([
-                                        TextInput::make('part')
-                                            ->label('Part')
-                                            ->readonly(fn($get) => filled($get('part')))
-                                            ->extraAttributes(
-                                                fn($get) => filled($get('part'))
-                                                    ? ['style' => 'pointer-events: none; background-color: #f3f4f6;']
-                                                    : []
-                                            ),
-
-                                        ButtonGroup::make('result')
-                                            ->label('Result')
-                                            ->options([
-                                                1 => 'Yes',
-                                                0 => 'No',
-                                            ])
-                                            ->onColor('primary')
-                                            ->offColor('gray')
-                                            ->gridDirection('row'),
-
-                                        Select::make('status')
-                                            ->label('Attachment Defect and Repaired Status')
-                                            ->options([
-                                                'ok' => 'OK',
-                                                'h' => 'Hold',
-                                                'r' => 'Repaired',
-                                            ])
-                                            ->required(),
-                                    ])
-                                    ->addActionLabel('Tambah Detail Part Pengecekan Material')
-                                    ->reorderable(false),
-                            ])
-                            ->addActionLabel('Tambah Detail Main Part Pengecekan Material')
-                            ->reorderable(false)
-                    ]),
-
-                Card::make('')
-                    ->schema([
-
-                        Textarea::make('note')
-                            ->required()
-                            ->label('Note')
-                            ->columnSpanFull()
-
-                    ]),
-
-                Section::make('PIC')
-                    ->collapsible()
-                    ->relationship('pic')
-                    ->schema([
-                        Grid::make(3)
-                            ->schema([
-                                Grid::make(1)
-                                    ->schema([
-
-                                        Hidden::make('inspected_name')
-                                            ->default(fn() => auth()->id()),
-
-                                        self::textInput('inspected_name_placeholder', 'Inspected By')
-                                            ->default(fn() => auth()->user()?->name)
-                                            ->extraAttributes([
-                                                'readonly' => true,
-                                                'style' => 'pointer-events: none;'
-                                            ]),
-
-                                        // self::textInput('inspected_name', 'Inspected By'),
-
-                                        self::signatureInput('inspected_signature', ''),
-
-                                        self::datePicker('inspected_date', '')
-                                            ->default(now())
-                                            ->required(),
-
-                                    ])->hiddenOn(operations: 'edit'),
-
-                                Grid::make(1)
-                                    ->schema([
-
-                                        Hidden::make('accepted_name')
-                                            ->default(fn() => auth()->id())
-                                            ->dehydrated(true)
-                                            ->afterStateHydrated(function ($component) {
-                                                $component->state(auth()->id());
-                                            }),
-
-                                        self::textInput('accepted_name_placeholder', 'Accepted By')
-                                            ->default(fn() => auth()->user()?->name)
-                                            ->placeholder(fn() => auth()->user()?->name)
-                                            ->required(false)
-                                            ->extraAttributes([
-                                                'readonly' => true,
-                                                'style' => 'pointer-events: none;'
-                                            ]),
-
-                                        // self::textInput('accepted_name', 'Accepted By'),
-
-                                        self::signatureInput('accepted_signature', ''),
-
-                                        self::datePicker('accepted_date', '')
-                                            ->required(),
-
-                                    ])->hidden(
-                                        fn($operation, $record) =>
-                                        $operation === 'create' || filled($record?->accepted_signature)
-                                    ),
-
-                                Grid::make(1)
-                                    ->schema([
-
-                                        Hidden::make('approved_name')
-                                            ->default(fn() => auth()->id())
-                                            ->dehydrated(true)
-                                            ->afterStateHydrated(function ($component) {
-                                                $component->state(auth()->id());
-                                            }),
-
-                                        self::textInput('approved_name_placeholder', 'Approved By')
-                                            ->default(fn() => auth()->user()?->name)
-                                            ->placeholder(fn() => auth()->user()?->name)
-                                            ->required(false)
-                                            ->extraAttributes([
-                                                'readonly' => true,
-                                                'style' => 'pointer-events: none;'
-                                            ]),
-
-                                        // self::textInput('approved_name', 'Approved By'),
-
-                                        self::signatureInput('approved_signature', ''),
-
-                                        self::datePicker('approved_date', '')
-                                            ->required(),
-
-                                    ])->hidden(
-                                        fn($operation, $record) =>
-                                        $operation === 'create' || blank($record?->accepted_signature) || filled($record?->approved_signature)
-                                    ),
-                            ]),
-                    ]),
-
+                static::signatureSection(
+                    [
+                        [
+                            'prefix' => 'inspected',
+                            'role' => 'Inspected by',
+                            'hideLogic' => fn($operation) => $operation === 'edit',
+                        ],
+                        [
+                            'prefix' => 'accepted',
+                            'role' => 'Accepted by',
+                            'hideLogic' => fn($operation, $record) =>
+                            $operation === 'create' || filled($record?->accepted_signature)
+                        ],
+                        [
+                            'prefix' => 'approved',
+                            'role' => 'Approved by',
+                            'hideLogic' => fn($operation, $record) =>
+                            $operation === 'create' || blank($record?->accepted_signature) || filled($record?->approved_signature)
+                        ],
+                    ],
+                    title: 'PIC',
+                    uploadPath: 'Quality/PengecekanMaterial/SS/Signatures'
+                ),
             ]);
     }
 
@@ -288,7 +81,13 @@ class PengecekanMaterialSSResource extends Resource
         return $table
             ->columns([
                 //
-                self::textColumn('spk.no_spk', 'No SPK'),
+                // self::textColumn('spk.no_spk', 'No SPK'),
+
+                TextColumn::make('kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.spk.no_spk')
+                    ->label('No SPK Marketing'),
+
+                TextColumn::make('kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.identifikasiProduks.no_seri')
+                    ->label('No Seri'),
 
                 self::textColumn('tipe', 'Type/Model'),
 
@@ -352,106 +151,14 @@ class PengecekanMaterialSSResource extends Resource
         ];
     }
 
-    protected static function textInput(string $fieldName, string $label): TextInput
+    public static function getEloquentQuery(): Builder
     {
-        return TextInput::make($fieldName)
-            ->label($label)
-            ->required()
-            ->maxLength(255);
-    }
-
-    protected static function selectInput(string $fieldName, string $label, string $relation, string $title): Select
-    {
-        return
-            Select::make($fieldName)
-            ->relationship($relation, $title)
-            ->label($label)
-            ->native(false)
-            ->searchable()
-            ->preload()
-            ->required()
-            ->reactive();
-    }
-
-    protected static function selectInputSPK(): Select
-    {
-        return
-            Select::make('spk_marketing_id')
-            ->label('Nomor SPK')
-            ->relationship(
-                'spk',
-                'no_spk',
-                fn($query) => $query
-                    ->whereHas('kelengkapanSS', function ($query) {
-                        $query->where('status_penyelesaian', 'Disetujui');
-                    })->whereDoesntHave('pengecekanSS')
-            )
-            ->placeholder('Pilin No SPK')
-            ->native(false)
-            ->searchable()
-            ->preload()
-            ->required()
-            ->reactive()
-            ->afterStateUpdated(function ($state, callable $set, callable $get) {
-                if (!$state) return;
-
-                $spk = SPKMarketing::with('kelengkapanSS')->find($state);
-
-                if (!$spk) return;
-
-                $tipe = $spk->kelengkapanSS?->tipe ?? '-';
-                $ref_document = $spk->kelengkapanSS?->ref_document ?? '-';
-
-                $set('tipe', $tipe);
-                $set('ref_document', $ref_document);
-            });
-    }
-
-    protected static function selectInputOptions(string $fieldName, string $label, string $config): Select
-    {
-        return
-            Select::make($fieldName)
-            ->options(config($config))
-            ->label($label)
-            ->native(false)
-            ->searchable()
-            ->preload()
-            ->required()
-            ->reactive();
-    }
-
-    protected static function datePicker(string $fieldName, string $label): DatePicker
-    {
-        return
-            DatePicker::make($fieldName)
-            ->label($label)
-            ->displayFormat('M d Y')
-            ->seconds(false);
-    }
-
-    protected static function signatureInput(string $fieldName, string $labelName): SignaturePad
-    {
-        return
-            SignaturePad::make($fieldName)
-            ->label($labelName)
-            ->exportPenColor('#0118D8')
-            ->helperText('*Harap Tandatangan di tengah area yang disediakan.')
-            ->afterStateUpdated(function ($state, $set) use ($fieldName) {
-                if (blank($state))
-                    return;
-                $path = SignatureUploader::handle($state, 'ttd_', 'Quality/PengecekanMaterial/SS/Signatures');
-                if ($path) {
-                    $set($fieldName, $path);
-                }
-            });
-    }
-
-    protected static function textColumn(string $fieldName, string $label): TextColumn
-    {
-        return
-            TextColumn::make($fieldName)
-            ->label($label)
-            ->searchable()
-            ->sortable();
+        return parent::getEloquentQuery()
+            ->with([
+                'kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.spk',
+                'kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.identifikasiProduks',
+                'pic',
+                'detail',
+            ]);
     }
 }

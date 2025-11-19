@@ -5,6 +5,7 @@ namespace App\Models\Production\Penyerahan\PenyerahanElectrical;
 use App\Models\Production\Penyerahan\PenyerahanElectrical\Pivot\PenerimaElectrical;
 use App\Models\Production\Penyerahan\PenyerahanElectrical\Pivot\PenyerahanElectricalPIC;
 use App\Models\Production\Penyerahan\PenyerahanElectrical\Pivot\SebelumSerahTerima;
+use App\Models\Production\SPK\SPKQuality;
 use App\Models\Quality\PengecekanMaterial\SS\PengecekanMaterialSS;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -32,6 +33,11 @@ class PenyerahanElectrical extends Model
     public function pengecekanSS()
     {
         return $this->belongsTo(PengecekanMaterialSS::class, 'pengecekan_material_id');
+    }
+
+    public function spkQC()
+    {
+        return $this->hasOne(SPKQuality::class, 'penyerahan_electrical_id');
     }
 
     public function pic()

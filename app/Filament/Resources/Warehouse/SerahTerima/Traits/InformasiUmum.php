@@ -47,7 +47,7 @@ trait InformasiUmum
             ]);
     }
 
-    protected static function select(): Select
+    private static function select(): Select
     {
         return
             Select::make('peminjaman_alat_id')
@@ -87,8 +87,6 @@ trait InformasiUmum
                 $pinjam = PeminjamanAlat::with('spkVendor.permintaanBahanProduksi.details')->find($state);
                 if (!$pinjam) return;
 
-                // dd($pinjam);
-
                 $details = $pinjam->spkVendor->permintaanBahanProduksi->details
                     ->map(fn($d) => [
                         'bahan_baku' => $d->bahan_baku ?? '',
@@ -100,47 +98,5 @@ trait InformasiUmum
 
                 $set('details', $details);
             });
-
-        // Select::make('permintaan_bahan_pro_id')
-        // ->relationship(
-        //     'permintaanBahanPro',
-        //     'no_surat',
-        //     fn($query) => $query->whereIn('id', Cache::rememberForever(
-        //         PermintaanAlatDanBahan::$CACHE_KEYS['serahTerimaBahan'],
-        //         fn() => PermintaanAlatDanBahan::where('status_penyerahan', 'Diserahkan')
-        //             ->where('status', 'Tersedia')
-        //             ->whereDoesntHave('serahTerimaBahan')
-        //             ->pluck('id')
-        //             ->toArray()
-        //     ))
-        // )
-        // ->label('Nomor Surat')
-        // ->placeholder('Pilih No Surat Dari Permintaan Alat dan Bahan Produksi')
-        // ->columnSpanFull()
-        // ->native(false)
-        // ->searchable()
-        // ->preload()
-        // ->required()
-        // ->reactive()
-        // ->afterStateUpdated(function ($state, callable $set) {
-        //     if (!$state)
-        //         return;
-
-        //     $pab = PermintaanAlatDanBahan::with('details')->find($state);
-
-        //     if (!$pab)
-        //         return;
-
-        //     $detailBahan = $pab->details?->map(function ($detail) {
-        //         return [
-        //             'bahan_baku' => $detail->bahan_baku ?? '',
-        //             'spesifikasi' => $detail->spesifikasi ?? '',
-        //             'jumlah' => $detail->jumlah ?? 0,
-        //             'keperluan_barang' => $detail->keperluan_barang ?? '',
-        //         ];
-        //     })->toArray();
-
-        //     $set('details', $detailBahan);
-        // });
     }
 }

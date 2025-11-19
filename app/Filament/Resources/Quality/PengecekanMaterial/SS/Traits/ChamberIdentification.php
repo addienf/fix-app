@@ -1,0 +1,195 @@
+<?php
+
+namespace App\Filament\Resources\Quality\PengecekanMaterial\SS\Traits;
+
+use App\Models\Quality\KelengkapanMaterial\SS\KelengkapanMaterialSS;
+use App\Models\Quality\Standarisasi\StandarisasiDrawing;
+use App\Traits\SimpleFormResource;
+use Filament\Forms\Components\Card;
+use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
+
+trait ChamberIdentification
+{
+    use SimpleFormResource;
+    protected static function getChamberIdentificationSection($form): Section
+    {
+        $isEdit = $form->getOperation() === 'edit';
+
+        return
+            Section::make('Chamber Identification')
+            ->collapsible()
+            ->schema([
+
+                Grid::make($isEdit ? 2 : 3)
+                    ->schema([
+
+                        self::getSelect()
+                            ->hiddenOn('edit'),
+
+                        self::textInput('tipe', 'Type/Model')
+                            ->extraAttributes([
+                                'readonly' => true,
+                                'style' => 'pointer-events: none;'
+                            ]),
+
+                        self::textInput('ref_document', 'Ref Document'),
+                        // ->extraAttributes([
+                        //     'readonly' => true,
+                        //     'style' => 'pointer-events: none;'
+                        // ]),
+
+                    ]),
+
+            ]);
+    }
+
+    private static function getSelect()
+    {
+        return
+            Select::make('kelengkapan_material_id')
+            ->label('Nomor SPK / No Seri')
+            ->placeholder('Pilih Standarisasi')
+            ->searchable()
+            ->native(false)
+            ->preload()
+            ->reactive()
+            ->required()
+            ->options(
+                fn() =>
+                KelengkapanMaterialSS::with([
+                    'standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.spk',
+                    'standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.identifikasiProduks',
+                ])
+                    ->latest()
+                    ->limit(10)
+                    ->get()
+                    ->mapWithKeys(function ($std) {
+
+                        $jadwal = $std->standarisasiDrawing
+                            ->serahTerimaWarehouse
+                            ->peminjamanAlat
+                            ->spkVendor
+                            ->permintaanBahanProduksi
+                            ->jadwalProduksi;
+
+                        $spkNo = $jadwal->spk->no_spk ?? '-';
+
+                        $seri = $jadwal->identifikasiProduks
+                            ->pluck('no_seri')
+                            ->filter()
+                            ->implode(', ') ?: '-';
+
+                        return [
+                            $std->id => "{$spkNo} - {$seri}",
+                        ];
+                    })
+            )
+            // ->getSearchResultsUsing(function ($search) {
+            //     return StandarisasiDrawing::with([
+            //         'serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.spk',
+            //         'serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.identifikasiProduks',
+            //     ])
+            //         ->whereHas(
+            //             'serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.spk',
+            //             fn($q) =>
+            //             $q->where('no_spk', 'like', "%{$search}%")
+            //         )
+            //         ->limit(10)
+            //         ->get()
+            //         ->mapWithKeys(function ($std) {
+
+            //             $jadwal = $std->serahTerimaWarehouse
+            //                 ->peminjamanAlat
+            //                 ->spkVendor
+            //                 ->permintaanBahanProduksi
+            //                 ->jadwalProduksi;
+
+            //             $spkNo = $jadwal->spk->no_spk ?? '-';
+
+            //             $seri = $jadwal->identifikasiProduks
+            //                 ->pluck('no_seri')
+            //                 ->filter()
+            //                 ->implode(', ') ?: '-';
+
+            //             return [
+            //                 $std->id => "{$spkNo} - {$seri}",
+            //             ];
+            //         })
+            //         ->toArray();
+            // })
+            // ->getOptionLabelUsing(function ($value) {
+            //     $std = StandarisasiDrawing::with([
+            //         'serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.spk',
+            //         'serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.identifikasiProduks',
+            //     ])->find($value);
+
+            //     if (!$std) return '-';
+
+            //     $jadwal = $std->serahTerimaWarehouse
+            //         ->peminjamanAlat
+            //         ->spkVendor
+            //         ->permintaanBahanProduksi
+            //         ->jadwalProduksi;
+
+            //     $spkNo = $jadwal->spk->no_spk ?? '-';
+
+            //     $seri = $jadwal->identifikasiProduks
+            //         ->pluck('no_seri')
+            //         ->filter()
+            //         ->implode(', ') ?: '-';
+
+            //     return "{$spkNo} - {$seri}";
+            // })
+            ->afterStateUpdated(function ($state, callable $set) {
+                if (!$state) return;
+
+                $kelengkapan = KelengkapanMaterialSS::with([
+                    'standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.spk'
+                ])->find($state);
+
+                $no_order =
+                    $kelengkapan
+                    ?->standarisasiDrawing
+                    ?->serahTerimaWarehouse
+                    ?->peminjamanAlat
+                    ?->spkVendor
+                    ?->permintaanBahanProduksi
+                    ?->jadwalProduksi
+                    ?->spk
+                    ?->no_order
+                    ?? '-';
+
+                $tipe =
+                    $kelengkapan
+                    ?->standarisasiDrawing
+                    ?->serahTerimaWarehouse
+                    ?->peminjamanAlat
+                    ?->spkVendor
+                    ?->permintaanBahanProduksi
+                    ?->jadwalProduksi
+                    ?->identifikasiProduks
+                    ?->first()
+                    ?->tipe
+                    ?? '-';
+
+                $set('no_order_temp', $no_order);
+                $set('tipe', $tipe);
+            });
+    }
+
+    public static function getNote()
+    {
+        return Card::make('')
+            ->schema([
+
+                Textarea::make('note')
+                    ->required()
+                    ->label('Note')
+                    ->columnSpanFull()
+
+            ]);
+    }
+}

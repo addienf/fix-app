@@ -29,25 +29,25 @@ trait TabelKelengkapanMaterial
                     ->label('')
                     ->schema([
 
-                        // TextInput::make('part')
-                        //     ->label('Part')
-                        //     ->readonly(fn($get) => filled($get('part')))
-                        //     ->extraAttributes(
-                        //         fn($get) => filled($get('part'))
-                        //             ? ['style' => 'pointer-events: none; background-color: #f3f4f6;']
-                        //             : []
-                        //     ),
+                        TextInput::make('part')
+                            ->label('Part')
+                            ->readonly(fn($get) => filled($get('part')))
+                            ->extraAttributes(
+                                fn($get) => filled($get('part'))
+                                    ? ['style' => 'pointer-events: none; background-color: #f3f4f6;']
+                                    : []
+                            ),
 
-                        // self::buttonGroup('result', 'Result'),
+                        self::buttonGroup('result', 'Result'),
 
-                        // Select::make('select')
-                        //     ->label('Keterangan')
-                        //     ->options([
-                        //         'ok' => 'OK',
-                        //         'h' => 'Hold',
-                        //         'r' => 'Repaired',
-                        //     ])
-                        //     ->required(),
+                        Select::make('select')
+                            ->label('Keterangan')
+                            ->options([
+                                'ok' => 'OK',
+                                'h' => 'Hold',
+                                'r' => 'Repaired',
+                            ])
+                            ->required(),
 
                     ])
                     ->default($defaultParts)
@@ -117,66 +117,66 @@ trait TabelKelengkapanMaterial
     //         ]);
     // }
 
-    protected static function getTabelKelengkapanMaterialSection2(): Section
-    {
-        $defaultParts = collect(config('kelengkapanSS.parts'))
-            ->map(fn($part) => ['part' => $part])
-            ->toArray();
+    // protected static function getTabelKelengkapanMaterialSection2(): Section
+    // {
+    //     $defaultParts = collect(config('kelengkapanSS.parts'))
+    //         ->map(fn($part) => ['part' => $part])
+    //         ->toArray();
 
-        return Section::make('Tabel Kelengkapan Material')
-            ->collapsible()
-            ->schema([
-                // 🔹 Repeater utama = relasi hasMany "details"
-                Repeater::make('details')
-                    ->relationship('details') // penting! ini relasi ke model detail
-                    ->label('Daftar Produk')
-                    ->schema([
-                        Grid::make(2)
-                            ->schema([
-                                TextInput::make('nama_alat')
-                                    ->label('Nama Produk')
-                                    ->required(),
-                                TextInput::make('nomor_seri')
-                                    ->label('Nomor Seri')
-                                    ->required(),
-                            ]),
+    //     return Section::make('Tabel Kelengkapan Material')
+    //         ->collapsible()
+    //         ->schema([
+    //             // 🔹 Repeater utama = relasi hasMany "details"
+    //             Repeater::make('details')
+    //                 ->relationship('details') // penting! ini relasi ke model detail
+    //                 ->label('Daftar Produk')
+    //                 ->schema([
+    //                     Grid::make(2)
+    //                         ->schema([
+    //                             TextInput::make('nama_alat')
+    //                                 ->label('Nama Produk')
+    //                                 ->required(),
+    //                             TextInput::make('nomor_seri')
+    //                                 ->label('Nomor Seri')
+    //                                 ->required(),
+    //                         ]),
 
-                        // 🔹 Field JSON dalam tiap record "detail"
-                        TableRepeater::make('details')
-                            ->label('Kelengkapan Material')
-                            ->schema([
-                                TextInput::make('part')
-                                    ->label('Part')
-                                    ->readonly(fn($get) => filled($get('part')))
-                                    ->extraAttributes(
-                                        fn($get) => filled($get('part'))
-                                            ? ['style' => 'pointer-events: none; background-color: #f3f4f6;']
-                                            : []
-                                    ),
+    //                     // 🔹 Field JSON dalam tiap record "detail"
+    //                     TableRepeater::make('details')
+    //                         ->label('Kelengkapan Material')
+    //                         ->schema([
+    //                             TextInput::make('part')
+    //                                 ->label('Part')
+    //                                 ->readonly(fn($get) => filled($get('part')))
+    //                                 ->extraAttributes(
+    //                                     fn($get) => filled($get('part'))
+    //                                         ? ['style' => 'pointer-events: none; background-color: #f3f4f6;']
+    //                                         : []
+    //                                 ),
 
-                                self::buttonGroup('result', 'Result'),
+    //                             self::buttonGroup('result', 'Result'),
 
-                                Select::make('select')
-                                    ->label('Keterangan')
-                                    ->options([
-                                        'ok' => 'OK',
-                                        'h' => 'Hold',
-                                        'r' => 'Repaired',
-                                    ])
-                                    ->required(),
-                            ])
-                            ->columns(2)
-                            ->default($defaultParts)
-                            ->addable(false)
-                            ->reorderable(false)
-                            ->deletable(false),
-                    ])
-                    ->columns(1)
-                    ->addable(false)
-                    ->reorderable(false)
-                    ->deletable(false),
-            ]);
-    }
+    //                             Select::make('select')
+    //                                 ->label('Keterangan')
+    //                                 ->options([
+    //                                     'ok' => 'OK',
+    //                                     'h' => 'Hold',
+    //                                     'r' => 'Repaired',
+    //                                 ])
+    //                                 ->required(),
+    //                         ])
+    //                         ->columns(2)
+    //                         ->default($defaultParts)
+    //                         ->addable(false)
+    //                         ->reorderable(false)
+    //                         ->deletable(false),
+    //                 ])
+    //                 ->columns(1)
+    //                 ->addable(false)
+    //                 ->reorderable(false)
+    //                 ->deletable(false),
+    //         ]);
+    // }
 
 
 

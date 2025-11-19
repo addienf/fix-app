@@ -160,7 +160,6 @@ class PermintaanAlatDanBahanResource extends Resource
                 'details',
                 'pic',
                 'permintaanBahanWBB',
-                'serahTerimaBahan'
             ]);
     }
 }
