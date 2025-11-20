@@ -4,6 +4,7 @@ namespace App\Models\Quality\Pengecekan;
 
 use App\Models\Quality\Pengecekan\Pivot\PengecekanPerformaDetail;
 use App\Models\Quality\Pengecekan\Pivot\PengecekanPerformaPIC;
+use App\Models\Quality\PengecekanMaterial\Electrical\PengecekanMaterialElectrical;
 use App\Models\Sales\SPKMarketings\SPKMarketing;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -13,7 +14,8 @@ class PengecekanPerforma extends Model
     use HasFactory;
 
     protected $fillable = [
-        'spk_marketing_id',
+        // 'spk_marketing_id',
+        'pengecekan_electrical_id',
         'tipe',
         'volume',
         'serial_number',
@@ -21,9 +23,14 @@ class PengecekanPerforma extends Model
         'status_penyelesaian',
     ];
 
-    public function spk()
+    // public function spk()
+    // {
+    //     return $this->belongsTo(SPKMarketing::class, 'spk_marketing_id');
+    // }
+
+    public function pengecekanElectrical()
     {
-        return $this->belongsTo(SPKMarketing::class, 'spk_marketing_id');
+        return $this->belongsTo(PengecekanMaterialElectrical::class, 'pengecekan_electrical_id');
     }
 
     public function pic()

@@ -4,6 +4,8 @@ namespace App\Models\Quality\KelengkapanMaterial\SS;
 
 use App\Models\Quality\KelengkapanMaterial\SS\Pivot\KelengkapanMaterialSSDetail;
 use App\Models\Quality\KelengkapanMaterial\SS\Pivot\KelengkapanMaterialSSPIC;
+use App\Models\Quality\PengecekanMaterial\SS\PengecekanMaterialSS;
+use App\Models\Quality\Standarisasi\StandarisasiDrawing;
 use App\Models\Sales\SPKMarketings\SPKMarketing;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -15,16 +17,27 @@ class KelengkapanMaterialSS extends Model
     protected $table = 'kelengkapan_material_ss';
 
     protected $fillable = [
-        'spk_marketing_id',
+        // 'spk_marketing_id',
+        'standarisasi_drawing_id',
         'tipe',
         'ref_document',
         'note',
         'status_penyelesaian',
     ];
 
-    public function spk()
+    // public function spk()
+    // {
+    //     return $this->belongsTo(SPKMarketing::class, 'spk_marketing_id');
+    // }
+
+    public function standarisasiDrawing()
     {
-        return $this->belongsTo(SPKMarketing::class, 'spk_marketing_id');
+        return $this->belongsTo(StandarisasiDrawing::class, 'standarisasi_drawing_id');
+    }
+
+    public function pengecekanSS()
+    {
+        return $this->hasOne(PengecekanMaterialSS::class, 'kelengkapan_material_id');
     }
 
     public function pic()
@@ -32,9 +45,9 @@ class KelengkapanMaterialSS extends Model
         return $this->hasOne(KelengkapanMaterialSSPIC::class, 'kelengkapan_material_id');
     }
 
-    public function details()
+    public function detail()
     {
-        return $this->hasMany(KelengkapanMaterialSSDetail::class, 'kelengkapan_material_id');
+        return $this->hasOne(KelengkapanMaterialSSDetail::class, 'kelengkapan_material_id');
     }
 
     protected static function booted()

@@ -17,7 +17,7 @@ class DefectStatus extends Model
     use HasFactory;
 
     protected $fillable = [
-        'spk_marketing_id',
+        // 'spk_marketing_id',
         'no_surat',
         'tipe_sumber',
         'sumber_id',
@@ -38,10 +38,19 @@ class DefectStatus extends Model
         };
     }
 
-    public function spk()
+    public function getNoSpkAttribute()
     {
-        return $this->belongsTo(SPKMarketing::class, 'spk_marketing_id');
+        $sumber = $this->sumber;
+
+        if (!$sumber) return '-';
+
+        return $sumber->spk->no_spk ?? '-';
     }
+
+    // public function spk()
+    // {
+    //     return $this->belongsTo(SPKMarketing::class, 'spk_marketing_id');
+    // }
 
     public function details()
     {

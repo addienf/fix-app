@@ -14,6 +14,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Actions\ActionGroup;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -47,7 +48,7 @@ class KelengkapanMaterialSSResource extends Resource
 
                 self::getChamberIdentificationSection($form),
 
-                self::getTabelKelengkapanMaterialSection2(),
+                self::getTabelKelengkapanMaterialSection(),
 
                 self::getNote(),
 
@@ -82,7 +83,11 @@ class KelengkapanMaterialSSResource extends Resource
         return $table
             ->columns([
                 //
-                self::textColumn('spk.no_spk', 'NO SPK'),
+                TextColumn::make('standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.spk.no_spk')
+                    ->label('No SPK Marketing'),
+
+                TextColumn::make('standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.identifikasiProduks.no_seri')
+                    ->label('No Seri'),
 
                 self::textColumn('tipe', 'Type/Model'),
 
@@ -145,8 +150,10 @@ class KelengkapanMaterialSSResource extends Resource
     {
         return parent::getEloquentQuery()
             ->with([
-                'spk',
-                'details',
+                // 'spk',
+                'standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.spk',
+                'standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.identifikasiProduks',
+                'detail',
                 'pic'
             ]);
     }

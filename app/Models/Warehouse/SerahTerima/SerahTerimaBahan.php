@@ -3,6 +3,7 @@
 namespace App\Models\Warehouse\SerahTerima;
 
 use App\Models\Production\PermintaanBahanProduksi\PermintaanAlatDanBahan;
+use App\Models\Quality\Standarisasi\StandarisasiDrawing;
 use App\Models\Warehouse\Peminjaman\PeminjamanAlat;
 use App\Models\Warehouse\SerahTerima\Pivot\SerahTerimaBahanDetail;
 use App\Models\Warehouse\SerahTerima\Pivot\SerahTerimaBahanPIC;
@@ -34,6 +35,11 @@ class SerahTerimaBahan extends Model
     public function peminjamanAlat()
     {
         return $this->belongsTo(PeminjamanAlat::class, 'peminjaman_alat_id');
+    }
+
+    public function standarisasiDrawing()
+    {
+        return $this->hasOne(StandarisasiDrawing::class, 'serah_terima_bahan_id');
     }
 
     public function details()

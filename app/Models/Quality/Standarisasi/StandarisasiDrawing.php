@@ -2,11 +2,13 @@
 
 namespace App\Models\Quality\Standarisasi;
 
+use App\Models\Quality\KelengkapanMaterial\SS\KelengkapanMaterialSS;
 use App\Models\Quality\Standarisasi\Pivot\IdentitasGambarKerja;
 use App\Models\Quality\Standarisasi\Pivot\PemeriksaanGambar;
 use App\Models\Quality\Standarisasi\Pivot\StandarisasiDrawingDetail;
 use App\Models\Quality\Standarisasi\Pivot\StandarisasiDrawingPIC;
 use App\Models\Sales\SPKMarketings\SPKMarketing;
+use App\Models\Warehouse\SerahTerima\SerahTerimaBahan;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -15,7 +17,8 @@ class StandarisasiDrawing extends Model
     use HasFactory;
 
     protected $fillable = [
-        'spk_marketing_id',
+        // 'spk_marketing_id',
+        'serah_terima_bahan_id',
         'tanggal',
         'jenis_gambar',
         'format_gambar',
@@ -28,9 +31,14 @@ class StandarisasiDrawing extends Model
         'tanggal' => 'date',
     ];
 
-    public function spk()
+    // public function spk()
+    // {
+    //     return $this->belongsTo(SPKMarketing::class, 'spk_marketing_id');
+    // }
+
+    public function serahTerimaWarehouse()
     {
-        return $this->belongsTo(SPKMarketing::class, 'spk_marketing_id');
+        return $this->belongsTo(SerahTerimaBahan::class, 'serah_terima_bahan_id');
     }
 
     public function identitas()
@@ -51,6 +59,11 @@ class StandarisasiDrawing extends Model
     public function pemeriksaan()
     {
         return $this->hasOne(PemeriksaanGambar::class, 'standarisasi_drawing_id');
+    }
+
+    public function kelengkapanMaterial()
+    {
+        return $this->hasOne(KelengkapanMaterialSS::class, 'standarisasi_drawing_id');
     }
 
     protected static function booted()

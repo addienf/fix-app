@@ -2,7 +2,9 @@
 
 namespace App\Models\Quality\PengecekanMaterial\Electrical;
 
+use App\Models\Production\Penyerahan\PenyerahanElectrical\PenyerahanElectrical;
 use App\Models\Quality\Defect\DefectStatus;
+use App\Models\Quality\Pengecekan\PengecekanPerforma;
 use App\Models\Quality\PengecekanMaterial\Electrical\Pivot\PengecekanMaterialElectricalDetail;
 use App\Models\Quality\PengecekanMaterial\Electrical\Pivot\PengecekanMaterialElectricalPIC;
 use App\Models\Sales\SPKMarketings\SPKMarketing;
@@ -16,7 +18,8 @@ class PengecekanMaterialElectrical extends Model
     protected $table = 'pengecekan_electrical';
 
     protected $fillable = [
-        'spk_marketing_id',
+        // 'spk_marketing_id',
+        'penyerahan_electrical_id',
         'tipe',
         'volume',
         'note',
@@ -29,9 +32,19 @@ class PengecekanMaterialElectrical extends Model
             ->where('tipe_sumber', 'electrical');
     }
 
-    public function spk()
+    // public function spk()
+    // {
+    //     return $this->belongsTo(SPKMarketing::class, 'spk_marketing_id');
+    // }
+
+    public function penyerahanElectrical()
     {
-        return $this->belongsTo(SPKMarketing::class, 'spk_marketing_id');
+        return $this->belongsTo(PenyerahanElectrical::class, 'penyerahan_electrical_id');
+    }
+
+    public function pengecekanPerforma()
+    {
+        return $this->hasOne(PengecekanPerforma::class, 'pengecekan_electrical_id');
     }
 
     public function pic()
