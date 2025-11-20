@@ -2,11 +2,7 @@
 
 namespace App\Filament\Resources\Quality\Defect\Traits;
 
-use App\Models\Quality\PengecekanMaterial\Electrical\PengecekanMaterialElectrical;
-use App\Models\Quality\PengecekanMaterial\SS\PengecekanMaterialSS;
 use App\Traits\SimpleFormResource;
-use Filament\Forms\Components\Fieldset;
-use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Repeater;

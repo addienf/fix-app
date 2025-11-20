@@ -13,38 +13,53 @@ trait DetailProduk
     {
         return
             Section::make('Detail Produk Yang Dipesan')
-            // ->hiddenOn(operations: 'edit')
             ->collapsible()
             ->schema([
                 TableRepeater::make('details')
                     ->relationship('details')
                     ->label('')
                     ->schema([
+
                         self::textInput('nama_produk', 'Nama Produk')
-                            ->extraAttributes([
-                                'readonly' => true,
-                                'style' => 'pointer-events: none;'
-                            ]),
+                            ->readOnly(fn($get) => filled($get('nama_produk')))
+                            ->extraAttributes(
+                                fn($get) =>
+                                filled($get('nama_produk'))
+                                    ? ['style' => 'pointer-events:none; background-color:#f3f4f6;']
+                                    : []
+                            ),
+
                         self::textInput('jumlah', 'Jumlah Pesanan')
-                            ->extraAttributes([
-                                'readonly' => true,
-                                'style' => 'pointer-events: none;'
-                            ]),
+                            ->readOnly(fn($get) => filled($get('jumlah')))
+                            ->extraAttributes(
+                                fn($get) =>
+                                filled($get('jumlah'))
+                                    ? ['style' => 'pointer-events:none; background-color:#f3f4f6;']
+                                    : []
+                            ),
+
                         self::textInput('no_urs', 'No URS')
-                            ->extraAttributes([
-                                'readonly' => true,
-                                'style' => 'pointer-events: none;'
-                            ]),
+                            ->readOnly(fn($get) => filled($get('no_urs')))
+                            ->extraAttributes(
+                                fn($get) =>
+                                filled($get('no_urs'))
+                                    ? ['style' => 'pointer-events:none; background-color:#f3f4f6;']
+                                    : []
+                            ),
 
                         self::textInput('rencana_pengiriman', 'Rencana Pengiriman')
-                            ->extraAttributes([
-                                'readonly' => true,
-                                'style' => 'pointer-events: none;'
-                            ]),
+                            ->readOnly(fn($get) => filled($get('rencana_pengiriman')))
+                            ->extraAttributes(
+                                fn($get) =>
+                                filled($get('rencana_pengiriman'))
+                                    ? ['style' => 'pointer-events:none; background-color:#f3f4f6;']
+                                    : []
+                            ),
                     ])
-                    ->deletable(false)
+                    ->deletable(true)
                     ->reorderable(false)
-                    ->addable(false),
+                    ->addable(true)
+                    ->addActionLabel('Tambah Detail Produk'),
             ]);
     }
 }

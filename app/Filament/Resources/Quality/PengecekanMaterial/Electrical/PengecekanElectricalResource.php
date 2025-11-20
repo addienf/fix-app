@@ -4,37 +4,22 @@ namespace App\Filament\Resources\Quality\PengecekanMaterial\Electrical;
 
 use App\Filament\Resources\Quality\PengecekanMaterial\Electrical\PengecekanElectricalResource\Pages;
 use App\Filament\Resources\Quality\PengecekanMaterial\Electrical\PengecekanElectricalResource\Pages\pdfPengecekanElectrical;
-use App\Filament\Resources\Quality\PengecekanMaterial\Electrical\PengecekanElectricalResource\RelationManagers;
+use App\Filament\Resources\Quality\PengecekanMaterial\Electrical\Traits\ChamberIdentification;
+use App\Filament\Resources\Quality\PengecekanMaterial\Electrical\Traits\TabelKelengkapanMaterial;
 use App\Models\Quality\PengecekanMaterial\Electrical\PengecekanMaterialElectrical;
-use App\Models\Sales\SPKMarketings\SPKMarketing;
-use App\Services\SignatureUploader;
+use App\Traits\HasSignature;
 use Filament\Actions\Action;
-use Filament\Forms;
-use Filament\Forms\Components\Card;
-use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Fieldset;
-use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Hidden;
-use Filament\Forms\Components\Repeater;
-use Filament\Forms\Components\Section;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Actions\ActionGroup;
-use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Icetalker\FilamentTableRepeater\Forms\Components\TableRepeater;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Saade\FilamentAutograph\Forms\Components\SignaturePad;
-use Wallo\FilamentSelectify\Components\ButtonGroup;
 
 class PengecekanElectricalResource extends Resource
 {
+    use ChamberIdentification, TabelKelengkapanMaterial, HasSignature;
     protected static ?string $model = PengecekanMaterialElectrical::class;
     protected static ?string $navigationIcon = 'heroicon-o-check-circle';
     protected static ?int $navigationSort = 17;
@@ -51,18 +36,18 @@ class PengecekanElectricalResource extends Resource
     }
     public static function form(Form $form): Form
     {
-        $defaultParts = collect(config('pengecekanElectrical'))
-            ->map(function ($group) {
-                return [
-                    'mainPart' => $group['mainPart'],
-                    'parts' => collect($group['parts'])
-                        ->map(fn($part) => ['part' => $part])
-                        ->toArray(),
-                ];
-            })
-            ->toArray();
+        // $defaultParts = collect(config('pengecekanElectrical'))
+        //     ->map(function ($group) {
+        //         return [
+        //             'mainPart' => $group['mainPart'],
+        //             'parts' => collect($group['parts'])
+        //                 ->map(fn($part) => ['part' => $part])
+        //                 ->toArray(),
+        //         ];
+        //     })
+        //     ->toArray();
 
-        $isEdit = $form->getOperation() === 'edit';
+        // $isEdit = $form->getOperation() === 'edit';
 
         return $form
             ->schema([
@@ -70,218 +55,248 @@ class PengecekanElectricalResource extends Resource
                 Hidden::make('status_penyelesaian')
                     ->default('Belum Diterima'),
 
-                Section::make('Chamber Identification')
-                    ->collapsible()
-                    ->schema([
+                self::getChamberIdentificationSection($form),
 
-                        Grid::make($isEdit ? 2 : 3)
-                            ->schema([
+                self::getTabelKelengkapanMaterialSection(),
 
-                                //
-                                self::selectInputSPK()
-                                    ->hiddenOn('edit')
-                                    ->placeholder('Pilih No SPK'),
+                self::getNote(),
 
-                                self::textInput('tipe', 'Type/Model')
-                                    ->extraAttributes([
-                                        'readonly' => true,
-                                        'style' => 'pointer-events: none;'
-                                    ]),
+                static::signatureSection(
+                    [
+                        [
+                            'prefix' => 'inspected',
+                            'role' => 'Inspected by',
+                            'hideLogic' => fn($operation) => $operation === 'edit',
+                        ],
+                        [
+                            'prefix' => 'accepted',
+                            'role' => 'Accepted by',
+                            'hideLogic' => fn($operation, $record) =>
+                            $operation === 'create' || filled($record?->accepted_signature)
+                        ],
+                        [
+                            'prefix' => 'approved',
+                            'role' => 'Approved by',
+                            'hideLogic' => fn($operation, $record) =>
+                            $operation === 'create' || blank($record?->accepted_signature) || filled($record?->approved_signature)
+                        ],
+                    ],
+                    title: 'PIC',
+                    uploadPath: 'Quality/PengecekanMaterial/Electrical/Signatures'
+                ),
 
-                                self::textInput('volume', 'Volume')
-                                    ->extraAttributes([
-                                        'readonly' => true,
-                                        'style' => 'pointer-events: none;'
-                                    ]),
+                // Section::make('Chamber Identification')
+                //     ->collapsible()
+                //     ->schema([
 
-                            ]),
+                //         Grid::make($isEdit ? 2 : 3)
+                //             ->schema([
 
-                    ]),
+                //                 //
+                //                 self::selectInputSPK()
+                //                     ->hiddenOn('edit')
+                //                     ->placeholder('Pilih No SPK'),
 
-                Section::make('Tabel Kelengkapan Material')
-                    ->collapsible()
-                    ->relationship('detail')
-                    ->schema([
+                //                 self::textInput('tipe', 'Type/Model')
+                //                     ->extraAttributes([
+                //                         'readonly' => true,
+                //                         'style' => 'pointer-events: none;'
+                //                     ]),
 
-                        Repeater::make('details')
-                            ->default($defaultParts)
-                            ->label('')
-                            ->schema([
+                //                 self::textInput('volume', 'Volume')
+                //                     ->extraAttributes([
+                //                         'readonly' => true,
+                //                         'style' => 'pointer-events: none;'
+                //                     ]),
 
-                                Grid::make(3)
-                                    ->schema([
-                                        TextInput::make('mainPart')
-                                            ->label('Main Part')
-                                            ->extraAttributes([
-                                                'readonly' => true,
-                                                'style' => 'pointer-events: none;'
-                                            ]),
+                //             ]),
 
-                                        ButtonGroup::make('mainPart_result')
-                                            ->label('Result')
-                                            ->options([
-                                                1 => 'Yes',
-                                                0 => 'No',
-                                            ])
-                                            ->onColor('primary')
-                                            ->offColor('gray')
-                                            ->gridDirection('row')
-                                            ->default('individual'),
+                //     ]),
 
-                                        Select::make('mainPart_status')
-                                            ->label('Status')
-                                            ->options([
-                                                'ok' => 'OK',
-                                                'h' => 'Hold',
-                                                'r' => 'Repaired',
-                                            ])
-                                            ->required(),
-                                    ]),
+                // Section::make('Tabel Kelengkapan Material')
+                //     ->collapsible()
+                //     ->relationship('detail')
+                //     ->schema([
 
-                                TableRepeater::make('parts')
-                                    ->label('')
-                                    ->schema([
+                //         Repeater::make('details')
+                //             ->default($defaultParts)
+                //             ->label('')
+                //             ->schema([
 
-                                        TextInput::make('part')
-                                            ->label('Part')
-                                            ->extraAttributes([
-                                                'readonly' => true,
-                                                'style' => 'pointer-events: none;'
-                                            ]),
+                //                 Grid::make(3)
+                //                     ->schema([
+                //                         TextInput::make('mainPart')
+                //                             ->label('Main Part')
+                //                             ->extraAttributes([
+                //                                 'readonly' => true,
+                //                                 'style' => 'pointer-events: none;'
+                //                             ]),
 
-                                        ButtonGroup::make('result')
-                                            ->options([
-                                                1 => 'Yes',
-                                                0 => 'No',
-                                            ])
-                                            ->onColor('primary')
-                                            ->offColor('gray')
-                                            ->gridDirection('row')
-                                            ->default('individual'),
+                //                         ButtonGroup::make('mainPart_result')
+                //                             ->label('Result')
+                //                             ->options([
+                //                                 1 => 'Yes',
+                //                                 0 => 'No',
+                //                             ])
+                //                             ->onColor('primary')
+                //                             ->offColor('gray')
+                //                             ->gridDirection('row')
+                //                             ->default('individual'),
 
-                                        Select::make('status')
-                                            ->label('Status')
-                                            ->options([
-                                                'ok' => 'OK',
-                                                'h' => 'Hold',
-                                                'r' => 'Repaired',
-                                            ])
-                                            ->required(),
+                //                         Select::make('mainPart_status')
+                //                             ->label('Status')
+                //                             ->options([
+                //                                 'ok' => 'OK',
+                //                                 'h' => 'Hold',
+                //                                 'r' => 'Repaired',
+                //                             ])
+                //                             ->required(),
+                //                     ]),
 
-                                    ])
-                                    ->addable(false)
-                                    ->deletable(false)
-                                    ->reorderable(false),
+                //                 TableRepeater::make('parts')
+                //                     ->label('')
+                //                     ->schema([
 
-                            ])
-                            ->addable(false)
-                            ->deletable(false)
-                            ->reorderable(false)
+                //                         TextInput::make('part')
+                //                             ->label('Part')
+                //                             ->extraAttributes([
+                //                                 'readonly' => true,
+                //                                 'style' => 'pointer-events: none;'
+                //                             ]),
 
-                    ]),
+                //                         ButtonGroup::make('result')
+                //                             ->options([
+                //                                 1 => 'Yes',
+                //                                 0 => 'No',
+                //                             ])
+                //                             ->onColor('primary')
+                //                             ->offColor('gray')
+                //                             ->gridDirection('row')
+                //                             ->default('individual'),
 
-                Card::make('')
-                    ->schema([
+                //                         Select::make('status')
+                //                             ->label('Status')
+                //                             ->options([
+                //                                 'ok' => 'OK',
+                //                                 'h' => 'Hold',
+                //                                 'r' => 'Repaired',
+                //                             ])
+                //                             ->required(),
 
-                        Textarea::make('note')
-                            ->required()
-                            ->label('Note')
-                            ->columnSpanFull()
+                //                     ])
+                //                     ->addable(false)
+                //                     ->deletable(false)
+                //                     ->reorderable(false),
 
-                    ]),
+                //             ])
+                //             ->addable(false)
+                //             ->deletable(false)
+                //             ->reorderable(false)
 
-                Section::make('Detail PIC')
-                    ->collapsible()
-                    ->relationship('pic')
-                    ->schema([
-                        Grid::make(3)
-                            ->schema([
-                                Grid::make(1)
-                                    ->schema([
+                //     ]),
 
-                                        Hidden::make('inspected_name')
-                                            ->default(fn() => auth()->id()),
+                // Card::make('')
+                //     ->schema([
 
-                                        self::textInput('inspected_name_placeholder', 'Inspected By')
-                                            ->default(fn() => auth()->user()?->name)
-                                            ->extraAttributes([
-                                                'readonly' => true,
-                                                'style' => 'pointer-events: none;'
-                                            ]),
+                //         Textarea::make('note')
+                //             ->required()
+                //             ->label('Note')
+                //             ->columnSpanFull()
 
-                                        // self::textInput('inspected_name', 'Inspected By'),
+                //     ]),
 
-                                        self::signatureInput('inspected_signature', ''),
+                // Section::make('Detail PIC')
+                //     ->collapsible()
+                //     ->relationship('pic')
+                //     ->schema([
+                //         Grid::make(3)
+                //             ->schema([
+                //                 Grid::make(1)
+                //                     ->schema([
 
-                                        self::datePicker('inspected_date', '')
-                                            ->default(now())
-                                            ->required(),
+                //                         Hidden::make('inspected_name')
+                //                             ->default(fn() => auth()->id()),
 
-                                    ])->hiddenOn(operations: 'edit'),
+                //                         self::textInput('inspected_name_placeholder', 'Inspected By')
+                //                             ->default(fn() => auth()->user()?->name)
+                //                             ->extraAttributes([
+                //                                 'readonly' => true,
+                //                                 'style' => 'pointer-events: none;'
+                //                             ]),
 
-                                Grid::make(1)
-                                    ->schema([
+                //                         // self::textInput('inspected_name', 'Inspected By'),
 
-                                        Hidden::make('accepted_name')
-                                            ->default(fn() => auth()->id())
-                                            ->dehydrated(true)
-                                            ->afterStateHydrated(function ($component) {
-                                                $component->state(auth()->id());
-                                            }),
+                //                         self::signatureInput('inspected_signature', ''),
 
-                                        self::textInput('accepted_name_placeholder', 'Accepted By')
-                                            ->default(fn() => auth()->user()?->name)
-                                            ->placeholder(fn() => auth()->user()?->name)
-                                            ->required(false)
-                                            ->extraAttributes([
-                                                'readonly' => true,
-                                                'style' => 'pointer-events: none;'
-                                            ]),
+                //                         self::datePicker('inspected_date', '')
+                //                             ->default(now())
+                //                             ->required(),
 
-                                        // self::textInput('accepted_name', 'Accepted By'),
+                //                     ])->hiddenOn(operations: 'edit'),
 
-                                        self::signatureInput('accepted_signature', ''),
+                //                 Grid::make(1)
+                //                     ->schema([
 
-                                        self::datePicker('accepted_date', '')
-                                            ->required(),
+                //                         Hidden::make('accepted_name')
+                //                             ->default(fn() => auth()->id())
+                //                             ->dehydrated(true)
+                //                             ->afterStateHydrated(function ($component) {
+                //                                 $component->state(auth()->id());
+                //                             }),
 
-                                    ])->hidden(
-                                        fn($operation, $record) =>
-                                        $operation === 'create' || filled($record?->accepted_signature)
-                                    ),
+                //                         self::textInput('accepted_name_placeholder', 'Accepted By')
+                //                             ->default(fn() => auth()->user()?->name)
+                //                             ->placeholder(fn() => auth()->user()?->name)
+                //                             ->required(false)
+                //                             ->extraAttributes([
+                //                                 'readonly' => true,
+                //                                 'style' => 'pointer-events: none;'
+                //                             ]),
 
-                                Grid::make(1)
-                                    ->schema([
+                //                         // self::textInput('accepted_name', 'Accepted By'),
 
-                                        Hidden::make('approved_name')
-                                            ->default(fn() => auth()->id())
-                                            ->dehydrated(true)
-                                            ->afterStateHydrated(function ($component) {
-                                                $component->state(auth()->id());
-                                            }),
+                //                         self::signatureInput('accepted_signature', ''),
 
-                                        self::textInput('approved_name_placeholder', 'Approved By')
-                                            ->default(fn() => auth()->user()?->name)
-                                            ->placeholder(fn() => auth()->user()?->name)
-                                            ->required(false)
-                                            ->extraAttributes([
-                                                'readonly' => true,
-                                                'style' => 'pointer-events: none;'
-                                            ]),
+                //                         self::datePicker('accepted_date', '')
+                //                             ->required(),
 
-                                        // self::textInput('approved_name', 'Approved By'),
+                //                     ])->hidden(
+                //                         fn($operation, $record) =>
+                //                         $operation === 'create' || filled($record?->accepted_signature)
+                //                     ),
 
-                                        self::signatureInput('approved_signature', ''),
+                //                 Grid::make(1)
+                //                     ->schema([
 
-                                        self::datePicker('approved_date', '')
-                                            ->required(),
+                //                         Hidden::make('approved_name')
+                //                             ->default(fn() => auth()->id())
+                //                             ->dehydrated(true)
+                //                             ->afterStateHydrated(function ($component) {
+                //                                 $component->state(auth()->id());
+                //                             }),
 
-                                    ])->hidden(
-                                        fn($operation, $record) =>
-                                        $operation === 'create' || blank($record?->accepted_signature) || filled($record?->approved_signature)
-                                    ),
-                            ]),
-                    ]),
+                //                         self::textInput('approved_name_placeholder', 'Approved By')
+                //                             ->default(fn() => auth()->user()?->name)
+                //                             ->placeholder(fn() => auth()->user()?->name)
+                //                             ->required(false)
+                //                             ->extraAttributes([
+                //                                 'readonly' => true,
+                //                                 'style' => 'pointer-events: none;'
+                //                             ]),
+
+                //                         // self::textInput('approved_name', 'Approved By'),
+
+                //                         self::signatureInput('approved_signature', ''),
+
+                //                         self::datePicker('approved_date', '')
+                //                             ->required(),
+
+                //                     ])->hidden(
+                //                         fn($operation, $record) =>
+                //                         $operation === 'create' || blank($record?->accepted_signature) || filled($record?->approved_signature)
+                //                     ),
+                //             ]),
+                //     ]),
             ]);
     }
 
@@ -290,7 +305,11 @@ class PengecekanElectricalResource extends Resource
         return $table
             ->columns([
                 //
-                self::textColumn('spk.no_spk', 'No SPK'),
+                TextColumn::make('penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.spk.no_spk')
+                    ->label('No SPK Marketing'),
+
+                TextColumn::make('penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.identifikasiProduks.no_seri')
+                    ->label('No Seri'),
 
                 self::textColumn('tipe', 'Type/Model'),
 
@@ -355,105 +374,105 @@ class PengecekanElectricalResource extends Resource
         ];
     }
 
-    protected static function textInput(string $fieldName, string $label): TextInput
-    {
-        return TextInput::make($fieldName)
-            ->label($label)
-            ->required()
-            ->maxLength(255);
-    }
+    // protected static function textInput(string $fieldName, string $label): TextInput
+    // {
+    //     return TextInput::make($fieldName)
+    //         ->label($label)
+    //         ->required()
+    //         ->maxLength(255);
+    // }
 
-    protected static function selectInput(string $fieldName, string $label, string $relation, string $title): Select
-    {
-        return
-            Select::make($fieldName)
-            ->relationship($relation, $title)
-            ->label($label)
-            ->native(false)
-            ->searchable()
-            ->preload()
-            ->required()
-            ->reactive();
-    }
+    // protected static function selectInput(string $fieldName, string $label, string $relation, string $title): Select
+    // {
+    //     return
+    //         Select::make($fieldName)
+    //         ->relationship($relation, $title)
+    //         ->label($label)
+    //         ->native(false)
+    //         ->searchable()
+    //         ->preload()
+    //         ->required()
+    //         ->reactive();
+    // }
 
-    protected static function selectInputOptions(string $fieldName, string $label, string $config): Select
-    {
-        return
-            Select::make($fieldName)
-            ->options(config($config))
-            ->label($label)
-            ->native(false)
-            ->searchable()
-            ->preload()
-            ->required()
-            ->reactive();
-    }
+    // protected static function selectInputOptions(string $fieldName, string $label, string $config): Select
+    // {
+    //     return
+    //         Select::make($fieldName)
+    //         ->options(config($config))
+    //         ->label($label)
+    //         ->native(false)
+    //         ->searchable()
+    //         ->preload()
+    //         ->required()
+    //         ->reactive();
+    // }
 
-    protected static function selectInputSPK(): Select
-    {
-        return
-            Select::make('spk_marketing_id')
-            ->label('Nomor SPK')
-            ->relationship(
-                'spk',
-                'no_spk',
-                fn($query) => $query
-                    ->whereHas('spkQC', function ($query) {
-                        $query->where('status_penerimaan', 'Diterima');
-                    })->whereDoesntHave('pengecekanElectrical')
-            )
-            ->native(false)
-            ->searchable()
-            ->preload()
-            ->required()
-            ->reactive()
-            ->afterStateUpdated(function ($state, callable $set, callable $get) {
-                if (!$state) return;
+    // protected static function selectInputSPK(): Select
+    // {
+    //     return
+    //         Select::make('spk_marketing_id')
+    //         ->label('Nomor SPK')
+    //         ->relationship(
+    //             'spk',
+    //             'no_spk',
+    //             fn($query) => $query
+    //                 ->whereHas('spkQC', function ($query) {
+    //                     $query->where('status_penerimaan', 'Diterima');
+    //                 })->whereDoesntHave('pengecekanElectrical')
+    //         )
+    //         ->native(false)
+    //         ->searchable()
+    //         ->preload()
+    //         ->required()
+    //         ->reactive()
+    //         ->afterStateUpdated(function ($state, callable $set, callable $get) {
+    //             if (!$state) return;
 
-                $spk = SPKMarketing::with('jadwalProduksi', 'defect')->find($state);
+    //             $spk = SPKMarketing::with('jadwalProduksi', 'defect')->find($state);
 
-                if (!$spk) return;
+    //             if (!$spk) return;
 
-                $tipe = $spk?->jadwalProduksi?->identifikasiProduks->first()->tipe;
-                $volume = $spk?->defect?->volume;
+    //             $tipe = $spk?->jadwalProduksi?->identifikasiProduks->first()->tipe;
+    //             $volume = $spk?->defect?->volume;
 
-                $set('tipe', $tipe);
-                $set('volume', $volume);
-            });
-    }
+    //             $set('tipe', $tipe);
+    //             $set('volume', $volume);
+    //         });
+    // }
 
-    protected static function datePicker(string $fieldName, string $label): DatePicker
-    {
-        return
-            DatePicker::make($fieldName)
-            ->label($label)
-            ->displayFormat('M d Y')
-            ->seconds(false);
-    }
+    // protected static function datePicker(string $fieldName, string $label): DatePicker
+    // {
+    //     return
+    //         DatePicker::make($fieldName)
+    //         ->label($label)
+    //         ->displayFormat('M d Y')
+    //         ->seconds(false);
+    // }
 
-    protected static function signatureInput(string $fieldName, string $labelName): SignaturePad
-    {
-        return
-            SignaturePad::make($fieldName)
-            ->label($labelName)
-            ->exportPenColor('#0118D8')
-            ->helperText('*Harap Tandatangan di tengah area yang disediakan.')
-            ->afterStateUpdated(function ($state, $set) use ($fieldName) {
-                if (blank($state))
-                    return;
-                $path = SignatureUploader::handle($state, 'ttd_', 'Quality/PengecekanMaterial/Electrical/Signatures');
-                if ($path) {
-                    $set($fieldName, $path);
-                }
-            });
-    }
+    // protected static function signatureInput(string $fieldName, string $labelName): SignaturePad
+    // {
+    //     return
+    //         SignaturePad::make($fieldName)
+    //         ->label($labelName)
+    //         ->exportPenColor('#0118D8')
+    //         ->helperText('*Harap Tandatangan di tengah area yang disediakan.')
+    //         ->afterStateUpdated(function ($state, $set) use ($fieldName) {
+    //             if (blank($state))
+    //                 return;
+    //             $path = SignatureUploader::handle($state, 'ttd_', 'Quality/PengecekanMaterial/Electrical/Signatures');
+    //             if ($path) {
+    //                 $set($fieldName, $path);
+    //             }
+    //         });
+    // }
 
-    protected static function textColumn(string $fieldName, string $label): TextColumn
-    {
-        return
-            TextColumn::make($fieldName)
-            ->label($label)
-            ->searchable()
-            ->sortable();
-    }
+    // protected static function textColumn(string $fieldName, string $label): TextColumn
+    // {
+    //     return
+    //         TextColumn::make($fieldName)
+    //         ->label($label)
+    //         ->searchable()
+    //         ->sortable();
+    // }
 }

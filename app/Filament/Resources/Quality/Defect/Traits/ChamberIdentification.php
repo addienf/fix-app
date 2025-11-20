@@ -6,7 +6,6 @@ use App\Models\Quality\PengecekanMaterial\Electrical\PengecekanMaterialElectrica
 use App\Models\Quality\PengecekanMaterial\SS\PengecekanMaterialSS;
 use App\Traits\SimpleFormResource;
 use Filament\Forms\Components\Fieldset;
-use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
@@ -62,110 +61,74 @@ trait ChamberIdentification
                 'stainless_steel' => 'Pengecekan Stainless Steel',
             ])
             ->reactive()
-            ->required();
+            ->required()
+            ->afterStateUpdated(function ($state, callable $set) {
+                // RESET ketika tipe berubah
+                $set('sumber_id', null);
+                $set('serial_number', null);
+                $set('tipe', null);
+                $set('details', []);
+            });
         // ->disabledOn('edit');
     }
 
     protected static function pilihId(): Select
     {
-        return Select::make('sumber_id')
+        return
+            Select::make('sumber_id')
             ->label('Data Pengecekan')
-            // ->options(function (callable $get) {
-            //     $tipe = $get('tipe_sumber');
-
-            //     return match ($tipe) {
-            //         'electrical' => PengecekanMaterialElectrical::whereDoesntHave('defectStatus')
-            //             ->get()
-            //             ->filter(
-            //                 fn($item) => collect($item->detail->details)
-            //                     ->contains(function ($d) {
-            //                         $hasMain = ($d['mainPart_result'] ?? '') === '0';
-            //                         $hasParts = collect($d['parts'] ?? [])
-            //                             ->contains(fn($p) => ($p['result'] ?? '') === '0');
-            //                         return $hasMain || $hasParts;
-            //                     })
-            //             )
-            //             ->mapWithKeys(fn($item) => [$item->id => $item->serial_number]),
-
-            //         'stainless_steel' => PengecekanMaterialSS::whereDoesntHave('defectStatus')
-            //             ->get()
-            //             ->filter(
-            //                 fn($item) => collect($item->detail->details)
-            //                     ->contains(function ($d) {
-            //                         $hasMain = ($d['mainPart_result'] ?? '') === '0';
-            //                         $hasParts = collect($d['parts'] ?? [])
-            //                             ->contains(fn($p) => ($p['result'] ?? '') === '0');
-            //                         return $hasMain || $hasParts;
-            //                     })
-            //             )
-            //             ->mapWithKeys(fn($item) => [$item->id => $item->serial_number]),
-
-            //         default => [],
-            //     };
-            // })
             ->options(function (callable $get) {
+
                 $tipe = $get('tipe_sumber');
 
                 return match ($tipe) {
-                    'electrical' => PengecekanMaterialElectrical::with([
-                        'spk.jadwalProduksi.identifikasiProduks'
+                    'electrical' =>
+                    PengecekanMaterialElectrical::with([
+                        'penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi'
                     ])
+                        ->whereDoesntHave('defectStatus')
                         ->get()
                         ->mapWithKeys(function ($item) {
-
-                            // No SPK
-                            $spkNo = $item->spk->no_spk ?? '-';
-
-                            // No Seri (ambil semua seri, pisah koma)
-                            $seri = $item->spk
-                                ?->jadwalProduksi
-                                ?->identifikasiProduks
-                                ?->pluck('no_seri')
-                                ?->filter()
-                                ?->implode(', ') ?? '-';
-
-                            return [
-                                $item->id => "{$spkNo} - {$seri}",
-                            ];
-                        }),
-
-                    'stainless_steel' => PengecekanMaterialSS::with([
-                        'kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi'
-                    ])
-                        ->get()
-                        ->mapWithKeys(function ($item) {
-
-                            // $spkNo = $item->spk->no_spk ?? '-';
                             $spkNo =
-                                $item
-                                ?->kelengkapanMaterial
-                                ?->standarisasiDrawing
-                                ?->serahTerimaWarehouse
-                                ?->peminjamanAlat
-                                ?->spkVendor
-                                ?->permintaanBahanProduksi
-                                ?->jadwalProduksi
-                                ?->spk
-                                ?->no_spk
+                                $item?->penyerahanElectrical?->pengecekanSS?->kelengkapanMaterial
+                                ?->standarisasiDrawing?->serahTerimaWarehouse?->peminjamanAlat
+                                ?->spkVendor?->permintaanBahanProduksi?->jadwalProduksi?->spk?->no_spk
                                 ?? '-';
 
                             $seri =
-                                $item
-                                ?->kelengkapanMaterial
-                                ?->standarisasiDrawing
-                                ?->serahTerimaWarehouse
-                                ?->peminjamanAlat
-                                ?->spkVendor
-                                ?->permintaanBahanProduksi
-                                ?->jadwalProduksi
-                                ?->identifikasiProduks
-                                ->pluck('no_seri')
-                                ->filter()
-                                ->implode(', ')
+                                $item?->penyerahanElectrical?->pengecekanSS?->kelengkapanMaterial
+                                ?->standarisasiDrawing?->serahTerimaWarehouse?->peminjamanAlat
+                                ?->spkVendor?->permintaanBahanProduksi?->jadwalProduksi
+                                ?->identifikasiProduks?->pluck('no_seri')->implode(', ')
                                 ?: '-';
 
                             return [
-                                $item->id => "{$spkNo} - {$seri}",
+                                $item->id => "{$spkNo} - {$seri}"
+                            ];
+                        }),
+
+                    'stainless_steel' =>
+                    PengecekanMaterialSS::with([
+                        'kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi'
+                    ])
+                        ->whereDoesntHave('defectStatus')
+                        ->get()
+                        ->mapWithKeys(function ($item) {
+
+                            $spkNo =
+                                $item?->kelengkapanMaterial?->standarisasiDrawing?->serahTerimaWarehouse
+                                ?->peminjamanAlat?->spkVendor?->permintaanBahanProduksi
+                                ?->jadwalProduksi?->spk?->no_spk
+                                ?? '-';
+
+                            $seri =
+                                $item?->kelengkapanMaterial?->standarisasiDrawing?->serahTerimaWarehouse
+                                ?->peminjamanAlat?->spkVendor?->permintaanBahanProduksi
+                                ?->jadwalProduksi?->identifikasiProduks?->pluck('no_seri')->implode(', ')
+                                ?: '-';
+
+                            return [
+                                $item->id => "{$spkNo} - {$seri}"
                             ];
                         }),
 
@@ -173,51 +136,36 @@ trait ChamberIdentification
                 };
             })
             ->afterStateUpdated(function ($state, callable $get, callable $set) {
-                $tipe = $get('tipe_sumber');
 
+                $tipe = $get('tipe_sumber');
                 $model = match ($tipe) {
                     'electrical' => PengecekanMaterialElectrical::find($state),
                     'stainless_steel' => PengecekanMaterialSS::find($state),
-                    default => null
+                    default => null,
                 };
 
                 if (!$model) return;
 
+                $root = $tipe === 'electrical'
+                    ? $model?->penyerahanElectrical?->pengecekanSS
+                    : $model;
+
                 $seri =
-                    $model
-                    ?->kelengkapanMaterial
-                    ?->standarisasiDrawing
-                    ?->serahTerimaWarehouse
-                    ?->peminjamanAlat
-                    ?->spkVendor
-                    ?->permintaanBahanProduksi
-                    ?->jadwalProduksi
-                    ?->identifikasiProduks
-                    ->pluck('no_seri')
-                    ->filter()
+                    $root?->kelengkapanMaterial?->standarisasiDrawing?->serahTerimaWarehouse
+                    ?->peminjamanAlat?->spkVendor?->permintaanBahanProduksi
+                    ?->jadwalProduksi?->identifikasiProduks?->pluck('no_seri')
                     ->implode(', ')
                     ?: '-';
 
-                $tipe =
-                    $model
-                    ?->kelengkapanMaterial
-                    ?->standarisasiDrawing
-                    ?->serahTerimaWarehouse
-                    ?->peminjamanAlat
-                    ?->spkVendor
-                    ?->permintaanBahanProduksi
-                    ?->jadwalProduksi
-                    ?->identifikasiProduks
-                    ?->first()
-                    ?->tipe
+                $tipeProduk =
+                    $root?->kelengkapanMaterial?->standarisasiDrawing?->serahTerimaWarehouse
+                    ?->peminjamanAlat?->spkVendor?->permintaanBahanProduksi
+                    ?->jadwalProduksi?->identifikasiProduks?->first()?->tipe
                     ?? '-';
 
-                // dd(vars: $tipe);
-
-                $set('tipe', $tipe);
                 $set('serial_number', $seri);
+                $set('tipe', $tipeProduk);
 
-                // FILTER DETAIL YANG DITOLAK
                 $ditolak = collect($model->detail->details)
                     ->map(function ($item) {
                         $partsDitolak = collect($item['parts'] ?? [])
@@ -225,13 +173,13 @@ trait ChamberIdentification
                             ->values()
                             ->toArray();
 
-                        if (count($partsDitolak) === 0) return null;
+                        if (empty($partsDitolak)) return null;
 
                         return [
-                            'mainPart' => $item['mainPart'] ?? '',
-                            'mainPart_result' => $item['mainPart_result'] ?? '',
-                            'mainPart_status' => $item['mainPart_status'] ?? '',
-                            'parts' => $partsDitolak
+                            'mainPart'         => $item['mainPart'] ?? '',
+                            'mainPart_result'  => $item['mainPart_result'] ?? '',
+                            'mainPart_status'  => $item['mainPart_status'] ?? '',
+                            'parts'            => $partsDitolak,
                         ];
                     })
                     ->filter()
@@ -241,7 +189,7 @@ trait ChamberIdentification
                 $set('details', [
                     [
                         'spesifikasi_ditolak' => $ditolak,
-                        'spesifikasi_revisi' => $ditolak,
+                        'spesifikasi_revisi'  => $ditolak,
                     ]
                 ]);
             })
@@ -258,10 +206,6 @@ trait ChamberIdentification
             ->schema([
                 self::textareaInput('note', 'Note')
                     ->columnSpanFull()
-                // Textarea::make('note')
-                //     ->required()
-                //     ->label('Note')
-                //     ->columnSpanFull()
             ]);
     }
 
@@ -270,15 +214,6 @@ trait ChamberIdentification
         return
             Fieldset::make('')
             ->schema([
-                // FileUpload::make('file_upload')
-                //     ->label('File Pendukung')
-                //     ->directory('Quality/DefectStatus/Files')
-                //     ->acceptedFileTypes(['application/pdf'])
-                //     ->maxSize(10240)
-                //     ->required()
-                //     ->columnSpanFull()
-                //     ->helperText('Hanya file PDF yang diperbolehkan. Maksimal ukuran 10 MB.'),
-
                 self::uploadField(
                     'file_upload',
                     'File Pendukung',

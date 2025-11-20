@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Filament\Resources\Quality\PengecekanMaterial\SS\Traits;
+namespace App\Filament\Resources\Quality\PengecekanMaterial\Electrical\Traits;
 
+use App\Models\Production\Penyerahan\PenyerahanElectrical\PenyerahanElectrical;
 use App\Models\Quality\KelengkapanMaterial\SS\KelengkapanMaterialSS;
 use App\Traits\SimpleFormResource;
 use Filament\Forms\Components\Card;
@@ -25,8 +26,10 @@ trait ChamberIdentification
                 Grid::make($isEdit ? 2 : 3)
                     ->schema([
 
+                        //
                         self::getSelect()
-                            ->hiddenOn('edit'),
+                            ->hiddenOn('edit')
+                            ->placeholder('Pilih No SPK'),
 
                         self::textInput('tipe', 'Type/Model')
                             ->extraAttributes([
@@ -34,7 +37,7 @@ trait ChamberIdentification
                                 'style' => 'pointer-events: none;'
                             ]),
 
-                        self::textInput('ref_document', 'Ref Document'),
+                        self::textInput('volume', 'Volume'),
                         // ->extraAttributes([
                         //     'readonly' => true,
                         //     'style' => 'pointer-events: none;'
@@ -48,9 +51,9 @@ trait ChamberIdentification
     private static function getSelect()
     {
         return
-            Select::make('kelengkapan_material_id')
+            Select::make('penyerahan_electrical_id')
             ->label('Nomor SPK / No Seri')
-            ->placeholder('Pilih Standarisasi')
+            ->placeholder('Pilih Serial Number')
             ->searchable()
             ->native(false)
             ->preload()
@@ -58,16 +61,18 @@ trait ChamberIdentification
             ->required()
             ->options(
                 fn() =>
-                KelengkapanMaterialSS::with([
-                    'standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.spk',
-                    'standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.identifikasiProduks',
+                PenyerahanElectrical::with([
+                    'pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.spk',
+                    'pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.identifikasiProduks',
                 ])
                     ->latest()
-                    ->limit(10)
+                    ->limit(20)
                     ->get()
-                    ->mapWithKeys(function ($std) {
+                    ->mapWithKeys(function ($item) {
 
-                        $jadwal = $std->standarisasiDrawing
+                        $jadwal = $item->pengecekanSS
+                            ->kelengkapanMaterial
+                            ->standarisasiDrawing
                             ->serahTerimaWarehouse
                             ->peminjamanAlat
                             ->spkVendor
@@ -82,7 +87,7 @@ trait ChamberIdentification
                             ->implode(', ') ?: '-';
 
                         return [
-                            $std->id => "{$spkNo} - {$seri}",
+                            $item->id => "{$spkNo} - {$seri}",
                         ];
                     })
             )
@@ -145,24 +150,14 @@ trait ChamberIdentification
             ->afterStateUpdated(function ($state, callable $set) {
                 if (!$state) return;
 
-                $kelengkapan = KelengkapanMaterialSS::with([
-                    'standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.spk'
+                $penyerahan = PenyerahanElectrical::with([
+                    'pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.spk'
                 ])->find($state);
 
-                $no_order =
-                    $kelengkapan
-                    ?->standarisasiDrawing
-                    ?->serahTerimaWarehouse
-                    ?->peminjamanAlat
-                    ?->spkVendor
-                    ?->permintaanBahanProduksi
-                    ?->jadwalProduksi
-                    ?->spk
-                    ?->no_order
-                    ?? '-';
-
                 $tipe =
-                    $kelengkapan
+                    $penyerahan
+                    ?->pengecekanSS
+                    ?->kelengkapanMaterial
                     ?->standarisasiDrawing
                     ?->serahTerimaWarehouse
                     ?->peminjamanAlat
@@ -174,7 +169,6 @@ trait ChamberIdentification
                     ?->tipe
                     ?? '-';
 
-                $set('no_order_temp', $no_order);
                 $set('tipe', $tipe);
             });
     }
