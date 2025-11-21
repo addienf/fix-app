@@ -14,7 +14,7 @@ class Ketidaksesuaian extends Model
     use HasFactory;
 
     protected $fillable = [
-        'spk_marketing_id',
+        'pengecekan_performa_id',
         'tanggal',
         'nama_perusahaan',
         'department',
@@ -22,10 +22,9 @@ class Ketidaksesuaian extends Model
         'status',
     ];
 
-
-    public function spk()
+    public function pengecekanPerforma()
     {
-        return $this->belongsTo(SPKMarketing::class, 'spk_marketing_id');
+        return $this->belongsTo(SPKMarketing::class, 'pengecekan_performa_id');
     }
 
     public function pic()

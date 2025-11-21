@@ -39,10 +39,11 @@
                 </td>
             </tr>
         </table>
+
         @php
             $fields = [
                 ['label' => 'No SPK  :', 'value' => $spk_qc->no_spk],
-                ['label' => 'No SPK MKT :', 'value' => $spk_qc->spk->no_spk],
+                ['label' => 'No SPK MKT :', 'value' => $spk_qc->penyerahanElectrical->no_spk],
                 ['label' => 'Dari :', 'value' => $spk_qc->dari],
                 ['label' => 'Kepada :', 'value' => $spk_qc->kepada],
             ];
@@ -69,17 +70,17 @@
                     </tr>
                 </thead>
                 <tbody class="text-black bg-white dark:bg-gray-900 dark:text-white">
-                    @foreach ($spk_qc->spk->spesifikasiProduct->details as $item)
+                    @foreach ($spk_qc->details as $item)
                         <tr>
                             <td class="px-4 py-2 border border-gray-300 dark:border-gray-600">{{ $loop->iteration }}
                             </td>
                             <td class="px-4 py-2 border border-gray-300 dark:border-gray-600">
-                                {{ $item->product->name }}</td>
-                            <td class="px-4 py-2 border border-gray-300 dark:border-gray-600">{{ $item->quantity }}</td>
+                                {{ $item->nama_produk }}</td>
+                            <td class="px-4 py-2 border border-gray-300 dark:border-gray-600">{{ $item->jumlah }}</td>
                             <td class="px-4 py-2 border border-gray-300 dark:border-gray-600">
-                                {{ $spk_qc->spk->spesifikasiProduct->urs->no_urs }}</td>
+                                {{ $item->no_urs }}</td>
                             <td class="px-4 py-2 border border-gray-300 dark:border-gray-600">
-                                {{ \Carbon\Carbon::parse($spk_qc->spk->tanggal)->translatedFormat('d M Y') }}
+                                {{ \Carbon\Carbon::parse($item->tanggal)->translatedFormat('d F Y') }}
                             </td>
                         </tr>
                     @endforeach

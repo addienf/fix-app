@@ -37,14 +37,6 @@ trait InformasiUmum
                         ])
                             ->hiddenOn('edit'),
 
-                        // ->placeholder($lastValue ? "Data Terakhir : {$lastValue}" : 'Data Belum Tersedia'),
-
-                        // self::textInput('no_spk', 'Nomor SPK Quality')
-                        //     ->placeholder($lastValue ? "Data Terakhir : {$lastValue}" : 'Data Belum Tersedia')
-                        //     ->unique(ignoreRecord: true)
-                        //     ->columnSpan($isEdit ? 'full' : 1)
-                        //     ->hint('Format: XXX/QKS/PRO/SPK/MM/YY'),
-
                         self::selectMaterialID()
                             ->placeholder('Pilih Nomor SPK')
                             ->hiddenOn('edit'),
@@ -64,58 +56,12 @@ trait InformasiUmum
             ]);
     }
 
-    private static function selectInputSPK(): Select
-    {
-        return
-            Select::make('spk_marketing_id')
-            ->label('Nomor SPK')
-            ->relationship(
-                'spk',
-                'no_spk',
-                fn($query) => $query
-                    ->whereHas('pengecekanSS.penyerahan', function ($query) {
-                        $query->where('status_penyelesaian', 'Disetujui');
-                    })->whereDoesntHave('spkQC')
-            )
-            ->native(false)
-            ->searchable()
-            ->preload()
-            ->required()
-            ->reactive()
-            ->afterStateUpdated(function ($state, callable $set) {
-                if (!$state) return;
-
-                $spk = SPKMarketing::with('spesifikasiProduct.urs', 'spesifikasiProduct.details.product')->find($state);
-                if (!$spk) return;
-
-                $spesifikasi = $spk->spesifikasiProduct;
-                $noUrs = $spesifikasi?->urs?->no_urs ?? '-';
-                $rencanaPengiriman = $spk->tanggal ? Carbon::parse($spk->tanggal)->format('d/m/Y') : '-';
-                $dari = $spk->dari ?? '-';
-                $kepada = $spk->kepada ?? '-';
-
-                $details = $spesifikasi->details->map(function ($detail) use ($noUrs, $rencanaPengiriman, $dari, $kepada) {
-                    return [
-                        'nama_produk' => $detail->product?->name ?? '-',
-                        'jumlah' => $detail?->quantity ?? '-',
-                        'no_urs' => $noUrs ?? '-',
-                        'rencana_pengiriman' => $rencanaPengiriman ?? '-',
-                    ];
-                })->toArray();
-
-                // dd($details);
-                $set('details', $details);
-                $set('dari', $dari ?? '-');
-                $set('kepada', $kepada ?? '-');
-            });
-    }
-
     private static function selectMaterialID(): Select
     {
         return
-            Select::make('pengecekan_material_id')
-            ->label('Pengecekan Material')
-            ->placeholder('Pilih No Surat Dari Pengecekan Material')
+            Select::make('penyerahan_electrical_id')
+            ->label('No SPK / Nomor Seri')
+            ->placeholder('Pilih No SPK / Nomor Seri')
             ->required()
             ->reactive()
             ->options(
@@ -124,6 +70,7 @@ trait InformasiUmum
                     'pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.spk',
                     'pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.identifikasiProduks',
                 ])
+                    // ->whereDoesntHave('spkQC')
                     ->latest()
                     ->limit(10)
                     ->get()

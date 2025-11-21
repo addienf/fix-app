@@ -5,7 +5,6 @@ namespace App\Models\Production\SPK;
 use App\Models\Production\Penyerahan\PenyerahanElectrical\PenyerahanElectrical;
 use App\Models\Production\SPK\Pivot\SPKQualityDetail;
 use App\Models\Production\SPK\Pivot\SPKQualityPIC;
-use App\Models\Sales\SPKMarketings\SPKMarketing;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -16,17 +15,12 @@ class SPKQuality extends Model
     protected $table = 'spk_qualities';
 
     protected $fillable = [
-        // 'spk_marketing_id',
+        'penyerahan_electrical_id',
         'no_spk',
         'dari',
         'kepada',
         'status_penerimaan',
     ];
-
-    // public function spk()
-    // {
-    //     return $this->belongsTo(SPKMarketing::class, 'spk_marketing_id');
-    // }
 
     public function penyerahanElectrical()
     {

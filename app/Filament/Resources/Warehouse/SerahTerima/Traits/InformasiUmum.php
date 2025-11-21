@@ -51,8 +51,8 @@ trait InformasiUmum
     {
         return
             Select::make('peminjaman_alat_id')
-            ->label('Nomor Surat / No Seri')
-            ->placeholder('Pilih Nomor Peminjaman')
+            ->label('Nomor SPK / No Seri Produk')
+            ->placeholder('Pilih Nomor SPK / No Seri Produk')
             ->searchable()
             ->native(false)
             ->preload()

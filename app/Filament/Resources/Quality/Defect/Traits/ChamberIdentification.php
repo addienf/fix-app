@@ -36,7 +36,7 @@ trait ChamberIdentification
                         'style' => 'pointer-events: none;'
                     ]),
 
-                self::textInput('no_surat', 'No Surat'),
+                self::textInput('no_surat', 'No Form'),
 
                 self::textInput('volume', 'Volume'),
 

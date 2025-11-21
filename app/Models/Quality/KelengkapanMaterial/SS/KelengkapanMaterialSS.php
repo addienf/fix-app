@@ -17,18 +17,12 @@ class KelengkapanMaterialSS extends Model
     protected $table = 'kelengkapan_material_ss';
 
     protected $fillable = [
-        // 'spk_marketing_id',
         'standarisasi_drawing_id',
         'tipe',
         'ref_document',
         'note',
         'status_penyelesaian',
     ];
-
-    // public function spk()
-    // {
-    //     return $this->belongsTo(SPKMarketing::class, 'spk_marketing_id');
-    // }
 
     public function standarisasiDrawing()
     {

@@ -48,9 +48,15 @@ class StandarisasiDrawingResource extends Resource
                     ->default('Belum Diperiksa'),
 
                 static::informasiUmumSection($form),
+
                 static::identifikasiGambarKerjaSection(),
+
                 static::spesifikasiTeknisSection(),
+
+                static::kopmponenGambarSection(),
+
                 static::detailsSection(),
+
                 static::signatureSection(
                     [
                         [

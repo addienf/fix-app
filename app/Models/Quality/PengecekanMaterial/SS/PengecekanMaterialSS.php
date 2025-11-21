@@ -16,7 +16,6 @@ class PengecekanMaterialSS extends Model
     protected $table = 'pengecekan_material_ss';
 
     protected $fillable = [
-        // 'spk_marketing_id',
         'kelengkapan_material_id',
         'tipe',
         'ref_document',
@@ -29,11 +28,6 @@ class PengecekanMaterialSS extends Model
         return $this->hasOne(DefectStatus::class, 'sumber_id')
             ->where('tipe_sumber', 'stainless_steel');
     }
-
-    // public function spk()
-    // {
-    //     return $this->belongsTo(SPKMarketing::class, 'spk_marketing_id');
-    // }
 
     public function kelengkapanMaterial()
     {

@@ -144,8 +144,13 @@ class DefectStatusResource extends Resource
             ])
             ->actions([
                 ActionGroup::make([
-                    Tables\Actions\EditAction::make(),
-                    Tables\Actions\DeleteAction::make(),
+                    Tables\Actions\EditAction::make()
+                        ->icon('heroicon-o-pencil-square')
+                        ->tooltip('Edit Data Spesifikasi')
+                        ->color('info'),
+                    Tables\Actions\DeleteAction::make()
+                        ->icon('heroicon-o-trash')
+                        ->tooltip('Hapus Data'),
                     Action::make('pdf_view')
                         ->label(_('Lihat PDF'))
                         ->icon('heroicon-o-document')

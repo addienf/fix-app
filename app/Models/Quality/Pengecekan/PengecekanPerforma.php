@@ -2,10 +2,10 @@
 
 namespace App\Models\Quality\Pengecekan;
 
+use App\Models\Production\Penyerahan\PenyerahanProdukJadi;
+use App\Models\Quality\Ketidaksesuaian\Ketidaksesuaian;
 use App\Models\Quality\Pengecekan\Pivot\PengecekanPerformaDetail;
 use App\Models\Quality\Pengecekan\Pivot\PengecekanPerformaPIC;
-use App\Models\Quality\PengecekanMaterial\Electrical\PengecekanMaterialElectrical;
-use App\Models\Sales\SPKMarketings\SPKMarketing;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -14,8 +14,7 @@ class PengecekanPerforma extends Model
     use HasFactory;
 
     protected $fillable = [
-        // 'spk_marketing_id',
-        'pengecekan_electrical_id',
+        'produk_jadi_id',
         'tipe',
         'volume',
         'serial_number',
@@ -23,19 +22,19 @@ class PengecekanPerforma extends Model
         'status_penyelesaian',
     ];
 
-    // public function spk()
-    // {
-    //     return $this->belongsTo(SPKMarketing::class, 'spk_marketing_id');
-    // }
-
-    public function pengecekanElectrical()
+    public function penyerahanProdukJadi()
     {
-        return $this->belongsTo(PengecekanMaterialElectrical::class, 'pengecekan_electrical_id');
+        return $this->belongsTo(PenyerahanProdukJadi::class, 'produk_jadi_id');
     }
 
     public function pic()
     {
         return $this->hasOne(PengecekanPerformaPIC::class, 'pengecekan_performa_id');
+    }
+
+    public function ketidaksesuaian()
+    {
+        return $this->hasOne(Ketidaksesuaian::class, 'pengecekan_performa_id');
     }
 
     public function detail()

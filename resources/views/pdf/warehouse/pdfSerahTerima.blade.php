@@ -43,7 +43,10 @@
         @php
 
             $fields = [
-                ['label' => 'Nomor:', 'value' => $serah_terima->permintaanBahanPro->no_surat],
+                [
+                    'label' => 'Nomor:',
+                    'value' => $serah_terima->no_surat,
+                ],
                 [
                     'label' => 'Tanggal :',
                     'value' => \Carbon\Carbon::parse($serah_terima->tanggal)->translatedFormat('d M Y'),
@@ -67,8 +70,11 @@
         <div class="max-w-4xl mx-auto mb-2 text-sm">
             <p class="mb-2">Dengan hormat,</p>
             <p class="flex flex-wrap items-center gap-1">
-                <span>Berdasarkan Permintaan Barang No {{ $serah_terima->permintaanBahanPro->no_surat }} Dari Departemen
-                    {{ $serah_terima->dari }}, berikut di bawah ini material/bahan/barang yang tersedia dan telah
+                <span>Berdasarkan Permintaan Barang No
+                    {{ $serah_terima->peminjamanAlat->spkVendor->permintaanBahanProduksi->no_surat }} Dari Departemen
+                    {{ Str::headline($serah_terima->pic?->submitName?->roles?->first()?->name ?? '') }}, berikut di bawah
+                    ini
+                    material/bahan/barang yang tersedia dan telah
                     diberikan:</span>
             </p>
         </div>

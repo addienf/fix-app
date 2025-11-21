@@ -14,7 +14,9 @@ trait TimelineProduksi
     use SimpleFormResource;
     protected static function timelineProduksiSection(): Section
     {
-        return Section::make('Timeline Produksi')
+        return
+            Section::make('Timeline Produksi')
+            ->collapsible()
             ->schema([
                 TableRepeater::make('timelines')
                     ->relationship('timelines')
