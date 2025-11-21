@@ -31,38 +31,12 @@ trait InformasiUmum
             ]);
     }
 
-    // protected static function selectInputSPK(): Select
-    // {
-    //     return
-    //         Select::make('spk_marketing_id')
-    //         ->label('Nomor SPK')
-    //         ->relationship(
-    //             'spk',
-    //             'no_spk',
-    //             fn($query) => $query->whereIn('id', Cache::rememberForever(
-    //                 SPKMarketing::$CACHE_KEYS['standarisasi'],
-    //                 fn() => SPKMarketing::whereHas('permintaan.serahTerimaBahan', function ($query) {
-    //                     $query->where('status_penerimaan', 'Diterima');
-    //                 })
-    //                     ->whereDoesntHave('standarisasi')
-    //                     ->pluck('id')
-    //                     ->toArray()
-    //             ))
-    //         )
-    //         ->placeholder('Pilin No SPK')
-    //         ->native(false)
-    //         ->searchable()
-    //         ->preload()
-    //         ->required()
-    //         ->reactive();
-    // }
-
     private static function select()
     {
         return
             Select::make('serah_terima_bahan_id')
             ->label('Nomor SPK / No Seri')
-            ->placeholder('Pilih Data Serah Terima')
+            ->placeholder('Pilih Nomor SPK / No Seri')
             ->searchable()
             ->native(false)
             ->preload()

@@ -22,6 +22,7 @@ return new class extends Migration
             // 3. Tambah kolom baru
             $table->foreignId('penyerahan_electrical_id')
                 ->nullable()
+                ->after('id')
                 ->constrained('penyerahan_electricals')
                 ->onDelete('cascade');
         });

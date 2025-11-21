@@ -46,7 +46,7 @@ trait ChamberIdentification
         return
             Select::make('standarisasi_drawing_id')
             ->label('Nomor SPK / No Seri')
-            ->placeholder('Pilih Standarisasi')
+            ->placeholder('Pilih Nomor SPK / No Seri')
             ->searchable()
             ->native(false)
             ->preload()
@@ -58,6 +58,7 @@ trait ChamberIdentification
                     'serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.spk',
                     'serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.identifikasiProduks',
                 ])
+                    ->whereDoesntHave('kelengkapanMaterial')
                     ->latest()
                     ->limit(10)
                     ->get()

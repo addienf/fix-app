@@ -75,8 +75,8 @@ trait InformasiProduk
     {
         return
             Select::make('pengecekan_material_id')
-            ->label('Pengecekan Material')
-            ->placeholder('Pilih No Surat Dari Pengecekan Material')
+            ->label('No SPK / Nomor Seri')
+            ->placeholder('Pilih No SPK / Nomor Seri')
             ->required()
             ->reactive()
             ->options(
@@ -85,6 +85,7 @@ trait InformasiProduk
                     'kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.spk',
                     'kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.identifikasiProduks',
                 ])
+                    ->whereDoesntHave('penyerahan')
                     ->latest()
                     ->limit(10)
                     ->get()

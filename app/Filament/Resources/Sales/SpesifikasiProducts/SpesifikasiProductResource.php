@@ -42,6 +42,13 @@ class SpesifikasiProductResource extends Resource
     protected static ?string $pluralLabel = 'Spesifikasi Produk';
     protected static ?string $modelLabel = 'Spesifikasi Produk';
 
+    public static function getNavigationBadge(): ?string
+    {
+        $count = SpesifikasiProduct::where('status', '!=', 'Diketahui MR')->count();
+
+        return $count > 0 ? (string) $count : null;
+    }
+
     public static function form(Form $form): Form
     {
         $isEdit = $form->getOperation() === 'edit';

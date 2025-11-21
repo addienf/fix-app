@@ -4,14 +4,8 @@ namespace App\Filament\Resources\Quality\Standarisasi\Traits;
 
 use App\Traits\HasAutoNumber;
 use App\Traits\SimpleFormResource;
-use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Section;
-use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
-use Filament\Forms\Get;
-use Illuminate\Support\Facades\Cache;
-use Wallo\FilamentSelectify\Components\ButtonGroup;
 
 trait Details
 {
@@ -23,13 +17,16 @@ trait Details
             ->collapsible()
             ->schema([
 
-                self::uploadField(
+                self::uploadField2(
                     'lampiran',
                     'Lampiran',
                     'Quality/StandarisasiDrawing/Files',
                     '*Hanya file gambar (PNG, JPG, JPEG) yang diperbolehkan. Maksimal ukuran 10 MB.',
-                    types: ['image/png', 'image/jpeg'],
-                    maxSize: 10240,
+                    ['image/png', 'image/jpeg'],
+                    10240,
+                    true,
+                    true,
+                    true
                 ),
 
                 Textarea::make('catatan')

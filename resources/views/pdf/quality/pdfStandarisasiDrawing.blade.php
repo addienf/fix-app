@@ -42,7 +42,10 @@
 
         @php
             $fields = [
-                ['label' => 'No SPK Produksi :', 'value' => $standarisasi->spk->no_spk],
+                [
+                    'label' => 'No SPK Produksi :',
+                    'value' => $no_spk,
+                ],
                 [
                     'label' => 'Tanggal Pemeriksaan :',
                     'value' => \Carbon\Carbon::parse($standarisasi->tanggal)->format('d M Y'),
@@ -54,7 +57,7 @@
         <div class="flex flex-col w-full max-w-4xl gap-4 pt-6 mx-auto text-sm">
             <div class="flex items-center gap-4">
                 <label class="w-48 font-medium">No SPK Produksi :</label>
-                <input type="text" readonly value="{{ $standarisasi->spk->no_spk }}"
+                <input type="text" readonly value="{{ $no_spk }}"
                     class="flex-1 px-3 py-2 text-black bg-white border border-gray-300 rounded-md cursor-not-allowed" />
             </div>
             <div class="flex items-center gap-4">
@@ -157,15 +160,6 @@
 
         <div class="w-full max-w-4xl pt-6 mx-auto">
             <h2 class="mb-4 text-xl font-bold">V. Lampiran</h2>
-
-            {{-- <div class="grid grid-cols-1 gap-4 mb-6 sm:grid-cols-2">
-                @foreach ($standarisasi->detail->lampiran as $gambar)
-                    <div class="border border-gray-300 rounded shadow p-2 flex items-center justify-center h-[300px]">
-                        <img src="{{ asset('storage/' . $gambar) }}" alt="Lampiran"
-                            class="object-contain max-w-full max-h-full" />
-                    </div>
-                @endforeach
-            </div> --}}
 
             @if (!empty($standarisasi->detail->lampiran))
                 <div class="mt-4 mb-5 text-sm text-gray-700">

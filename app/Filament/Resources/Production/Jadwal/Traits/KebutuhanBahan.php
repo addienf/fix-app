@@ -14,7 +14,9 @@ trait KebutuhanBahan
     use SimpleFormResource;
     protected static function kebutuhanBahanSection(): Section
     {
-        return Section::make('Kebutuhan bahan/alat')
+        return
+            Section::make('Kebutuhan bahan/alat')
+            ->collapsible()
             ->schema([
                 TableRepeater::make('sumbers')
                     ->relationship('sumbers')

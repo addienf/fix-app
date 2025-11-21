@@ -17,7 +17,9 @@ trait DetailJadwalProduksi
     use SimpleFormResource;
     protected static function detailJadwalProduksiSection(): Section
     {
-        return Section::make('Detail Jadwal Produksi')
+        return
+            Section::make('Detail Jadwal Produksi')
+            ->collapsible()
             ->schema([
                 TableRepeater::make('details')
                     ->relationship('details')

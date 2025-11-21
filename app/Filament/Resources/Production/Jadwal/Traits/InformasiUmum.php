@@ -19,7 +19,9 @@ trait InformasiUmum
     {
         $isEdit = $form->getOperation() === 'edit';
 
-        return Section::make('Informasi Umum')
+        return
+            Section::make('Informasi Umum')
+            ->collapsible()
             ->schema([
 
                 Grid::make($isEdit ? 3 : 2)

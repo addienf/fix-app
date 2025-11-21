@@ -72,9 +72,9 @@
                 <li>
                     <strong>Jumlah & Jenis Material</strong><br>
                     Jenis Material:
-                    {{ $vendor->spk->permintaan->details->pluck('bahan_baku')->unique()->implode(' / ') }}<br>
+                    {{ $vendor->permintaanBahanProduksi->details->pluck('bahan_baku')->unique()->implode(' / ') }}<br>
                     Ketebalan:
-                    {{ $vendor->spk->permintaan->details->pluck('spesifikasi')->unique()->implode(' / ') }}<br>
+                    {{ $vendor->permintaanBahanProduksi->details->pluck('spesifikasi')->unique()->implode(' / ') }}<br>
                     Jumlah: Sesuai dokumen terlampir
                 </li>
                 <li>
@@ -136,8 +136,6 @@
         window.scrollTo(0, 0);
 
         const element = document.getElementById("export-area");
-
-        // Pastikan semua gambar sudah termuat sebelum render
         const images = element.getElementsByTagName("img");
         const totalImages = images.length;
         let loadedImages = 0;

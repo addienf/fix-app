@@ -41,7 +41,7 @@
         </table>
         <div class="grid w-full max-w-4xl grid-cols-1 pt-4 mx-auto gap-y-4">
             @php
-                $fields1 = [['label' => 'No SPK Produksi :', 'value' => $kelengkapan->spk->no_spk]];
+                $fields1 = [['label' => 'No SPK Produksi :', 'value' => $no_spk]];
             @endphp
 
             @foreach ($fields1 as $field)

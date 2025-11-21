@@ -17,7 +17,9 @@ trait IdentifikasiProduk
     use SimpleFormResource;
     protected static function identifikasiProdukSection(): Section
     {
-        return Section::make('Identifikasi Produk')
+        return
+            Section::make('Identifikasi Produk')
+            ->collapsible()
             ->schema([
                 TableRepeater::make('identifikasiProduks')
                     ->relationship('identifikasiProduks')

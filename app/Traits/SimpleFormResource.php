@@ -87,4 +87,50 @@ trait SimpleFormResource
                 }
             });
     }
+
+    protected static function uploadField2(
+        string $name = '',
+        string $label = '',
+        string $directory = '',
+        ?string $helperText = null,
+        array $types = ['application/pdf', 'image/jpeg', 'image/png'],
+        int $maxSize = 5120,
+        bool $required = true,
+        bool $optimize = true,
+        bool $multiple = true,
+    ): FileUpload {
+        return FileUpload::make($name)
+            ->label($label)
+            ->directory($directory)
+            ->acceptedFileTypes($types)
+            ->maxSize($maxSize)
+            ->columnSpanFull()
+            ->helperText(
+                $helperText
+                    ?? 'Unggah file (PDF/JPG/PNG), maksimal ' . ($maxSize / 1024) . ' MB.'
+            )
+            ->required($required)
+            ->openable()
+            ->multiple($multiple) // ✅ MULTIPLE AKTIF
+
+            ->afterStateUpdated(function ($state) use ($optimize) {
+
+                if (! $optimize || empty($state)) {
+                    return;
+                }
+
+                // 🔥 kalau multiple, $state = array
+                $paths = is_array($state) ? $state : [$state];
+
+                foreach ($paths as $file) {
+                    if (! $file) continue;
+
+                    $path = Storage::disk('public')->path($file);
+
+                    if (file_exists($path) && @exif_imagetype($path)) {
+                        ImageOptimizer::optimize($path);
+                    }
+                }
+            });
+    }
 }

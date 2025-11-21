@@ -42,7 +42,7 @@
 
         <div class="grid w-full max-w-4xl grid-cols-1 pt-2 mx-auto text-sm gap-y-4">
             @php
-                $fields = [['label' => 'No SPK Produksi :', 'value' => $pengecekanSS->spk->no_spk]];
+                $fields = [['label' => 'No SPK Produksi :', 'value' => $no_spk]];
             @endphp
 
             @foreach ($fields as $field)
@@ -77,15 +77,12 @@
             $rawDetails = $pengecekanSS->detail->details ?? [];
             $details = is_string($rawDetails) ? json_decode($rawDetails, true) : $rawDetails;
 
-            function statusLabel($code)
-            {
-                return match (strtolower($code)) {
-                    'ok' => 'OK',
-                    'h' => 'Hold',
-                    'r' => 'Repaired',
-                    default => ucfirst($code ?? '-'),
-                };
-            }
+            $statusLabel = fn($code) => match (strtolower($code)) {
+                'ok' => 'OK',
+                'h' => 'Hold',
+                'r' => 'Repaired',
+                default => ucfirst($code ?? '-'),
+            };
         @endphp
 
         <table class="w-full max-w-4xl mx-auto text-sm border border-black">
@@ -119,7 +116,7 @@
                             {{ ($group['mainPart_result'] ?? '0') == '0' ? '✘' : '' }}
                         </td>
                         <td class="px-3 py-2 font-semibold text-center bg-gray-200 border border-black">
-                            {{ statusLabel($group['mainPart_status'] ?? '-') }}
+                            {{ $statusLabel($group['mainPart_status'] ?? '-') }}
                         </td>
                     </tr>
 
@@ -135,7 +132,7 @@
                                 {{ ($part['result'] ?? '0') == '0' ? '✘' : '' }}
                             </td>
                             <td class="px-3 py-2 text-center border border-black">
-                                {{ statusLabel($part['status'] ?? '-') }}
+                                {{ $statusLabel($part['status'] ?? '-') }}
                             </td>
                         </tr>
                     @endforeach

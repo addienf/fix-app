@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Quality\Pengecekan\Traits;
 
+use App\Models\Production\Penyerahan\PenyerahanProdukJadi;
 use App\Models\Quality\PengecekanMaterial\Electrical\PengecekanMaterialElectrical;
 use App\Traits\SimpleFormResource;
 use Filament\Forms\Components\Card;
@@ -52,9 +53,9 @@ trait ChamberIdentification
     private static function getSelect()
     {
         return
-            Select::make('pengecekan_electrical_id')
+            Select::make('produk_jadi_id')
             ->label('Nomor SPK / No Seri')
-            ->placeholder('Pilih Serial Number')
+            ->placeholder('Pilih Nomor SPK / No Seri')
             ->searchable()
             ->native(false)
             ->preload()
@@ -62,16 +63,16 @@ trait ChamberIdentification
             ->required()
             ->options(
                 fn() =>
-                PengecekanMaterialElectrical::with([
-                    'penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.spk',
-                    'penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.identifikasiProduks',
+                PenyerahanProdukJadi::with([
+                    'pengecekanElectrical.penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.spk',
+                    'pengecekanElectrical.penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.identifikasiProduks',
                 ])
                     ->latest()
                     ->limit(20)
                     ->get()
                     ->mapWithKeys(function ($item) {
 
-                        $jadwal = $item->penyerahanElectrical->pengecekanSS->kelengkapanMaterial->standarisasiDrawing
+                        $jadwal = $item->pengecekanElectrical->penyerahanElectrical->pengecekanSS->kelengkapanMaterial->standarisasiDrawing
                             ->serahTerimaWarehouse->peminjamanAlat->spkVendor->permintaanBahanProduksi->jadwalProduksi;
 
                         $spkNo = $jadwal->spk->no_spk ?? '-';
@@ -89,20 +90,22 @@ trait ChamberIdentification
             ->afterStateUpdated(function ($state, callable $set) {
                 if (!$state) return;
 
-                $pengecekan = PengecekanMaterialElectrical::with([
-                    'penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.spk'
+                $penyerahan = PenyerahanProdukJadi::with([
+                    'pengecekanElectrical.penyerahanElectrical',
+                    'pengecekanElectrical.penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.identifikasiProduks',
                 ])->find($state);
 
-                $model_pengecekan =
-                    $pengecekan?->penyerahanElectrical?->pengecekanSS?->kelengkapanMaterial?->standarisasiDrawing
-                    ?->serahTerimaWarehouse?->peminjamanAlat?->spkVendor?->permintaanBahanProduksi
-                    ?->jadwalProduksi ?? '-';
 
-                $tipe = $model_pengecekan?->identifikasiProduks?->first()?->tipe ?? '-';
+                $tipe = $penyerahan?->pengecekanElectrical?->penyerahanElectrical->tipe ?? '-';
 
-                $volume = $pengecekan?->volume;
+                $volume = $penyerahan?->pengecekanElectrical?->volume;
 
-                $no_seri = $model_pengecekan?->identifikasiProduks?->first()?->no_seri ?? '-';
+                $no_seri = $penyerahan?->pengecekanElectrical?->penyerahanElectrical->pengecekanSS
+                    ->kelengkapanMaterial->standarisasiDrawing->serahTerimaWarehouse->peminjamanAlat->spkVendor
+                    ->permintaanBahanProduksi->jadwalProduksi->identifikasiProduks
+                    ->pluck('no_seri')
+                    ->filter()
+                    ->implode(', ') ?: '-';
 
                 // dd($no_seri);
 

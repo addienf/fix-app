@@ -42,11 +42,23 @@
             </tr>
         </table>
 
+        @php
+            $lampiran = $standarisasi_lampiran->detail?->lampiran ?? [];
+
+            if (is_string($lampiran)) {
+                $lampiran = [$lampiran];
+            }
+
+            if (!is_array($lampiran)) {
+                $lampiran = [];
+            }
+        @endphp
+
         <div class="max-w-4xl py-6 mx-auto">
             <h1 class="mb-4 text-2xl font-bold">Lampiran Gambar</h1>
 
             <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                @forelse ($standarisasi_lampiran->detail?->lampiran ?? [] as $gambar)
+                @forelse ($lampiran as $gambar)
                     <div class="border border-gray-300 rounded shadow p-2 flex items-center justify-center h-[300px]">
                         <img src="{{ asset('storage/' . $gambar) }}" alt="Lampiran"
                             class="object-contain max-w-full max-h-full" />
