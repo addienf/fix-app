@@ -64,7 +64,7 @@
             $detailsTambahan = $detail['details_tambahan'] ?? [];
         @endphp
 
-        <div class="max-w-4xl mx-auto mt-5 space-y-10 text-sm">
+        <div class="max-w-4xl mx-auto pt-4 space-y-7 text-sm">
             <div class="max-w-4xl pt-4 mx-auto space-y-5 text-sm">
                 <div class="overflow-hidden border rounded-lg shadow-sm">
                     <table class="w-full text-left border-collapse table-fixed">
@@ -90,7 +90,7 @@
                                     There was no color change within 3 minutes after the liquid dropped on the surface that
                                     indicating material is genuine SS304
                                     <img src="{{ asset('asset/IncomingMaterialSS.png') }}" alt="Logo"
-                                        class="pt-2 w-28 h-15" />
+                                        class="w-34 h-26" />
                                 </td>
                                 <td class="px-4 py-2 align-top border">
                                     <textarea class="w-full h-24 px-2 py-1 border rounded-md resize-none focus:outline-none focus:ring focus:ring-gray-300">{{ $checklist['actual_result_1'] ?? '-' }}</textarea>
@@ -151,10 +151,10 @@
             </div>
         </div>
 
-        <div class="w-full max-w-4xl pt-6 mx-auto mb-8">
+        <div class="w-full max-w-4xl pt-8 mx-auto mb-12">
             <label for="note" class="block mb-1 text-sm font-medium text-gray-700">Remarks</label>
             <div id="note" readonly
-                class="w-full px-3 py-2 overflow-hidden text-sm leading-relaxed break-words border border-black rounded-md resize-none">
+                class="w-full px-3 py-2 overflow-hidden text-sm leading-relaxed break-words border border-gray rounded-md resize-none">
                 {{ trim($incomingSS->remarks) }}
             </div>
         </div>
