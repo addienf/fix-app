@@ -48,7 +48,10 @@
             <div class="w-full max-w-4xl mx-auto space-y-2 text-sm">
                 @php
                     $fields = [
-                        ['label' => 'Tanggal :', 'value' => $pelabelan->spk->no_spk],
+                        [
+                            'label' => 'Tanggal :',
+                            'value' => \Carbon\Carbon::parse($pelabelan->tanggal)->translatedFormat('d F Y'),
+                        ],
                         ['label' => 'Penanggung Jawab :', 'value' => $pelabelan->penanggung_jawab],
                     ];
                 @endphp

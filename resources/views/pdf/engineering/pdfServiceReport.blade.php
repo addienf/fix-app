@@ -46,7 +46,7 @@
                     ['label' => 'Form No:', 'value' => $serviceReport->form_no],
                     [
                         'label' => 'Date',
-                        'value' => \Carbon\Carbon::parse($serviceReport->tanggal)->translatedFormat('d M Y'),
+                        'value' => \Carbon\Carbon::parse($serviceReport->tanggal)->translatedFormat('d F Y'),
                     ],
                 ];
             @endphp

@@ -42,9 +42,26 @@ trait InformasiProduk
                                 0 => 'No',
                             ]),
 
-                        TextInput::make('field_category')
+                        // TextInput::make('field_category')
+                        //     ->label('Field Category')
+                        //     ->required(),
+
+                        Select::make('field_category')
                             ->label('Field Category')
-                            ->required(),
+                            ->options([
+                                'controlling' => 'Controlling',
+                                'air_cooling_system' => 'Air Cooling System',
+                                'logging_system' => 'Logging System',
+                                'server_computer' => 'Server Computer',
+                                'networking' => 'Networking',
+                                'water_feeding_system' => 'Water Feeding System',
+                                'cooling_system' => 'Cooling System',
+                                'humidifier_system' => 'Humidifier System',
+                                'communication_system' => 'Communication System',
+                                'air_heating_system' => 'Air Heating System',
+                                'software' => 'Software',
+                                'other' => 'Other',
+                            ]),
 
                         Textarea::make('deskripsi')
                             ->columnSpanFull()

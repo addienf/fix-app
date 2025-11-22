@@ -6,7 +6,6 @@ use App\Services\SignatureUploader;
 use App\Traits\SimpleFormResource;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Section;
-use Filament\Forms\Components\Select;
 use Saade\FilamentAutograph\Forms\Components\SignaturePad;
 
 trait Petugas

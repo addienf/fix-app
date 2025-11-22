@@ -4,9 +4,13 @@ namespace App\Filament\Resources\Warehouse\Pelabelan;
 
 use App\Filament\Resources\Warehouse\Pelabelan\QCPassedResource\Pages;
 use App\Filament\Resources\Warehouse\Pelabelan\QCPassedResource\RelationManagers;
+use App\Filament\Resources\Warehouse\Pelabelan\Traits\DetailLaporanProduk;
+use App\Filament\Resources\Warehouse\Pelabelan\Traits\InformasiUmum;
+use App\Filament\Resources\Warehouse\Pelabelan\Traits\SyaratDanKetentuan;
 use App\Models\Sales\SPKMarketings\SPKMarketing;
 use App\Models\Warehouse\Pelabelan\QCPassed;
 use App\Services\SignatureUploader;
+use App\Traits\HasSignature;
 use Filament\Actions\Action;
 use Filament\Forms;
 use Filament\Forms\Components\Repeater;
@@ -30,8 +34,8 @@ use Saade\FilamentAutograph\Forms\Components\SignaturePad;
 
 class QCPassedResource extends Resource
 {
+    use InformasiUmum, DetailLaporanProduk, SyaratDanKetentuan, HasSignature;
     protected static ?string $model = QCPassed::class;
-
     protected static ?string $navigationIcon = 'heroicon-o-cog-6-tooth';
     protected static ?int $navigationSort = 4;
     protected static ?string $navigationGroup = 'Warehouse';
@@ -49,138 +53,35 @@ class QCPassedResource extends Resource
 
     public static function form(Form $form): Form
     {
-        $isEdit = $form->getOperation() === 'edit';
-
         return $form
             ->schema([
                 //
                 Hidden::make('status_persetujuan')
                     ->default('Belum Disetujui'),
 
-                Section::make('Informasi Umum')
-                    ->collapsible()
-                    ->schema([
+                self::getInformasiUmumSection($form),
 
-                        self::selectInputSPK()
-                            ->hiddenOn('edit')
-                            ->placeholder('Pilih No SPK'),
+                self::getDetailLaporanProdukSection(),
 
-                        self::datePicker('tanggal', 'Tanggal'),
+                self::getSyaratDanKetentuanSection(),
 
-                        self::textInput('penanggung_jawab', 'Penanggung Jawab')
-
-                    ])->columns($isEdit ? 2 : 3),
-
-
-                Section::make('Detail Laporan Produk')
-                    ->collapsible()
-                    ->schema([
-                        Repeater::make('details')
-                            ->label('')
-                            ->relationship('details')
-                            ->schema([
-                                // Grid untuk 6 kolom
-                                self::textInput('nama_produk', 'Nama Produk')
-                                    ->extraAttributes([
-                                        'readonly' => true,
-                                        'style' => 'pointer-events: none;'
-                                    ]),
-
-                                self::textInput('tipe', 'Tipe/Model')
-                                    ->extraAttributes([
-                                        'readonly' => true,
-                                        'style' => 'pointer-events: none;'
-                                    ]),
-
-                                self::textInput('serial_number', 'S/N')
-                                    ->extraAttributes([
-                                        'readonly' => true,
-                                        'style' => 'pointer-events: none;'
-                                    ]),
-
-                                self::selectJenis(), // Asumsi ini dropdown
-
-                                self::textInput('jumlah', 'Jumlah')
-                                    ->extraAttributes([
-                                        'readonly' => true,
-                                        'style' => 'pointer-events: none;'
-                                    ]),
-
-                                self::textInput('keterangan', 'Keterangan'),
-                            ])
-                            ->columns(6)
-                            ->deletable(false)
-                            ->reorderable(false)
-                            ->addable(false)
-                    ]),
-
-                Section::make('Syarat dan Ketentuan')
-                    ->collapsible()
-                    ->schema([
-
-                        self::textInput('total_masuk', 'Total Masuk'),
-
-                        self::textInput('total_keluar', 'Total Keluar'),
-
-                        self::textInput('sisa_stock', 'Sisa Stock')
-
-                    ])->columns(3),
-
-                Section::make('PIC')
-                    ->collapsible()
-                    ->relationship('pic')
-                    ->schema([
-
-                        Grid::make(2)
-                            ->schema([
-
-                                Grid::make(1)
-                                    ->schema([
-
-                                        Hidden::make('created_name')
-                                            ->default(fn() => auth()->id()),
-
-                                        self::textInput('created_name_placeholder', 'Dibuat Oleh')
-                                            ->default(fn() => auth()->user()?->name)
-                                            ->extraAttributes([
-                                                'readonly' => true,
-                                                'style' => 'pointer-events: none;'
-                                            ]),
-
-                                        // self::textInput('created_name', 'Dibuat Oleh'),
-
-                                        self::signatureInput('created_signature', ''),
-
-                                    ])->hiddenOn(operations: 'edit'),
-
-                                Grid::make(1)
-                                    ->schema([
-
-                                        Hidden::make('approved_name')
-                                            ->default(fn() => auth()->id())
-                                            ->dehydrated(true)
-                                            ->afterStateHydrated(function ($component) {
-                                                $component->state(auth()->id());
-                                            }),
-
-                                        self::textInput('approved_name_placeholder', 'Disetujui Oleh')
-                                            ->placeholder(fn() => auth()->user()?->name)
-                                            ->required(false)
-                                            ->extraAttributes([
-                                                'readonly' => true,
-                                                'style' => 'pointer-events: none;'
-                                            ]),
-
-                                        // self::textInput('approved_name', 'Disetujui Oleh'),
-
-                                        self::signatureInput('approved_signature', ''),
-
-                                    ])->hiddenOn(operations: 'create'),
-
-                            ]),
-
-                    ]),
-
+                static::signatureSection(
+                    [
+                        [
+                            'prefix' => 'created',
+                            'role' => 'Dibuat Oleh',
+                            'hideLogic' => fn($operation) => $operation === 'edit',
+                        ],
+                        [
+                            'prefix' => 'approved',
+                            'role' => 'Disetujui Oleh',
+                            'hideLogic' => fn($operation, $record) =>
+                            $operation === 'create' || filled($record?->approved_signature)
+                        ],
+                    ],
+                    title: 'PIC',
+                    uploadPath: 'Quality/PengecekanMaterial/SS/Signatures'
+                )
             ]);
     }
 
@@ -189,7 +90,11 @@ class QCPassedResource extends Resource
         return $table
             ->columns([
                 //
-                self::textColumn('spk.no_spk', 'No SPK'),
+                // self::textColumn('spk.no_spk', 'No SPK'),
+
+                self::textColumn('pengecekanPerforma.penyerahanProdukJadi.details.no_spk', 'Nomor SPK'),
+
+                self::textColumn('pengecekanPerforma.serial_number', 'Serial Number'),
 
                 self::textColumn('penanggung_jawab', 'Penanggung Jawab'),
 
@@ -208,8 +113,13 @@ class QCPassedResource extends Resource
             ])
             ->actions([
                 ActionGroup::make([
-                    Tables\Actions\EditAction::make(),
-                    Tables\Actions\DeleteAction::make(),
+                    Tables\Actions\EditAction::make()
+                        ->icon('heroicon-o-pencil-square')
+                        ->tooltip('Edit Data SPK Marketing')
+                        ->color('info'),
+                    Tables\Actions\DeleteAction::make()
+                        ->icon('heroicon-o-trash')
+                        ->tooltip('Hapus Data'),
                     Action::make('pdf_view')
                         ->label(_('Lihat PDF'))
                         ->icon('heroicon-o-document')
@@ -240,132 +150,5 @@ class QCPassedResource extends Resource
             'edit' => Pages\EditQCPassed::route('/{record}/edit'),
             'pdfPelabelanQCPassed' => Pages\pdfPelabelanQCPassed::route('/{record}/pdfPelabelanQCPassed')
         ];
-    }
-
-    protected static function textInput(string $fieldName, string $label): TextInput
-    {
-        return TextInput::make($fieldName)
-            ->label($label)
-            ->required()
-            ->maxLength(255);
-    }
-
-    protected static function selectInputSPK(): Select
-    {
-        return
-            Select::make('spk_marketing_id')
-                ->label('Nomor SPK')
-                ->relationship(
-                    'spk',
-                    'no_spk',
-                    fn($query) => $query
-                        ->whereHas('pengecekanPerforma', function ($query) {
-                            $query->where('status_penyelesaian', 'Disetujui');
-                        })->whereDoesntHave('qc')
-                )
-                ->native(false)
-                ->searchable()
-                ->preload()
-                ->required()
-                ->reactive()
-                ->afterStateUpdated(function ($state, callable $set) {
-                    if (!$state)
-                        return;
-
-                    $spk = SPKMarketing::with('spesifikasiProduct.details.product', 'pengecekanElectrical', 'pengecekanPerforma')->find($state);
-                    if (!$spk)
-                        return;
-
-                    $spesifikasi = $spk->spesifikasiProduct;
-                    $serial = $spk->pengecekanPerforma?->serial_number;
-                    $tipe = $spk?->pengecekanElectrical?->tipe;
-
-                    $details = $spesifikasi->details->map(function ($detail) use ($serial, $tipe) {
-                        return [
-                            'nama_produk' => $detail->product?->name ?? '-',
-                            'jumlah' => $detail?->quantity ?? '-',
-                            'serial_number' => $serial ?? '-',
-                            'tipe' => $tipe ?? '-',
-                        ];
-                    })->toArray();
-
-                    // dd($details);
-                    $set('details', $details);
-                })
-        ;
-    }
-
-    protected static function selectInput(string $fieldName, string $label, string $relation, string $title): Select
-    {
-        return
-            Select::make($fieldName)
-                ->relationship($relation, $title)
-                ->label($label)
-                ->native(false)
-                ->searchable()
-                ->preload()
-                ->required()
-                ->reactive();
-    }
-
-    protected static function selectInputOptions(string $fieldName, string $label, string $config): Select
-    {
-        return
-            Select::make($fieldName)
-                ->options(config($config))
-                ->label($label)
-                ->native(false)
-                ->searchable()
-                ->preload()
-                ->required()
-                ->reactive();
-    }
-
-    protected static function selectJenis(): Select
-    {
-        return
-            Select::make('jenis_transaksi')
-                ->label('Jenis Transaksi')
-                ->required()
-                ->placeholder('Pilih Jenis Transaksi')
-                ->options([
-                    'masuk' => 'Masuk',
-                    'keluar' => 'Keluar',
-                ]);
-    }
-
-    protected static function datePicker(string $fieldName, string $label): DatePicker
-    {
-        return
-            DatePicker::make($fieldName)
-                ->label($label)
-                ->displayFormat('M d Y')
-                ->seconds(false);
-    }
-
-    protected static function signatureInput(string $fieldName, string $labelName): SignaturePad
-    {
-        return
-            SignaturePad::make($fieldName)
-                ->label($labelName)
-                ->exportPenColor('#0118D8')
-                ->helperText('*Harap Tandatangan di tengah area yang disediakan.')
-                ->afterStateUpdated(function ($state, $set) use ($fieldName) {
-                    if (blank($state))
-                        return;
-                    $path = SignatureUploader::handle($state, 'ttd_', 'Quality/PengecekanMaterial/SS/Signatures');
-                    if ($path) {
-                        $set($fieldName, $path);
-                    }
-                });
-    }
-
-    protected static function textColumn(string $fieldName, string $label): TextColumn
-    {
-        return
-            TextColumn::make($fieldName)
-                ->label($label)
-                ->searchable()
-                ->sortable();
     }
 }
