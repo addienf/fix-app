@@ -103,7 +103,7 @@
                 <div class="flex items-center gap-2">
                     <label class="w-52">Jadwal Pelaksanaan : </label>
                     <input type="text" class="flex-1 px-2 py-1 border rounded"
-                        value="{{ \Carbon\Carbon::parse($service->jadwal_pelaksana)->translatedFormat('d M Y') }}" />
+                        value="{{ \Carbon\Carbon::parse($service->jadwal_pelaksana)->translatedFormat('d F Y') }}" />
                 </div>
                 {{-- <div class="flex items-center gap-2">
                                         <label class="w-52">Estimasi Waktu Selesai : </label>

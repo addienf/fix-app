@@ -25,7 +25,7 @@ trait InformasiProduk
                     ->schema([
                         Select::make('produk_name')
                             ->label('Pilih Produk')
-                            ->options(Product::pluck('name', 'name')) // key dan value sama
+                            ->options(Product::pluck('name', 'name'))
                             ->searchable(),
 
                         TextInput::make('type')

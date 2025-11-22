@@ -7,7 +7,6 @@ use App\Filament\Resources\Engineering\Complain\Traits\DataComplain;
 use App\Filament\Resources\Engineering\Complain\Traits\InformasiProduk;
 use App\Filament\Resources\Engineering\Complain\Traits\InformasiUmum;
 use App\Models\Engineering\Complain\Complain;
-use App\Services\SignatureUploader;
 use App\Traits\HasSignature;
 use Filament\Actions\Action;
 use Filament\Forms\Form;
@@ -17,7 +16,6 @@ use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Saade\FilamentAutograph\Forms\Components\SignaturePad;
 
 class ComplainResource extends Resource
 {

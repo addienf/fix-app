@@ -72,7 +72,6 @@ trait InformasiUmum
                     ->schema([
                         TextInput::make('form_no')
                             ->label('Nomor Form')
-                            // ->default('SR-' . now()->format('Ymd') . '-' . strtoupper(Str::random(6)))
                             ->placeholder($lastValue2 ? "Data Terakhir : {$lastValue2}" : 'Data Belum Tersedia')
                             ->hiddenOn('edit')
                             ->unique(ignoreRecord: true)

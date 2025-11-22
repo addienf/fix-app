@@ -21,11 +21,24 @@ trait DetailKetidaksesuaian
                     ->schema([
 
                         self::textInput('nama_produk', 'Nama Produk'),
+                        // ->extraAttributes([
+                        //     'readonly' => true,
+                        //     'style' => 'pointer-events: none;'
+                        // ]),
                         self::textInput('serial_number', 'Serial Number'),
+                        // ->extraAttributes([
+                        //     'readonly' => true,
+                        //     'style' => 'pointer-events: none;'
+                        // ]),
                         self::textInput('ketidaksesuaian', 'ketidaksesuaian'),
                         self::textInput('jumlah', 'Jumlah')->numeric(),
+                        // ->extraAttributes([
+                        //     'readonly' => true,
+                        //     'style' => 'pointer-events: none;'
+                        // ]),
                         self::textInput('satuan', 'Satuan'),
-                        self::textInput('keterangan', 'Keterangan'),
+                        self::textareaInput('keterangan', 'Keterangan')
+                            ->rows(1),
                     ])
                     ->deletable(true)
                     ->addable(true)

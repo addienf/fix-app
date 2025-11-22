@@ -25,6 +25,7 @@ use App\Models\Quality\Defect\DefectStatus;
 use App\Models\Quality\IncommingMaterial\MaterialNonSS\IncommingMaterialNonSS;
 use App\Models\Quality\IncommingMaterial\MaterialSS\IncommingMaterialSS;
 use App\Models\Quality\KelengkapanMaterial\SS\KelengkapanMaterialSS;
+use App\Models\Quality\Ketidaksesuaian\Ketidaksesuaian;
 use App\Models\Quality\Pengecekan\PengecekanPerforma;
 use App\Models\Quality\PengecekanMaterial\Electrical\PengecekanMaterialElectrical;
 use App\Models\Quality\PengecekanMaterial\SS\PengecekanMaterialSS;
@@ -293,7 +294,7 @@ class PDFController extends Controller
 
     public function pdfPelabelanQCPassed($id)
     {
-        $pelabelan = QCPassed::with(['spk', 'pic', 'details', 'pic.createdName', 'pic.approvedName'])->findOrFail($id);
+        $pelabelan = QCPassed::with(['pengecekanPerforma', 'pic', 'details', 'pic.createdName', 'pic.approvedName'])->findOrFail($id);
 
         return view('pdf.warehouse.pdfPelabelanQCPassed', compact('pelabelan'));
     }
@@ -446,12 +447,14 @@ class PDFController extends Controller
 
         return view('pdf.engineering.pdfServiceReport', compact('serviceReport'));
     }
+
     public function pdfCatatanPelanggan($id)
     {
         $complaint = Complain::with(['details', 'pic', 'pic.reportedBy'])->findOrFail($id);
 
         return view('pdf.engineering.pdfCatatanPelanggan', compact('complaint'));
     }
+
     public function downloadZipserviceReport($id)
     {
         $serviceReport = ServiceReport::with(['spkService', 'details', 'produkServices', 'pic', 'pic.approvedBy', 'pic.checkedBy'])->findOrFail($id);
@@ -479,5 +482,12 @@ class PDFController extends Controller
         }
 
         return response()->download($zipPath)->deleteFileAfterSend(true);
+    }
+
+    public function pdfKetidaksesuaian($id)
+    {
+        $ketidaksesuaian = Ketidaksesuaian::with(['pengecekanPerforma', 'pic', 'details', 'snk', 'pic.pelaporName', 'pic.diterimaName'])->findOrFail($id);
+
+        return view('pdf.quality.pdfKetidaksesuaian', compact('ketidaksesuaian'));
     }
 }

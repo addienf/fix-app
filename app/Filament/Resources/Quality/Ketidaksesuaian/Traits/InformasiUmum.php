@@ -38,7 +38,7 @@ trait InformasiUmum
     private static function getSelect()
     {
         return
-            Select::make('pengecekan_electrical_id')
+            Select::make('pengecekan_performa_id')
             ->label('Nomor SPK / No Seri')
             ->placeholder('Pilih Serial Number')
             ->searchable()
@@ -49,59 +49,64 @@ trait InformasiUmum
             ->options(
                 fn() =>
                 PengecekanPerforma::with([
-                    // 'pengecekanElectrical.penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.spk',
-                    // 'pengecekanElectrical.penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.identifikasiProduks',
-                    'pengecekanElectrical',
-                    'pengecekanElectrical',
+                    'penyerahanProdukJadi.pengecekanElectrical.penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.spk',
+                    'penyerahanProdukJadi.pengecekanElectrical.penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.identifikasiProduks',
                 ])
                     ->latest()
                     ->limit(20)
                     ->get()
                     ->mapWithKeys(function ($item) {
 
-                        $tes = $item->pengecekanElectrical;
+                        $jadwal = $item->penyerahanProdukJadi->pengecekanElectrical->penyerahanElectrical
+                            ->pengecekanSS->kelengkapanMaterial->standarisasiDrawing
+                            ->serahTerimaWarehouse->peminjamanAlat->spkVendor->permintaanBahanProduksi
+                            ->jadwalProduksi;
 
-                        dd($item);
+                        $spkNo = $jadwal->spk->no_spk ?? '-';
 
-                        // $jadwal = $item
-                        //     ->pengecekanElectrical->penyerahanElectrical->pengecekanSS->kelengkapanMaterial->standarisasiDrawing
-                        //     ->serahTerimaWarehouse->peminjamanAlat->spkVendor->permintaanBahanProduksi->jadwalProduksi;
+                        $seri = $jadwal->identifikasiProduks
+                            ->pluck('no_seri')
+                            ->filter()
+                            ->implode(', ') ?: '-';
 
-                        // $spkNo = $jadwal->spk->no_spk ?? '-';
-
-                        // $seri = $jadwal->identifikasiProduks
-                        //     ->pluck('no_seri')
-                        //     ->filter()
-                        //     ->implode(', ') ?: '-';
-
-                        // return [
-                        //     $item->id => "{$spkNo} - {$seri}",
-                        // ];
+                        return [
+                            $item->id => "{$spkNo} - {$seri}",
+                        ];
                     })
             );
         // ->afterStateUpdated(function ($state, callable $set) {
         //     if (!$state) return;
 
         //     $pengecekan = PengecekanPerforma::with([
-        //         'penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.spk'
+        //         'penyerahanProdukJadi.pengecekanElectrical.penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.spk'
         //     ])->find($state);
 
         //     $model_pengecekan =
-        //         $pengecekan?->penyerahanElectrical?->pengecekanSS?->kelengkapanMaterial?->standarisasiDrawing
-        //         ?->serahTerimaWarehouse?->peminjamanAlat?->spkVendor?->permintaanBahanProduksi
-        //         ?->jadwalProduksi ?? '-';
+        //         $pengecekan?->penyerahanProdukJadi?->pengecekanElectrical
+        //         ?->penyerahanElectrical?->pengecekanSS?->kelengkapanMaterial
+        //         ?->standarisasiDrawing?->serahTerimaWarehouse?->peminjamanAlat
+        //         ?->spkVendor?->permintaanBahanProduksi?->jadwalProduksi ?? '-';
 
-        //     $tipe = $model_pengecekan?->identifikasiProduks?->first()?->tipe ?? '-';
+        //     $company_name = $model_pengecekan?->spk?->spesifikasiProduct?->urs?->customer?->company_name ?? '-';
+        //     $department = $model_pengecekan?->spk?->spesifikasiProduct?->urs?->customer?->department ?? '-';
+        //     $name = $model_pengecekan?->spk?->spesifikasiProduct?->urs?->customer?->name ?? '-';
 
-        //     $volume = $pengecekan?->volume;
 
+        //     $product_name = $pengecekan?->penyerahanProdukJadi?->pengecekanElectrical?->penyerahanElectrical?->nama_produk ?? '-';
+        //     $product_jumlah = $pengecekan?->penyerahanProdukJadi?->pengecekanElectrical?->penyerahanElectrical?->jumlah ?? '-';
         //     $no_seri = $model_pengecekan?->identifikasiProduks?->first()?->no_seri ?? '-';
 
-        //     // dd($no_seri);
+        //     $set('details', [
+        //         [
+        //             'nama_produk'   => $product_name ?? '-',
+        //             'serial_number' => $no_seri ?? '-',
+        //             'jumlah'        => $product_jumlah ?? '-',
+        //         ]
+        //     ]);
 
-        //     $set('tipe', $tipe);
-        //     $set('volume', $volume);
-        //     $set('serial_number', $no_seri);
+        //     $set('nama_perusahaan', $company_name);
+        //     $set('department', $department);
+        //     $set('pelapor', $name);
         // });
     }
 }

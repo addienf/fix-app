@@ -81,7 +81,7 @@ class IncommingMaterialResource extends Resource
                     ->label('No Surat Permintaan Bahan'),
 
                 self::textColumn('tanggal', 'Tanggal Penerimaan')
-                    ->formatStateUsing(fn($state) => \Carbon\Carbon::parse($state)->format('d M Y')),
+                    ->formatStateUsing(fn($state) => \Carbon\Carbon::parse($state)->format('d F Y')),
 
                 TextColumn::make('status_penerimaan_pic')
                     ->label('Status Penerimaan')

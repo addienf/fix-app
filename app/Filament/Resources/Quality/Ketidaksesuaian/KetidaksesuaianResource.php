@@ -77,12 +77,11 @@ class KetidaksesuaianResource extends Resource
             ->columns([
                 //
                 self::textColumn('tanggal', 'Tanggal')
-                    ->formatStateUsing(fn($state) => \Carbon\Carbon::parse($state)->format('d M Y'))
-                    ->alignCenter(),
+                    ->formatStateUsing(fn($state) => \Carbon\Carbon::parse($state)->format('d F Y')),
 
-                self::textColumn('pelapor', 'Pelapor')->alignCenter(),
+                self::textColumn('pelapor', 'Pelapor'),
 
-                self::textColumn('nama_perusahaan', 'Nama Perusahaan')->alignCenter(),
+                self::textColumn('nama_perusahaan', 'Nama Perusahaan'),
 
                 self::textColumn('status', 'Status')
                     ->badge()
@@ -92,8 +91,7 @@ class KetidaksesuaianResource extends Resource
                             'Diterima' => 'success',
                             default => 'gray',
                         };
-                    })
-                    ->alignCenter(),
+                    }),
             ])
             ->filters([
                 //
