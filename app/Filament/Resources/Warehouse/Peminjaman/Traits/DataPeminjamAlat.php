@@ -26,7 +26,7 @@ trait DataPeminjamAlat
                         self::dateInput('tanggal_pinjam', 'Tanggal Pinjam')
                             ->required(),
                         self::dateInput('tanggal_kembali', 'Tanggal Kembali')
-                            ->required(),
+                            ->required(false),
                         TableRepeater::make('details')
                             ->relationship('details')
                             ->label('Barang')
@@ -55,18 +55,18 @@ trait DataPeminjamAlat
             ->preload()
             ->required()
             ->options(function () {
-
-                return SPKVendor::with([
-                    'permintaanBahanProduksi.jadwalProduksi.spk:id,no_spk',
-                    'permintaanBahanProduksi.jadwalProduksi.identifikasiProduks:id,jadwal_produksi_id,no_seri'
-                ])
+                return SPKVendor::query()
+                    ->with([
+                        'permintaanBahanProduksi.jadwalProduksi.spk:id,no_spk',
+                        'permintaanBahanProduksi.jadwalProduksi.identifikasiProduks:id,jadwal_produksi_id,no_seri'
+                    ])
                     ->whereDoesntHave('peminjamanAlat')
                     ->latest()
                     ->limit(10)
                     ->get()
-                    ->mapWithKeys(function ($spk_vendor) {
+                    ->mapWithKeys(function ($spkVendor) {
 
-                        $jadwal = $spk_vendor->permintaanBahanProduksi->jadwalProduksi;
+                        $jadwal = $spkVendor->permintaanBahanProduksi->jadwalProduksi;
 
                         $spkNo = $jadwal->spk->no_spk ?? '-';
 
@@ -76,103 +76,45 @@ trait DataPeminjamAlat
                             ->implode(', ') ?: '-';
 
                         return [
-                            $spk_vendor->id => "{$spkNo} - {$noSeri}",
+                            $spkVendor->id => "{$spkNo} - {$noSeri}",
+                        ];
+                    });
+            })
+            ->getSearchResultsUsing(function (string $search) {
+                return SPKVendor::query()
+                    ->with([
+                        'permintaanBahanProduksi.jadwalProduksi.spk:id,no_spk',
+                        'permintaanBahanProduksi.jadwalProduksi.identifikasiProduks:id,jadwal_produksi_id,no_seri'
+                    ])
+                    ->whereDoesntHave('peminjamanAlat')
+                    ->where(function ($q) use ($search) {
+                        // Search by SPK No
+                        $q->whereHas('permintaanBahanProduksi.jadwalProduksi.spk', function ($spk) use ($search) {
+                            $spk->where('no_spk', 'like', "%{$search}%");
+                        });
+
+                        $q->orWhereHas('permintaanBahanProduksi.jadwalProduksi.identifikasiProduks', function ($prod) use ($search) {
+                            $prod->where('no_seri', 'like', "%{$search}%");
+                        });
+                    })
+                    ->latest()
+                    ->limit(10)
+                    ->get()
+                    ->mapWithKeys(function ($spkVendor) {
+
+                        $jadwal = $spkVendor->permintaanBahanProduksi->jadwalProduksi;
+
+                        $spkNo = $jadwal->spk->no_spk ?? '-';
+
+                        $noSeri = $jadwal->identifikasiProduks
+                            ->pluck('no_seri')
+                            ->filter()
+                            ->implode(', ') ?: '-';
+
+                        return [
+                            $spkVendor->id => "{$spkNo} - {$noSeri}",
                         ];
                     });
             });
-        // ->getSearchResultsUsing(function (string $search) {
-
-        //     if ($search === '') {
-        //         return [];
-        //     }
-
-        //     return PermintaanAlatDanBahan::with([
-        //         'jadwalProduksi.spk',
-        //         'jadwalProduksi.identifikasiProduks'
-        //     ])
-        //         ->whereDoesntHave('spkVendor')
-        //         ->where(function ($query) use ($search) {
-        //             $query->whereHas(
-        //                 'jadwalProduksi',
-        //                 fn($q) =>
-        //                 $q->where('no_surat', 'LIKE', "%{$search}%")
-        //             )
-        //                 ->orWhereHas(
-        //                     'jadwalProduksi.spk',
-        //                     fn($q) =>
-        //                     $q->where('no_spk', 'LIKE', "%{$search}%")
-        //                 )
-        //                 ->orWhereHas(
-        //                     'jadwalProduksi.identifikasiProduks',
-        //                     fn($q) =>
-        //                     $q->where('no_seri', 'LIKE', "%{$search}%")
-        //                 );
-        //         })
-        //         ->latest()
-        //         ->limit(20)
-        //         ->get()
-        //         ->mapWithKeys(function ($permintaan) {
-
-        //             $jadwal = $permintaan->jadwalProduksi;
-        //             $spkNo = $jadwal->spk->no_spk ?? '-';
-        //             $noSurat = $jadwal->no_surat ?? '-';
-        //             $noSeri = $jadwal->identifikasiProduks
-        //                 ->pluck('no_seri')
-        //                 ->filter()
-        //                 ->implode(', ') ?: '-';
-
-        //             return [
-        //                 $permintaan->id => "{$noSurat} - {$spkNo} - {$noSeri}",
-        //             ];
-        //         })
-        //         ->toArray();
-        // })
-        // ->getOptionLabelUsing(function ($value) {
-
-        //     $permintaan = PermintaanAlatDanBahan::with([
-        //         'jadwalProduksi.spk',
-        //         'jadwalProduksi.identifikasiProduks'
-        //     ])
-        //         ->find($value);
-
-        //     if (!$permintaan) return '-';
-
-        //     $jadwal = $permintaan->jadwalProduksi;
-        //     $spkNo = $jadwal->spk->no_spk ?? '-';
-        //     $noSurat = $jadwal->no_surat ?? '-';
-        //     $noSeri = $jadwal->identifikasiProduks
-        //         ->pluck('no_seri')
-        //         ->filter()
-        //         ->implode(', ') ?: '-';
-
-        //     return "{$noSurat} - {$spkNo} - {$noSeri}";
-        // });
-        // ->afterStateUpdated(function ($state, callable $set) {
-        //     if (!$state) return;
-        //     $permintaan = PermintaanAlatDanBahan::with([
-        //         'jadwalProduksi:id,spk_marketing_id',
-        //         'jadwalProduksi.spk:id,spesifikasi_product_id',
-        //         'jadwalProduksi.spk.spesifikasiProduct:id,urs_id',
-        //         'jadwalProduksi.spk.spesifikasiProduct.urs:id,customer_id',
-        //         'jadwalProduksi.spk.spesifikasiProduct.urs.customer:id,company_name',
-        //         'jadwalProduksi.sumbers:id,jadwal_produksi_id,bahan_baku,spesifikasi,jumlah,keperluan'
-        //     ])->find($state);
-
-        //     if (!$permintaan) return;
-
-        //     $company = optional(
-        //         $permintaan->jadwalProduksi?->spk?->spesifikasiProduct?->urs?->customer
-        //     )->company_name ?? '-';
-
-        //     $details = $permintaan->details->map(fn($d) => [
-        //         'bahan_baku' => $d->bahan_baku,
-        //         'spesifikasi' => $d->spesifikasi,
-        //         'jumlah' => $d->jumlah,
-        //         'keperluan_barang' => $d->keperluan_barang,
-        //     ])->toArray();
-
-        //     $set('nama_perusahaan', $company);
-        //     $set('details', $details);
-        // });
     }
 }

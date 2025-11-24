@@ -43,7 +43,7 @@
             $fields = [
                 [
                     'label' => 'Tanggal  :',
-                    'value' => \Carbon\Carbon::parse($produkJadi->tanggal)->translatedFormat('d M Y'),
+                    'value' => \Carbon\Carbon::parse($produkJadi->tanggal)->translatedFormat('d F Y'),
                 ],
                 ['label' => 'Penanggung Jawab :', 'value' => $produkJadi->penanggug_jawab],
                 ['label' => 'Penerima :', 'value' => $produkJadi->penerima],

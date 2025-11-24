@@ -7,13 +7,6 @@ use App\Filament\Resources\Production\SPKVendor\Traits\DokumenPendukung;
 use App\Filament\Resources\Production\SPKVendor\Traits\InformasiUmum;
 use App\Filament\Resources\Production\SPKVendor\Traits\ListDetailBahanBaku;
 use App\Models\Production\SPK\SPKVendor;
-use App\Models\Sales\SPKMarketings\SPKMarketing;
-use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\Grid;
-use Filament\Forms\Components\Section;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -21,7 +14,6 @@ use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Icetalker\FilamentTableRepeater\Forms\Components\TableRepeater;
 use Illuminate\Database\Eloquent\Builder;
 
 class SPKVendorResource extends Resource
@@ -55,24 +47,35 @@ class SPKVendorResource extends Resource
         return $table
             ->columns([
                 //
-                TextColumn::make('no_spk_vendor')
-                    ->label('No SPK Vendor'),
 
-                TextColumn::make('permintaanBahanProduksi.jadwalProduksi.spk.no_spk')
-                    ->label('No SPK Marketing'),
+                self::textColumn('no_spk_vendor', 'No SPK Vendor'),
 
-                TextColumn::make('permintaanBahanProduksi.jadwalProduksi.identifikasiProduks.no_seri')
-                    ->label('No Seri Product'),
+                self::textColumn('permintaanBahanProduksi.jadwalProduksi.spk.no_spk', 'No SPK Marketing'),
 
-                TextColumn::make('nama_perusahaan'),
+                self::textColumn('no_seri', 'No Seri Product')
+                    ->getStateUsing(function ($record) {
+                        return $record
+                            ->permintaanBahanProduksi
+                            ?->jadwalProduksi
+                            ?->identifikasiProduks
+                            ?->pluck('no_seri')
+                            ->implode(', ') ?? '-';
+                    }),
+
+                self::textColumn('nama_perusahaan', 'Nama Perusahaan')
             ])
             ->filters([
                 //
             ])
             ->actions([
                 ActionGroup::make([
-                    Tables\Actions\EditAction::make(),
-                    Tables\Actions\DeleteAction::make(),
+                    Tables\Actions\EditAction::make()
+                        ->icon('heroicon-o-pencil-square')
+                        ->tooltip('Edit Data SPK Marketing')
+                        ->color('info'),
+                    Tables\Actions\DeleteAction::make()
+                        ->icon('heroicon-o-trash')
+                        ->tooltip('Hapus Data'),
                     Action::make('pdf_view')
                         ->label(_('View PDF'))
                         ->icon('heroicon-o-document')
@@ -102,18 +105,6 @@ class SPKVendorResource extends Resource
             'edit' => Pages\EditSPKVendor::route('/{record}/edit'),
         ];
     }
-
-    // public static function getEloquentQuery(): Builder
-    // {
-    //     return parent::getEloquentQuery()
-    //         ->with([
-    //             'jadwalProduksi',
-    //             'details',
-    //             'pic',
-    //             'permintaanBahanWBB',
-    //             'serahTerimaBahan'
-    //         ]);
-    // }
 
     public static function getEloquentQuery(): Builder
     {

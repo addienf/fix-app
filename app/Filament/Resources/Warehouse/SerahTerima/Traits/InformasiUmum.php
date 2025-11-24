@@ -81,6 +81,23 @@ trait InformasiUmum
                         ];
                     });
             })
+            ->getSearchResultsUsing(function ($query) {
+
+                return PeminjamanAlat::with([
+                    'spkVendor.permintaanBahanProduksi.jadwalProduksi.spk',
+                    'spkVendor.permintaanBahanProduksi.jadwalProduksi.identifikasiProduks'
+                ])
+                    ->whereDoesntHave('serahTerimaBahan')
+                    ->whereHas('spkVendor.permintaanBahanProduksi.jadwalProduksi.spk', function ($q) use ($query) {
+                        $q->where('no_spk', 'like', "%{$query}%");
+                    })
+                    ->latest()
+                    ->limit(10)
+                    ->get()
+                    ->mapWithKeys(fn($pinjam) => [
+                        $pinjam->id => $this->buildSPKLabel($pinjam),
+                    ]);
+            })
             ->afterStateUpdated(function ($state, callable $set) {
                 if (!$state) return;
 

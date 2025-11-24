@@ -15,6 +15,7 @@ use Filament\Tables;
 use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class PenyerahanProdukJadiResource extends Resource
 {
@@ -79,16 +80,19 @@ class PenyerahanProdukJadiResource extends Resource
             ->columns([
                 //
 
-                TextColumn::make('pengecekanElectrical.penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.spk.no_spk')
-                    ->label('No SPK Marketing'),
+                self::textColumn('pengecekanElectrical.penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.spk.no_spk', 'No SPK Marketing'),
 
-                TextColumn::make('pengecekanElectrical.penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.identifikasiProduks.no_seri')
-                    ->label('No Seri'),
+                self::textColumn('no_seri', 'No Seri')
+                    ->getStateUsing(function ($record) {
+                        return $record?->pengecekanElectrical?->penyerahanElectrical?->pengecekanSS
+                            ?->kelengkapanMaterial?->standarisasiDrawing?->serahTerimaWarehouse
+                            ?->peminjamanAlat?->spkVendor?->permintaanBahanProduksi?->jadwalProduksi
+                            ?->identifikasiProduks?->pluck('no_seri')->filter()->implode(', ') ?? '-';
+                    }),
 
                 self::textColumn('penanggug_jawab', 'Penanggung Jawab'),
 
-                TextColumn::make('status_penerimaan')
-                    ->label('Status Penerimaan')
+                self::textColumn('status_penerimaan', 'Status')
                     ->badge()
                     ->color(
                         fn($state) =>
@@ -139,5 +143,14 @@ class PenyerahanProdukJadiResource extends Resource
             'edit' => Pages\EditPenyerahanProdukJadi::route('/{record}/edit'),
             'pdfPenyerahanProdukJadi' => Pages\pdfPenyerahanProdukJadi::route('/{record}/pdfPenyerahanProdukJadi')
         ];
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->with([
+                'pengecekanElectrical.penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.spk',
+                'pengecekanElectrical.penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.identifikasiProduks',
+            ]);
     }
 }

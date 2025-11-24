@@ -16,6 +16,7 @@ use Filament\Tables;
 use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class PengecekanElectricalResource extends Resource
 {
@@ -79,35 +80,34 @@ class PengecekanElectricalResource extends Resource
         return $table
             ->columns([
                 //
-                TextColumn::make('penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.spk.no_spk')
-                    ->label('No SPK Marketing'),
+                // TextColumn::make('penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.spk.no_spk')
+                //     ->label('No SPK Marketing'),
 
-                TextColumn::make('penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.identifikasiProduks.no_seri')
-                    ->label('No Seri'),
+                // TextColumn::make('penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.identifikasiProduks.no_seri')
+                //     ->label('No Seri'),
+
+                self::textColumn('penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.spk.no_spk', 'No SPK Marketing'),
+
+                self::textColumn('no_seri', 'No Seri')
+                    ->getStateUsing(function ($record) {
+                        return $record?->penyerahanElectrical?->pengecekanSS
+                            ?->kelengkapanMaterial?->standarisasiDrawing?->serahTerimaWarehouse
+                            ?->peminjamanAlat?->spkVendor?->permintaanBahanProduksi?->jadwalProduksi
+                            ?->identifikasiProduks?->pluck('no_seri')->filter()->implode(', ') ?? '-';
+                    }),
 
                 self::textColumn('tipe', 'Type/Model'),
 
                 self::textColumn('volume', 'Volume'),
 
-                TextColumn::make('status_penyelesaian')
-                    ->label('Status Penyelesaian')
+                self::textColumn('status_penyelesaian', 'Status')
                     ->badge()
-                    ->color(function ($record) {
-                        $penyelesaian = $record->status_penyelesaian;
-                        $persetujuan = $record->status_persetujuan;
-
-                        if ($penyelesaian === 'Disetujui') {
-                            return 'success';
-                        }
-
-                        if ($penyelesaian !== 'Diterima' && $persetujuan !== 'Disetujui') {
-                            return 'danger';
-                        }
-
-                        return 'warning';
-                    })
+                    ->color(fn($state) => [
+                        'Belum Diterima' => 'danger',
+                        'Diterima' => 'warning',
+                        'Disetujui' => 'success',
+                    ][$state] ?? 'gray')
                     ->alignCenter(),
-
             ])
             ->filters([
                 //
@@ -151,5 +151,14 @@ class PengecekanElectricalResource extends Resource
             'edit' => Pages\EditPengecekanElectrical::route('/{record}/edit'),
             'pdfPengecekanElectrical' => pdfPengecekanElectrical::route('/{record}/pdfPengecekanElectrical')
         ];
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->with([
+                'penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.spk',
+                'penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.identifikasiProduks',
+            ]);
     }
 }

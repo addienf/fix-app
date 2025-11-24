@@ -63,14 +63,47 @@ trait InformasiUmum
             ->label('No SPK / Nomor Seri')
             ->placeholder('Pilih No SPK / Nomor Seri')
             ->required()
+            ->searchable()
             ->reactive()
-            ->options(
-                fn() =>
-                PenyerahanElectrical::with([
+            // ->options(
+            //     fn() =>
+            //     PenyerahanElectrical::with([
+            //         'pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.spk',
+            //         'pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.identifikasiProduks',
+            //     ])
+            //         // ->whereDoesntHave('spkQC')
+            //         ->latest()
+            //         ->limit(10)
+            //         ->get()
+            //         ->mapWithKeys(function ($std) {
+
+            //             $jadwal = $std->pengecekanSS
+            //                 ->kelengkapanMaterial
+            //                 ->standarisasiDrawing
+            //                 ->serahTerimaWarehouse
+            //                 ->peminjamanAlat
+            //                 ->spkVendor
+            //                 ->permintaanBahanProduksi
+            //                 ->jadwalProduksi;
+
+            //             $spkNo = $jadwal->spk->no_spk ?? '-';
+
+            //             $seri = $jadwal->identifikasiProduks
+            //                 ->pluck('no_seri')
+            //                 ->filter()
+            //                 ->implode(', ') ?: '-';
+
+            //             return [
+            //                 $std->id => "{$spkNo} - {$seri}",
+            //             ];
+            //         })
+            // )
+            ->options(function () {
+                return PenyerahanElectrical::with([
                     'pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.spk',
                     'pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.identifikasiProduks',
                 ])
-                    // ->whereDoesntHave('spkQC')
+                    ->whereDoesntHave('spkQC')
                     ->latest()
                     ->limit(10)
                     ->get()
@@ -95,8 +128,72 @@ trait InformasiUmum
                         return [
                             $std->id => "{$spkNo} - {$seri}",
                         ];
-                    })
-            )
+                    });
+            })
+
+            // 🔹 Saat user mengetik search (limit 10)
+            ->getSearchResultsUsing(function ($search) {
+
+                return PenyerahanElectrical::with([
+                    'pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.spk',
+                    'pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.identifikasiProduks',
+                ])
+                    ->whereHas(
+                        'pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.spk',
+                        fn($q) => $q->where('no_spk', 'like', "%{$search}%")
+                    )
+                    ->limit(10)
+                    ->get()
+                    ->mapWithKeys(function ($std) {
+
+                        $jadwal = $std->pengecekanSS
+                            ->kelengkapanMaterial
+                            ->standarisasiDrawing
+                            ->serahTerimaWarehouse
+                            ->peminjamanAlat
+                            ->spkVendor
+                            ->permintaanBahanProduksi
+                            ->jadwalProduksi;
+
+                        $spkNo = $jadwal->spk->no_spk ?? '-';
+
+                        $seri = $jadwal->identifikasiProduks
+                            ->pluck('no_seri')
+                            ->filter()
+                            ->implode(', ') ?: '-';
+
+                        return [
+                            $std->id => "{$spkNo} - {$seri}",
+                        ];
+                    });
+            })
+            // ->getOptionLabelUsing(function ($value) {
+
+            //     $std = PenyerahanElectrical::with([
+            //         'pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.spk',
+            //         'pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.identifikasiProduks',
+            //     ])->find($value);
+
+            //     if (!$std) return '-';
+
+            //     $jadwal = $std->pengecekanSS
+            //         ->kelengkapanMaterial
+            //         ->standarisasiDrawing
+            //         ->serahTerimaWarehouse
+            //         ->peminjamanAlat
+            //         ->spkVendor
+            //         ->permintaanBahanProduksi
+            //         ->jadwalProduksi;
+
+            //     $spkNo = $jadwal->spk->no_spk ?? '-';
+
+            //     $seri = $jadwal->identifikasiProduks
+            //         ->pluck('no_seri')
+            //         ->filter()
+            //         ->implode(', ') ?: '-';
+
+            //     return "{$spkNo} - {$seri}";
+            // })
             ->afterStateUpdated(function ($state, callable $set) {
 
                 if (!$state) return;

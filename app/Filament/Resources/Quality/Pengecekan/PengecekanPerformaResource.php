@@ -6,28 +6,15 @@ use App\Filament\Resources\Quality\Pengecekan\PengecekanPerformaResource\Pages;
 use App\Filament\Resources\Quality\Pengecekan\Traits\ChamberIdentification;
 use App\Filament\Resources\Quality\Pengecekan\Traits\TabelKelengkapanMaterial;
 use App\Models\Quality\Pengecekan\PengecekanPerforma;
-use App\Models\Sales\SPKMarketings\SPKMarketing;
-use App\Services\SignatureUploader;
 use App\Traits\HasSignature;
 use Filament\Actions\Action;
-use Filament\Forms\Components\Card;
-use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Hidden;
-use Filament\Forms\Components\Repeater;
-use Filament\Forms\Components\Section;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Actions\ActionGroup;
-use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Icetalker\FilamentTableRepeater\Forms\Components\TableRepeater;
-use Saade\FilamentAutograph\Forms\Components\SignaturePad;
-use Wallo\FilamentSelectify\Components\ButtonGroup;
+use Illuminate\Database\Eloquent\Builder;
 
 class PengecekanPerformaResource extends Resource
 {
@@ -50,19 +37,6 @@ class PengecekanPerformaResource extends Resource
 
     public static function form(Form $form): Form
     {
-        // $defaultParts = collect(config('pengecekanPerforma'))
-        //     ->map(function ($group) {
-        //         return [
-        //             'mainPart' => $group['mainPart'],
-        //             'parts' => collect($group['parts'])
-        //                 ->map(fn($part) => ['part' => $part])
-        //                 ->toArray(),
-        //         ];
-        //     })
-        //     ->toArray();
-
-        // $isEdit = $form->getOperation() === 'edit';
-
         return $form
             ->schema([
                 //
@@ -107,11 +81,6 @@ class PengecekanPerformaResource extends Resource
         return $table
             ->columns([
                 //
-                TextColumn::make('penyerahanProdukJadi.pengecekanElectrical.penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.spk.no_spk')
-                    ->label('No SPK Marketing'),
-
-                TextColumn::make('penyerahanProdukJadi.pengecekanElectrical.penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.identifikasiProduks.no_seri')
-                    ->label('No Seri'),
 
                 self::textColumn('tipe', 'Type/Model'),
 
@@ -119,23 +88,13 @@ class PengecekanPerformaResource extends Resource
 
                 self::textColumn('serial_number', 'S/N'),
 
-                TextColumn::make('status_penyelesaian')
-                    ->label('Status Penyelesaian')
+                self::textColumn('status_penyelesaian', 'Status')
                     ->badge()
-                    ->color(function ($record) {
-                        $penyelesaian = $record->status_penyelesaian;
-                        $persetujuan = $record->status_persetujuan;
-
-                        if ($penyelesaian === 'Disetujui') {
-                            return 'success';
-                        }
-
-                        if ($penyelesaian !== 'Diterima' && $persetujuan !== 'Disetujui') {
-                            return 'danger';
-                        }
-
-                        return 'warning';
-                    })
+                    ->color(fn($state) => [
+                        'Belum Diterima' => 'danger',
+                        'Diterima' => 'warning',
+                        'Disetujui' => 'success',
+                    ][$state] ?? 'gray')
                     ->alignCenter(),
             ])
             ->filters([
@@ -180,5 +139,18 @@ class PengecekanPerformaResource extends Resource
             'edit' => Pages\EditPengecekanPerforma::route('/{record}/edit'),
             'pdfPengecekanPerforma' => Pages\pdfPengecekanPerforma::route('/{record}/pdfPengecekanPerforma')
         ];
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->with([
+                'penyerahanProdukJadi',
+                'pic',
+                'ketidaksesuaian',
+                'productRelease',
+                'qcPassed',
+                'detail'
+            ]);
     }
 }

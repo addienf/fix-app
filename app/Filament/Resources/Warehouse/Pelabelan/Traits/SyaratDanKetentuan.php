@@ -4,10 +4,7 @@ namespace App\Filament\Resources\Warehouse\Pelabelan\Traits;
 
 use App\Traits\HasAutoNumber;
 use App\Traits\SimpleFormResource;
-use Filament\Forms\Components\Grid;
-use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Section;
-use Illuminate\Support\Str;
 
 trait SyaratDanKetentuan
 {

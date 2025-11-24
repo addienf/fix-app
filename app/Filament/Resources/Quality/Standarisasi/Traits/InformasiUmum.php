@@ -106,29 +106,29 @@ trait InformasiUmum
                         ];
                     })
                     ->toArray();
-            })
-            ->getOptionLabelUsing(function ($value) {
-
-                $serah = SerahTerimaBahan::with([
-                    'peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.spk',
-                    'peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.identifikasiProduks',
-                ])->find($value);
-
-                if (!$serah) return '-';
-
-                $jadwal = $serah->peminjamanAlat
-                    ->spkVendor
-                    ->permintaanBahanProduksi
-                    ->jadwalProduksi;
-
-                $spkNo = $jadwal->spk->no_spk ?? '-';
-
-                $noSeri = $jadwal->identifikasiProduks
-                    ->pluck('no_seri')
-                    ->filter()
-                    ->implode(', ') ?: '-';
-
-                return "{$spkNo} - {$noSeri}";
             });
+        // ->getOptionLabelUsing(function ($value) {
+
+        //     $serah = SerahTerimaBahan::with([
+        //         'peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.spk',
+        //         'peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.identifikasiProduks',
+        //     ])->find($value);
+
+        //     if (!$serah) return '-';
+
+        //     $jadwal = $serah->peminjamanAlat
+        //         ->spkVendor
+        //         ->permintaanBahanProduksi
+        //         ->jadwalProduksi;
+
+        //     $spkNo = $jadwal->spk->no_spk ?? '-';
+
+        //     $noSeri = $jadwal->identifikasiProduks
+        //         ->pluck('no_seri')
+        //         ->filter()
+        //         ->implode(', ') ?: '-';
+
+        //     return "{$spkNo} - {$noSeri}";
+        // });
     }
 }

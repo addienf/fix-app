@@ -6,29 +6,16 @@ use App\Filament\Resources\Quality\IncommingMaterial\MaterialSS\IncommingMateria
 use App\Filament\Resources\Quality\IncommingMaterial\MaterialSS\Traits\ChecklistTable;
 use App\Filament\Resources\Quality\IncommingMaterial\MaterialSS\Traits\InformasiUmum;
 use App\Filament\Resources\Quality\IncommingMaterial\MaterialSS\Traits\Summary;
-use App\Models\Purchasing\Permintaan\PermintaanPembelian;
 use App\Models\Quality\IncommingMaterial\MaterialSS\IncommingMaterialSS;
-use App\Services\SignatureUploader;
 use App\Traits\HasSignature;
 use Filament\Actions\Action;
-use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Hidden;
-use Filament\Forms\Components\Placeholder;
-use Filament\Forms\Components\Repeater;
-use Filament\Forms\Components\Section;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Actions\ActionGroup;
-use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\HtmlString;
-use Saade\FilamentAutograph\Forms\Components\SignaturePad;
 
 class IncommingMaterialSSResource extends Resource
 {
@@ -51,15 +38,13 @@ class IncommingMaterialSSResource extends Resource
 
     public static function form(Form $form): Form
     {
-        // $lastValue = IncommingMaterialSS::latest('no_po')->value('no_po');
-
         return $form
             ->schema([
                 //
                 Hidden::make('status_penyelesaian')
                     ->default('Belum Diterima'),
 
-                self::informasiUmumSection(),
+                self::informasiUmumSection($form),
 
                 self::checklistTableSection(),
 

@@ -39,6 +39,7 @@
                 </td>
             </tr>
         </table>
+
         @php
             $infoUmum = [
                 ['label' => 'Nomor Surat :', 'value' => $permintaan_alat_bahan->no_surat],
@@ -51,6 +52,7 @@
                 ['label' => 'Kepada :', 'value' => $permintaan_alat_bahan->kepada],
             ];
         @endphp
+
         <div class="grid max-w-4xl grid-cols-1 pt-2 pt-4 pt-6 mx-auto mb-6 text-sm md:grid-cols-2 gap-x-6 gap-y-4">
             @foreach ($infoUmum as $field)
                 <div class="flex flex-col items-start gap-2 md:flex-row md:gap-4 md:items-center">

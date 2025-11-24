@@ -45,7 +45,7 @@
                 ['label' => 'Nomor :', 'value' => $permintaan_bahan->no_surat],
                 [
                     'label' => 'Tanggal :',
-                    'value' => \Carbon\Carbon::parse($permintaan_bahan->tanggal)->translatedFormat('d M Y'),
+                    'value' => \Carbon\Carbon::parse($permintaan_bahan->tanggal)->translatedFormat('d F Y'),
                 ],
                 ['label' => 'Dari : ', 'value' => $permintaan_bahan->dari],
                 ['label' => 'Kepada :', 'value' => $permintaan_bahan->kepada],
@@ -72,7 +72,7 @@
                     value="{{ $permintaan_bahan->permintaanBahanPro->no_surat }}" />
                 <span>Dari Departemen</span>
                 <input disabled class="w-32 px-2 py-1 text-sm align-middle bg-transparent border-none h-7"
-                    value="{{ $permintaan_bahan->dari }}" />
+                    value="{{ Str::headline($permintaan_bahan->pic->dibuatName->roles->first()?->name ?? '-') }}" />
                 <span>mohon bantuan untuk memenuhi kebutuhan bahan/sparepart dengan rincian sebagai berikut:</span>
             </p>
         </div>

@@ -46,7 +46,7 @@
                 ['label' => '3. Nomor SPK. MKT :', 'value' => $serahElectrical->no_spk],
                 [
                     'label' => '4. Tanggal Produksi Mekanik Selesai:',
-                    'value' => \Carbon\Carbon::parse($serahElectrical->tanggal_selesai)->format('d M Y'),
+                    'value' => \Carbon\Carbon::parse($serahElectrical->tanggal_selesai)->format('d F Y'),
                 ],
                 ['label' => '5. Jumlah Unit :', 'value' => $serahElectrical->jumlah],
             ];
@@ -81,8 +81,6 @@
             ];
 
             $status_penerimaan = $serahElectrical->penerimaElectrical->status_penerimaan ?? null;
-
-            // $penerimaan = $serahElectrical->penerimaElectrical->status_penerimaan ?? null;
 
             $penjelasan_status = $serahElectrical->penerimaElectrical->penjelasan_status ?? null;
 

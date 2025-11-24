@@ -35,16 +35,38 @@ trait InformasiUmum
         return
             Select::make('permintaan_pembelian_id')
             ->label('Permintaan Pembelian')
+            ->searchable()
             ->options(function () {
-                return Cache::rememberForever(PermintaanPembelian::$CACHE_KEYS['incomingMaterial'], function () {
-                    return PermintaanPembelian::with('permintaanBahanWBB')
-                        ->whereDoesntHave('incommingMaterial')
-                        ->get()
-                        ->mapWithKeys(function ($item) {
-                            $noSurat = $item->permintaanBahanWBB->no_surat ?? '-';
-                            return [$item->id => "{$item->id} - {$noSurat}"];
-                        });
-                });
+                return PermintaanPembelian::query()
+                    ->with('permintaanBahanWBB')
+                    ->whereDoesntHave('incommingMaterial')
+                    ->orderBy('id', 'desc')
+                    ->limit(10)
+                    ->get()
+                    ->mapWithKeys(function ($item) {
+                        $noSurat = $item->permintaanBahanWBB->no_surat ?? '-';
+                        return [$item->id => "{$item->id} - {$noSurat}"];
+                    });
+            })
+            ->getSearchResultsUsing(function (string $search) {
+                return PermintaanPembelian::query()
+                    ->with('permintaanBahanWBB')
+                    ->whereDoesntHave('incommingMaterial')
+                    ->where(function ($q) use ($search) {
+                        $q->where('id', 'like', "%{$search}%")
+                            ->orWhereHas(
+                                'permintaanBahanWBB',
+                                fn($wbb) =>
+                                $wbb->where('no_surat', 'like', "%{$search}%")
+                            );
+                    })
+                    ->orderBy('id', 'desc')
+                    ->limit(10)
+                    ->get()
+                    ->mapWithKeys(function ($item) {
+                        $noSurat = $item->permintaanBahanWBB->no_surat ?? '-';
+                        return [$item->id => "{$item->id} - {$noSurat}"];
+                    });
             })
             ->native(false)
             ->searchable()

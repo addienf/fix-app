@@ -3,14 +3,10 @@
 namespace App\Filament\Resources\Production\Penyerahan\PenyerahanElectrical\Traits;
 
 use App\Models\Quality\PengecekanMaterial\SS\PengecekanMaterialSS;
-use App\Models\Sales\SPKMarketings\SPKMarketing;
-use App\Models\Warehouse\SerahTerima\SerahTerimaBahan;
 use App\Traits\HasAutoNumber;
 use App\Traits\SimpleFormResource;
-use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
-use Illuminate\Support\Facades\Cache;
 
 trait InformasiProduk
 {
@@ -78,10 +74,42 @@ trait InformasiProduk
             ->label('No SPK / Nomor Seri')
             ->placeholder('Pilih No SPK / Nomor Seri')
             ->required()
+            ->searchable()
             ->reactive()
-            ->options(
-                fn() =>
-                PengecekanMaterialSS::with([
+            // ->options(
+            //     fn() =>
+            //     PengecekanMaterialSS::with([
+            //         'kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.spk',
+            //         'kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.identifikasiProduks',
+            //     ])
+            //         ->whereDoesntHave('penyerahan')
+            //         ->latest()
+            //         ->limit(10)
+            //         ->get()
+            //         ->mapWithKeys(function ($std) {
+
+            //             $jadwal = $std->kelengkapanMaterial
+            //                 ->standarisasiDrawing
+            //                 ->serahTerimaWarehouse
+            //                 ->peminjamanAlat
+            //                 ->spkVendor
+            //                 ->permintaanBahanProduksi
+            //                 ->jadwalProduksi;
+
+            //             $spkNo = $jadwal->spk->no_spk ?? '-';
+
+            //             $seri = $jadwal->identifikasiProduks
+            //                 ->pluck('no_seri')
+            //                 ->filter()
+            //                 ->implode(', ') ?: '-';
+
+            //             return [
+            //                 $std->id => "{$spkNo} - {$seri}",
+            //             ];
+            //         })
+            // )
+            ->options(function () {
+                return PengecekanMaterialSS::with([
                     'kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.spk',
                     'kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.identifikasiProduks',
                 ])
@@ -109,8 +137,70 @@ trait InformasiProduk
                         return [
                             $std->id => "{$spkNo} - {$seri}",
                         ];
-                    })
-            )
+                    });
+            })
+
+            // search
+            ->getSearchResultsUsing(function ($search) {
+                return PengecekanMaterialSS::with([
+                    'kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.spk',
+                    'kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.identifikasiProduks',
+                ])
+                    ->whereDoesntHave('penyerahan')
+                    ->whereHas(
+                        'kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.spk',
+                        fn($q) => $q->where('no_spk', 'like', "%{$search}%")
+                    )
+                    ->limit(10)
+                    ->get()
+                    ->mapWithKeys(function ($std) {
+
+                        $jadwal = $std->kelengkapanMaterial
+                            ->standarisasiDrawing
+                            ->serahTerimaWarehouse
+                            ->peminjamanAlat
+                            ->spkVendor
+                            ->permintaanBahanProduksi
+                            ->jadwalProduksi;
+
+                        $spkNo = $jadwal->spk->no_spk ?? '-';
+
+                        $seri = $jadwal->identifikasiProduks
+                            ->pluck('no_seri')
+                            ->filter()
+                            ->implode(', ') ?: '-';
+
+                        return [
+                            $std->id => "{$spkNo} - {$seri}",
+                        ];
+                    });
+            })
+            // ->getOptionLabelUsing(function ($value) {
+
+            //     $std = PengecekanMaterialSS::with([
+            //         'kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.spk',
+            //         'kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.identifikasiProduks',
+            //     ])->find($value);
+
+            //     if (!$std) return '-';
+
+            //     $jadwal = $std->kelengkapanMaterial
+            //         ->standarisasiDrawing
+            //         ->serahTerimaWarehouse
+            //         ->peminjamanAlat
+            //         ->spkVendor
+            //         ->permintaanBahanProduksi
+            //         ->jadwalProduksi;
+
+            //     $spkNo = $jadwal->spk->no_spk ?? '-';
+
+            //     $seri = $jadwal->identifikasiProduks
+            //         ->pluck('no_seri')
+            //         ->filter()
+            //         ->implode(', ') ?: '-';
+
+            //     return "{$spkNo} - {$seri}";
+            // })
             ->afterStateUpdated(function ($state, callable $set) {
 
                 if (!$state) return;

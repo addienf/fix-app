@@ -15,15 +15,18 @@ use Illuminate\Support\Facades\Cache;
 trait InformasiUmum
 {
     use SimpleFormResource, HasAutoNumber;
-    protected static function informasiUmumSection(): Section
+    protected static function informasiUmumSection($form): Section
     {
-        return Section::make('Informasi Umum')
+        $isEdit = $form->getOperation() === 'edit';
+
+        return
+            Section::make('Informasi Umum')
             ->collapsible()
             ->schema([
 
-                Grid::make(2)
+                Grid::make($isEdit ? 3 : 2)
                     ->schema([
-                        self::select('permintaan_pembelian_id', 'Permintaan Pembelian', 'permintaanPembelian', 'id')
+                        self::select2()
                             ->placeholder('Pilih Nomor Permintaan Pembelian')
                             ->hiddenOn('edit')
                             ->required(),
@@ -49,23 +52,59 @@ trait InformasiUmum
             ]);
     }
 
-    protected static function select(string $fieldName, string $label, string $relation, string $title): Select
+    private static function select2(): Select
     {
         return
-            Select::make($fieldName)
-            ->relationship($relation, $title)
+            // Select::make($fieldName)
+            // ->relationship($relation, $title)
+            // ->options(function () {
+            //     return Cache::rememberForever(PermintaanPembelian::$CACHE_KEYS['materialNonSS'], function () {
+            //         return
+            //             PermintaanPembelian::with('permintaanBahanWBB')
+            //             ->whereDoesntHave('materialNonSS')
+            //             ->get()
+            //             ->mapWithKeys(function ($item) {
+            //                 return [$item->id => $item->permintaanBahanWBB->no_surat ?? 'Tanpa No Surat'];
+            //             });
+            //     });
+            // })
+            Select::make('permintaan_pembelian_id')
+            ->label('Permintaan Pembelian')
+            ->placeholder('Pilih Nomor Permintaan Pembelian')
+            ->searchable()
+            ->hiddenOn('edit')
+            ->required()
             ->options(function () {
-                return Cache::rememberForever(PermintaanPembelian::$CACHE_KEYS['materialNonSS'], function () {
-                    return
-                        PermintaanPembelian::with('permintaanBahanWBB')
-                        ->whereDoesntHave('materialNonSS')
-                        ->get()
-                        ->mapWithKeys(function ($item) {
-                            return [$item->id => $item->permintaanBahanWBB->no_surat ?? 'Tanpa No Surat'];
-                        });
-                });
+                return PermintaanPembelian::query()
+                    ->with('permintaanBahanWBB')
+                    ->whereDoesntHave('materialNonSS')
+                    ->orderBy('id', 'desc')
+                    ->limit(10)
+                    ->get()
+                    ->mapWithKeys(function ($item) {
+                        return [
+                            $item->id => $item->permintaanBahanWBB->no_surat ?? 'Tanpa No Surat',
+                        ];
+                    });
             })
-            ->label($label)
+            ->getSearchResultsUsing(function (string $search) {
+                return PermintaanPembelian::query()
+                    ->with('permintaanBahanWBB')
+                    ->whereDoesntHave('materialNonSS')
+                    ->whereHas(
+                        'permintaanBahanWBB',
+                        fn($q) =>
+                        $q->where('no_surat', 'like', "%{$search}%")
+                    )
+                    ->orderBy('id', 'desc')
+                    ->limit(10)
+                    ->get()
+                    ->mapWithKeys(function ($item) {
+                        return [
+                            $item->id => $item->permintaanBahanWBB->no_surat ?? 'Tanpa No Surat',
+                        ];
+                    });
+            })
             ->native(false)
             ->searchable()
             ->preload()

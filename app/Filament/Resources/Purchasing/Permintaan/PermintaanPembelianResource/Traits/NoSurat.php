@@ -28,17 +28,36 @@ trait NoSurat
 
     protected static function select2(): Select
     {
-        return Select::make('permintaan_bahan_wbb_id')
-            ->relationship(
-                'permintaanBahanWBB',
-                'no_surat',
-                fn($query) => $query->whereIn('id', Cache::rememberForever(
-                    PermintaanBahan::$CACHE_KEYS['pembelian'],
-                    fn() => PermintaanBahan::whereDoesntHave('pembelian')
-                        ->pluck('id')
-                        ->toArray()
-                ))
-            )
+        return
+            // Select::make('permintaan_bahan_wbb_id')
+            // ->relationship(
+            //     'permintaanBahanWBB',
+            //     'no_surat',
+            //     fn($query) => $query->whereIn('id', Cache::rememberForever(
+            //         PermintaanBahan::$CACHE_KEYS['pembelian'],
+            //         fn() => PermintaanBahan::whereDoesntHave('pembelian')
+            //             ->pluck('id')
+            //             ->toArray()
+            //     ))
+            // )
+            Select::make('permintaan_bahan_wbb_id')
+            ->label('No Surat')
+            ->searchable()
+            ->options(function () {
+                return PermintaanBahan::query()
+                    ->whereDoesntHave('pembelian')
+                    ->orderBy('id', 'desc')
+                    ->limit(10)
+                    ->pluck('no_surat', 'id');
+            })
+            ->getSearchResultsUsing(function (string $search) {
+                return PermintaanBahan::query()
+                    ->whereDoesntHave('pembelian')
+                    ->where('no_surat', 'like', "%{$search}%")
+                    ->orderBy('id', 'desc')
+                    ->limit(10)
+                    ->pluck('no_surat', 'id');
+            })
             ->label('Pilih Nomor Surat')
             ->placeholder('Pilin No Surat Dari Permintaan Bahan Pembelian')
             ->columnSpanFull()

@@ -115,29 +115,29 @@ trait ChamberIdentification
                     })
                     ->toArray();
             })
-            ->getOptionLabelUsing(function ($value) {
-                $std = StandarisasiDrawing::with([
-                    'serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.spk',
-                    'serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.identifikasiProduks',
-                ])->find($value);
+            // ->getOptionLabelUsing(function ($value) {
+            //     $std = StandarisasiDrawing::with([
+            //         'serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.spk',
+            //         'serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.identifikasiProduks',
+            //     ])->find($value);
 
-                if (!$std) return '-';
+            //     if (!$std) return '-';
 
-                $jadwal = $std->serahTerimaWarehouse
-                    ->peminjamanAlat
-                    ->spkVendor
-                    ->permintaanBahanProduksi
-                    ->jadwalProduksi;
+            //     $jadwal = $std->serahTerimaWarehouse
+            //         ->peminjamanAlat
+            //         ->spkVendor
+            //         ->permintaanBahanProduksi
+            //         ->jadwalProduksi;
 
-                $spkNo = $jadwal->spk->no_spk ?? '-';
+            //     $spkNo = $jadwal->spk->no_spk ?? '-';
 
-                $seri = $jadwal->identifikasiProduks
-                    ->pluck('no_seri')
-                    ->filter()
-                    ->implode(', ') ?: '-';
+            //     $seri = $jadwal->identifikasiProduks
+            //         ->pluck('no_seri')
+            //         ->filter()
+            //         ->implode(', ') ?: '-';
 
-                return "{$spkNo} - {$seri}";
-            })
+            //     return "{$spkNo} - {$seri}";
+            // })
             ->afterStateUpdated(function ($state, callable $set) {
                 if (!$state) return;
 

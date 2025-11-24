@@ -13,7 +13,6 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\ActionGroup;
-use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -37,7 +36,7 @@ class PermintaanBahanResource extends Resource
                 Hidden::make('status')
                     ->default('Belum Diketahui'),
 
-                self::informasiUmumSection(),
+                self::informasiUmumSection($form),
 
                 self::detailBahanBakuSection(),
 

@@ -27,7 +27,7 @@ trait KebutuhanBahan
 
                         self::textInput('spesifikasi', 'Spesifikasi'),
 
-                        self::textInput('jumlah', 'Quantity'),
+                        self::textInput('jumlah', 'Quantity')->numeric(),
 
                         self::textInput('status', 'Status (Diterima atau Belum)'),
 
