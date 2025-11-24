@@ -60,6 +60,7 @@ Route::get('/quality/pengecekan-performa/{record}/pdf-pengecekan-performa', [PDF
 Route::get('/quality/defect-status/{record}/pdf-defect-status', [PDFController::class, 'pdfDefectStatus'])->name('pdf.defectStatus');
 Route::get('/quality/defect-status/{record}/download-file', [PDFController::class, 'downloadDefectStatus'])->name('defectStatus.file-download');
 Route::get('/quality/ketidaksesuaian/{record}/pdf-ketidaksesuaian', [PDFController::class, 'pdfKetidaksesuaian'])->name('pdf.ketidaksesuaian');
+Route::get('/quality/product-release/{record}/pdf-product-release', [PDFController::class, 'pdfProductRelease'])->name('pdf.productRelease');
 
 //Engineering
 Route::get('/engineering/spk-service/{record}/pdf-spk-service', [PDFController::class, 'pdfSPKService'])->name('pdf.spkService');

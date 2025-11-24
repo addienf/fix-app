@@ -93,9 +93,9 @@ trait InformasiUmum
             })
             ->getSearchResultsUsing(function (string $search) {
 
-                if ($search === '') {
-                    return Cache::get(SPKMarketing::$CACHE_PREFIXES['search_spk'], []);
-                }
+                // if ($search === '') {
+                //     return Cache::get(SPKMarketing::$CACHE_PREFIXES['search_spk'], []);
+                // }
 
                 return SPKMarketing::query()
                     ->select(['id', 'no_spk'])

@@ -3,25 +3,18 @@
 namespace App\Filament\Resources\Quality\Ketidaksesuaian;
 
 use App\Filament\Resources\Quality\Ketidaksesuaian\KetidaksesuaianResource\Pages;
-use App\Filament\Resources\Quality\Ketidaksesuaian\KetidaksesuaianResource\RelationManagers;
 use App\Filament\Resources\Quality\Ketidaksesuaian\Traits\DetailKetidaksesuaian;
 use App\Filament\Resources\Quality\Ketidaksesuaian\Traits\InformasiUmum;
 use App\Filament\Resources\Quality\Ketidaksesuaian\Traits\SyaratDanketentuan;
 use App\Models\Quality\Ketidaksesuaian\Ketidaksesuaian;
 use App\Traits\HasSignature;
-use App\Traits\SimpleFormResource;
 use Filament\Actions\Action;
-use Filament\Forms;
 use Filament\Forms\Components\Hidden;
-use Filament\Forms\Components\Section;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Table;
-use Icetalker\FilamentTableRepeater\Forms\Components\TableRepeater;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class KetidaksesuaianResource extends Resource
 {
@@ -37,7 +30,7 @@ class KetidaksesuaianResource extends Resource
 
     public static function form(Form $form): Form
     {
-        $isEdit = $form->getOperation() === 'edit';
+        // $isEdit = $form->getOperation() === 'edit';
 
         return $form
             ->schema([

@@ -7,7 +7,6 @@ use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
-use Illuminate\Support\Facades\Cache;
 use Wallo\FilamentSelectify\Components\ButtonGroup;
 
 trait InformasiUmum
@@ -88,26 +87,38 @@ trait InformasiUmum
             ->label('No URS')
             ->placeholder('Pilih Data URS')
             ->searchable()
+            // ->getSearchResultsUsing(function (string $search) {
+
+            //     $key = URS::$CACHE_PREFIXES['search_urs'] . md5($search);
+
+            //     return Cache::remember($key, 300, function () use ($search) {
+            //         return URS::query()
+            //             ->where('no_urs', 'like', "%{$search}%")
+            //             ->orderBy('id', 'desc')
+            //             ->limit(10)
+            //             ->pluck('no_urs', 'id');
+            //     });
+            // })
+            // ->options(function () {
+            //     return Cache::rememberForever(URS::$CACHE_KEYS['select_urs'], function () {
+            //         return URS::orderBy('id', 'desc')
+            //             ->limit(10)
+            //             ->pluck('no_urs', 'id');
+            //     });
+            // })
             ->getSearchResultsUsing(function (string $search) {
-
-                $key = URS::$CACHE_PREFIXES['search_urs'] . md5($search);
-
-                return Cache::remember($key, 300, function () use ($search) {
-                    return URS::query()
-                        ->where('no_urs', 'like', "%{$search}%")
-                        ->orderBy('id', 'desc')
-                        ->limit(10)
-                        ->pluck('no_urs', 'id');
-                });
+                return URS::query()
+                    ->where('no_urs', 'like', "%{$search}%")
+                    ->orderBy('id', 'desc')
+                    ->limit(10)
+                    ->pluck('no_urs', 'id');
             })
             ->options(function () {
-                return Cache::rememberForever(URS::$CACHE_KEYS['select_urs'], function () {
-                    return URS::orderBy('id', 'desc')
-                        ->limit(10)
-                        ->pluck('no_urs', 'id');
-                });
+                return URS::orderBy('id', 'desc')
+                    ->limit(10)
+                    ->pluck('no_urs', 'id');
             })
-            ->getOptionLabelUsing(fn($value) => URS::find($value)?->no_urs ?? '-')
+            // ->getOptionLabelUsing(fn($value) => URS::find($value)?->no_urs ?? '-')
             ->native(false)
             ->preload(false)
             ->required();

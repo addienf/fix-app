@@ -3,40 +3,19 @@
 namespace App\Filament\Resources\Quality\IncommingMaterial\MaterialNonSS;
 
 use App\Filament\Resources\Quality\IncommingMaterial\MaterialNonSS\IncommingMaterialNonSSResource\Pages;
-use App\Filament\Resources\Quality\IncommingMaterial\MaterialNonSS\IncommingMaterialNonSSResource\RelationManagers;
 use App\Filament\Resources\Quality\IncommingMaterial\MaterialNonSS\Traits\HasilPemeriksaan;
 use App\Filament\Resources\Quality\IncommingMaterial\MaterialNonSS\Traits\InformasiUmum;
 use App\Filament\Resources\Quality\IncommingMaterial\MaterialNonSS\Traits\Summary;
-use App\Models\Purchasing\Permintaan\PermintaanPembelian;
 use App\Models\Quality\IncommingMaterial\MaterialNonSS\IncommingMaterialNonSS;
-use App\Services\SignatureUploader;
 use App\Traits\HasSignature;
 use Filament\Actions\Action;
-use Filament\Forms;
-use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Fieldset;
-use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Hidden;
-use Filament\Forms\Components\Placeholder;
-use Filament\Forms\Components\Repeater;
-use Filament\Forms\Components\Section;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
-use Filament\Forms\Get;
 use Filament\Resources\Resource;
-use Illuminate\Support\HtmlString;
 use Filament\Tables;
 use Filament\Tables\Actions\ActionGroup;
-use Filament\Tables\Columns\ImageColumn;
-use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Icetalker\FilamentTableRepeater\Forms\Components\TableRepeater;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Saade\FilamentAutograph\Forms\Components\SignaturePad;
-use Wallo\FilamentSelectify\Components\ButtonGroup;
 
 class IncommingMaterialNonSSResource extends Resource
 {
@@ -59,11 +38,6 @@ class IncommingMaterialNonSSResource extends Resource
 
     public static function form(Form $form): Form
     {
-        // $defaultParts = collect(config('incommingMaterialNonSS.parts'))
-        //     ->map(fn($part) => ['part' => $part])
-        //     ->toArray();
-
-        // $rows = config('summaryNonSS.rows');
 
         return $form
             ->schema([
@@ -71,7 +45,7 @@ class IncommingMaterialNonSSResource extends Resource
                 Hidden::make('status_penyelesaian')
                     ->default('Belum Diterima'),
 
-                self::informasiUmumSection(),
+                self::informasiUmumSection($form),
 
                 self::hasilPemeriksaanSection(),
 

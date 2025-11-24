@@ -13,7 +13,6 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\ActionGroup;
-use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -84,11 +83,11 @@ class PermintaanAlatDanBahanResource extends Resource
         return $table
             ->columns([
                 //
-                self::textColumn('jadwalProduksi.no_surat', 'Nomor Surat Perencanaan Produksi')->alignCenter(),
+                self::textColumn('jadwalProduksi.no_surat', 'Nomor Surat Perencanaan Produksi'),
 
-                self::textColumn('no_surat', 'Nomor Surat')->alignCenter(),
+                self::textColumn('no_surat', 'Nomor Surat'),
 
-                self::textColumn('tanggal', 'Tanggal Dibuat')->date('d F Y')->alignCenter(),
+                self::textColumn('tanggal', 'Tanggal Dibuat')->date('d F Y'),
 
                 self::textColumn('status', 'Status Stock Barang')
                     ->badge()

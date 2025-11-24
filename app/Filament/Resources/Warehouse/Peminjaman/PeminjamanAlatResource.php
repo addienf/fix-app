@@ -59,7 +59,8 @@ class PeminjamanAlatResource extends Resource
 
                 self::textColumn('tanggal_kembali', 'Tanggal Kembali')->date('d F Y'),
 
-                self::textColumn('pic.nama_peminjam', 'Nama Peminjam'),
+                self::textColumn('pic.NamaPeminjam.name', 'Nama Peminjam'),
+                // self::textColumn('peminjam.name', 'Nama Peminjam'),
             ])
             ->filters([
                 //

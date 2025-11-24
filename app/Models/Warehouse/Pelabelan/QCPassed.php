@@ -3,6 +3,7 @@
 namespace App\Models\Warehouse\Pelabelan;
 
 use App\Models\Quality\Pengecekan\PengecekanPerforma;
+use App\Models\Quality\Release\ProductRelease;
 use App\Models\Warehouse\Pelabelan\Pivot\QCPassedDetail;
 use App\Models\Warehouse\Pelabelan\Pivot\QCPassedPIC;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -14,8 +15,7 @@ class QCPassed extends Model
     protected $table = 'qc_passeds';
 
     protected $fillable = [
-        // 'spk_marketing_id',
-        'pengecekan_performa_id',
+        'release_id',
         'tanggal',
         'penanggung_jawab',
         'total_masuk',
@@ -24,14 +24,9 @@ class QCPassed extends Model
         'status_persetujuan',
     ];
 
-    // public function spk()
-    // {
-    //     return $this->belongsTo(SPKMarketing::class, 'spk_marketing_id');
-    // }
-
-    public function pengecekanPerforma()
+    public function productRelease()
     {
-        return $this->belongsTo(PengecekanPerforma::class, 'pengecekan_performa_id');
+        return $this->belongsTo(ProductRelease::class, 'release_id');
     }
 
     public function details()

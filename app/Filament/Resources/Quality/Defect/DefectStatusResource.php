@@ -7,33 +7,16 @@ use App\Filament\Resources\Quality\Defect\DefectStatusResource\Pages\pdfDefectSt
 use App\Filament\Resources\Quality\Defect\Traits\ChamberIdentification;
 use App\Filament\Resources\Quality\Defect\Traits\TabelChecklist;
 use App\Models\Quality\Defect\DefectStatus;
-use App\Models\Quality\PengecekanMaterial\Electrical\PengecekanMaterialElectrical;
-use App\Models\Quality\PengecekanMaterial\SS\PengecekanMaterialSS;
-use App\Models\Sales\SPKMarketings\SPKMarketing;
-use App\Services\SignatureUploader;
 use App\Traits\HasSignature;
 use Filament\Actions\Action;
-use Filament\Forms;
-use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Card;
-use Filament\Forms\Components\Fieldset;
-use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Hidden;
-use Filament\Forms\Components\Repeater;
-use Filament\Forms\Components\Section;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Icetalker\FilamentTableRepeater\Forms\Components\TableRepeater;
-use Saade\FilamentAutograph\Forms\Components\SignaturePad;
-use Wallo\FilamentSelectify\Components\ButtonGroup;
+use Illuminate\Database\Eloquent\Builder;
 
 class DefectStatusResource extends Resource
 {
@@ -181,5 +164,14 @@ class DefectStatusResource extends Resource
             'edit' => Pages\EditDefectStatus::route('/{record}/edit'),
             'pdfDefectStatus' => pdfDefectStatus::route('/{record}/pdfDefectStatus')
         ];
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->with([
+                'details',
+                'pic'
+            ]);
     }
 }

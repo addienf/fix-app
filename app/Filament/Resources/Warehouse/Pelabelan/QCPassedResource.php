@@ -3,34 +3,20 @@
 namespace App\Filament\Resources\Warehouse\Pelabelan;
 
 use App\Filament\Resources\Warehouse\Pelabelan\QCPassedResource\Pages;
-use App\Filament\Resources\Warehouse\Pelabelan\QCPassedResource\RelationManagers;
 use App\Filament\Resources\Warehouse\Pelabelan\Traits\DetailLaporanProduk;
 use App\Filament\Resources\Warehouse\Pelabelan\Traits\InformasiUmum;
 use App\Filament\Resources\Warehouse\Pelabelan\Traits\SyaratDanKetentuan;
-use App\Models\Sales\SPKMarketings\SPKMarketing;
 use App\Models\Warehouse\Pelabelan\QCPassed;
-use App\Services\SignatureUploader;
 use App\Traits\HasSignature;
 use Filament\Actions\Action;
-use Filament\Forms;
-use Filament\Forms\Components\Repeater;
-use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Section;
-use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Hidden;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Actions\ActionGroup;
-use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Icetalker\FilamentTableRepeater\Forms\Components\TableRepeater;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Saade\FilamentAutograph\Forms\Components\SignaturePad;
 
 class QCPassedResource extends Resource
 {
@@ -90,11 +76,10 @@ class QCPassedResource extends Resource
         return $table
             ->columns([
                 //
-                // self::textColumn('spk.no_spk', 'No SPK'),
 
-                self::textColumn('pengecekanPerforma.penyerahanProdukJadi.details.no_spk', 'Nomor SPK'),
+                self::textColumn('productRelease.pengecekanPerforma.penyerahanProdukJadi.details.no_spk', 'Nomor SPK'),
 
-                self::textColumn('pengecekanPerforma.serial_number', 'Serial Number'),
+                self::textColumn('productRelease.pengecekanPerforma.serial_number', 'Serial Number'),
 
                 self::textColumn('penanggung_jawab', 'Penanggung Jawab'),
 
@@ -150,5 +135,13 @@ class QCPassedResource extends Resource
             'edit' => Pages\EditQCPassed::route('/{record}/edit'),
             'pdfPelabelanQCPassed' => Pages\pdfPelabelanQCPassed::route('/{record}/pdfPelabelanQCPassed')
         ];
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->with([
+                'productRelease.pengecekanPerforma.penyerahanProdukJadi.details'
+            ]);
     }
 }

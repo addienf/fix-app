@@ -48,7 +48,7 @@
                 $fields = [
                     [
                         'label' => 'Tanggal :',
-                        'value' => \Carbon\Carbon::parse($spk_mkt->tanggal)->translatedFormat('d M Y'),
+                        'value' => \Carbon\Carbon::parse($spk_mkt->tanggal)->translatedFormat('d F Y'),
                     ],
                     ['label' => 'No SPK :', 'value' => $spk_mkt->no_spk],
                     ['label' => 'Customer :', 'value' => $spk_mkt->spesifikasiProduct->urs->customer->name],

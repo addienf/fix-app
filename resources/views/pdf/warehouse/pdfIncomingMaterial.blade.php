@@ -49,7 +49,7 @@
                     ],
                     [
                         'label' => 'Tanggal Penerimaan :',
-                        'value' => \Carbon\Carbon::parse($incomingMaterial->tanggal)->translatedFormat('d M Y'),
+                        'value' => \Carbon\Carbon::parse($incomingMaterial->tanggal)->translatedFormat('d F Y'),
                     ],
                 ];
             @endphp

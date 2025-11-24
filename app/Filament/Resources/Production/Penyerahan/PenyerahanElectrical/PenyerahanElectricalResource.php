@@ -3,36 +3,17 @@
 namespace App\Filament\Resources\Production\Penyerahan\PenyerahanElectrical;
 
 use App\Filament\Resources\Production\Penyerahan\PenyerahanElectrical\PenyerahanElectricalResource\Pages;
-use App\Filament\Resources\Production\Penyerahan\PenyerahanElectrical\PenyerahanElectricalResource\RelationManagers;
 use App\Filament\Resources\Production\Penyerahan\PenyerahanElectrical\Traits\InformasiProduk;
 use App\Filament\Resources\Production\Penyerahan\PenyerahanElectrical\Traits\PengecekanDanPenerimaan;
 use App\Models\Production\Penyerahan\PenyerahanElectrical\PenyerahanElectrical;
-use App\Models\Quality\PengecekanMaterial\SS\PengecekanMaterialSS;
-use App\Models\Sales\SPKMarketings\SPKMarketing;
-use App\Services\SignatureUploader;
 use App\Traits\HasSignature;
 use Filament\Actions\Action;
-use Filament\Forms;
-use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Fieldset;
-use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Hidden;
-use Filament\Forms\Components\Section;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Split;
-use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Actions\ActionGroup;
-use Filament\Tables\Columns\ImageColumn;
-use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Saade\FilamentAutograph\Forms\Components\SignaturePad;
 
 class PenyerahanElectricalResource extends Resource
 {
@@ -100,26 +81,20 @@ class PenyerahanElectricalResource extends Resource
 
                 self::textColumn('no_spk', 'Nomor SPK Marketing'),
 
-                TextColumn::make('pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.identifikasiProduks.no_seri')
-                    ->label('No Seri'),
+                self::textColumn('no_seri', 'No Seri')
+                    ->getStateUsing(function ($record) {
+                        return $record?->pengecekanSS?->kelengkapanMaterial?->standarisasiDrawing?->serahTerimaWarehouse
+                            ?->peminjamanAlat?->spkVendor?->permintaanBahanProduksi?->jadwalProduksi
+                            ?->identifikasiProduks?->pluck('no_seri')->filter()->implode(', ') ?? '-';
+                    }),
 
-                TextColumn::make('status_penyelesaian')
-                    ->label('Status')
+                self::textColumn('status_penyelesaian', 'Status')
                     ->badge()
-                    ->color(function ($record) {
-                        $penyelesaian = $record->status_penyelesaian;
-                        $persetujuan = $record->status_persetujuan;
-
-                        if ($penyelesaian === 'Disetujui') {
-                            return 'success';
-                        }
-
-                        if ($penyelesaian !== 'Diterima' && $persetujuan !== 'Disetujui') {
-                            return 'danger';
-                        }
-
-                        return 'warning';
-                    })
+                    ->color(fn($state) => [
+                        'Belum Diterima' => 'danger',
+                        'Diterima' => 'warning',
+                        'Disetujui' => 'success',
+                    ][$state] ?? 'gray')
                     ->alignCenter(),
             ])
             ->filters([

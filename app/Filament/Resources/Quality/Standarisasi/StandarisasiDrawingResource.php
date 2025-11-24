@@ -79,14 +79,28 @@ class StandarisasiDrawingResource extends Resource
 
     public static function table(Table $table): Table
     {
-        return $table
+        return
+            $table
             ->columns([
                 //
-                TextColumn::make('serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.spk.no_spk')
-                    ->label('No SPK Marketing'),
+                // TextColumn::make('serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.spk.no_spk')
+                //     ->label('No SPK Marketing'),
 
-                TextColumn::make('serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.identifikasiProduks.no_seri')
-                    ->label('No Seri'),
+                self::textColumn('serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.spk.no_spk', 'No SPK Marketing'),
+
+                self::textColumn('no_seri', 'No Seri')
+                    ->getStateUsing(function ($record) {
+                        return $record
+                            ->serahTerimaWarehouse
+                            ?->peminjamanAlat
+                            ?->spkVendor
+                            ?->permintaanBahanProduksi
+                            ?->jadwalProduksi
+                            ?->identifikasiProduks
+                            ?->pluck('no_seri')
+                            ->filter()
+                            ->implode(', ') ?? '-';
+                    }),
 
                 self::textColumn('tanggal', 'Tanggal')
                     ->date('d F Y'),
@@ -98,8 +112,7 @@ class StandarisasiDrawingResource extends Resource
 
                 self::textColumn('format_gambar', 'Format Gambar'),
 
-                TextColumn::make('status_pemeriksaan')
-                    ->label('Status Pemeriksaan')
+                self::textColumn('status_pemeriksaan', 'Status Pemeriksaan')
                     ->badge()
                     ->color(
                         fn($state) =>
@@ -112,17 +125,24 @@ class StandarisasiDrawingResource extends Resource
             ])
             ->actions([
                 ActionGroup::make([
-                    Tables\Actions\EditAction::make(),
-                    Tables\Actions\DeleteAction::make(),
+                    Tables\Actions\EditAction::make()
+                        ->icon('heroicon-o-pencil-square')
+                        ->tooltip('Edit Data SPK Marketing')
+                        ->color('info'),
+                    Tables\Actions\DeleteAction::make()
+                        ->icon('heroicon-o-trash')
+                        ->tooltip('Hapus Data'),
                     Action::make('pdf_view')
                         ->label(_('Lihat PDF'))
                         ->icon('heroicon-o-document')
+                        ->tooltip('Lihat Data PDF')
                         ->color('success')
                         ->visible(fn($record) => $record->status_pemeriksaan === 'Diperiksa')
                         ->url(fn($record) => route('pdf.StandarisasiDrawing', ['record' => $record->id])),
                     Action::make('lampiran_view')
                         ->label(_('Lihat Lampiran'))
                         ->icon('heroicon-o-clipboard')
+                        ->tooltip('Lihat Data Lampiran')
                         ->color('primary')
                         ->visible(fn($record) => !empty($record->detail?->lampiran))
                         ->url(fn($record) => route('pdf.StandarisasiDrawingLampiran', ['record' => $record->id])),

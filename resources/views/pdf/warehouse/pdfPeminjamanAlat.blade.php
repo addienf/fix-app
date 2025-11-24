@@ -59,13 +59,13 @@
                         <tr>
                             <td class="px-4 py-2 border">{{ $index + 1 }}</td>
                             <td class="px-4 py-2 border">
-                                {{ \Carbon\Carbon::parse($peminjaman->tanggal_pinjam)->translatedFormat('d M Y') }}</td>
+                                {{ \Carbon\Carbon::parse($peminjaman->tanggal_pinjam)->translatedFormat('d F Y') }}</td>
                             <td class="px-4 py-2 border">{{ $peminjaman->pic->department }}</td>
                             <td class="px-4 py-2 border">{{ $produk['nama_sparepart'] }}</td>
                             <td class="px-4 py-2 border">{{ $produk['model'] }}</td>
                             <td class="px-4 py-2 border">{{ $produk['jumlah'] }}</td>
                             <td class="px-4 py-2 border">
-                                {{ \Carbon\Carbon::parse($peminjaman->tanggal_kembali)->translatedFormat('d M Y') }}</td>
+                                {{ \Carbon\Carbon::parse($peminjaman->tanggal_kembali)->translatedFormat('d F Y') }}</td>
                             <td class="px-4 py-2 border">{{ $peminjaman->pic->NamaPeminjam->name }}</td>
                             <td class="px-4 py-2 border"><img src="{{ asset('storage/' . $peminjaman->pic->signature) }}"
                                     alt="Create Signature" class="h-20 w-80" /></td>

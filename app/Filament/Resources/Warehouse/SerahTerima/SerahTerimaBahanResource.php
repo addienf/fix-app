@@ -142,7 +142,6 @@ class SerahTerimaBahanResource extends Resource
     {
         return parent::getEloquentQuery()
             ->with([
-                // 'permintaanBahanPro',
                 'peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.spk',
                 'peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.identifikasiProduks',
                 'details',

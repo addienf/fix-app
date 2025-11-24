@@ -3,36 +3,21 @@
 namespace App\Filament\Resources\Sales\SPK;
 
 use App\Filament\Resources\Sales\SPK\SPKResource\Pages;
-use App\Filament\Resources\Sales\SPK\SPKResource\RelationManagers;
 use App\Filament\Resources\Sales\SPK\Traits\DetailProduk;
 use App\Filament\Resources\Sales\SPK\Traits\InformasiUmum;
-use App\Models\Sales\SpesifikasiProducts\SpesifikasiProduct;
 use App\Models\Sales\SPKMarketings\SPKMarketing;
-use App\Services\SignatureUploader;
 use App\Traits\HasAutoNumber;
 use App\Traits\HasSignature;
 use App\Traits\SimpleFormResource;
-use Filament\Forms;
-use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Hidden;
-use Filament\Forms\Components\Section;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Grid;
-use Filament\Forms\Components\Split;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\ActionGroup;
-use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use GuzzleHttp\Promise\Create;
-use Icetalker\FilamentTableRepeater\Forms\Components\TableRepeater;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Saade\FilamentAutograph\Forms\Components\SignaturePad;
 
 class SPKResource extends Resource
 {
@@ -98,8 +83,7 @@ class SPKResource extends Resource
 
                 self::textColumn('no_order', 'No Order'),
 
-                TextColumn::make('status_penerimaan')
-                    ->label('Status Penerimaan')
+                self::textColumn('status_penerimaan', 'Status')
                     ->badge()
                     ->color(
                         fn($state) =>

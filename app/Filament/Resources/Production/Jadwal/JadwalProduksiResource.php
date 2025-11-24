@@ -94,13 +94,11 @@ class JadwalProduksiResource extends Resource
                 self::textColumn('tanggal', 'Tanggal Dibuat')
                     ->formatStateUsing(fn($state) => \Carbon\Carbon::parse($state)->format('d F Y')),
 
-                TextColumn::make('status_persetujuan')
-                    ->label('Status Persetujuan')
+                self::textColumn('status_persetujuan', 'Status')
                     ->badge()
-                    ->color(
-                        fn($state) =>
-                        $state === 'Disetujui' ? 'success' : 'danger'
-                    )
+                    ->color(fn($state) => [
+                        'Disetujui' => 'success',
+                    ][$state] ?? 'danger')
                     ->alignCenter(),
 
             ])

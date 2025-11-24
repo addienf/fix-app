@@ -48,7 +48,7 @@ trait ChamberIdentification
 
                 // Hidden::make('spk_marketing_id'),
 
-            ])->columns($isEdit ? 3 : 4);
+            ])->columns($isEdit ? 4 : 2);
     }
 
     protected static function pilihModel(): Select

@@ -3,6 +3,7 @@
 namespace App\Models\Warehouse\Peminjaman;
 
 use App\Models\Production\SPK\SPKVendor;
+use App\Models\User;
 use App\Models\Warehouse\Peminjaman\Pivot\PeminjamanAlatDetail;
 use App\Models\Warehouse\Peminjaman\Pivot\PeminjamanAlatPIC;
 use App\Models\Warehouse\SerahTerima\SerahTerimaBahan;
@@ -26,6 +27,11 @@ class PeminjamanAlat extends Model
     public function spkVendor()
     {
         return $this->belongsTo(SPKVendor::class, 'spk_vendor_id');
+    }
+
+    public function peminjam()
+    {
+        return $this->belongsTo(User::class, 'nama_peminjam');
     }
 
     public function serahTerimaBahan()

@@ -81,35 +81,27 @@ class PengecekanMaterialSSResource extends Resource
         return $table
             ->columns([
                 //
-                // self::textColumn('spk.no_spk', 'No SPK'),
 
-                TextColumn::make('kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.spk.no_spk')
-                    ->label('No SPK Marketing'),
+                self::textColumn('kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.spk.no_spk', 'No SPK Marketing'),
 
-                TextColumn::make('kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.identifikasiProduks.no_seri')
-                    ->label('No Seri'),
+                self::textColumn('no_seri', 'No Seri')
+                    ->getStateUsing(function ($record) {
+                        return $record->kelengkapanMaterial?->standarisasiDrawing?->serahTerimaWarehouse
+                            ?->peminjamanAlat?->spkVendor?->permintaanBahanProduksi?->jadwalProduksi
+                            ?->identifikasiProduks?->pluck('no_seri')->filter()->implode(', ') ?? '-';
+                    }),
 
                 self::textColumn('tipe', 'Type/Model'),
 
                 self::textColumn('ref_document', 'Ref Document'),
 
-                TextColumn::make('status_penyelesaian')
-                    ->label('Status')
+                self::textColumn('status_penyelesaian', 'Status')
                     ->badge()
-                    ->color(function ($record) {
-                        $penyelesaian = $record->status_penyelesaian;
-                        $persetujuan = $record->status_persetujuan;
-
-                        if ($penyelesaian === 'Disetujui') {
-                            return 'success';
-                        }
-
-                        if ($penyelesaian !== 'Diterima' && $persetujuan !== 'Disetujui') {
-                            return 'danger';
-                        }
-
-                        return 'warning';
-                    })
+                    ->color(fn($state) => [
+                        'Belum Diterima' => 'danger',
+                        'Diterima' => 'warning',
+                        'Disetujui' => 'success',
+                    ][$state] ?? 'gray')
                     ->alignCenter(),
             ])
             ->filters([

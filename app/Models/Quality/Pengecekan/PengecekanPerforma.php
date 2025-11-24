@@ -6,6 +6,7 @@ use App\Models\Production\Penyerahan\PenyerahanProdukJadi;
 use App\Models\Quality\Ketidaksesuaian\Ketidaksesuaian;
 use App\Models\Quality\Pengecekan\Pivot\PengecekanPerformaDetail;
 use App\Models\Quality\Pengecekan\Pivot\PengecekanPerformaPIC;
+use App\Models\Quality\Release\ProductRelease;
 use App\Models\Warehouse\Pelabelan\QCPassed;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -36,6 +37,11 @@ class PengecekanPerforma extends Model
     public function ketidaksesuaian()
     {
         return $this->hasOne(Ketidaksesuaian::class, 'pengecekan_performa_id');
+    }
+
+    public function productRelease()
+    {
+        return $this->hasOne(ProductRelease::class, 'pengecekan_performa_id');
     }
 
     public function qcPassed()
