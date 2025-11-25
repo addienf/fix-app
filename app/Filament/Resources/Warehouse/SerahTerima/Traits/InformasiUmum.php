@@ -94,9 +94,20 @@ trait InformasiUmum
                     ->latest()
                     ->limit(10)
                     ->get()
-                    ->mapWithKeys(fn($pinjam) => [
-                        $pinjam->id => $this->buildSPKLabel($pinjam),
-                    ]);
+                    ->mapWithKeys(function ($pinjam) {
+
+                        $jadwal = $pinjam->spkVendor->permintaanBahanProduksi->jadwalProduksi;
+
+                        $spkNo = $jadwal->spk->no_spk ?? '-';
+                        $noSeri = $jadwal->identifikasiProduks
+                            ->pluck('no_seri')
+                            ->filter()
+                            ->implode(', ') ?: '-';
+
+                        return [
+                            $pinjam->id => "{$spkNo} - {$noSeri}",
+                        ];
+                    });
             })
             ->afterStateUpdated(function ($state, callable $set) {
                 if (!$state) return;
