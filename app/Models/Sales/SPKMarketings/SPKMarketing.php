@@ -2,26 +2,12 @@
 
 namespace App\Models\Sales\SPKMarketings;
 
-use App\Models\Production\Jadwal\JadwalProduksi as JadwalJadwalProduksi;
-use App\Models\Production\JadwalProduksi;
-use App\Models\Production\Penyerahan\PenyerahanProdukJadi;
-use App\Models\Production\PermintaanBahanProduksi\PermintaanAlatDanBahan;
-use App\Models\Production\SPK\SPKQuality;
-use App\Models\Production\SPK\SPKVendor;
-use App\Models\Quality\Defect\DefectStatus;
-use App\Models\Quality\KelengkapanMaterial\SS\KelengkapanMaterialSS;
-use App\Models\Quality\Ketidaksesuaian\Ketidaksesuaian;
-use App\Models\Quality\Pengecekan\PengecekanPerforma;
-use App\Models\Quality\PengecekanMaterial\Electrical\PengecekanMaterialElectrical;
-use App\Models\Quality\PengecekanMaterial\SS\PengecekanMaterialSS;
-use App\Models\Quality\Standarisasi\StandarisasiDrawing;
+use App\Models\Production\Jadwal\JadwalProduksi;
 use App\Models\Sales\SpesifikasiProducts\SpesifikasiProduct;
 use App\Models\Sales\SPKMarketings\Pivot\SPKMarketingPIC;
-use App\Models\Warehouse\Pelabelan\QCPassed;
 use App\Traits\HasCacheManager;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Log;
 
 /**
  * @property string|null $id
@@ -58,6 +44,11 @@ class SPKMarketing extends Model
     public function spesifikasiProduct()
     {
         return $this->belongsTo(SpesifikasiProduct::class);
+    }
+
+    public function jadwalProduksi()
+    {
+        return $this->belongsTo(JadwalProduksi::class, 'spk_marketing_id');
     }
 
     public function pic()
