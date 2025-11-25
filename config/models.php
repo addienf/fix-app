@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Engineering\Berita\BeritaAcara;
+use App\Models\Engineering\Complain\Complain;
 use App\Models\Engineering\Maintenance\ChamberG2\ChamberG2;
 use App\Models\Engineering\Maintenance\ChamberR2\ChamberR2;
 use App\Models\Engineering\Maintenance\ChamberWalkinG2\ChamberWalkinG2;
@@ -8,6 +9,7 @@ use App\Models\Engineering\Maintenance\ColdRoom\ColdRoom;
 use App\Models\Engineering\Maintenance\Refrigerator\Refrigerator;
 use App\Models\Engineering\Maintenance\RissingPipette\RissingPipette;
 use App\Models\Engineering\Maintenance\WalkinChamber\WalkinChamber;
+use App\Models\Engineering\Pelayanan\PermintaanPelayananPelanggan;
 use App\Models\Engineering\Permintaan\PermintaanSparepart;
 use App\Models\Engineering\Service\ServiceReport;
 use App\Models\Engineering\SPK\SPKService;
@@ -24,12 +26,15 @@ use App\Models\Quality\Defect\DefectStatus;
 use App\Models\Quality\IncommingMaterial\MaterialNonSS\IncommingMaterialNonSS;
 use App\Models\Quality\IncommingMaterial\MaterialSS\IncommingMaterialSS;
 use App\Models\Quality\KelengkapanMaterial\SS\KelengkapanMaterialSS;
+use App\Models\Quality\Ketidaksesuaian\Ketidaksesuaian;
 use App\Models\Quality\Pengecekan\PengecekanPerforma;
 use App\Models\Quality\PengecekanMaterial\Electrical\PengecekanMaterialElectrical;
 use App\Models\Quality\PengecekanMaterial\SS\PengecekanMaterialSS;
+use App\Models\Quality\Release\ProductRelease;
 use App\Models\Quality\Standarisasi\StandarisasiDrawing;
 use App\Models\Sales\SpesifikasiProducts\SpesifikasiProduct;
 use App\Models\Sales\SPKMarketings\SPKMarketing;
+use App\Models\Sales\URS;
 use App\Models\User;
 use App\Models\Warehouse\Incomming\IncommingMaterial;
 use App\Models\Warehouse\Pelabelan\QCPassed;
@@ -50,6 +55,10 @@ return [
         'produk' => [
             'label' => 'Produk',
             'model' => Product::class,
+        ],
+        'urs' => [
+            'label' => 'URS',
+            'model' => URS::class,
         ],
     ],
 
@@ -120,6 +129,14 @@ return [
             'label' => 'Defect Status',
             'model' => DefectStatus::class,
         ],
+        'ketidaksesuaian' => [
+            'label' => 'Ketidaksesuaian',
+            'model' => Ketidaksesuaian::class,
+        ],
+        'release' => [
+            'label' => 'Product Repelase',
+            'model' => ProductRelease::class,
+        ],
     ],
 
     'purchase' => [
@@ -131,7 +148,7 @@ return [
 
     'produksi' => [
         'jadwalProduksi' => [
-            'label' => 'Jadwal Produksi',
+            'label' => 'Perencanaan Produksi',
             'model' => JadwalProduksi::class,
         ],
         'permintaanBahanProduksi' => [
@@ -157,6 +174,14 @@ return [
     ],
 
     'engineer' => [
+        'complaint' => [
+            'label' => 'Complain',
+            'model' => Complain::class,
+        ],
+        'pelayananPelanggan' => [
+            'label' => 'Permintaan Pelayanan Pelanggan',
+            'model' => PermintaanPelayananPelanggan::class,
+        ],
         'spkService' => [
             'label' => 'SPK Service',
             'model' => SPKService::class,

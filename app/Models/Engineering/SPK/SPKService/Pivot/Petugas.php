@@ -15,7 +15,6 @@ class Petugas extends Model
         'spk_service_id',
         'nama_teknisi',
         'jabatan',
-        'ttd'
     ];
 
     public function spkService()

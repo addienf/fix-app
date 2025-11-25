@@ -18,8 +18,8 @@ class SPKServicePIC extends Model
         'spk_service_id',
         'dikonfirmasi_signature',
         'dikonfirmasi_name',
-        'diketahui_signature',
-        'diketahui_name',
+        'dibuat_signature',
+        'dibuat_name',
     ];
 
     public function spkService()
@@ -32,9 +32,9 @@ class SPKServicePIC extends Model
         return $this->belongsTo(User::class, 'dikonfirmasi_name');
     }
 
-    public function diketahuiNama()
+    public function dibuatNama()
     {
-        return $this->belongsTo(User::class, 'diketahui_name');
+        return $this->belongsTo(User::class, 'dibuat_name');
     }
 
     protected static function booted(): void
@@ -49,11 +49,11 @@ class SPKServicePIC extends Model
             }
 
             if (
-                $model->isDirty('diketahui_signature') &&
-                $model->getOriginal('diketahui_signature') &&
-                Storage::disk('public')->exists($model->getOriginal('diketahui_signature'))
+                $model->isDirty('dibuat_signature') &&
+                $model->getOriginal('dibuat_signature') &&
+                Storage::disk('public')->exists($model->getOriginal('dibuat_signature'))
             ) {
-                Storage::disk('public')->delete($model->getOriginal('diketahui_signature'));
+                Storage::disk('public')->delete($model->getOriginal('dibuat_signature'));
             }
         });
 
@@ -62,8 +62,8 @@ class SPKServicePIC extends Model
                 Storage::disk('public')->delete($model->dikonfirmasi_signature);
             }
 
-            if ($model->diketahui_signature && Storage::disk('public')->exists($model->diketahui_signature)) {
-                Storage::disk('public')->delete($model->diketahui_signature);
+            if ($model->dibuat_signature && Storage::disk('public')->exists($model->dibuat_signature)) {
+                Storage::disk('public')->delete($model->dibuat_signature);
             }
         });
     }

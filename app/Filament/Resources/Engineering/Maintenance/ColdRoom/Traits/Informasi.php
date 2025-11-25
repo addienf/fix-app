@@ -28,13 +28,28 @@ trait Informasi
 
                 Select::make('spk_service_id')
                     ->label('Nomor SPK Service')
+                    // ->options(function () {
+                    //     return Cache::rememberForever(SPKService::$CACHE_KEYS['coldRoom'], function () {
+                    //         return SPKService::where('status_penyelesaian', 'Selesai')
+                    //             ->whereDoesntHave('coldRoom')
+                    //             ->get()
+                    //             ->pluck('no_spk_service', 'id');
+                    //     });
+                    // })
                     ->options(function () {
-                        return Cache::rememberForever(SPKService::$CACHE_KEYS['coldRoom'], function () {
-                            return SPKService::where('status_penyelesaian', 'Selesai')
-                                ->whereDoesntHave('coldRoom')
-                                ->get()
-                                ->pluck('no_spk_service', 'id');
-                        });
+                        return SPKService::query()
+                            ->where('status', 'Selesai')
+                            ->whereDoesntHave('coldRoom')
+                            ->limit(10)
+                            ->pluck('no_spk_service', 'id');
+                    })
+                    ->getSearchResultsUsing(function (string $search) {
+                        return SPKService::query()
+                            ->where('status', 'Selesai')
+                            ->whereDoesntHave('coldRoom')
+                            ->where('no_spk_service', 'like', "%{$search}%")
+                            ->limit(10)
+                            ->pluck('no_spk_service', 'id');
                     })
                     ->native(false)
                     ->searchable()

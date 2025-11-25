@@ -12,7 +12,6 @@ use App\Models\Sales\SPKMarketings\SPKMarketing;
 use App\Traits\HasCacheManager;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 /**
@@ -70,14 +69,6 @@ class JadwalProduksi extends Model
         return $this->hasOne(JadwalProduksiPIC::class);
     }
 
-    public static array $CACHE_KEYS = [
-        'select_jadwal' => 'jadwal_select_default',
-    ];
-
-    public static array $CACHE_PREFIXES = [
-        'search_jadwal' => 'jadwal_search_',
-    ];
-
     protected static function booted()
     {
         static::saving(function ($model) {
@@ -115,16 +106,6 @@ class JadwalProduksi extends Model
             if ($model->file_upload && Storage::disk('public')->exists($model->file_upload)) {
                 Storage::disk('public')->delete($model->file_upload);
             }
-        });
-
-        static::saved(function () {
-            static::newClearModelCaches();
-            // Log::info("Jadwal cache cleared (saved)");
-        });
-
-        static::deleted(function () {
-            static::newClearModelCaches();
-            // Log::info("Jadwal cache cleared (deleted)");
         });
     }
 }

@@ -11,16 +11,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('spk_services', function (Blueprint $table) {
+        Schema::create('permintaan_pelayanan_pelanggans', function (Blueprint $table) {
             $table->id();
             $table->foreignId(column: 'complain_id')->constrained('complains')->cascadeOnDelete();
-            $table->string('no_spk_service');
-            $table->string('perusahaan');
+            $table->string('no_form');
+            $table->date('tanggal');
             $table->string('alamat');
-            $table->string('deskripsi_pekerjaan');
-            $table->string('deskripsi_pekerjaan_lainnya')->nullable();
+            $table->string('perusahaan');
+            $table->string('jenis_permintaan');
+            $table->string('jenis_permintaan_lainnya')->nullable();
             $table->date('tanggal_pelaksanaan');
             $table->string('tempat_pelaksanaan');
+            $table->string('no_kontak');
             $table->string('status');
             $table->timestamps();
         });
@@ -31,6 +33,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('spk_services');
+        Schema::dropIfExists('permintaan_pelayanan_pelanggans');
     }
 };

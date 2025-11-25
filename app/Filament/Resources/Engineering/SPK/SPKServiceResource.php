@@ -33,7 +33,7 @@ class SPKServiceResource extends Resource
 
     public static function getNavigationBadge(): ?string
     {
-        $count = SPKService::where('status_penyelesaian', '!=', 'Selesai')->count();
+        $count = SPKService::where('status', '!=', 'Selesai')->count();
 
         return $count > 0 ? (string) $count : null;
     }
@@ -44,16 +44,18 @@ class SPKServiceResource extends Resource
         return $form
             ->schema([
                 //
-                Hidden::make('status_penyelesaian')
-                    ->default('Belum Diselesaikan'),
+                Hidden::make('status')
+                    ->default('Belum Selesai'),
 
-                self::getInformasiUmumSection($form),
+                self::getInformasiUmumSection(),
 
                 self::getDeskripsiPekerjaanSection(),
 
-                self::getPetugasSection(),
-
                 self::getPemeriksaanSection(),
+
+                self::getPelaksanaanSection(),
+
+                // self::getPemeriksaanSection(),
 
                 static::signatureSection(
                     [
@@ -63,10 +65,10 @@ class SPKServiceResource extends Resource
                             'hideLogic' => fn($operation) => $operation === 'edit',
                         ],
                         [
-                            'prefix' => 'diketahui',
-                            'role' => 'Diketahui Oleh',
+                            'prefix' => 'dibuat',
+                            'role' => 'Dibuat Oleh',
                             'hideLogic' => fn($operation, $record) =>
-                            $operation === 'create' || filled($record?->diketahui_signature)
+                            $operation === 'create' || filled($record?->dibuat_signature)
                         ],
                     ],
                     title: 'PIC',
@@ -81,31 +83,13 @@ class SPKServiceResource extends Resource
         return $table
             ->columns([
                 //
-                self::textColumn('complain.form_no', 'No Compaint Form'),
+                self::textColumn('pelayananPelanggan.no_form', 'No Compaint Form'),
 
                 self::textColumn('no_spk_service', 'No SPK Service'),
 
-                self::textColumn('tanggal', 'Tanggal')->date('d F Y'),
-
                 self::textColumn('perusahaan', 'Nama Perusahaan'),
 
-                TextColumn::make('pemeriksaanPersetujuan.status_pekerjaan')
-                    ->label('Status Pengerjaan')
-                    ->badge()
-                    ->formatStateUsing(function ($state) {
-                        if (strtolower($state) === 'ya') {
-                            return 'Selesai';
-                        }
-
-                        return 'Belum Selesai';
-                    })
-                    ->color(function ($state) {
-                        return strtolower($state) === 'ya' ? 'success' : 'danger';
-                    })
-                    ->alignCenter(),
-
-                TextColumn::make('status_penyelesaian')
-                    ->label('Status')
+                self::textColumn('status', 'Status')
                     ->badge()
                     ->color(
                         fn($state) =>
@@ -129,7 +113,7 @@ class SPKServiceResource extends Resource
                         ->label(_('Lihat PDF'))
                         ->icon('heroicon-o-document')
                         ->color('success')
-                        ->visible(fn($record) => $record->status_penyelesaian === 'Selesai')
+                        ->visible(fn($record) => $record->status === 'Selesai')
                         ->url(fn($record) => route('pdf.spkService', ['record' => $record->id])),
                 ])
             ])
@@ -160,9 +144,9 @@ class SPKServiceResource extends Resource
     {
         return parent::getEloquentQuery()
             ->with([
-                'complain',
+                'pelayananPelanggan',
                 'petugas',
-                'pemeriksaanPersetujuan',
+                'details',
                 'beritaAcara',
                 'pic',
                 'permintaanSparepart',

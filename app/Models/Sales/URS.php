@@ -28,25 +28,4 @@ class URS extends Model
     {
         return $this->hasMany(SpesifikasiProduct::class, 'urs_id');
     }
-
-    public static array $CACHE_KEYS = [
-        'select_urs' => 'urs_select_default',
-    ];
-
-    public static array $CACHE_PREFIXES = [
-        'search_urs' => 'urs_search_',
-    ];
-
-    protected static function booted()
-    {
-        static::saved(function () {
-            static::newClearModelCaches();
-            // Log::info("URS cache cleared (saved)");
-        });
-
-        static::deleted(function () {
-            static::newClearModelCaches();
-            // Log::info("URS cache cleared (deleted)");
-        });
-    }
 }

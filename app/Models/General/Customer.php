@@ -26,25 +26,4 @@ class Customer extends Model
     {
         return $this->hasMany(URS::class);
     }
-
-    public static array $CACHE_KEYS = [
-        'select_customer' => 'customer_select_default',
-    ];
-
-    public static array $CACHE_PREFIXES = [
-        'search_customer' => 'customer_search_',
-    ];
-
-    protected static function booted()
-    {
-        static::saved(function () {
-            static::clearModelCaches();
-            Log::info("Customer cache cleared (saved)");
-        });
-
-        static::deleted(function () {
-            static::clearModelCaches();
-            Log::info("Customer cache cleared (deleted)");
-        });
-    }
 }

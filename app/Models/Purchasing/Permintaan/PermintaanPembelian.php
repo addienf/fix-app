@@ -52,12 +52,6 @@ class PermintaanPembelian extends Model
         return $this->hasOne(IncommingMaterial::class);
     }
 
-    public static array $CACHE_KEYS = [
-        'materialNonSS' => 'permintaan_pembelian_material_non_ss',
-        'materialSS' => 'permintaan_pembelian_material_ss',
-        'incomingMaterial' => 'permintaan_pembelian_incoming_material',
-    ];
-
     protected static function booted()
     {
         static::saving(function ($model) {
@@ -77,14 +71,6 @@ class PermintaanPembelian extends Model
             if ($model->pic) {
                 $model->pic->delete();
             }
-        });
-
-        static::saved(function () {
-            PermintaanBahan::clearModelCaches();
-        });
-
-        static::deleted(function () {
-            PermintaanBahan::clearModelCaches();
         });
     }
 }
