@@ -16,7 +16,8 @@ trait InformasiProduk
     use SimpleFormResource;
     public static function getInformasiProdukSection()
     {
-        return Section::make('Informasi Produk')
+        return
+            Section::make('Informasi Produk')
             ->collapsible()
             ->schema([
                 Repeater::make('Service Produk')
@@ -41,10 +42,6 @@ trait InformasiProduk
                                 1 => 'Yes',
                                 0 => 'No',
                             ]),
-
-                        // TextInput::make('field_category')
-                        //     ->label('Field Category')
-                        //     ->required(),
 
                         Select::make('field_category')
                             ->label('Field Category')

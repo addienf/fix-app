@@ -11,7 +11,6 @@ use Database\Factories\Sales\SpesifikasiProducts\SpesifikasiProductFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Facades\Log;
 
 /**
  * @property string|null $id
@@ -60,14 +59,6 @@ class SpesifikasiProduct extends Model
         return $this->hasOne(SPKMarketing::class);
     }
 
-    public static array $CACHE_KEYS = [
-        'select_spesifikasi' => 'spesifikasi_select_default',
-    ];
-
-    public static array $CACHE_PREFIXES = [
-        'search_spesifikasi' => 'spesifikasi_search_',
-    ];
-
     protected static function booted()
     {
         static::saving(function ($model) {
@@ -92,16 +83,6 @@ class SpesifikasiProduct extends Model
             }
 
             $model->pic?->delete();
-        });
-
-        static::saved(function () {
-            static::newClearModelCaches();
-            // Log::info("Spesifikasi Produk cache cleared (saved)");
-        });
-
-        static::deleted(function () {
-            static::newClearModelCaches();
-            // Log::info("Spesifikasi Produk cache cleared (deleted)");
         });
     }
 }

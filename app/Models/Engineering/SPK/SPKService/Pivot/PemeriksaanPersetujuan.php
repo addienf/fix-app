@@ -12,8 +12,12 @@ class PemeriksaanPersetujuan extends Model
 
     protected $fillable = [
         'spk_service_id',
-        'status_pekerjaan',
-        'catatan_tambahan',
+        'nama_alat',
+        'tipe',
+        'nomor_seri',
+        'resolusi',
+        'titik_ukur',
+        'quantity',
     ];
 
     public function spkService()

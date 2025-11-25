@@ -11,6 +11,7 @@ use App\Models\Engineering\Maintenance\ColdRoom\ColdRoom;
 use App\Models\Engineering\Maintenance\Refrigerator\Refrigerator;
 use App\Models\Engineering\Maintenance\RissingPipette\RissingPipette;
 use App\Models\Engineering\Maintenance\WalkinChamber\WalkinChamber;
+use App\Models\Engineering\Pelayanan\PermintaanPelayananPelanggan;
 use App\Models\Engineering\Permintaan\PermintaanSparepart;
 use App\Models\Engineering\Service\ServiceReport;
 use App\Models\Engineering\SPK\SPKService\Pivot\PemeriksaanPersetujuan;
@@ -27,26 +28,24 @@ class SPKService extends Model
     protected $table = 'spk_services';
 
     protected $fillable = [
-        'complain_id',
+        'pelayanan_id',
         'no_spk_service',
-        'tanggal',
-        'alamat',
         'perusahaan',
+        'alamat',
         'deskripsi_pekerjaan',
-        'jadwal_pelaksana',
-        'waktu_selesai',
-        'status_penyelesaian',
+        'deskripsi_pekerjaan_lainnya',
+        'tanggal_pelaksanaan',
+        'tempat_pelaksanaan',
+        'status',
     ];
 
     protected $casts = [
-        'jadwal_pelaksana' => 'datetime',
-        'waktu_selesai' => 'datetime',
         'deskripsi_pekerjaan' => 'array'
     ];
 
-    public function complain()
+    public function pelayananPelanggan()
     {
-        return $this->belongsTo(Complain::class, 'complain_id');
+        return $this->belongsTo(PermintaanPelayananPelanggan::class, 'pelayanan_id');
     }
 
     public function petugas()
@@ -54,9 +53,9 @@ class SPKService extends Model
         return $this->hasMany(Petugas::class, 'spk_service_id');
     }
 
-    public function pemeriksaanPersetujuan()
+    public function details()
     {
-        return $this->hasOne(PemeriksaanPersetujuan::class, 'spk_service_id');
+        return $this->hasMany(PemeriksaanPersetujuan::class, 'spk_service_id');
     }
 
     public function beritaAcara()
@@ -124,32 +123,18 @@ class SPKService extends Model
         'walkinG2'                  => 'spk_service_walking_g2',
         'chamberG2'                 => 'spk_service_chamber_g2',
         'service'                   => 'spk_service_service',
-        'beritaAcara'                   => 'spk_service_berita_acara',
+        'beritaAcara'               => 'spk_service_berita_acara',
     ];
 
     protected static function booted()
     {
         static::saving(function ($model) {
             if (
-                $model->pic?->diketahui_signature &&
-                $model->status_penyelesaian !== 'Selesai'
+                $model->pic?->dibuat_signature &&
+                $model->status !== 'Selesai'
             ) {
-                $model->status_penyelesaian = 'Selesai';
+                $model->status = 'Selesai';
             }
-        });
-
-        // static::deleting(function ($spesifikasi) {
-        //     if ($spesifikasi->pic) {
-        //         $spesifikasi->pic->delete();
-        //     }
-        // });
-
-        static::saved(function () {
-            Complain::clearModelCaches();
-        });
-
-        static::deleted(function () {
-            Complain::clearModelCaches();
         });
     }
 }

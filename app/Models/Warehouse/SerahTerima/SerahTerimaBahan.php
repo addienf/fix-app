@@ -27,11 +27,6 @@ class SerahTerimaBahan extends Model
         'tanggal' => 'date',
     ];
 
-    // public function permintaanBahanPro()
-    // {
-    //     return $this->belongsTo(PermintaanAlatDanBahan::class, 'permintaan_bahan_pro_id');
-    // }
-
     public function peminjamanAlat()
     {
         return $this->belongsTo(PeminjamanAlat::class, 'peminjaman_alat_id');

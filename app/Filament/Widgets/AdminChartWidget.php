@@ -2,7 +2,6 @@
 
 namespace App\Filament\Widgets;
 
-use App\Models\User;
 use App\Traits\HasModelFilter;
 use EightyNine\FilamentAdvancedWidget\AdvancedChartWidget;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
@@ -35,7 +34,6 @@ class AdminChartWidget extends AdvancedChartWidget
             return '';
         }
 
-        // Cek jika department atau model tidak valid
         if (!$selectedDepartment || !config("models.$selectedDepartment.$selectedModel")) {
             return 'Pilih Model Terlebih Dahulu';
         }

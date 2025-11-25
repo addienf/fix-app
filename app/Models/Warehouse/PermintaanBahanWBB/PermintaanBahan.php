@@ -47,10 +47,6 @@ class PermintaanBahan extends Model
         return $this->hasOne(PermintaanPembelian::class, 'permintaan_bahan_wbb_id');
     }
 
-    public static array $CACHE_KEYS = [
-        'pembelian' => 'permintaan_warehouse_pembelian',
-    ];
-
     protected static function booted()
     {
         static::saving(function ($model) {
@@ -81,14 +77,6 @@ class PermintaanBahan extends Model
             if ($model->pembelian) {
                 $model->pembelian->delete();
             }
-        });
-
-        static::saved(function () {
-            PermintaanAlatDanBahan::clearModelCaches();
-        });
-
-        static::deleted(function () {
-            PermintaanAlatDanBahan::clearModelCaches();
         });
     }
 }

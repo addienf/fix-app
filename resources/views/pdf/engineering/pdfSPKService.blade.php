@@ -17,48 +17,40 @@
             <tr>
                 <td class="font-bold text-center border border-black dark:border-white dark:bg-gray-900"
                     style="font-size: 20px;">
-                    Surat Perinta Kerja Service <br> dan Maintenance
+                    Surat Perinta Kerja <br> Pelayanan Pelanggan
                 </td>
                 <td rowspan="2" class="p-0 align-top border border-black dark:border-white dark:bg-gray-900">
                     <table class="w-full text-sm dark:bg-gray-900 dark:text-white" style="border-collapse: collapse;">
                         <tr>
                             <td class="px-3 py-2 border-b border-black dark:border-white">No. Dokumen</td>
                             <td class="px-3 py-2 font-semibold border-b border-black dark:border-white"> :
-                                FO-QKS-CC-01-02</td>
+                                FO-QKS-CC-01-05</td>
                         </tr>
                         <tr>
                             <td class="px-3 py-2 border-b border-black dark:border-white">Tanggal Rilis</td>
-                            <td class="px-3 py-2 font-semibold border-b border-black dark:border-white"> : 18 Juni 2025
+                            <td class="px-3 py-2 font-semibold border-b border-black dark:border-white"> : 13 Oktober 2025
                             </td>
                         </tr>
                         <tr>
                             <td class="px-3 py-2">Revisi</td>
-                            <td class="px-3 py-2 font-semibold"> : 0</td>
+                            <td class="px-3 py-2 font-semibold"> : 01</td>
                         </tr>
                     </table>
                 </td>
             </tr>
         </table>
         <div class="max-w-4xl p-6 mx-auto text-sm text-black bg-white">
-            <!-- Header -->
-            <div class="flex justify-start mb-3">
-                <label class="font-semibold">Complaint Form. No : {{ $service->complain->form_no }}</label>
-            </div>
 
             <h2 class="mb-6 font-bold text-center uppercase">
-                Formulir Surat Perintah Kerja (SPK) Service & Maintenance
+                FORMULIR SURAT PERINTAH KERJA (SPK)
             </h2>
 
             <!-- Informasi Umum -->
             @php
                 $infoUmumFields = [
                     ['label' => 'Nomor SPK :', 'value' => $service->no_spk_service],
-                    [
-                        'label' => 'Tanggal :',
-                        'value' => \Carbon\Carbon::parse($service->tanggal)->translatedFormat('d M Y'),
-                    ],
-                    ['label' => 'Alamat :', 'value' => $service->alamat],
                     ['label' => 'Perusahaan :', 'value' => $service->perusahaan],
+                    ['label' => 'Alamat :', 'value' => $service->alamat],
                 ];
             @endphp
 
@@ -71,131 +63,129 @@
                 @endforeach
             </div>
 
-            <!-- Deskripsi Pekerjaan -->
+            @php
+                $jenis = $service->deskripsi_pekerjaan ?? [];
+                $lainnya = $service->deskripsi_pekerjaan_lainnya ?? null;
+            @endphp
+
             <h3 class="mb-2 font-bold">A. Deskripsi Pekerjaan</h3>
-
-            {{-- <div class="mb-3 space-y-2">
-                                    <label><input type="checkbox" class="mr-1"> Service</label><br>
-                                    <label><input type="checkbox" class="mr-1"> Maintenance</label><br>
-                                    <label><input type="checkbox" class="mr-1"> Lainnya</label>
-                                </div> --}}
-
             <div class="mb-3 space-y-2">
-                <label>
-                    <input type="checkbox" name="deskripsi_pekerjaan[]" value="service"
-                        {{ in_array('service', $service->deskripsi_pekerjaan) ? 'checked' : '' }} disabled>
-                    Service
-                </label><br>
 
-                <label>
-                    <input type="checkbox" name="deskripsi_pekerjaan[]" value="maintenance"
-                        {{ in_array('maintenance', $service->deskripsi_pekerjaan) ? 'checked' : '' }} disabled>
-                    Maintenance
-                </label><br>
-
-                <label>
-                    <input type="checkbox" name="deskripsi_pekerjaan[]" value="lainya"
-                        {{ in_array('lainya', $service->deskripsi_pekerjaan) ? 'checked' : '' }} disabled>
-                    Lainnya
+                <label class="flex items-center gap-2">
+                    <input type="checkbox" disabled {{ in_array('service', $jenis) ? 'checked' : '' }}>
+                    <span>Service</span>
                 </label>
-            </div>
-            <div class="mb-6 space-y-2">
-                <div class="flex items-center gap-2">
-                    <label class="w-52">Jadwal Pelaksanaan : </label>
-                    <input type="text" class="flex-1 px-2 py-1 border rounded"
-                        value="{{ \Carbon\Carbon::parse($service->jadwal_pelaksana)->translatedFormat('d F Y') }}" />
-                </div>
-                {{-- <div class="flex items-center gap-2">
-                                        <label class="w-52">Estimasi Waktu Selesai : </label>
-                                        <input type="text" class="flex-1 px-2 py-1 border rounded"
-                                            value="{{ \Carbon\Carbon::parse($service->waktu_selesai)->translatedFormat('d M Y') }}" />
-                                    </div> --}}
-                <div class="flex items-center gap-2">
-                    <label class="w-52">Estimasi Waktu Selesai : </label>
-                    <input type="text" class="flex-1 px-2 py-1 border rounded"
-                        value="{{ \Carbon\Carbon::parse($service->waktu_selesai)->diffInDays(\Carbon\Carbon::parse($service->jadwal_pelaksana)) }} Hari" />
-                </div>
-                <div class="flex items-center gap-2">
-                    <label class="w-52">Petugas yang ditugaskan : </label>
+
+                <label class="flex items-center gap-2">
+                    <input type="checkbox" disabled {{ in_array('maintenance', $jenis) ? 'checked' : '' }}>
+                    <span>Maintenance</span>
+                </label>
+
+                <label class="flex items-center gap-2">
+                    <input type="checkbox" disabled {{ in_array('kalibrasi', $jenis) ? 'checked' : '' }}>
+                    <span>Kalibrasi</span>
+                </label>
+
+                <div class="flex items-center col-span-2 gap-2">
+                    <input type="checkbox" disabled {{ in_array('lainnya', $jenis) ? 'checked' : '' }}>
+                    <span>Lainnya :</span>
+
+                    <input type="text" class="flex-1 px-1 py-0.5 bg-transparent" readonly value="{{ $lainnya ?? '' }}"
+                        placeholder="...................................................." />
                 </div>
             </div>
 
-            <!-- Tabel Teknisi -->
-            <table class="w-full mb-4 text-center border border-collapse border-black">
-                <thead>
-                    <tr class="bg-gray-100">
-                        <th class="px-2 py-1 border border-black ">No</th>
-                        <th class="w-40 px-2 py-1 border border-black">Nama Teknisi</th>
-                        <th class="w-40 px-2 py-1 border border-black">Jabatan</th>
-                        <th class="px-2 py-1 border border-black">Tanda Tangan</th>
+            <h3 class="mt-4 font-bold">B. IDENTITAS ALAT</h3>
+            <table class="w-full text-sm text-left border border-gray-300 dark:border-gray-600">
+                <thead class="text-black bg-gray-100 dark:bg-gray-800 dark:text-white">
+                    <tr>
+                        <th class="px-4 py-2 border border-gray-300 dark:border-gray-600">Nomor</th>
+                        <th class="px-4 py-2 border border-gray-300 dark:border-gray-600">Nama Alat</th>
+                        <th class="px-4 py-2 border border-gray-300 dark:border-gray-600">Tipe</th>
+                        <th class="px-4 py-2 border border-gray-300 dark:border-gray-600">Nomor Seri</th>
+                        <th class="px-4 py-2 border border-gray-300 dark:border-gray-600">Resolusi</th>
+                        <th class="px-4 py-2 border border-gray-300 dark:border-gray-600">Titik Ukur</th>
+                        <th class="px-4 py-2 border border-gray-300 dark:border-gray-600">Quantity</th>
                     </tr>
                 </thead>
-                <tbody>
-                    @foreach ($service->petugas as $index => $data)
+                <tbody class="text-black bg-white dark:bg-gray-900 dark:text-white">
+                    @foreach ($service->details as $item)
                         <tr>
-                            <td class="px-4 py-2 border border-black">{{ $index + 1 }}</td>
-                            <td class="px-4 py-2 border border-black">{{ $data['nama_teknisi'] }}</td>
-                            <td class="px-4 py-2 border border-black">{{ $data['jabatan'] }}</td>
-                            <td class="px-4 py-2 border border-black"><img src="{{ asset('storage/' . $data['ttd']) }}"
-                                    alt="Create Signature" class="mx-auto h-50" /></td>
+                            <td class="px-4 py-2 border border-gray-300 dark:border-gray-600">{{ $loop->iteration }}
+                            </td>
+                            <td class="px-4 py-2 border border-gray-300 dark:border-gray-600">{{ $item->nama_alat }}</td>
+                            <td class="px-4 py-2 border border-gray-300 dark:border-gray-600">{{ $item->tipe }}</td>
+                            <td class="px-4 py-2 border border-gray-300 dark:border-gray-600">{{ $item->nomor_seri }}</td>
+                            <td class="px-4 py-2 border border-gray-300 dark:border-gray-600">{{ $item->resolusi }}</td>
+                            <td class="px-4 py-2 border border-gray-300 dark:border-gray-600">{{ $item->titik_ukur }}</td>
+                            <td class="px-4 py-2 border border-gray-300 dark:border-gray-600">{{ $item->quantity }}</td>
                         </tr>
                     @endforeach
                 </tbody>
             </table>
 
-            {{-- <label class="inline-flex items-center gap-2">
-                                    <input type="checkbox" {{ $kondisi === 'perlu_perbaikan' ? 'checked' : '' }} disabled
-                                        class="w-4 h-4 border border-gray-400 checked:bg-blue-600 checked:border-blue-600">
-                                    <span>Perlu Perbaikan</span>
-                                </label> --}}
-
+            <h3 class="mt-4 font-bold">C. PELAKSANAAN</h3>
             @php
-                $kondisi = $service->pemeriksaanPersetujuan->status_pekerjaan;
+                $pelaksanaan = [
+                    [
+                        'label' => 'Tanggal Pelaksanaan :',
+                        'value' => \Carbon\Carbon::parse($service->tanggal_pelaksanaan)->translatedFormat('d F Y'),
+                    ],
+                    ['label' => 'Tempat Pelaksanaan :', 'value' => $service->tempat_pelaksanaan],
+                ];
             @endphp
 
-            <!-- Pemeriksaan -->
-            <h3 class="font-bold">B. Pemeriksaan dan Persetujuan</h3>
-            <ol class="pl-5 mb-4 list-decimal">
-                <li class="mb-2">
-                    Apakah pekerjaan telah selesai sesuai permintaan?
-                    <span class="ml-2">
-                        <input type="radio" name="selesai" value="Ya" {{ $kondisi === 'ya' ? 'checked' : '' }}
-                            disabled> Ya
-                        <input type="radio" name="selesai" value="Tidak" class="ml-4"
-                            {{ $kondisi === 'tidak' ? 'checked' : '' }} disabled> Tidak
-                    </span>
-                </li>
-                <li>
-                    Catatan Tambahan:
-                    <div id="note" readonly
-                        class="w-full min-h-[75px] px-3 py-2 mt-2 text-sm leading-relaxed text-left border rounded-md text-black border-black">
-                        {{ trim($service->pemeriksaanPersetujuan->catatan_tambahan) }}
+            <div class="mb-2 space-y-2">
+                @foreach ($pelaksanaan as $field)
+                    <div class="flex items-center gap-2">
+                        <label class="w-40">{{ $field['label'] }}</label>
+                        <input value="{{ $field['value'] }}" class="flex-1 px-2 py-1 border rounded" />
                     </div>
-                </li>
-            </ol>
+                @endforeach
+                <div class="flex items-center gap-2">
+                    <label class="w-52">Petugas yang ditugaskan : </label>
+                </div>
+            </div>
+
+            <table class="w-full mb-4 text-center border border-collapse border-black">
+                <thead>
+                    <tr class="bg-gray-100">
+                        <th class="w-10 px-2 py-1 border border-black">No</th>
+                        <th class="w-40 px-2 py-1 border border-black">Nama Teknisi</th>
+                        <th class="w-40 px-2 py-1 border border-black">Jabatan</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($service->petugas as $index => $data)
+                        <tr>
+                            <td class="w-10 px-1 py-1 border border-black">{{ $index + 1 }}</td>
+                            <td class="px-2 py-1 border border-black">{{ $data['nama_teknisi'] }}</td>
+                            <td class="px-2 py-1 border border-black">{{ $data['jabatan'] }}</td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
 
             <div class="grid grid-cols-2 gap-2 text-center">
-
                 <div>
                     <p class="mb-2">Dikonfirmasi Oleh,</p>
 
                     <div class="flex items-center justify-center w-40 h-24 mx-auto mb-2 bg-white ">
-                        {{-- <span class="text-sm text-gray-400">Tanda Tangan</span> --}}
                         <img src="{{ asset('storage/' . $service->pic->dikonfirmasi_signature) }}" alt="Product Signature"
                             class="h-20 w-80" />
                     </div>
                     <p class="font-semibold underline">{{ $service->pic->dikonfirmasiNama->name }}</p>
                 </div>
                 <div>
-                    <p class="mb-2">Diketahui Oleh,</p>
+                    <p class="mb-2">Dibuat Oleh,</p>
                     <div class="flex items-center justify-center w-40 h-24 mx-auto mb-2 bg-white ">
-                        {{-- <span class="text-sm text-gray-400">Tanda Tangan</span> --}}
-                        <img src="{{ asset('storage/' . $service->pic->diketahui_signature) }}" alt="Product Signature"
+                        <img src="{{ asset('storage/' . $service->pic->dibuat_signature) }}" alt="Product Signature"
                             class="h-20 w-80" />
                     </div>
-                    <p class="font-semibold underline">{{ $service->pic->diketahuiNama->name }}</p>
+                    <p class="font-semibold underline">{{ $service->pic->dibuatNama->name }}</p>
                 </div>
             </div>
+
         </div>
     </div>
     <div class="mt-6 mb-3 text-center">

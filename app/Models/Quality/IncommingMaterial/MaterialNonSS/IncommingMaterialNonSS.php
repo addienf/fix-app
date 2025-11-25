@@ -75,13 +75,5 @@ class IncommingMaterialNonSS extends Model
                 $model->summary->delete();
             }
         });
-
-        static::saved(function () {
-            PermintaanPembelian::clearModelCaches();
-        });
-
-        static::deleted(function () {
-            PermintaanPembelian::clearModelCaches();
-        });
     }
 }

@@ -11,6 +11,7 @@ use App\Models\Engineering\Maintenance\ColdRoom\ColdRoom;
 use App\Models\Engineering\Maintenance\Refrigerator\Refrigerator;
 use App\Models\Engineering\Maintenance\RissingPipette\RissingPipette;
 use App\Models\Engineering\Maintenance\WalkinChamber\WalkinChamber;
+use App\Models\Engineering\Pelayanan\PermintaanPelayananPelanggan;
 use App\Models\Engineering\Permintaan\PermintaanSparepart;
 use App\Models\Engineering\Service\ServiceReport;
 use App\Models\Engineering\SPK\SPKService;
@@ -377,7 +378,7 @@ class PDFController extends Controller
 
     public function pdfSPKService($id)
     {
-        $service = SPKService::with(['complain', 'petugas', 'pemeriksaanPersetujuan', 'pic', 'pic.dikonfirmasiNama', 'pic.diketahuiNama'])->findOrFail($id);
+        $service = SPKService::with(['pelayananPelanggan', 'petugas', 'details', 'pic', 'pic.dikonfirmasiNama', 'pic.dibuatNama'])->findOrFail($id);
 
         return view('pdf.engineering.pdfSPKService', compact('service'));
     }
@@ -497,5 +498,12 @@ class PDFController extends Controller
         $release = ProductRelease::with(['pic', 'pic.dibuatName', 'pic.dikonfirmasiName', 'pic.diterimaName', 'pic.diketahuiName'])->findOrFail($id);
 
         return view('pdf.quality.pdfProductRelease', compact('release'));
+    }
+
+    public function pdfPelayananPelanggan($id)
+    {
+        $pelayanan = PermintaanPelayananPelanggan::with(['pic', 'details', 'pic.diketahuiName', 'pic.diterimaName', 'pic.dibuatName'])->findOrFail($id);
+
+        return view('pdf.engineering.pdfPelayananPelanggan', compact('pelayanan'));
     }
 }

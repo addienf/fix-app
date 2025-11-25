@@ -11,11 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('spk_service_pics', function (Blueprint $table) {
+        Schema::create('pelayanan_pelanggan_pics', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('spk_service_id')->constrained('spk_services')->cascadeOnDelete();
-            $table->string('dikonfirmasi_signature');
-            $table->string('dikonfirmasi_name');
+            $table->foreignId(column: 'pelayanan_id')->constrained('permintaan_pelayanan_pelanggans')->cascadeOnDelete();
+            $table->string('diketahui_signature');
+            $table->string('diketahui_name');
+            $table->string('diterima_signature')->nullable();
+            $table->string('diterima_name')->nullable();
             $table->string('dibuat_signature')->nullable();
             $table->string('dibuat_name')->nullable();
             $table->timestamps();
@@ -27,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('spk_service_pics');
+        Schema::dropIfExists('pelayanan_pelanggan_pics');
     }
 };

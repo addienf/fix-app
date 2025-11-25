@@ -26,13 +26,28 @@ trait InformasiUmum
             ->schema([
                 Select::make('spk_service_id')
                     ->label('Nomor SPK Service')
+                    // ->options(function () {
+                    //     return Cache::rememberForever(SPKService::$CACHE_KEYS['service'], function () {
+                    //         return SPKService::where('status_penyelesaian', 'Selesai')
+                    //             ->whereDoesntHave('service')
+                    //             ->get()
+                    //             ->pluck('no_spk_service', 'id');
+                    //     });
+                    // })
                     ->options(function () {
-                        return Cache::rememberForever(SPKService::$CACHE_KEYS['service'], function () {
-                            return SPKService::where('status_penyelesaian', 'Selesai')
-                                ->whereDoesntHave('service')
-                                ->get()
-                                ->pluck('no_spk_service', 'id');
-                        });
+                        return SPKService::query()
+                            ->where('status', 'Selesai')
+                            ->whereDoesntHave('service')
+                            ->limit(10)
+                            ->pluck('no_spk_service', 'id');
+                    })
+                    ->getSearchResultsUsing(function (string $search) {
+                        return SPKService::query()
+                            ->where('status', 'Selesai')
+                            ->whereDoesntHave('service')
+                            ->where('no_spk_service', 'like', "%{$search}%")
+                            ->limit(10)
+                            ->pluck('no_spk_service', 'id');
                     })
                     ->native(false)
                     ->searchable()

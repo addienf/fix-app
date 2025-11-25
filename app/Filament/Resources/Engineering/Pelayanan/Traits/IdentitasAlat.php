@@ -1,21 +1,20 @@
 <?php
 
-namespace App\Filament\Resources\Engineering\SPK\Traits;
+namespace App\Filament\Resources\Engineering\Pelayanan\Traits;
 
+use App\Models\General\Product;
 use App\Traits\SimpleFormResource;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Icetalker\FilamentTableRepeater\Forms\Components\TableRepeater;
-use Wallo\FilamentSelectify\Components\ButtonGroup;
 
-trait Pemeriksaan
+trait IdentitasAlat
 {
     use SimpleFormResource;
-    public static function getPemeriksaanSection()
+    public static function getIdentitasAlatSection()
     {
-
         return
             Section::make('B Identitas Alat')
             ->collapsible()
@@ -37,11 +36,9 @@ trait Pemeriksaan
                             ->label('Nomor Seri')
                             ->required(),
 
-                        TextInput::make('resolusi')
-                            ->label('Resolusi'),
-
-                        TextInput::make('titik_ukur')
-                            ->label('Titik Ukur'),
+                        Textarea::make('deskripsi')
+                            ->rows(1)
+                            ->label('Deskripsi'),
 
                         TextInput::make('quantity')
                             ->numeric()

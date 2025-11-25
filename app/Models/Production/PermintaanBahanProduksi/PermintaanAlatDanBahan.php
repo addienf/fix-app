@@ -41,11 +41,6 @@ class PermintaanAlatDanBahan extends Model
         'tanggal' => 'date',
     ];
 
-    // public function spk()
-    // {
-    //     return $this->belongsTo(SPKMarketing::class, 'spk_marketing_id');
-    // }
-
     public function jadwalProduksi()
     {
         return $this->belongsTo(JadwalProduksi::class, 'jadwal_id');
@@ -75,11 +70,6 @@ class PermintaanAlatDanBahan extends Model
     {
         return $this->hasOne(SPKVendor::class, 'permintaan_bahan_pro_id');
     }
-
-    public static array $CACHE_KEYS = [
-        'permintaanBahanWBB' => 'permintaan_produksi_warehouse',
-        'serahTerimaBahan' => 'serah_terima_warehouse',
-    ];
 
     protected static function booted()
     {
@@ -111,14 +101,6 @@ class PermintaanAlatDanBahan extends Model
             if ($model->permintaanBahanWBB) {
                 $model->permintaanBahanWBB->delete();
             }
-        });
-
-        static::saved(function () {
-            JadwalProduksi::clearModelCaches();
-        });
-
-        static::deleted(function () {
-            JadwalProduksi::clearModelCaches();
         });
     }
 }

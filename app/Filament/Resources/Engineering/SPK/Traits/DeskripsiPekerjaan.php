@@ -8,26 +8,44 @@ use Filament\Forms\Components\Select;
 
 trait DeskripsiPekerjaan
 {
-    use SimpleFormResource;
+    use SimpleFormResource, Petugas;
     public static function getDeskripsiPekerjaanSection()
     {
 
-        return Section::make('Deskripsi Pekerjaan')
+        return
+            Section::make('A. Deskripsi Pekerjaan')
             ->collapsible()
             ->schema([
                 Select::make('deskripsi_pekerjaan')
                     ->multiple()
+                    ->reactive()
                     ->options([
-                        'service' => 'Service',
                         'maintenance' => 'Maintenance',
-                        'lainya' => 'Lainnya'
+                        'service' => 'Service',
+                        'kalibrasi' => 'Kalibrasi',
+                        'lainnya' => 'Lainnya'
                     ]),
 
-                self::dateInput('jadwal_pelaksana', 'Jadwal Pelaksana'),
-
-                self::dateInput('waktu_selesai', 'Waktu Selesai'),
-
+                self::textInput('deskripsi_pekerjaan_lainnya', 'Jenis Permintaan Lainnya')
+                    ->visible(fn($get) => in_array('lainnya', (array) $get('deskripsi_pekerjaan')))
+                    ->required(fn($get) => in_array('lainnya', (array) $get('deskripsi_pekerjaan'))),
             ])
-            ->columns(3);
+            ->columns(2);
+    }
+
+    public static function getPelaksanaanSection()
+    {
+
+        return
+            Section::make('C. Pelaksanaan')
+            ->collapsible()
+            ->schema([
+                self::dateInput('tanggal_pelaksanaan', 'Tanggal Pelaksana'),
+
+                self::textInput('tempat_pelaksanaan', 'Tempat Pelaksanaan'),
+
+                self::getPetugasSection(),
+            ])
+            ->columns(2);
     }
 }

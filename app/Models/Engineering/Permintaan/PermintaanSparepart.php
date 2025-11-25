@@ -63,13 +63,5 @@ class PermintaanSparepart extends Model
                 $model->pic->delete();
             }
         });
-
-        static::saved(function () {
-            SPKService::clearModelCaches();
-        });
-
-        static::deleted(function () {
-            SPKService::clearModelCaches();
-        });
     }
 }

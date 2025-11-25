@@ -7,14 +7,12 @@ use App\Traits\HasAutoNumber;
 use App\Traits\SimpleFormResource;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
-use Illuminate\Support\Facades\Cache;
 
 trait InformasiUmum
 {
     use SimpleFormResource, HasAutoNumber;
     public static function getInformasiUmumSection($form)
     {
-        // $lastValue = PermintaanSparepart::latest('no_surat')->value('no_surat');
         $isEdit = $form->getOperation() === 'edit';
 
         return Section::make('Informasi Umum')
@@ -24,12 +22,19 @@ trait InformasiUmum
                 Select::make('spk_service_id')
                     ->label('Nomor SPK Service')
                     ->options(function () {
-                        return Cache::rememberForever(SPKService::$CACHE_KEYS['permintaanSparepart'], function () {
-                            return SPKService::where('status_penyelesaian', 'Selesai')
-                                ->whereDoesntHave('permintaanSparepart')
-                                ->get()
-                                ->pluck('no_spk_service', 'id');
-                        });
+                        return SPKService::query()
+                            ->where('status', 'Selesai')
+                            ->whereDoesntHave('permintaanSparepart')
+                            ->limit(10)
+                            ->pluck('no_spk_service', 'id');
+                    })
+                    ->getSearchResultsUsing(function (string $search) {
+                        return SPKService::query()
+                            ->where('status', 'Selesai')
+                            ->whereDoesntHave('permintaanSparepart')
+                            ->where('no_spk_service', 'like', "%{$search}%")
+                            ->limit(10)
+                            ->pluck('no_spk_service', 'id');
                     })
                     ->native(false)
                     ->searchable()
@@ -37,14 +42,6 @@ trait InformasiUmum
                     ->required()
                     ->columnSpanFull()
                     ->hiddenOn(operations: 'edit'),
-
-                // TextInput::make('no_surat')
-                //     ->label('Nomor Surat')
-                //     ->hint('Format: No Surat')
-                //     ->placeholder($lastValue ? "Data Terakhir : {$lastValue}" : 'Data Belum Tersedia')
-                //     ->hiddenOn('edit')
-                //     ->unique(ignoreRecord: true)
-                //     ->required(),
 
                 self::autoNumberField2('no_surat', 'Nomor Surat', [
                     'prefix' => 'QKS',

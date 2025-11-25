@@ -4,6 +4,7 @@ namespace App\Models\Engineering\Complain;
 
 use App\Models\Engineering\Complain\Pivot\ComplainDetail;
 use App\Models\Engineering\Complain\Pivot\ComplainPIC;
+use App\Models\Engineering\Pelayanan\PermintaanPelayananPelanggan;
 use App\Models\Engineering\SPK\SPKService;
 use App\Traits\HasCacheManager;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -25,10 +26,16 @@ class Complain extends Model
         'receive_by',
     ];
 
-    public function spkService()
+    // public function spkService()
+    // {
+    //     return $this->hasOne(SPKService::class, 'complain_id');
+    // }
+
+    public function pelayananPelanggan()
     {
-        return $this->hasOne(SPKService::class, 'complain_id');
+        return $this->hasOne(PermintaanPelayananPelanggan::class, 'complain_id');
     }
+
 
     public function details()
     {

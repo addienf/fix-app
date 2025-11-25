@@ -21,7 +21,6 @@ use App\Models\Warehouse\Pelabelan\QCPassed;
 use App\Traits\HasCacheManager;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
 /**
@@ -66,93 +65,6 @@ class SPKMarketing extends Model
         return $this->hasOne(SPKMarketingPIC::class, 'spk_marketing_id');
     }
 
-    public function jadwalProduksi()
-    {
-        return $this->hasOne(JadwalJadwalProduksi::class, 'spk_marketing_id');
-    }
-
-    public function permintaan()
-    {
-        return $this->hasOne(PermintaanAlatDanBahan::class, 'spk_marketing_id');
-    }
-
-    public function standarisasi()
-    {
-        return $this->hasOne(StandarisasiDrawing::class, 'spk_marketing_id');
-    }
-
-    public function kelengkapanSS()
-    {
-        return $this->hasOne(KelengkapanMaterialSS::class, 'spk_marketing_id');
-    }
-
-    public function pengecekanSS()
-    {
-        return $this->hasOne(PengecekanMaterialSS::class, 'spk_marketing_id');
-    }
-
-    public function defect()
-    {
-        return $this->hasOne(DefectStatus::class, 'spk_marketing_id');
-    }
-
-    public function pengecekanElectrical()
-    {
-        return $this->hasOne(PengecekanMaterialElectrical::class, 'spk_marketing_id');
-    }
-
-    public function spkQC()
-    {
-        return $this->hasOne(SPKQuality::class, 'spk_marketing_id');
-    }
-
-    public function produkJadi()
-    {
-        return $this->hasOne(PenyerahanProdukJadi::class, 'spk_marketing_id');
-    }
-
-    public function pengecekanPerforma()
-    {
-        return $this->hasOne(PengecekanPerforma::class, 'spk_marketing_id');
-    }
-
-    public function qc()
-    {
-        return $this->hasOne(QCPassed::class, 'spk_marketing_id');
-    }
-
-    public function spkVendor()
-    {
-        return $this->hasOne(SPKVendor::class, 'spk_marketing_id');
-    }
-
-    public function ketidaksesuaian()
-    {
-        return $this->hasOne(Ketidaksesuaian::class, 'spk_marketing_id');
-    }
-
-    public static array $CACHE_KEYS = [
-        'select_spk' => 'spk_select_default',
-    ];
-
-    public static array $CACHE_PREFIXES = [
-        'search_spk' => 'spk_search_',
-    ];
-
-    // public static array $CACHE_KEYS = [
-    //     'jadwal_produksi'       => 'spk_marketing_ke_jadwal',
-    //     'permintaan_bahan'      => 'spk_marketing_ke_permintaan',
-    //     'standarisasi'          => 'spk_marketing_ke_stadarisasi',
-    //     'kelengkapanSS'          => 'spk_marketing_ke_kelengkapan_ss',
-    //     'pengecekan_ss'         => 'spk_marketing_ke_ss',
-    //     'pengecekan_electrical' => 'spk_marketing_ke_electrical',
-    //     'produk_jadi'           => 'spk_marketing_ke_produk_jadi',
-    //     'pengecekan_performa'   => 'spk_marketing_ke_performa',
-    //     'qc_passed'             => 'spk_marketing_ke_qc_passed',
-    //     'vendor'                => 'spk_marketing_ke_vendor',
-    //     'ketidaksesuaian'       => 'spk_marketing_ke_ketidaksesuaian',
-    // ];
-
     protected static function booted()
     {
         static::saving(function ($model) {
@@ -166,16 +78,6 @@ class SPKMarketing extends Model
 
         static::deleting(function ($spk) {
             $spk->pic?->delete();
-        });
-
-        static::saved(function () {
-            static::newClearModelCaches();
-            Log::info("SPK Marketing cache cleared (saved)");
-        });
-
-        static::deleted(function () {
-            static::newClearModelCaches();
-            Log::info("SPK Marketing cache cleared (deleted)");
         });
     }
 }
