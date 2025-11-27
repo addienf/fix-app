@@ -10,7 +10,6 @@ use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Illuminate\Support\Facades\Cache;
 use Wallo\FilamentSelectify\Components\ButtonGroup;
 
 trait InformasiUmum
@@ -62,25 +61,41 @@ trait InformasiUmum
         return Select::make('spk_service_id')
             ->label('Nomor SPK Service')
             ->options(function () {
-                return Cache::rememberForever(SPKService::$CACHE_KEYS['beritaAcara'], function () {
-                    return
-                        SPKService::whereHas('permintaanSparepart', function ($query) {
-                            $query->where('status_penyerahan', 'Diserahkan');
-                        })
-                        ->whereDoesntHave('beritaAcara')
-                        ->where(function ($query) {
-                            $query->whereHas('walkinChamber')
-                                ->orWhereHas('chamberR2')
-                                ->orWhereHas('refrigerator')
-                                ->orWhereHas('coldRoom')
-                                ->orWhereHas('rissing')
-                                ->orWhereHas('walkinG2')
-                                ->orWhereHas('chamberG2')
-                                ->orWhereHas('service');
-                        })
-                        ->get()
-                        ->pluck('no_spk_service', 'id');
-                });
+                return SPKService::whereHas('permintaanSparepart', function ($query) {
+                    $query->where('status', 'Selesai');
+                })
+                    ->whereDoesntHave('beritaAcara')
+                    ->where(function ($query) {
+                        $query->whereHas('walkinChamber')
+                            ->orWhereHas('chamberR2')
+                            ->orWhereHas('refrigerator')
+                            ->orWhereHas('coldRoom')
+                            ->orWhereHas('rissing')
+                            ->orWhereHas('walkinG2')
+                            ->orWhereHas('chamberG2')
+                            ->orWhereHas('service');
+                    })
+                    ->limit(10)
+                    ->pluck('no_spk_service', 'id');
+            })
+            ->getSearchResultsUsing(function (string $search) {
+                return SPKService::whereHas('permintaanSparepart', function ($query) {
+                    $query->where('status', 'Selesai');
+                })
+                    ->whereDoesntHave('beritaAcara')
+                    ->where(function ($query) {
+                        $query->whereHas('walkinChamber')
+                            ->orWhereHas('chamberR2')
+                            ->orWhereHas('refrigerator')
+                            ->orWhereHas('coldRoom')
+                            ->orWhereHas('rissing')
+                            ->orWhereHas('walkinG2')
+                            ->orWhereHas('chamberG2')
+                            ->orWhereHas('service');
+                    })
+                    ->where('no_spk_service', 'like', "%{$search}%")
+                    ->limit(10)
+                    ->pluck('no_spk_service', 'id');
             })
             ->native(false)
             ->searchable()
@@ -93,17 +108,17 @@ trait InformasiUmum
                 if (!$state)
                     return;
 
-                $service = SPKService::with('petugas', 'complain')->find($state);
-                // $complain = Complain::with('spkService')->find($state);
+                $service = SPKService::with('petugas', 'pelayananPelanggan')->find($state);
+
                 if (!$service)
                     return;
 
                 $namaPetugas = $service->petugas->pluck('nama_teknisi')->toArray();
                 $nama_teknisi = implode(', ', $namaPetugas);
-                $namaComplain = $service->complain->name_complain;
-                $companyName = $service->complain->company_name;
-                $alamat = $service->complain->spkService->alamat;
-                $department = $service->complain->department;
+                $namaComplain = $service->pelayananPelanggan->complain->name_complain;
+                $companyName = $service->pelayananPelanggan->complain->company_name;
+                $alamat = $service->pelayananPelanggan->complain->alamat;
+                $department = $service->pelayananPelanggan->complain->department;
 
                 $set('detail.nama_teknisi', $nama_teknisi);
                 $set('pelanggan.nama', $namaComplain);
