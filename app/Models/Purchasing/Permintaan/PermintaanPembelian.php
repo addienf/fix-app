@@ -18,6 +18,7 @@ class PermintaanPembelian extends Model
 
     protected $fillable = [
         'permintaan_bahan_wbb_id',
+        'is_stock',
         'status_persetujuan',
     ];
 

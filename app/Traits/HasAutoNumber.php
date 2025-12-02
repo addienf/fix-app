@@ -14,19 +14,21 @@ trait HasAutoNumber
         $type = $config['type'] ?? 'DOC';
         $table = $config['table'] ?? null;
 
-        return TextInput::make($name)
+        return
+            TextInput::make($name)
             ->label($label)
             ->hint("Format: XXX/{$prefix}/{$section}/{$type}/MM/YY")
-            ->default(function () use ($table, $prefix, $section, $type) {
+            ->default(function () use ($table, $prefix, $section, $type, $name) {
+
                 $month = now()->format('m');
                 $year = now()->format('y');
 
                 $last = DB::table($table)
-                    ->select($table . '.' . 'no_urs')
-                    ->orderByDesc('id')
+                    ->select($name)
+                    ->orderByDesc($name)
                     ->first();
 
-                if ($last && preg_match('/^(\d{3})/', $last->no_urs, $m)) {
+                if ($last && preg_match('/^(\d{3})/', $last->{$name}, $m)) {
                     $num = intval($m[1]) + 1;
                 } else {
                     $num = 1;

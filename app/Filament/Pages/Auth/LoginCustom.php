@@ -19,7 +19,7 @@ class LoginCustom extends Login
                         $this->getEmailFormComponent(),
                         $this->getPasswordFormComponent(),
                         $this->getRememberFormComponent(),
-                        $this->getCloudflameFormComponent(),
+                        // $this->getCloudflameFormComponent(),
                     ])
                     ->statePath('data'),
             ),

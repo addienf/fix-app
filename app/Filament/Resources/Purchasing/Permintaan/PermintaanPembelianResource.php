@@ -15,7 +15,8 @@ use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Actions\DeleteAction;
 use Filament\Tables\Actions\EditAction;
-use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -74,7 +75,16 @@ class PermintaanPembelianResource extends Resource
         return $table
             ->columns([
                 //
-                self::textColumn('permintaanBahanWBB.no_surat', 'No Surat WBB'),
+                self::textColumn('permintaanBahanWBB.no_surat', 'No Surat WBB')
+                    ->getStateUsing(
+                        fn($record) =>
+                        $record->permintaanBahanWBB->no_surat ?? "Untuk Stock"
+                    ),
+
+                self::textColumn('is_stock', 'Jenis Stock')
+                    ->formatStateUsing(fn($state) => $state == 0 ? 'Untuk Stock' : 'Permintaan')
+                    ->color(fn($state) => $state == 0 ? 'danger' : 'success')
+                    ->badge(),
 
                 self::textColumn('status_persetujuan', 'Status Persetujuan')
                     ->badge()
@@ -88,6 +98,16 @@ class PermintaanPembelianResource extends Resource
             ])
             ->filters([
                 //
+                SelectFilter::make('status_persetujuan')
+                    ->options([
+                        'Disetujui' => 'Disetujui',
+                        'Belum Disetujui' => 'Belum Disetujui',
+                    ])
+                    ->label('Filter Status'),
+
+                Filter::make('is_stock')
+                    ->label('Untuk Stock')
+                    ->query(fn(Builder $query) => $query->where('is_stock', 0)),
             ])
             ->actions([
                 ActionGroup::make([

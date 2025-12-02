@@ -24,7 +24,7 @@ class PermintaanPelayananPelangganResource extends Resource
     use Informasi, IdentitasAlat, HasSignature;
     protected static ?string $model = PermintaanPelayananPelanggan::class;
     protected static ?int $navigationSort = 20;
-    protected static ?string $navigationGroup = 'Engineering';
+    protected static ?string $navigationGroup = 'Customer Care';
     protected static ?string $navigationLabel = 'Permintaan Pelayanan Pelanggan';
     protected static ?string $pluralLabel = 'Permintaan Pelayanan Pelanggan';
     protected static ?string $modelLabel = 'Permintaan Pelayanan Pelanggan';

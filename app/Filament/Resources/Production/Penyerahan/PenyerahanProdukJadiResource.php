@@ -9,6 +9,7 @@ use App\Models\Production\Penyerahan\PenyerahanProdukJadi;
 use App\Traits\HasSignature;
 use Filament\Actions\Action;
 use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\Split;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -50,9 +51,13 @@ class PenyerahanProdukJadiResource extends Resource
 
                 self::getDetailJadwalProduksiSection(),
 
-                self::getKondisiProduk(),
+                Split::make([
+                    self::getKondisiProduk(),
+                ]),
 
-                self::getCatatanPenting(),
+                Split::make([
+                    self::getCatatanPenting()
+                ]),
 
                 static::signatureSection(
                     [

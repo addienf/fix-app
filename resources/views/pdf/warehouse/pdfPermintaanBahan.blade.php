@@ -69,7 +69,7 @@
             <p class="flex flex-wrap items-center gap-1">
                 <span>Berdasarkan Permintaan Barang No</span>
                 <input disabled class="w-64 px-2 py-1 text-sm align-middle bg-transparent border-none h-7"
-                    value="{{ $permintaan_bahan->permintaanBahanPro->no_surat }}" />
+                    value="{{ $permintaan_bahan->permintaanBahanPro->no_surat ?? 'Untuk Stock' }}" />
                 <span>Dari Departemen</span>
                 <input disabled class="w-32 px-2 py-1 text-sm align-middle bg-transparent border-none h-7"
                     value="{{ Str::headline($permintaan_bahan->pic->dibuatName->roles->first()?->name ?? '-') }}" />

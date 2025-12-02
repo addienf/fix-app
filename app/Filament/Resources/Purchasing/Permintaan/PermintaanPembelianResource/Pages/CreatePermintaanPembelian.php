@@ -8,7 +8,9 @@ use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Support\Facades\Log;
 use App\Jobs\SendGenericNotif;
 use App\Notifications\GenericNotification;
-
+use Filament\Notifications\Notification;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Validation\ValidationException;
 
 class CreatePermintaanPembelian extends CreateRecord
 {
@@ -45,5 +47,43 @@ class CreatePermintaanPembelian extends CreateRecord
     public function getBreadcrumb(): string
     {
         return 'Tambah';
+    }
+
+    // protected function handleRecordCreation(array $data): Model
+    // {
+    // try {
+    //     return static::getModel()::create($data);
+    // } catch (\Throwable $e) {
+    //     Notification::make()
+    //         ->title('Gagal Menyimpan')
+    //         ->body('Terjadi error. Cek ulang inputan kamu ya bro.')
+    //         ->danger()
+    //         ->send();
+
+    //     \Log::error($e->getMessage());
+
+    //     throw ValidationException::withMessages([
+    //         'error' => 'Gagal menyimpan data.',
+    //     ]);
+    // }
+    // }
+
+    public function handleRecordCreation(array $data): Model
+    {
+        try {
+            return static::getModel()::create($data);
+        } catch (\Throwable $e) {
+            Notification::make()
+                ->title('Gagal Menyimpan')
+                ->body('Terjadi error. Cek ulang inputan kamu ya bro.')
+                ->danger()
+                ->send();
+
+            Log::error($e->getMessage());
+
+            throw ValidationException::withMessages([
+                'error' => 'Gagal menyimpan data.',
+            ]);
+        }
     }
 }

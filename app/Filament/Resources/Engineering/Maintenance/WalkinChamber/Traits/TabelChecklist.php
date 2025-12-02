@@ -105,8 +105,9 @@ trait TabelChecklist
                                     ->required(),
 
                             ])
+                            ->addActionLabel('Tambah Checklist')
                             ->columns(7)
-                            ->addable(false)
+                            // ->addable(false)
                             ->deletable(false)
                             ->reorderable(false),
 

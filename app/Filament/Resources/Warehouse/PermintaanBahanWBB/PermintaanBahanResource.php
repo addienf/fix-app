@@ -13,6 +13,8 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\ActionGroup;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -71,9 +73,14 @@ class PermintaanBahanResource extends Resource
         return $table
             ->columns([
                 //
-                self::textColumn('permintaanBahanPro.no_surat', 'No Surat Production'),
+                self::textColumn('no_surat', 'No Surat'),
 
                 self::textColumn('tanggal', 'Tanggal Dibuat')->date('d F Y'),
+
+                self::textColumn('is_stock', 'Jenis Stock')
+                    ->formatStateUsing(fn($state) => $state == 0 ? 'Untuk Stock' : 'Permintaan')
+                    ->color(fn($state) => $state == 0 ? 'danger' : 'success')
+                    ->badge(),
 
                 self::textColumn('status', 'Status')
                     ->badge()
@@ -89,6 +96,17 @@ class PermintaanBahanResource extends Resource
             ])
             ->filters([
                 //
+                SelectFilter::make('status')
+                    ->options([
+                        'Belum Diketahui' => 'Belum Diketahui',
+                        'Diterima' => 'Diterima',
+                        'Diserahkan' => 'Diserahkan',
+                    ])
+                    ->label('Filter Status'),
+
+                Filter::make('is_stock')
+                    ->label('Untuk Stock')
+                    ->query(fn(Builder $query) => $query->where('is_stock', 0)),
             ])
             ->actions([
                 ActionGroup::make([
@@ -104,6 +122,7 @@ class PermintaanBahanResource extends Resource
                         ->tooltip('Lihat Dokumen PDF')
                         ->icon('heroicon-o-document')
                         ->color('success')
+                        ->visible(fn($record) => $record->status === 'Diserahkan')
                         ->url(fn($record) => route('pdf.permintaanBahan', ['record' => $record->id])),
                 ])
             ])

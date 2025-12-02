@@ -17,8 +17,8 @@
 
                 <td rowspan="2" class="w-48 p-2 pt-2 text-sm leading-tight text-center align-top border border-black">
                     FO-QKS-ENG-01-12<br>
-                    Rev. 00<br>
-                    02 June 2025
+                    Rev. 02<br>
+                    27 Augs 2025
                 </td>
             </tr>
             <tr>
@@ -37,7 +37,7 @@
 
             {{-- CTC No --}}
             <div class="flex items-center justify-center w-full gap-2 my-6">
-                <span class="font-semibold text-center">Name Tag/No: {{ $G2->tag_no }}</span>
+                <span class="font-semibold text-center">CTC Name/Tag No: {{ $G2->tag_no }}</span>
             </div>
 
             @php

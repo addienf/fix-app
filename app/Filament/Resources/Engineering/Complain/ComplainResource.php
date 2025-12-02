@@ -22,7 +22,7 @@ class ComplainResource extends Resource
     use InformasiUmum, DataComplain, InformasiProduk, HasSignature;
     protected static ?string $model = Complain::class;
     protected static ?int $navigationSort = 20;
-    protected static ?string $navigationGroup = 'Engineering';
+    protected static ?string $navigationGroup = 'Customer Care';
     protected static ?string $navigationLabel = 'Complaint';
     protected static ?string $pluralLabel = 'Complaint';
     protected static ?string $modelLabel = 'Complaint';

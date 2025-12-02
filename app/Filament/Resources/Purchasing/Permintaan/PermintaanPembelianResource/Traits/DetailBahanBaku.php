@@ -29,30 +29,23 @@ trait DetailBahanBaku
 
                                         self::textInput('kode_barang', 'Kode Barang'),
 
-                                        self::textInput('nama_barang', 'Nama Barang')
-                                            ->extraAttributes([
-                                                'readonly' => true,
-                                                'style' => 'pointer-events: none;'
-                                            ]),
+                                        self::textInput('nama_barang', 'Nama Barang'),
 
-                                        self::textInput('jumlah', 'Jumlah')->numeric()
-                                            ->extraAttributes([
-                                                'readonly' => true,
-                                                'style' => 'pointer-events: none;'
-                                            ]),
+                                        self::textInput('jumlah', 'Jumlah')
+                                            ->numeric(),
 
                                         self::textareaInput('keterangan', 'Keterangan')
-                                            // ->columnSpanFull(false)
                                             ->columnSpan(1)
                                             ->rows(1),
 
                                     ])
 
                             ])
-                            ->deletable(false)
+                            // ->deletable(false)
                             ->reorderable(false)
-                            ->addable(false)
+                            // ->addable(false)
                             ->columnSpanFull()
+                            ->addActionLabel('Tambah Detail Permintaan Pembelian')
 
                     ])
 

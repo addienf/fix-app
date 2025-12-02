@@ -64,6 +64,7 @@
                     <tr>
                         <th class="px-4 py-2 border border-gray-300 dark:border-gray-600">Nomor</th>
                         <th class="px-4 py-2 border border-gray-300 dark:border-gray-600">Nama Produk</th>
+                        <th class="px-4 py-2 border border-gray-300 dark:border-gray-600">Nomor Seri</th>
                         <th class="px-4 py-2 border border-gray-300 dark:border-gray-600">Jumlah Pesanan</th>
                         <th class="px-4 py-2 border border-gray-300 dark:border-gray-600">No URS</th>
                         <th class="px-4 py-2 border border-gray-300 dark:border-gray-600">Rencana Pengiriman</th>
@@ -76,6 +77,7 @@
                             </td>
                             <td class="px-4 py-2 border border-gray-300 dark:border-gray-600">
                                 {{ $item->nama_produk }}</td>
+                            <td class="px-4 py-2 border border-gray-300 dark:border-gray-600">{{ $item->nomor_seri }}</td>
                             <td class="px-4 py-2 border border-gray-300 dark:border-gray-600">{{ $item->jumlah }}</td>
                             <td class="px-4 py-2 border border-gray-300 dark:border-gray-600">
                                 {{ $item->no_urs }}</td>

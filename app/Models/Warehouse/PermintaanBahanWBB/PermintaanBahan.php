@@ -16,6 +16,7 @@ class PermintaanBahan extends Model
 
     protected $fillable = [
         'permintaan_bahan_pro_id',
+        'is_stock',
         'tanggal',
         'no_surat',
         'dari',

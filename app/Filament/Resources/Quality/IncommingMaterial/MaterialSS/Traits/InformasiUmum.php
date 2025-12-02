@@ -102,6 +102,7 @@ trait InformasiUmum
                 return PermintaanPembelian::query()
                     ->with('permintaanBahanWBB')
                     ->whereDoesntHave('materialSS')
+                    ->where('is_stock', '=', 1)
                     ->orderBy('id', 'desc')
                     ->limit(10)
                     ->get()

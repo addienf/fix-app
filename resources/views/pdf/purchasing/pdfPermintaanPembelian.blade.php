@@ -42,7 +42,8 @@
         <div class="max-w-4xl pt-6 mx-auto mb-6 text-sm">
             <p class="mb-2">Dengan hormat,</p>
             <p class="flex flex-wrap items-center gap-1">
-                <span>Berdasarkan Permintaan Barang No. {{ $permintaan_pembelian->permintaanBahanWBB->no_surat }} mohon
+                <span>Berdasarkan Permintaan Barang No.
+                    {{ $permintaan_pembelian->permintaanBahanWBB->no_surat ?? 'Untuk Stock' }} mohon
                     bantuan untuk memenuhi kebutuhan bahan/sparepart dengan rincian sebagai berikut:</span>
             </p>
         </div>
@@ -72,7 +73,7 @@
             </table>
         </div>
 
-        <div class="ttd max-w-4xl mx-auto mt-10 text-sm">
+        <div class="max-w-4xl mx-auto mt-10 text-sm ttd">
             <div class="flex items-start justify-between gap-4">
                 <div class="flex flex-col items-center">
                     <p class="mb-2 dark:text-white">Dibuat Oleh</p>
