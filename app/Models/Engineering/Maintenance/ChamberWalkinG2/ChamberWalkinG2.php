@@ -1,0 +1,62 @@
+<?php
+
+namespace App\Models\Engineering\Maintenance\ChamberWalkinG2;
+
+use App\Models\Engineering\Maintenance\ChamberWalkinG2\Pivot\ChamberWalkinG2Detail;
+use App\Models\Engineering\Maintenance\ChamberWalkinG2\Pivot\ChamberWalkinG2PIC;
+use App\Models\Engineering\SPK\SPKService;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class ChamberWalkinG2 extends Model
+{
+    use HasFactory;
+    protected $table = 'chamber_walkin_g2s';
+    protected $fillable = [
+        'spk_service_id',
+        'tag_no',
+        'remarks',
+        'status_penyetujuan',
+    ];
+
+    public function spkService()
+    {
+        return $this->belongsTo(SPKService::class, 'spk_service_id');
+    }
+
+    public function detail()
+    {
+        return $this->hasOne(ChamberWalkinG2Detail::class, 'walk_in_g2_id');
+    }
+
+    public function pic()
+    {
+        return $this->hasOne(ChamberWalkinG2PIC::class, 'walk_in_g2_id');
+    }
+
+    protected static function booted()
+    {
+        static::saving(function ($model) {
+            if (
+                $model->pic?->approved_signature &&
+                $model->status_penyetujuan !== 'Disetujui'
+            ) {
+                $model->status_penyetujuan = 'Disetujui';
+            }
+        });
+
+        static::deleting(function ($spesifikasi) {
+            if ($spesifikasi->pic) {
+                $spesifikasi->pic->delete();
+            }
+        });
+
+        static::saved(function () {
+            SPKService::clearModelCaches();
+        });
+
+        static::deleted(function () {
+            SPKService::clearModelCaches();
+        });
+    }
+}

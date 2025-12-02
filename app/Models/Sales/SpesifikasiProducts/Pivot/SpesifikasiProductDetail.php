@@ -15,11 +15,13 @@ class SpesifikasiProductDetail extends Model
         'spesifikasi_produk_id',
         'product_id',
         'quantity',
-        'specification'
+        'specification',
+        'specification_mecmesin',
     ];
 
     protected $casts = [
         'specification' => 'array',
+        'specification_mecmesin' => 'array',
     ];
 
     public function spesifikasiProduk()

@@ -3,10 +3,10 @@
 namespace App\Filament\Resources\Sales\SpesifikasiProducts\SpesifikasiProductResource\Pages;
 
 use App\Filament\Resources\Sales\SpesifikasiProducts\SpesifikasiProductResource;
-use Filament\Actions;
-use Filament\Notifications\Actions\Action;
-use Filament\Notifications\Notification;
+use App\Jobs\SendGenericNotif;
+use App\Notifications\GenericNotification;
 use Filament\Resources\Pages\CreateRecord;
+use Illuminate\Support\Facades\Log;
 
 class CreateSpesifikasiProduct extends CreateRecord
 {
@@ -16,15 +16,30 @@ class CreateSpesifikasiProduct extends CreateRecord
     {
         return $this->getResource()::getUrl('index');
     }
-    protected function getCreatedNotification(): ?Notification
+
+    protected function afterCreate(): void
     {
-        return Notification::make()
-            ->title('Data Spesifikasi Berhasil Di Buat')
-            ->success()
-            // ->body('The User has been added and is ready to be edited if needed.')
-            ->actions([
-                Action::make('view')->label('View Data')->button()
-                    ->url(EditSpesifikasiProduct::getUrl(['record' => $this->record])),
-            ]);
+        if ($this->record && $this->record->id) {
+            SendGenericNotif::dispatch(
+                $this->record,
+                ['sales', 'super_admin', 'production', 'MR'],
+                GenericNotification::class,
+                '/admin/sales/spesifikasi-produk',
+                'Data Spesifikasi Produk berhasil dibuat',
+                'Ada data Spesifikasi Produk baru yang masuk.'
+            )->delay(now()->addSeconds(2));
+        } else {
+            Log::error('Record belum lengkap.');
+        }
+    }
+
+    public function getTitle(): string
+    {
+        return 'Tambah Data Spesifikasi Produk';
+    }
+
+    public function getBreadcrumb(): string
+    {
+        return 'Tambah';
     }
 }

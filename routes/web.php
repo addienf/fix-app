@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Controllers\PDFController;
+use App\Jobs\Sales\SendSpesifikasiProductNotif;
+use App\Models\Sales\SpesifikasiProducts\SpesifikasiProduct;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -15,4 +18,70 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return redirect()->route('filament.admin.auth.login');
+});
+
+// Sales
+Route::get('/sales/spesifikasi-produk/{record}/pdf-spesifikasi-produk', [PDFController::class, 'previewSpesifikasiProduct'])->name('specProduct.preview');
+Route::get('/sales/spesifikasi-produk/{record}/download-file', [PDFController::class, 'downloadFileSpesifikasiProduct'])->name('specProduct.file-download');
+Route::get('/sales/spk/{record}/pdf-spk-marketing', [PDFController::class, 'pdfSPKMarketing'])->name('pdf.SPKMarketing');
+
+// Produksi
+Route::get('/produksi/jadwal-produksi/{record}/pdf-jadwal-produksi', [PDFController::class, 'pdfJadwalProduksi'])->name('pdf.jadwalProduksi');
+Route::get('/produksi/jadwal-produksi/{record}/download-file', [PDFController::class, 'downloadJadwalProduksi'])->name('jadwalProduksi.file-download');
+Route::get('/produksi/permintaan-alat-dan-bahan/{record}/pdf-permintaan-alat-dan-bahan', [PDFController::class, 'pdfPermintaanAlatBahan'])->name('pdf.permintaanAlatBahan');
+Route::get('/produksi/penyerahan-electrical/{record}/pdf-penyerahan-electrical', [PDFController::class, 'pdfPenyerahanElectrical'])->name('pdf.penyerahanElectrical');
+Route::get('/produksi/penyerahan-electrical/{record}/download-file', [PDFController::class, 'downloadPenyerahanElectrical'])->name('penyerahanElectrical.file-download');
+Route::get('/produksi/spk-quality/{record}/pdf-spk-quality', [PDFController::class, 'pdfSPKQuality'])->name('pdf.spkQuality');
+Route::get('/produksi/penyerahan-produk-jadi/{record}/pdf-penyerahan-produk-jadi', [PDFController::class, 'pdfPenyerahanProdukJadi'])->name('pdf.PenyerahanProdukJadi');
+Route::get('/produksi/spk-vendor/{record}/pdf-spk-vendor', [PDFController::class, 'pdfSPKVendor'])->name('pdf.spkVendor');
+Route::get('/produksi/spk-vendor/{record}/download-zip', [PDFController::class, 'downloadSPKVendor'])->name('spkVendor.download-zip');
+
+// Warehouse
+Route::get('/warehouse/permintaan-bahan/{record}/pdf-permintaan-bahan', [PDFController::class, 'pdfPermintaanBahan'])->name('pdf.permintaanBahan');
+Route::get('/warehouse/incoming-material/{record}/pdf-incoming-material', [PDFController::class, 'pdfIncomingMaterial'])->name('pdf.IncomingMaterial');
+Route::get('/warehouse/incoming-material/{record}/download-file', [PDFController::class, 'downloadIncomingMaterial'])->name('IncomingMaterial.file-download');
+Route::get('/warehouse/serah-terima-bahan/{record}/pdf-serah-terima-bahan', [PDFController::class, 'pdfSerahTerima'])->name('pdf.serahTerima');
+Route::get('/warehouse/pelabelan-qc-passed/{record}/pdf-pelabelan-qc-passed', [PDFController::class, 'pdfPelabelanQCPassed'])->name('pdf.PelabelanQCPassed');
+Route::get('/warehouse/peminjaman-alat/{record}/pdf-peminjaman-alat', [PDFController::class, 'pdfPeminjamanAlat'])->name('pdf.PeminjamanAlat');
+
+// Purchasing
+Route::get('/purchasing/permintaan-pembelian/{record}/pdf-permintaan-pembelian', [PDFController::class, 'pdfPermintaanPembelian'])->name('pdf.PermintaanPembelian');
+
+// Quality
+Route::get('/quality/incoming-material-ss/{record}/pdf-incoming-material-ss', [PDFController::class, 'pdfIncomingMaterialSS'])->name('pdf.incomingMaterialSS');
+Route::get('/quality/incoming-material-non-ss/{record}/pdf-incoming-material-non-ss', [PDFController::class, 'pdfIncomingMaterialNonSS'])->name('pdf.incomingMaterialNonSS');
+Route::get('/quality/standarisasi-gambar-kerja/{record}/pdf-standarisasi-gambar-kerja', [PDFController::class, 'pdfStandarisasiDrawing'])->name('pdf.StandarisasiDrawing');
+Route::get('/quality/standarisasi-gambar-kerja/{record}/pdf-lampiran-standarisasi-gambar-kerja', [PDFController::class, 'pdfStandarisasiDrawingLampiran'])->name('pdf.StandarisasiDrawingLampiran');
+Route::get('/quality/standarisasi-gambar-kerja/{record}/download-zip', [PDFController::class, 'downloadZipStandarisasiDrawing'])->name('StandarisasiDrawing.download-zip');
+Route::get('/quality/kelengkapan-material-ss/{record}/pdf-kelengkapan-material-ss', [PDFController::class, 'pdfKelengkapanMaterialSS'])->name('pdf.kelengkapanMaterialSS');
+Route::get('/quality/pengecekan-material-ss/{record}/pdf-kelengkapan-material-ss', [PDFController::class, 'pdfPengecekanMaterialSS'])->name('pdf.pengecekanMaterialSS');
+Route::get('/quality/pengecekan-electrical/{record}/pdf-pengecekan-electrical', [PDFController::class, 'pdfPengecekanElectrical'])->name('pdf.pengecekanElectrical');
+Route::get('/quality/pengecekan-performa/{record}/pdf-pengecekan-performa', [PDFController::class, 'pdfPengecekanPerforma'])->name('pdf.pengecekanPerforma');
+Route::get('/quality/defect-status/{record}/pdf-defect-status', [PDFController::class, 'pdfDefectStatus'])->name('pdf.defectStatus');
+Route::get('/quality/defect-status/{record}/download-file', [PDFController::class, 'downloadDefectStatus'])->name('defectStatus.file-download');
+Route::get('/quality/ketidaksesuaian/{record}/pdf-ketidaksesuaian', [PDFController::class, 'pdfKetidaksesuaian'])->name('pdf.ketidaksesuaian');
+Route::get('/quality/product-release/{record}/pdf-product-release', [PDFController::class, 'pdfProductRelease'])->name('pdf.productRelease');
+
+//Engineering
+Route::get('/engineering/catatan-keluhan-pelanggan/{record}/pdfCatatanPelanggan', [PDFController::class, 'pdfCatatanPelanggan'])->name('pdf.CatatanPelanggan');
+Route::get('/engineering/permintaan-pelayana-pelanggan/{record}/pdfPelayananPelanggan', [PDFController::class, 'pdfPelayananPelanggan'])->name('pdf.PelayananPelanggan');
+Route::get('/engineering/spk-service/{record}/pdf-spk-service', [PDFController::class, 'pdfSPKService'])->name('pdf.spkService');
+Route::get('/engineering/sparepart-alat-kerja/{record}/pdf-sparepart-alat-kerja', [PDFController::class, 'pdfSparepartAlatKerja'])->name('pdf.sparepartAlatKerja');
+Route::get('/engineering/berita-acara/{record}/pdf-berita-acara', [PDFController::class, 'pdfBeritaAcara'])->name('pdf.beritaAcara');
+Route::get('/engineering/chamber-g2/{record}/pdf-chamber-g2', [PDFController::class, 'pdfMaintenanceChamberG2'])->name('pdf.MaintenanceChamberG2');
+Route::get('/engineering/walkin-chamber-g2/{record}/pdf-walkin-chamber-g2', [PDFController::class, 'pdfWalkInChamberG2'])->name('pdf.walkInChamberG2');
+Route::get('/engineering/rissing-pipette/{record}/pdf-rissing-pipette', [PDFController::class, 'pdfRissingPipette'])->name('pdf.rissingPipette');
+Route::get('/engineering/chamber-r1/{record}/pdf-chamber-r1', [PDFController::class, 'pdfWalkInChamberR1'])->name('pdf.walkInChamberR1');
+Route::get('/engineering/chamber-r2/{record}/pdf-chamber-r2', [PDFController::class, 'pdfWalkInChamberR2'])->name('pdf.walkInChamberR2');
+Route::get('/engineering/maintenance-refrigator/{record}/pdf-maintenance-refrigator', [PDFController::class, 'pdfMaintenanceRefrigator'])->name('pdf.MaintenanceRefrigator');
+Route::get('/engineering/maintenance-cold-room/{record}/pdf-cold-room', [PDFController::class, 'pdfMaintenanceColdRoom'])->name('pdf.MaintenanceColdRoom');
+Route::get('/engineering/service-report/{record}/pdf-service-report', [PDFController::class, 'pdfServiceReport'])->name('pdf.serviceReport');
+Route::get('/engineering/service-report/{record}/download-zip', [PDFController::class, 'downloadZipserviceReport'])->name('serviceReport.download-zip');
+
+
+Route::get('/customercare/pdfPermintaanPelayanan', function () {
+    return view('pdf.customercare.pdfPermintaanPelayanan');
+});
+Route::get('/customercare/pdfSuratPerintahKerja', function () {
+    return view('pdf.customercare.pdfSuratPerintahKerja');
 });

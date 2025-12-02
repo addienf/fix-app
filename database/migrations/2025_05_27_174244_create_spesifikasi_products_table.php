@@ -14,9 +14,13 @@ return new class extends Migration
         Schema::create('spesifikasi_products', function (Blueprint $table) {
             $table->id();
             $table->foreignId('urs_id')->constrained()->cascadeOnDelete();
-            $table->boolean('is_stock');
-            $table->string('detail_specification');
+            $table->boolean('is_stock')->nullable();
+            $table->text('detail_specification');
             $table->string('delivery_address');
+            $table->date('estimasi_pengiriman');
+            $table->string('status_penerimaan_order');
+            $table->text('alasan')->nullable();
+            $table->string('status');
             $table->timestamps();
         });
     }

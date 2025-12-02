@@ -1,0 +1,149 @@
+@import '../../../../vendor/filament/filament/resources/css/theme.css';
+
+@config 'tailwind.config.js';
+
+.fi-simple-main {
+    @apply shadow-xl rounded-sm;
+}
+
+.fi-btn {
+    @apply bg-[#222fb2] text-white shadow-lg transition-all duration-75 ease-in-out; }
+
+.fi-btn:hover {
+    @apply bg-gradient-to-r from-[#222fb2] to-[#367CEF] text-white shadow-xl transition-all duration-500 ease-in-out;
+}
+
+.fi-sidebar-header img,
+.fi-auth-container img {
+    content: url('/public/asset/logo2.png');
+    /* Logo dashboard */
+    max-height: 45px;
+    width: auto;
+    margin: 0 auto;
+}
+
+@layer components {
+
+
+    .fi-sidebar-item-button.bg-gray-100 {
+        @apply border border-white bg-white/15;
+    }
+
+    .dark .fi-sidebar-item-button.bg-gray-100 {
+        @apply bg-gradient-to-r from-[#212932] to-[#212932] text-white;   }
+}
+
+.fi-topbar {
+    @apply border-b border-gray-100 dark:border-black;
+}
+.fi-topbar * {
+    @apply text-gray-900 dark:text-gray-100;
+}
+
+.fi-sidebar {
+    @apply shadow-lg bg-gradient-to-t from-[#367CEF] to-[#092056];
+}
+.dark .fi-sidebar {
+    @apply bg-gradient-to-t from-[#2e2e2e] to-[#18181B] shadow-lg;
+}
+
+.fi-sidebar * {
+    @apply text-white;
+}
+.fi-sidebar-nav a {
+    @apply rounded-md px-3 py-2 flex items-center gap-3 text-blue-800 transition-colors duration-300;
+}
+
+.fi-badge{
+    @apply border border-blue-200 bg-transparent;
+}
+
+/* .fi-sidebar-nav a:hover {
+    @apply bg-white/50 text-white;
+} */
+
+.dark .fi-sidebar-nav a:hover {
+   @apply bg-transparent border border-white text-white;
+}
+
+.fi-sidebar-nav a:hover span,
+.fi-sidebar-nav a:hover svg,
+.fi-sidebar-nav a:hover div {
+    color: white !important;
+    fill: black !important;
+    stroke: white !important;
+}
+
+@layer components {
+    .fi-ta thead tr {
+        @apply bg-blue-300/20 text-white !important;
+    } 
+}
+.fi-ta-row:hover {
+    @apply bg-blue-300/50 transition-all duration-300;
+}
+
+.fi-ta{
+    @apply border border-blue-200 rounded-lg dark:border-gray-50/20;
+}
+
+.fi-section-header {
+    @apply bg-blue-400/20 text-white rounded-t-lg border border-blue-200 dark:bg-gray-800 dark:border-gray-100 !important;
+}
+
+.fi-section-content {
+    @apply border border-blue-200 rounded-lg dark:border-gray-50;
+}
+.fi-wi-stats-overview-stat{
+    @apply border border-blue-200 rounded-lg;
+}
+
+.filament-tables-header {
+    @apply bg-white/50 !important;
+    border: none !important;
+    box-shadow: none !important;
+    /* kalau ada shadow yang mirip border */
+}
+
+.fi-fieldset{
+    @apply border border-blue-300 bg-white;
+}
+/* .fi-main{
+    @apply bg-gradient-to-t from-[#2e2e2e]/10 to-[#18181B]/10;
+} */
+/* 
+.fi-fo-repeater{
+    @apply bg-blue-400/20 text-white rounded-t-lg !important;
+        border: none !important;
+} */@keyframes rainbow-glow {
+    0% {
+        box-shadow: 0 0 12px 2px red;
+    }
+
+    25% {
+        box-shadow: 0 0 12px 2px orange;
+    }
+
+    50% {
+        box-shadow: 0 0 12px 2px yellow;
+    }
+
+    75% {
+        box-shadow: 0 0 12px 2px green;
+    }
+
+    100% {
+        box-shadow: 0 0 12px 2px blue;
+    }
+}
+
+@layer components {
+    .fi-input {
+        font-family: theme('fontFamily.poppins');
+    }
+}
+
+.download {
+   background-color: red;
+}
+       

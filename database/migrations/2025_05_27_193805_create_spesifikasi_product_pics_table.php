@@ -14,9 +14,15 @@ return new class extends Migration
         Schema::create('spesifikasi_product_pics', function (Blueprint $table) {
             $table->id();
             $table->foreignId('spesifikasi_product_id')->constrained('spesifikasi_products')->onDelete('cascade');
-            $table->text('signature');
-            $table->string('name');
-            $table->date('date');
+            $table->string('signed_signature');
+            $table->string('signed_name');
+            $table->date('signed_date');
+            $table->string('accepted_signature')->nullable();
+            $table->string('accepted_name')->nullable();
+            $table->date('accepted_date')->nullable();
+            $table->string('acknowledge_signature')->nullable();
+            $table->string('acknowledge_name')->nullable();
+            $table->date('acknowledge_date')->nullable();
             $table->timestamps();
         });
     }

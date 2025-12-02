@@ -4,23 +4,44 @@ namespace App\Models\Sales\SpesifikasiProducts;
 
 use App\Models\Sales\SpesifikasiProducts\Pivot\SpesifikasiProductDetail;
 use App\Models\Sales\SpesifikasiProducts\Pivot\SpesifikasiProductPIC;
+use App\Models\Sales\SPKMarketings\SPKMarketing;
 use App\Models\Sales\URS;
+use App\Traits\HasCacheManager;
+use Database\Factories\Sales\SpesifikasiProducts\SpesifikasiProductFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Notifications\Notifiable;
 
+/**
+ * @property string|null $id
+ * @property string|null $urs_id
+ * @property string|null $is_stock
+ * @property string|null $detail_specification
+ * @property string|null $delivery_address
+ */
 class SpesifikasiProduct extends Model
 {
-    use HasFactory;
+    use HasFactory, Notifiable, HasCacheManager;
+
+    protected static $factory = SpesifikasiProductFactory::class;
     protected $fillable = [
         'urs_id',
         'is_stock',
         'detail_specification',
         'delivery_address',
+        'estimasi_pengiriman',
+        'status_penerimaan_order',
+        'alasan',
+        'status'
+    ];
+
+    protected $casts = [
+        'estimasi_pengiriman' => 'date',
     ];
 
     public function urs()
     {
-        return $this->belongsTo(URS::class);
+        return $this->belongsTo(URS::class, 'urs_id');
     }
 
     public function details()
@@ -33,16 +54,35 @@ class SpesifikasiProduct extends Model
         return $this->hasOne(SpesifikasiProductPIC::class);
     }
 
+    public function spk()
+    {
+        return $this->hasOne(SPKMarketing::class);
+    }
+
     protected static function booted()
     {
+        static::saving(function ($model) {
+            if (
+                $model->pic?->accepted_signature &&
+                $model->status !== 'Diterima'
+            ) {
+                $model->status = 'Diterima';
+            }
+
+            if (
+                $model->pic?->acknowledge_signature &&
+                $model->status !== 'Diketahui MR'
+            ) {
+                $model->status = 'Diketahui MR';
+            }
+        });
+
         static::deleting(function ($model) {
             foreach ($model->details as $detail) {
                 $detail->delete();
             }
 
-            if ($model->pic) {
-                $model->pic->delete();
-            }
+            $model->pic?->delete();
         });
     }
 }

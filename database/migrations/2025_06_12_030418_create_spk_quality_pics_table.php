@@ -1,0 +1,32 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('spk_quality_pics', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('spk_qualities_id')->constrained('spk_qualities')->onDelete('cascade');
+            $table->text('create_signature');
+            $table->string('create_name');
+            $table->text('receive_signature')->nullable();
+            $table->string('receive_name')->nullable();
+            $table->timestamps();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('spk_quality_pics');
+    }
+};

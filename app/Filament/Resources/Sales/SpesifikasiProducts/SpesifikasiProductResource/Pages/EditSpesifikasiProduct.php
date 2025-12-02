@@ -21,13 +21,7 @@ class EditSpesifikasiProduct extends EditRecord
         return Notification::make()
             ->title('Data Spesifikasi Berhasil Di Update')
             ->warning()
-            // ->body('The User information has been updated.')
-            ->actions([
-                Action::make('edit')
-                    ->label('View Again')
-                    ->url(self::getUrl(['record' => $this->record]))
-                    ->button(),
-            ]);
+            ->actions([]);
     }
 
     protected function getHeaderActions(): array
