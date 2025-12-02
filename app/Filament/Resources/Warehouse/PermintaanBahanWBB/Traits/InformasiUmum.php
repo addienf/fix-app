@@ -3,39 +3,54 @@
 namespace App\Filament\Resources\Warehouse\PermintaanBahanWBB\Traits;
 
 use App\Models\Production\PermintaanBahanProduksi\PermintaanAlatDanBahan;
-use App\Models\Warehouse\PermintaanBahanWBB\PermintaanBahan;
 use App\Traits\HasAutoNumber;
 use App\Traits\SimpleFormResource;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
-use Illuminate\Support\Facades\Cache;
+use Illuminate\Validation\Rule;
+use Wallo\FilamentSelectify\Components\ButtonGroup;
 
 trait InformasiUmum
 {
     use SimpleFormResource, HasAutoNumber;
     protected static function informasiUmumSection($form): Section
     {
-        $lastValue = PermintaanBahan::latest('no_surat')->value('no_surat');
+        // $lastValue = PermintaanBahan::latest('no_surat')->value('no_surat');
         $isEdit = $form->getOperation() === 'edit';
 
-        return Section::make('Informasi Umum')
+        return
+            Section::make('Informasi Umum')
             ->collapsible()
             ->schema([
 
-                self::select()
+                self::getIsStock()
                     ->hiddenOn('edit'),
+
+                self::select()
+                    ->hidden(
+                        fn($get, $livewire) =>
+                        $get('is_stock') != 1 ||
+                            $livewire instanceof \Filament\Resources\Pages\EditRecord
+                    ),
+                // ->hiddenOn('edit'),
 
                 Grid::make($isEdit ? 3 : 2)
                     ->schema([
+
                         self::autoNumberField2('no_surat', 'No Surat', [
                             'prefix' => 'QKS',
                             'section' => 'WBB',
                             'type' => 'PERMINTAAN',
                             'table' => 'permintaan_bahans',
                         ])
-                            ->hiddenOn('edit')
-                            ->placeholder($lastValue ? "Data Terakhir : {$lastValue}" : 'Data Belum Tersedia'),
+                            ->rules(function (callable $get) {
+                                return $get('is_stock') == 0
+                                    ? ['nullable']
+                                    : ['required', Rule::unique('permintaan_bahans', 'no_surat')];
+                            })
+                            ->hiddenOn('edit'),
+                        // ->hidden(fn($get) => $get('is_stock') != 1),
 
                         self::dateInput('tanggal', 'Tanggal')
                             ->required(),
@@ -112,6 +127,31 @@ trait InformasiUmum
                 })->toArray();
 
                 $set('details', $detailBahan);
+            });
+    }
+
+    private static function getIsStock()
+    {
+        return
+            ButtonGroup::make('is_stock')
+            ->label('')
+            ->required()
+            ->options([
+                1 => 'Permintaan Biasa',
+                0 => 'Untuk Stock',
+            ])
+            ->reactive()
+            ->columnSpanFull()
+            ->onColor('primary')
+            ->offColor('gray')
+            ->gridDirection('row')
+            ->afterStateUpdated(function ($state, callable $set) {
+                if ($state == 0) {
+                    $kode = now()->format('YmdHis');
+                    $set('no_surat', "Untuk Stock - {$kode}");
+                    $set('dari', null);
+                    $set('kepada', null);
+                }
             });
     }
 }

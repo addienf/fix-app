@@ -29,6 +29,15 @@ trait DetailProduk
                                     : []
                             ),
 
+                        self::textInput('nomor_seri', 'Nomor Seri')
+                            ->readOnly(fn($get) => filled($get('nomor_seri')))
+                            ->extraAttributes(
+                                fn($get) =>
+                                filled($get('nomor_seri'))
+                                    ? ['style' => 'pointer-events:none; background-color:#f3f4f6;']
+                                    : []
+                            ),
+
                         self::textInput('jumlah', 'Jumlah Pesanan')
                             ->readOnly(fn($get) => filled($get('jumlah')))
                             ->extraAttributes(

@@ -7,45 +7,42 @@ use App\Traits\HasAutoNumber;
 use App\Traits\SimpleFormResource;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
-use Illuminate\Support\Facades\Cache;
+use Wallo\FilamentSelectify\Components\ButtonGroup;
 
 trait NoSurat
 {
     use SimpleFormResource, HasAutoNumber;
     protected static function noSuratSection(): Section
     {
-        return Section::make('Nomor Surat')
+        return Section::make('Informasi Umum')
             ->hiddenOn('edit')
             ->collapsible()
             ->schema([
 
-                static::select('permintaan_bahan_wbb_id', 'Pilih Nomor Surat', 'permintaanBahanWBB', 'no_surat')
-                    ->placeholder('Pilin No Surat Dari Permintaan Bahan Pembelian')
-                    ->columnSpanFull(),
+                static::getIsStock()
+                    ->hiddenOn('edit'),
+
+                static::select2()
+                    ->hidden(
+                        fn($get, $livewire) =>
+                        $get('is_stock') != 1 ||
+                            $livewire instanceof \Filament\Resources\Pages\EditRecord
+                    )
+                    ->columnSpanFull()
 
             ]);
     }
 
-    protected static function select2(): Select
+    private static function select2(): Select
     {
         return
-            // Select::make('permintaan_bahan_wbb_id')
-            // ->relationship(
-            //     'permintaanBahanWBB',
-            //     'no_surat',
-            //     fn($query) => $query->whereIn('id', Cache::rememberForever(
-            //         PermintaanBahan::$CACHE_KEYS['pembelian'],
-            //         fn() => PermintaanBahan::whereDoesntHave('pembelian')
-            //             ->pluck('id')
-            //             ->toArray()
-            //     ))
-            // )
             Select::make('permintaan_bahan_wbb_id')
             ->label('No Surat')
             ->searchable()
             ->options(function () {
                 return PermintaanBahan::query()
                     ->whereDoesntHave('pembelian')
+                    ->where('is_stock', '!=', 0)
                     ->orderBy('id', 'desc')
                     ->limit(10)
                     ->pluck('no_surat', 'id');
@@ -53,6 +50,7 @@ trait NoSurat
             ->getSearchResultsUsing(function (string $search) {
                 return PermintaanBahan::query()
                     ->whereDoesntHave('pembelian')
+                    ->where('is_stock', '!=', 0)
                     ->where('no_surat', 'like', "%{$search}%")
                     ->orderBy('id', 'desc')
                     ->limit(10)
@@ -120,5 +118,22 @@ trait NoSurat
                 $set('details', $detailBahan);
             })
         ;
+    }
+
+    private static function getIsStock()
+    {
+        return
+            ButtonGroup::make('is_stock')
+            ->label('')
+            ->required()
+            ->options([
+                1 => 'Permintaan Biasa',
+                0 => 'Untuk Stock',
+            ])
+            ->reactive()
+            ->columnSpanFull()
+            ->onColor('primary')
+            ->offColor('gray')
+            ->gridDirection('row');
     }
 }

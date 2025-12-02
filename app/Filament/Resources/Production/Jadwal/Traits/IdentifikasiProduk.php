@@ -48,36 +48,16 @@ trait IdentifikasiProduk
                             ->default('')
                             ->dehydrated(true),
 
-                        // TextInput::make('batch_code')
-                        //     ->label('Batch (A/B/C)')
-                        //     ->reactive()
-                        //     ->hidden(fn($operation) => $operation === 'edit')
-                        //     ->afterStateUpdated(function ($state, callable $set) {
-
-                        //         $prefix = strtoupper(Str::random(4));
-                        //         $mid = str_pad(rand(0, 9999), 4, '0', STR_PAD_LEFT);
-                        //         $monthCode = chr(64 + now()->month);
-                        //         $year = now()->format('y');
-                        //         $generated = $prefix . $mid . strtoupper($state) . $monthCode . $year;
-                        //         $set('no_seri', $generated);
-                        //     }),
-
-                        // TextInput::make('no_seri')
-                        //     ->label('Nomor Seri')
-                        //     ->reactive()
-                        //     ->default('')
-                        //     ->dehydrated(true)
-                        //     ->required(),
-
                         self::textInput('custom_standar', 'Custom/Stardar'),
 
                         self::textInput('jumlah', 'Quantity')->numeric(),
 
                     ])
-                    ->deletable(true)
-                    ->addable(true)
+                    // ->deletable(true)
+                    // ->addable(true)
                     ->reorderable(false)
-                    ->columnSpanFull(),
+                    ->columnSpanFull()
+                    ->addActionLabel('Tambah Produk'),
 
             ]);
     }

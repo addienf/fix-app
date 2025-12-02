@@ -111,25 +111,17 @@ class URSResource extends Resource
             ->placeholder('Pilih Data Customer')
             ->searchable()
             ->getSearchResultsUsing(function (string $search) {
-                $key = Customer::$CACHE_PREFIXES['search_customer'] . md5($search);
-
-                return Cache::rememberForever($key, function () use ($search) {
-                    return Customer::query()
-                        ->where('name', 'like', "%{$search}%")
-                        ->orderBy('id', 'desc')
-                        ->limit(10)
-                        ->pluck('name', 'id');
-                });
+                return Customer::query()
+                    ->where('name', 'like', "%{$search}%")
+                    ->orderBy('id', 'desc')
+                    ->limit(10)
+                    ->pluck('name', 'id');
             })
             ->options(function () {
-                $keySelect = Customer::$CACHE_KEYS['select_customer'];
-
-                return Cache::rememberForever($keySelect, function () {
-                    return Customer::query()
-                        ->orderBy('id', 'desc')
-                        ->limit(10)
-                        ->pluck('name', 'id');
-                });
+                return Customer::query()
+                    ->orderBy('id', 'desc')
+                    ->limit(10)
+                    ->pluck('name', 'id');
             })
             ->native(false)
             ->preload(false)

@@ -19,8 +19,8 @@
 
                 <td rowspan="2" class="w-48 p-2 pt-2 text-sm leading-tight text-center align-top border border-black">
                     FO-QKS-ENG-01-05<br>
-                    Rev. 02<br>
-                    02 June 2025
+                    Rev. 04<br>
+                    27 Augs 2025
                 </td>
             </tr>
             <tr>

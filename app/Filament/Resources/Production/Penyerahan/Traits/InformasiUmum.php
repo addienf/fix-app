@@ -61,7 +61,7 @@ trait InformasiUmum
             ->schema([
 
                 self::textareaInput('catatan_tambahan', 'Catatan Tambahan')
-                    ->columnSpanFull()
+                    ->rows(1)
 
             ]);
     }

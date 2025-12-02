@@ -33,10 +33,9 @@ trait KebutuhanBahan
 
                         self::textInput('keperluan', 'Keperluan'),
                     ])
-                    ->deletable(true)
                     ->reorderable(false)
-                    ->addable(true)
-                    ->columnSpanFull(),
+                    ->columnSpanFull()
+                    ->addActionLabel('Tambah Kebutuhan'),
             ]);
     }
 }

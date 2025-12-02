@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('spk_qualities_id')->constrained('spk_qualities')->onDelete('cascade');
             $table->string('nama_produk');
+            $table->string('nomor_seri');
             $table->string('jumlah');
             $table->string('no_urs');
             $table->string('rencana_pengiriman');

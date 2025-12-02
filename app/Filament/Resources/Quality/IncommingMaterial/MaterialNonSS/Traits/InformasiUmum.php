@@ -3,14 +3,11 @@
 namespace App\Filament\Resources\Quality\IncommingMaterial\MaterialNonSS\Traits;
 
 use App\Models\Purchasing\Permintaan\PermintaanPembelian;
-use App\Models\Quality\IncommingMaterial\MaterialNonSS\IncommingMaterialNonSS;
-use App\Models\Warehouse\PermintaanBahanWBB\PermintaanBahan;
 use App\Traits\HasAutoNumber;
 use App\Traits\SimpleFormResource;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
-use Illuminate\Support\Facades\Cache;
 
 trait InformasiUmum
 {
@@ -55,19 +52,6 @@ trait InformasiUmum
     private static function select2(): Select
     {
         return
-            // Select::make($fieldName)
-            // ->relationship($relation, $title)
-            // ->options(function () {
-            //     return Cache::rememberForever(PermintaanPembelian::$CACHE_KEYS['materialNonSS'], function () {
-            //         return
-            //             PermintaanPembelian::with('permintaanBahanWBB')
-            //             ->whereDoesntHave('materialNonSS')
-            //             ->get()
-            //             ->mapWithKeys(function ($item) {
-            //                 return [$item->id => $item->permintaanBahanWBB->no_surat ?? 'Tanpa No Surat'];
-            //             });
-            //     });
-            // })
             Select::make('permintaan_pembelian_id')
             ->label('Permintaan Pembelian')
             ->placeholder('Pilih Nomor Permintaan Pembelian')
@@ -78,6 +62,7 @@ trait InformasiUmum
                 return PermintaanPembelian::query()
                     ->with('permintaanBahanWBB')
                     ->whereDoesntHave('materialNonSS')
+                    ->where('is_stock', '=', 1)
                     ->orderBy('id', 'desc')
                     ->limit(10)
                     ->get()

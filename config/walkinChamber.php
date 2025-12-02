@@ -11,21 +11,21 @@ return [
             // 'Clean the evaporator',
         ]
     ],
-    // [
-    //     'mainPart' => 'Humidification System',
-    //     'parts' => [
-    //         'Measure the resistance of the water heater',
-    //         'Water Heater  3000 W (15-16 Ohm)',
-    //         'Water Heater  2500 W (18-19,3Ohm)',
-    //         'Water Heater  2500 W (9-9,6hm)',
-    //         'Clean the container of humidifier',
-    //         'Clean Water heater surface',
-    //         'Clean & Check Level switch sensor',
-    //         'Clean the water inlet',
-    //         'Check the function of humidification system',
-    //         'Take the photo of the water heater condition and resistance in Ampere Meter',
-    //     ]
-    // ],
+    [
+        'mainPart' => 'Humidification System',
+        'parts' => [
+            'Measure the resistance of the water heater',
+            // 'Water Heater  3000 W (15-16 Ohm)',
+            // 'Water Heater  2500 W (18-19,3Ohm)',
+            // 'Water Heater  2500 W (9-9,6hm)',
+            // 'Clean the container of humidifier',
+            // 'Clean Water heater surface',
+            // 'Clean & Check Level switch sensor',
+            // 'Clean the water inlet',
+            // 'Check the function of humidification system',
+            // 'Take the photo of the water heater condition and resistance in Ampere Meter',
+        ]
+    ],
     // [
     //     'mainPart' => 'Air Heating System',
     //     'parts' => [

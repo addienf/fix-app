@@ -15,6 +15,7 @@ class SPKQualityDetail extends Model
     protected $fillable = [
         'spk_qualities_id',
         'nama_produk',
+        'nomor_seri',
         'jumlah',
         'no_urs',
         'rencana_pengiriman',

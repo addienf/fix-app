@@ -34,10 +34,9 @@ trait DetailJadwalProduksi
 
                         self::dateInput('tanggal_selesai', 'Tanggal Selesai'),
                     ])
-                    ->deletable(true)
-                    ->addable(true)
                     ->reorderable(false)
-                    ->columnSpanFull(),
+                    ->columnSpanFull()
+                    ->addActionLabel('Tambah Pekerja'),
             ]);
     }
 }

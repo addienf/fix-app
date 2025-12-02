@@ -15,7 +15,6 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Actions\ActionGroup;
-use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -24,7 +23,7 @@ class SPKServiceResource extends Resource
     use InformasiUmum, DeskripsiPekerjaan, Pemeriksaan, Petugas, HasSignature;
     protected static ?string $model = SPKService::class;
     protected static ?int $navigationSort = 20;
-    protected static ?string $navigationGroup = 'Engineering';
+    protected static ?string $navigationGroup = 'Customer Care';
     protected static ?string $navigationLabel = 'SPK Service';
     protected static ?string $pluralLabel = 'SPK Service';
     protected static ?string $modelLabel = 'SPK Service';
