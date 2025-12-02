@@ -12,6 +12,7 @@ use App\Models\Engineering\Maintenance\ColdRoom\ColdRoom;
 use App\Models\Engineering\Maintenance\Refrigerator\Refrigerator;
 use App\Models\Engineering\Maintenance\RissingPipette\RissingPipette;
 use App\Models\Engineering\Maintenance\WalkinChamber\WalkinChamber;
+use App\Models\Engineering\Pelayanan\PermintaanPelayananPelanggan;
 use App\Models\Engineering\Permintaan\PermintaanSparepart;
 use App\Models\Engineering\Service\ServiceReport;
 use App\Models\Engineering\SPK\SPKService;
@@ -27,9 +28,11 @@ use App\Models\Quality\Defect\DefectStatus;
 use App\Models\Quality\IncommingMaterial\MaterialNonSS\IncommingMaterialNonSS;
 use App\Models\Quality\IncommingMaterial\MaterialSS\IncommingMaterialSS;
 use App\Models\Quality\KelengkapanMaterial\SS\KelengkapanMaterialSS;
+use App\Models\Quality\Ketidaksesuaian\Ketidaksesuaian;
 use App\Models\Quality\Pengecekan\PengecekanPerforma;
 use App\Models\Quality\PengecekanMaterial\Electrical\PengecekanMaterialElectrical;
 use App\Models\Quality\PengecekanMaterial\SS\PengecekanMaterialSS;
+use App\Models\Quality\Release\ProductRelease;
 use App\Models\Quality\Standarisasi\StandarisasiDrawing;
 use App\Models\Sales\SpesifikasiProducts\SpesifikasiProduct;
 use App\Models\Sales\SPKMarketings\SPKMarketing;
@@ -48,6 +51,7 @@ use App\Policies\Engineering\Maintenance\ColdRoom\ColdRoomPolicy;
 use App\Policies\Engineering\Maintenance\Refrigerator\RefrigeratorPolicy;
 use App\Policies\Engineering\Maintenance\RissingPipette\RissingPipettePolicy;
 use App\Policies\Engineering\Maintenance\WalkinChamber\WalkinChamberPolicy;
+use App\Policies\Engineering\Pelayanan\PermintaanPelayananPelangganPolicy;
 use App\Policies\Engineering\Permintaan\PermintaanSparepartPolicy;
 use App\Policies\Engineering\Service\ServiceReportPolicy;
 use App\Policies\Engineering\SPK\SPKServicePolicy;
@@ -63,9 +67,11 @@ use App\Policies\Quality\Defect\DefectStatusPolicy;
 use App\Policies\Quality\IncommingMaterial\MaterialNonSS\IncommingMaterialNonSSPolicy;
 use App\Policies\Quality\IncommingMaterial\MaterialSS\IncommingMaterialSSPolicy;
 use App\Policies\Quality\KelengkapanMaterial\SS\KelengkapanMaterialSSPolicy;
+use App\Policies\Quality\Ketidaksesuaian\KetidaksesuaianPolicy;
 use App\Policies\Quality\Pengecekan\PengecekanPerformaPolicy;
 use App\Policies\Quality\PengecekanMaterial\Electrical\PengecekanMaterialElectricalPolicy;
 use App\Policies\Quality\PengecekanMaterial\SS\PengecekanMaterialSSPolicy;
+use App\Policies\Quality\Release\ProductReleasePolicy;
 use App\Policies\Quality\Standarisasi\StandarisasiDrawingPolicy;
 use App\Policies\Sales\SpesifikasiProducts\SpesifikasiProductPolicy;
 use App\Policies\Sales\SPKMarketings\SPKMarketingPolicy;
@@ -76,6 +82,7 @@ use App\Policies\Warehouse\Peminjaman\PeminjamanAlatPolicy;
 use App\Policies\Warehouse\PermintaanBahanWBB\PermintaanBahanPolicy;
 use App\Policies\Warehouse\SerahTerima\SerahTerimaBahanPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
+use Illuminate\Support\Facades\Gate;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -122,6 +129,8 @@ class AuthServiceProvider extends ServiceProvider
         PengecekanMaterialElectrical::class => PengecekanMaterialElectricalPolicy::class,
         PengecekanPerforma::class => PengecekanPerformaPolicy::class,
         StandarisasiDrawing::class => StandarisasiDrawingPolicy::class,
+        Ketidaksesuaian::class => KetidaksesuaianPolicy::class,
+        ProductRelease::class => ProductReleasePolicy::class,
 
         //Engineering
         BeritaAcara::class => BeritaAcaraPolicy::class,
@@ -137,6 +146,7 @@ class AuthServiceProvider extends ServiceProvider
         WalkinChamber::class => WalkinChamberPolicy::class,
         ServiceReport::class => ServiceReportPolicy::class,
         Complain::class => ComplainPolicy::class,
+        PermintaanPelayananPelanggan::class => PermintaanPelayananPelangganPolicy::class,
     ];
 
     /**
@@ -145,5 +155,15 @@ class AuthServiceProvider extends ServiceProvider
     public function boot(): void
     {
         //
+        Gate::before(function ($user, $ability) {
+            if (request()->is('admin/email-verification/*')) {
+                return true;
+            }
+
+            // allow super admin everything
+            if ($user->hasRole('super_admin')) {
+                return true;
+            }
+        });
     }
 }

@@ -14,8 +14,7 @@ trait HasAutoNumber
         $type = $config['type'] ?? 'DOC';
         $table = $config['table'] ?? null;
 
-        return
-            TextInput::make($name)
+        return TextInput::make($name)
             ->label($label)
             ->hint("Format: XXX/{$prefix}/{$section}/{$type}/MM/YY")
             ->default(function () use ($table, $prefix, $section, $type, $name) {
@@ -23,20 +22,15 @@ trait HasAutoNumber
                 $month = now()->format('m');
                 $year = now()->format('y');
 
-                $last = DB::table($table)
-                    ->select($name)
-                    ->orderByDesc($name)
-                    ->first();
+                $lastNumber = DB::table($table)
+                    ->select(DB::raw("MAX(CAST(SUBSTRING_INDEX({$name}, '/', 1) AS UNSIGNED)) as max_num"))
+                    ->first()
+                    ->max_num;
 
-                if ($last && preg_match('/^(\d{3})/', $last->{$name}, $m)) {
-                    $num = intval($m[1]) + 1;
-                } else {
-                    $num = 1;
-                }
+                $num = $lastNumber ? $lastNumber + 1 : 1;
+                $numStr = str_pad($num, 3, '0', STR_PAD_LEFT);
 
-                $num = str_pad($num, 3, '0', STR_PAD_LEFT);
-
-                return "{$num}/{$prefix}/{$section}/{$type}/{$month}/{$year}";
+                return "{$numStr}/{$prefix}/{$section}/{$type}/{$month}/{$year}";
             })
             ->unique()
             ->required()

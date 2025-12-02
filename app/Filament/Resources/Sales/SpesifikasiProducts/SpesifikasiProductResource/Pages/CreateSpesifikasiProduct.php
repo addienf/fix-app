@@ -3,12 +3,8 @@
 namespace App\Filament\Resources\Sales\SpesifikasiProducts\SpesifikasiProductResource\Pages;
 
 use App\Filament\Resources\Sales\SpesifikasiProducts\SpesifikasiProductResource;
-use App\Jobs\Sales\SendSpesifikasiProductNotif;
 use App\Jobs\SendGenericNotif;
 use App\Notifications\GenericNotification;
-use App\Notifications\Sales\SpesifikasiProductNotif;
-use Filament\Actions\Action;
-use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Support\Facades\Log;
 
@@ -26,12 +22,12 @@ class CreateSpesifikasiProduct extends CreateRecord
         if ($this->record && $this->record->id) {
             SendGenericNotif::dispatch(
                 $this->record,
-                ['sales', 'super_admin'],
+                ['sales', 'super_admin', 'production', 'MR'],
                 GenericNotification::class,
                 '/admin/sales/spesifikasi-produk',
                 'Data Spesifikasi Produk berhasil dibuat',
                 'Ada data Spesifikasi Produk baru yang masuk.'
-            );
+            )->delay(now()->addSeconds(2));
         } else {
             Log::error('Record belum lengkap.');
         }

@@ -70,6 +70,7 @@ return [
 
         'pages' => [
             'Dashboard',
+            'EmailVerificationPrompt',
         ],
 
         'widgets' => [
@@ -88,6 +89,12 @@ return [
 
     'register_role_policy' => [
         'enabled' => true,
+    ],
+
+    'excluded_routes' => [
+        'filament.admin.auth.email-verification.verify',
+        'filament.admin.auth.email-verification.prompt',
+        'verification.verify',
     ],
 
 ];
