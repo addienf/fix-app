@@ -15,16 +15,18 @@ class Customer extends Model
     protected static $factory = \Database\Factories\General\CustomerFactory::class;
 
     protected $fillable = [
-        'companies_id',
+        'company_id',
         'name',
-        'phone_number',
         'department',
-        'company_name',
-        'company_address'
     ];
 
     public function urs()
     {
         return $this->hasMany(URS::class);
+    }
+
+    public function company()
+    {
+        return $this->belongsTo(Company::class, 'company_id');
     }
 }

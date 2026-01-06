@@ -101,7 +101,7 @@
                 $fields = [
                     ['label' => 'Form No :', 'value' => $complaint->form_no],
                     ['label' => 'Who Complaint :', 'value' => $complaint->name_complain],
-                    ['label' => 'Company Name :', 'value' => $complaint->company_name],
+                    ['label' => 'Company Name :', 'value' => optional($complaint->companies->first())->name],
                     ['label' => 'Department :', 'value' => $complaint->department],
                     ['label' => 'Phone Number :', 'value' => $complaint->phone_number],
                     ['label' => 'Complaint Received By :', 'value' => $complaint->receive_by],

@@ -459,7 +459,7 @@ class PDFController extends Controller
 
     public function pdfCatatanPelanggan($id)
     {
-        $complaint = Complain::with(['details', 'pic', 'pic.reportedBy'])->findOrFail($id);
+        $complaint = Complain::with(['details', 'pic', 'pic.reportedBy', 'companies'])->findOrFail($id);
 
         return view('pdf.engineering.pdfCatatanPelanggan', compact('complaint'));
     }
