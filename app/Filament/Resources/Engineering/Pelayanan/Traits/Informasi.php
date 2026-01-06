@@ -7,7 +7,6 @@ use App\Traits\SimpleFormResource;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
-use Ysfkaya\FilamentPhoneInput\Forms\PhoneInput;
 
 trait Informasi
 {
@@ -133,6 +132,7 @@ trait Informasi
                 self::textInput('tempat_pelaksanaan', 'Tempat Pelaksanaan'),
 
                 self::textInput('no_kontak', 'PIC/No. Kontak/Dept')
-            ]);
+            ])
+            ->columns(3);
     }
 }

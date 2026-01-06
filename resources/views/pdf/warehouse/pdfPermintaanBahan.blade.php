@@ -90,7 +90,7 @@
                     </tr>
                 </thead>
                 <tbody class="bg-white dark:bg-gray-900">
-                    @foreach ($permintaan_bahan->details as $index => $produk)
+                    @foreach ($permintaan_bahan->permintaanDetails as $index => $produk)
                         <tr>
                             <td class="px-4 py-2 border">{{ $index + 1 }}</td>
                             <td class="px-4 py-2 border">{{ $produk['bahan_baku'] }}</td>

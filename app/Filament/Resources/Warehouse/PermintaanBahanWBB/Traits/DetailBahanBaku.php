@@ -21,7 +21,7 @@ trait DetailBahanBaku
                     ->schema([
                         TableRepeater::make('details')
                             ->label('')
-                            // ->relationship('details')
+                            ->relationship('permintaanDetails')
                             ->schema([
 
                                 self::textInput('bahan_baku', 'Bahan Baku'),
@@ -32,7 +32,6 @@ trait DetailBahanBaku
                                     ->numeric(),
 
                                 self::textareaInput('keperluan_barang', 'Keperluan Barang')
-                                    // ->maxLength(255)
                                     ->rows(1),
 
                             ])

@@ -107,7 +107,7 @@ class PDFController extends Controller
 
     public function pdfPermintaanBahan($id)
     {
-        $permintaan_bahan = PermintaanBahan::with(['permintaanBahanPro', 'details', 'pic', 'pic.dibuatName', 'pic.mengetahuiName', 'pic.diserahkanName'])->findOrFail($id);
+        $permintaan_bahan = PermintaanBahan::with(['permintaanBahanPro', 'permintaanDetails', 'pic', 'pic.dibuatName', 'pic.mengetahuiName', 'pic.diserahkanName'])->findOrFail($id);
 
         return view('pdf.warehouse.pdfPermintaanBahan', compact('permintaan_bahan'));
     }
@@ -296,7 +296,7 @@ class PDFController extends Controller
 
     public function pdfPelabelanQCPassed($id)
     {
-        $pelabelan = QCPassed::with(['pengecekanPerforma', 'pic', 'details', 'pic.createdName', 'pic.approvedName'])->findOrFail($id);
+        $pelabelan = QCPassed::with(['pic', 'details', 'pic.createdName', 'pic.approvedName', 'productRelease'])->findOrFail($id);
 
         return view('pdf.warehouse.pdfPelabelanQCPassed', compact('pelabelan'));
     }
@@ -362,8 +362,15 @@ class PDFController extends Controller
             }
 
             // Tambahkan semua gambar ke dalam folder 'gambar/' di ZIP
-            foreach ($vendor->lampiran ?? [] as $gambarPath) {
+            // foreach ($vendor->lampiran ?? [] as $gambarPath) {
+            //     $fullGambarPath = storage_path('app/public/' . $gambarPath);
+            //     if (file_exists($fullGambarPath)) {
+            //         $zip->addFile($fullGambarPath, 'gambar/' . basename($gambarPath));
+            //     }
+            // }
+            foreach ((array) $vendor->lampiran as $gambarPath) {
                 $fullGambarPath = storage_path('app/public/' . $gambarPath);
+
                 if (file_exists($fullGambarPath)) {
                     $zip->addFile($fullGambarPath, 'gambar/' . basename($gambarPath));
                 }

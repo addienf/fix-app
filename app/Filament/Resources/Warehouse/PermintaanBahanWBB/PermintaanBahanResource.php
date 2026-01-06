@@ -155,7 +155,7 @@ class PermintaanBahanResource extends Resource
         return parent::getEloquentQuery()
             ->with([
                 'permintaanBahanPro',
-                'details',
+                'permintaanDetails',
                 'pic',
                 'pembelian',
             ]);

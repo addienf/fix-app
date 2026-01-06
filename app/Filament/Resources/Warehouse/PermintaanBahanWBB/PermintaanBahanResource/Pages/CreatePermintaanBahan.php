@@ -40,40 +40,40 @@ class CreatePermintaanBahan extends CreateRecord
         }
     }
 
-    protected function mutateFormDataBeforeCreate(array $data): array
-    {
-        return $data;
-    }
+    // protected function mutateFormDataBeforeCreate(array $data): array
+    // {
+    //     return $data;
+    // }
 
-    protected function handleRecordCreation(array $data): Model
-    {
-        try {
+    // protected function handleRecordCreation(array $data): Model
+    // {
+    //     try {
 
-            return DB::transaction(function () use ($data) {
+    //         return DB::transaction(function () use ($data) {
 
-                $details = $data['details'] ?? [];
-                unset($data['details']);
+    //             $details = $data['details'] ?? [];
+    //             unset($data['details']);
 
-                $parent = PermintaanBahan::create($data);
-                foreach ($details as $i => $detail) {
-                    $created = $parent->details()->create($detail);
-                }
+    //             $parent = PermintaanBahan::create($data);
+    //             foreach ($details as $i => $detail) {
+    //                 $created = $parent->details()->create($detail);
+    //             }
 
-                return $parent;
-            });
-        } catch (Throwable $e) {
+    //             return $parent;
+    //         });
+    //     } catch (Throwable $e) {
 
-            DB::rollBack();
+    //         DB::rollBack();
 
-            Notification::make()
-                ->title('Gagal Menyimpan Data')
-                ->body('Input tidak valid !')
-                ->danger()
-                ->send();
+    //         Notification::make()
+    //             ->title('Gagal Menyimpan Data')
+    //             ->body('Input tidak valid !')
+    //             ->danger()
+    //             ->send();
 
-            throw new Halt();
-        }
-    }
+    //         throw new Halt();
+    //     }
+    // }
 
     public function getTitle(): string
     {

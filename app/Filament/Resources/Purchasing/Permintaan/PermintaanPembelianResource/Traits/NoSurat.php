@@ -68,12 +68,12 @@ trait NoSurat
                 if (!$state)
                     return;
 
-                $pab = PermintaanBahan::with('details')->find($state);
+                $pab = PermintaanBahan::with('permintaanDetails')->find($state);
 
                 if (!$pab)
                     return;
 
-                $detailBahan = $pab->details?->map(function ($detail) {
+                $detailBahan = $pab->permintaanDetails?->map(function ($detail) {
                     return [
                         'nama_barang' => $detail->bahan_baku ?? '',
                         'jumlah' => $detail->jumlah ?? 0,

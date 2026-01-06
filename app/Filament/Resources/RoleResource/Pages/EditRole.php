@@ -15,6 +15,8 @@ class EditRole extends EditRecord
 
     public Collection $permissions;
 
+    protected static bool $canCreateAnother = false;
+
     protected function getActions(): array
     {
         return [

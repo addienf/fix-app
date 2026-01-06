@@ -15,6 +15,7 @@ class Customer extends Model
     protected static $factory = \Database\Factories\General\CustomerFactory::class;
 
     protected $fillable = [
+        'companies_id',
         'name',
         'phone_number',
         'department',

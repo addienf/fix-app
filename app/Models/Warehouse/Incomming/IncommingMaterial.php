@@ -70,13 +70,5 @@ class IncommingMaterial extends Model
                 $model->pic->delete();
             }
         });
-
-        static::saved(function () {
-            PermintaanPembelian::clearModelCaches();
-        });
-
-        static::deleted(function () {
-            PermintaanPembelian::clearModelCaches();
-        });
     }
 }

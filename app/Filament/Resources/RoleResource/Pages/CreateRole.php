@@ -14,6 +14,13 @@ class CreateRole extends CreateRecord
 
     public Collection $permissions;
 
+    protected static bool $canCreateAnother = false;
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
+
     protected function mutateFormDataBeforeCreate(array $data): array
     {
         $this->permissions = collect($data)
@@ -43,5 +50,15 @@ class CreateRole extends CreateRecord
         });
 
         $this->record->syncPermissions($permissionModels);
+    }
+
+    public function getTitle(): string
+    {
+        return 'Tambah Data Role User';
+    }
+
+    public function getBreadcrumb(): string
+    {
+        return 'Tambah';
     }
 }
