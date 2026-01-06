@@ -85,3 +85,9 @@ Route::get('/customercare/pdfPermintaanPelayanan', function () {
 Route::get('/customercare/pdfSuratPerintahKerja', function () {
     return view('pdf.customercare.pdfSuratPerintahKerja');
 });
+
+Route::get('admin/storage-link', function () {
+    $targetFolder = storage_path('app/public');
+    $linkFolder = $_SERVER['DOCUMENT_ROOT'] . '/storage';
+    symlink($targetFolder, $linkFolder);
+});

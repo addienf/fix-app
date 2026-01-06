@@ -117,14 +117,25 @@ trait InformasiUmum
                 $nama_teknisi = implode(', ', $namaPetugas);
                 $namaComplain = $service->pelayananPelanggan->complain->name_complain;
                 $companyName = $service->pelayananPelanggan->complain->company_name;
-                $alamat = $service->pelayananPelanggan->complain->alamat;
+                $alamat = $service->pelayananPelanggan->alamat;
                 $department = $service->pelayananPelanggan->complain->department;
+
+                $detail = $service->pelayananPelanggan
+                    ?->details
+                    ?->first();
+
+                $produk = $detail?->nama_alat ?? '-';
+                $noSeri = $detail?->nomor_seri ?? '-';
 
                 $set('detail.nama_teknisi', $nama_teknisi);
                 $set('pelanggan.nama', $namaComplain);
                 $set('pelanggan.perusahaan', $companyName);
                 $set('pelanggan.alamat', $alamat);
                 $set('pelanggan.jabatan', $department);
+
+                $set('detail.nama_teknisi', $nama_teknisi);
+                $set('detail.produk', $produk);
+                $set('detail.serial_number', $noSeri);
             });
     }
 }

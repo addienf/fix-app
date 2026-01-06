@@ -34,9 +34,17 @@ trait InformasiUmum
                     //             ->pluck('no_spk_service', 'id');
                     //     });
                     // })
+                    // ->options(function () {
+                    //     return SPKService::query()
+                    //         ->where('status', 'Selesai')
+                    //         ->whereDoesntHave('service')
+                    //         ->limit(10)
+                    //         ->pluck('no_spk_service', 'id');
+                    // })
                     ->options(function () {
-                        return SPKService::query()
-                            ->where('status', 'Selesai')
+                        return SPKService::whereHas('permintaanSparepart', function ($query) {
+                            $query->where('status', 'Selesai');
+                        })
                             ->whereDoesntHave('service')
                             ->limit(10)
                             ->pluck('no_spk_service', 'id');
@@ -58,23 +66,29 @@ trait InformasiUmum
                         if (!$state)
                             return;
 
-                        $spkS = SPKService::with('complain')->find($state);
+                        $spkS = SPKService::with('pelayananPelanggan.complain')->find($state);
                         if (!$spkS)
                             return;
 
-                        $details = $spkS->complain->details->map(function ($detail) {
+                        $serialNumber = $spkS->pelayananPelanggan
+                            ?->details
+                            ?->first()
+                            ?->nomor_seri ?? '-';
+
+                        $details = $spkS->pelayananPelanggan->complain->details->map(function ($detail) use ($serialNumber) {
                             return [
                                 'produk_name' => $detail->unit_name ?? '-',
                                 'type' => $detail?->tipe_model ?? '-',
                                 'status_warranty' => $detail?->status_warranty  ?? '-',
+                                'serial_number' => $serialNumber  ?? '-',
                             ];
                         })->toArray();
 
-                        $formNo = $spkS->complain->form_no;
-                        $namaComplain = $spkS->complain->name_complain;
-                        $companyName = $spkS->complain->company_name;
-                        $alamat = $spkS->complain->spkService->alamat;
-                        $number = $spkS->complain->phone_number;
+                        $formNo = $spkS->pelayananPelanggan->complain->form_no ?? '-';
+                        $namaComplain = $spkS->pelayananPelanggan->complain->name_complain ?? '-';
+                        $companyName = $spkS->pelayananPelanggan->complain->company_name ?? '-';
+                        $alamat = $spkS->pelayananPelanggan->alamat ?? '-';
+                        $number = $spkS->pelayananPelanggan->complain->phone_number ?? '-';
 
                         $set('form_no', $formNo);
                         $set('name_complaint', $namaComplain);
@@ -114,12 +128,10 @@ trait InformasiUmum
             //         ->pluck('no_spk_service', 'id');
             // })
             ->options(function () {
-                return Cache::rememberForever(SPKService::$CACHE_KEYS['service'], function () {
-                    return SPKService::where('status_penyelesaian', 'Selesai')
-                        ->whereDoesntHave('service')
-                        ->get()
-                        ->pluck('no_spk_service', 'id');
-                });
+                return SPKService::where('status_penyelesaian', 'Selesai')
+                    ->whereDoesntHave('service')
+                    ->get()
+                    ->pluck('no_spk_service', 'id');
             })
             ->native(false)
             ->searchable()

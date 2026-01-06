@@ -16,6 +16,7 @@ use App\Models\Engineering\Pelayanan\PermintaanPelayananPelanggan;
 use App\Models\Engineering\Permintaan\PermintaanSparepart;
 use App\Models\Engineering\Service\ServiceReport;
 use App\Models\Engineering\SPK\SPKService;
+use App\Models\General\Company;
 use App\Models\General\Customer;
 use App\Models\Production\Jadwal\JadwalProduksi;
 use App\Models\Production\Penyerahan\PenyerahanElectrical\PenyerahanElectrical;
@@ -55,6 +56,7 @@ use App\Policies\Engineering\Pelayanan\PermintaanPelayananPelangganPolicy;
 use App\Policies\Engineering\Permintaan\PermintaanSparepartPolicy;
 use App\Policies\Engineering\Service\ServiceReportPolicy;
 use App\Policies\Engineering\SPK\SPKServicePolicy;
+use App\Policies\General\CompanyPolicy;
 use App\Policies\General\CustomerPolicy;
 use App\Policies\Production\Jadwal\JadwalProduksiPolicy;
 use App\Policies\Production\Penyerahan\PenyerahanElectrical\PenyerahanElectricalPolicy;
@@ -97,6 +99,7 @@ class AuthServiceProvider extends ServiceProvider
         //General
         Customer::class => CustomerPolicy::class,
         URS::class => URSPolicy::class,
+        Company::class => CompanyPolicy::class,
 
         //Sales
         SpesifikasiProduct::class => SpesifikasiProductPolicy::class,

@@ -21,38 +21,38 @@ class EditPermintaanBahan extends EditRecord
         return $this->getResource()::getUrl('index');
     }
 
-    protected function handleRecordUpdate(Model $record, array $data): Model
-    {
-        try {
+    // protected function handleRecordUpdate(Model $record, array $data): Model
+    // {
+    //     try {
 
-            return DB::transaction(function () use ($record, $data) {
+    //         return DB::transaction(function () use ($record, $data) {
 
-                $details = $data['details'] ?? [];
-                unset($data['details']);
+    //             $details = $data['details'] ?? [];
+    //             unset($data['details']);
 
-                $record->update($data);
+    //             $record->update($data);
 
-                $record->details()->delete();
+    //             $record->details()->delete();
 
-                foreach ($details as $detail) {
-                    $record->details()->create($detail);
-                }
+    //             foreach ($details as $detail) {
+    //                 $record->details()->create($detail);
+    //             }
 
-                return $record;
-            });
-        } catch (Throwable $e) {
+    //             return $record;
+    //         });
+    //     } catch (Throwable $e) {
 
-            DB::rollBack();
+    //         DB::rollBack();
 
-            Notification::make()
-                ->title('Gagal Menyimpan Data')
-                ->body('Input tidak valid!')
-                ->danger()
-                ->send();
+    //         Notification::make()
+    //             ->title('Gagal Menyimpan Data')
+    //             ->body('Input tidak valid!')
+    //             ->danger()
+    //             ->send();
 
-            throw new Halt();
-        }
-    }
+    //         throw new Halt();
+    //     }
+    // }
 
     protected function getHeaderActions(): array
     {

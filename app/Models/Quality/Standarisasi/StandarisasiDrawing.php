@@ -90,13 +90,5 @@ class StandarisasiDrawing extends Model
                 $model->identitas->delete();
             }
         });
-
-        static::saved(function () {
-            SPKMarketing::clearModelCaches();
-        });
-
-        static::deleted(function () {
-            SPKMarketing::clearModelCaches();
-        });
     }
 }

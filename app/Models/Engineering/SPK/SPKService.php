@@ -113,19 +113,6 @@ class SPKService extends Model
         return $this->hasOne(ServiceReport::class, 'spk_service_id');
     }
 
-    public static array $CACHE_KEYS = [
-        'permintaanSparepart'       => 'spk_service_permintaan_sparepart',
-        'walkinChamber'             => 'spk_service_walking_chamber',
-        'chamberR2'                 => 'spk_service_chamber_r2',
-        'refrigerator'              => 'spk_service_refrigerator',
-        'coldRoom'                  => 'spk_service_cold_room',
-        'rissing'                   => 'spk_service_rissing',
-        'walkinG2'                  => 'spk_service_walking_g2',
-        'chamberG2'                 => 'spk_service_chamber_g2',
-        'service'                   => 'spk_service_service',
-        'beritaAcara'               => 'spk_service_berita_acara',
-    ];
-
     protected static function booted()
     {
         static::saving(function ($model) {

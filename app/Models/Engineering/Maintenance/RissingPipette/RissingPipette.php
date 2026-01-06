@@ -50,13 +50,5 @@ class RissingPipette extends Model
                 $spesifikasi->pic->delete();
             }
         });
-
-        static::saved(function () {
-            SPKService::clearModelCaches();
-        });
-
-        static::deleted(function () {
-            SPKService::clearModelCaches();
-        });
     }
 }

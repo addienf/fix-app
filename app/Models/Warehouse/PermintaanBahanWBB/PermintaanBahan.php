@@ -33,7 +33,7 @@ class PermintaanBahan extends Model
         return $this->belongsTo(PermintaanAlatDanBahan::class, 'permintaan_bahan_pro_id');
     }
 
-    public function details()
+    public function permintaanDetails()
     {
         return $this->hasMany(PermintaanBahanDetail::class, 'permintaan_bahan_wbb_id');
     }
@@ -67,7 +67,7 @@ class PermintaanBahan extends Model
         });
 
         static::deleting(function ($model) {
-            foreach ($model->details as $detail) {
+            foreach ($model->permintaanDetails as $detail) {
                 $detail->delete();
             }
 
