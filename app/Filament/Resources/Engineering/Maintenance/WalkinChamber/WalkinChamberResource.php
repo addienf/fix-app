@@ -22,10 +22,10 @@ class WalkinChamberResource extends Resource
     protected static ?string $model = WalkinChamber::class;
     protected static ?int $navigationSort = 23;
     protected static ?string $navigationGroup = 'Engineering';
-    protected static ?string $navigationLabel = 'Walk-in Chamber';
-    protected static ?string $pluralLabel = 'Walk-in Chamber';
-    protected static ?string $modelLabel = 'Walk-in Chamber';
-    protected static ?string $slug = 'engineering/walkin-chamber';
+    protected static ?string $navigationLabel = 'Walk in Test Chamber';
+    protected static ?string $pluralLabel = 'Walk in Test Chamber';
+    protected static ?string $modelLabel = 'Walk in Test Chamber';
+    protected static ?string $slug = 'engineering/walkin-test-chamber';
     protected static ?string $navigationIcon = 'heroicon-o-wrench-screwdriver';
     public static function getNavigationBadge(): ?string
     {
@@ -63,7 +63,7 @@ class WalkinChamberResource extends Resource
                         ],
                     ],
                     title: 'PIC',
-                    uploadPath: 'Engineering/Maintenance/WalkinChamber/Signature'
+                    uploadPath: 'Engineering/Maintenance/WalkinTestChamber/Signature'
                 ),
             ]);
     }
@@ -96,11 +96,11 @@ class WalkinChamberResource extends Resource
                         ->icon('heroicon-o-trash')
                         ->tooltip('Hapus Data'),
                     Action::make('pdf_view')
-                        ->label(_('Lihat PDF'))
+                        ->label(_('Download PDF'))
                         ->icon('heroicon-o-document')
                         ->color('success')
                         ->visible(fn($record) => $record->status_penyetujuan === 'Disetujui')
-                        ->url(fn($record) => route('pdf.walkInChamberR1', ['record' => $record->id])),
+                        ->url(fn($record) => route('pdf.walkInChamber', ['record' => $record->id])),
                 ])
             ])
             ->bulkActions([

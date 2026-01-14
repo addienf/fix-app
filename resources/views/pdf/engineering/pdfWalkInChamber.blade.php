@@ -1,5 +1,5 @@
 @extends('pdf.layout.engineering')
-@section('title', 'Regular Maintenance Checklist - Qlab Refrigerator PDF')
+@section('title', 'Regular Maintenance Checklist - Qlab Walk-in Test Chamber PDF')
 @section('pdf-header')
     <table style="width:100%; border-collapse:collapse; margin-bottom:12px;">
         <tr>
@@ -12,9 +12,9 @@
             </td>
 
             <td rowspan="2" style="width:110px; text-align:center; vertical-align:top; font-size:10px; line-height:1.4;">
-                FO-QKS-ENG-01-06<br>
-                Rev. 00<br>
-                12 Maret 2025
+                FO-QKS-ENG-01-04<br>
+                Rev. 02<br>
+                01 July 2025
             </td>
         </tr>
 
@@ -28,17 +28,17 @@
 @section('content')
 
     @php
-        $rawDetails = $refrigerator->detail->checklist ?? [];
+        $rawDetails = $walkin->detail->checklist ?? [];
         $details = is_string($rawDetails) ? json_decode($rawDetails, true) : $rawDetails;
         $rowNumber = 1;
     @endphp
 
     <h2 style="text-align:center; font-weight:bold; margin-bottom:12px;">
-        REGULAR MAINTENANCE CHECK-LIST - QLAB REFRIGERATOR
+        REGULAR MAINTENANCE CHECK LIST – QLAB WALK-IN TEST CHAMBER
     </h2>
 
     <p style="text-align:center; font-weight:bold; margin-bottom:16px;">
-        Name / Tag No : {{ $refrigerator->tag_no }}
+        WTC Name / Tag No : {{ $walkin->tag_no }}
     </p>
 
     <br>
@@ -142,7 +142,7 @@
     <table>
         <tr>
             <td style="height:60px">
-                {{ trim($refrigerator->remarks) }}
+                {{ trim($walkin->remarks) }}
             </td>
         </tr>
     </table>
@@ -160,8 +160,8 @@
         <tbody>
             <tr>
                 <td class="font-bold">Name</td>
-                <td>{{ $refrigerator->pic?->checkedBy?->name ?? '-' }}</td>
-                <td>{{ $refrigerator->pic?->approvedBy?->name ?? '-' }}</td>
+                <td>{{ $walkin->pic?->checkedBy?->name ?? '-' }}</td>
+                <td>{{ $walkin->pic?->approvedBy?->name ?? '-' }}</td>
             </tr>
             <tr>
                 <td class="font-bold text-center align-middle">
@@ -169,21 +169,19 @@
                 </td>
                 <td class="sign-cell">
                     <div class="sign-box">
-                        <img src="{{ public_path('storage/' . $refrigerator->pic->checked_signature) }}">
+                        <img src="{{ public_path('storage/' . $walkin->pic->checked_signature) }}">
                     </div>
                 </td>
                 <td class="sign-cell">
                     <div class="sign-box">
-                        <img src="{{ public_path('storage/' . $refrigerator->pic->approved_signature) }}">
+                        <img src="{{ public_path('storage/' . $walkin->pic->approved_signature) }}">
                     </div>
                 </td>
             </tr>
             <tr>
                 <td class="font-bold">Date</td>
-                <td>{{ \Carbon\Carbon::parse($refrigerator->pic->checked_date)->translatedFormat('d F Y') }}
-                </td>
-                <td>{{ \Carbon\Carbon::parse($refrigerator->pic->approved_date)->translatedFormat('d F Y') }}
-                </td>
+                <td>{{ \Carbon\Carbon::parse($walkin->pic->checked_date)->translatedFormat('d F Y') }}</td>
+                <td>{{ \Carbon\Carbon::parse($walkin->pic->approved_date)->translatedFormat('d F Y') }}</td>
             </tr>
         </tbody>
     </table>

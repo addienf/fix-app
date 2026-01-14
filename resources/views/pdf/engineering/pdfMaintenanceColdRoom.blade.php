@@ -1,218 +1,209 @@
-@extends('pdf.layout.layout')
+@extends('pdf.layout.engineering')
 @section('title', 'Regular Maintenance Checklist - Qlab Cold Room PDF')
-@section('content')
-    <div id="export-area" class="p-2 text-black bg-white">
+@section('pdf-header')
+    <table style="width:100%; border-collapse:collapse; margin-bottom:12px;">
+        <tr>
+            <td rowspan="2" style="width:110px; text-align:center; vertical-align:middle;">
+                <img src="{{ public_path('asset/logo.png') }}" style="height:50px;">
+            </td>
 
+            <td style="padding:4px 8px; vertical-align:top;">
+                <strong>Project :</strong>
+            </td>
 
-        <table class="w-full max-w-4xl mx-auto text-sm border border-black" style="border-collapse: collapse;">
-            <tr>
+            <td rowspan="2" style="width:110px; text-align:center; vertical-align:top; font-size:10px; line-height:1.4;">
+                FO-QKS-ENG-01-07<br>
+                Rev. 00<br>
+                12 Maret 2025
+            </td>
+        </tr>
 
-                <td rowspan="2" class="w-32 h-24 text-center align-middle border border-black">
-                    <img src="{{ asset('asset/logo.png') }}" alt="Logo" class="object-contain h-16 mx-auto" />
-                </td>
-
-
-                <td class="px-2 py-1 align-top border border-black">
-                    <strong>Project :</strong>
-                </td>
-
-
-                <td rowspan="2" class="w-48 p-2 pt-2 text-sm leading-tight text-center align-top border border-black">
-                    FO-QKS-ENG-01-07<br>
-                    Rev. 00<br>
-                    12 Maret 2025
-                </td>
-            </tr>
-            <tr>
-                <td class="px-2 py-1 align-top border border-black">
-                    Client
-                </td>
-            </tr>
-        </table>
-        <div class="w-full max-w-4xl pt-4 mx-auto text-sm">
-            <h2 class="mb-4 text-xl font-bold text-center">
-                MAINTENANCE CHECKLIST
-            </h2>
-            <div class="flex items-center justify-center w-full gap-2 my-6">
-                <span class="font-semibold text-center">Name Tag/No: {{ $cold->tag_no }}</span>
-            </div>
-
-            @php
-                $rawDetails = $cold->detail->checklist ?? [];
-                $details = is_string($rawDetails) ? json_decode($rawDetails, true) : $rawDetails;
-            @endphp
-
-            <table class="w-full max-w-4xl pt-4 mx-auto text-xs border border-black table-auto">
-                <thead>
-                    <tr class="font-bold text-center">
-                        <th class="w-8 border border-black">NO</th>
-                        <th class="w-48 border border-black">ITEM TO CHECK</th>
-                        <th class="w-40 border border-black">BEFORE<br>MAINTENANCE</th>
-                        <th class="w-40 border border-black">AFTER<br>MAINTENANCE</th>
-                        <th class="w-16 border border-black" colspan="3">ACCEPTED</th>
-                        <th class="border border-black w-36">REMARK</th>
-                    </tr>
-                    <tr class="font-bold text-center">
-                        <th colspan="4" class="invisible"></th>
-                        <th class="w-10 border border-black">YES</th>
-                        <th class="w-10 border border-black">NO</th>
-                        <th class="w-10 border border-black">NA</th>
-                        <th class="invisible"></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @php $rowNumber = 1; @endphp
-                    @foreach ($details as $group)
-                        <tr>
-                            <td class="px-3 py-2 text-center border border-black">{{ $rowNumber++ }}</td>
-                            <td class="px-3 py-2 font-semibold border border-black">
-                                {{ $group['mainPart'] ?? '-' }}</td>
-                            <td class="px-3 py-2 text-center border border-black">{{ $group['before'] ?? '-' }}</td>
-                            <td class="px-3 py-2 text-center border border-black">{{ $group['after'] ?? '-' }}</td>
-                            <td class="px-3 py-2 text-center border border-black">
-                                {{ ($group['accepted'] ?? '') === 'yes' ? '✔' : '' }}
-                            </td>
-                            <td class="px-3 py-2 text-center border border-black">
-                                {{ ($group['accepted'] ?? '') === 'no' ? '✔' : '' }}
-                            </td>
-                            <td class="px-3 py-2 text-center border border-black">
-                                {{ ($group['accepted'] ?? '') === 'na' ? '✔' : '' }}
-                            </td>
-                            <td class="px-3 py-2 border border-black">{{ $group['remark'] }}</td>
-                        </tr>
-                        @foreach ($group['parts'] as $part)
-                            <tr>
-                                <td class="px-3 py-2 text-center border border-black">{{ $rowNumber++ }}</td>
-                                <td class="px-3 py-2 border border-black">{{ $part['part'] ?? '-' }}</td>
-                                <td class="px-3 py-2 text-center border border-black">{{ $part['before'] ?? '-' }}</td>
-                                <td class="px-3 py-2 text-center border border-black">{{ $part['after'] ?? '-' }}</td>
-                                <td class="px-3 py-2 text-center border border-black">
-                                    {{ ($part['accepted'] ?? '') === 'yes' ? '✔' : '' }}
-                                </td>
-                                <td class="px-3 py-2 text-center border border-black">
-                                    {{ ($part['accepted'] ?? '') === 'no' ? '✔' : '' }}
-                                </td>
-                                <td class="px-3 py-2 text-center border border-black">
-                                    {{ ($part['accepted'] ?? '') === 'na' ? '✔' : '' }}
-                                </td>
-                                <td class="px-3 py-2 border border-black">{{ $part['remark'] }}</td>
-                            </tr>
-                        @endforeach
-                    @endforeach
-                </tbody>
-            </table>
-            <div class="w-full max-w-4xl pt-4 mx-auto mb-3">
-                <label for="note" class="block mb-1 text-sm font-medium text-black">Remark:</label>
-                <div id="note" readonly
-                    class="w-full px-3 py-2 overflow-hidden text-sm leading-relaxed border border-black rounded-md resize-none">
-                    {{ trim($cold->remarks) }}</div>
-            </div>
-
-            {{-- TTD Section --}}
-            <table class="w-full text-sm border border-black">
-                <thead>
-                    <tr class="font-semibold text-center bg-gray-200">
-                        <th class="w-32 border border-black"></th>
-                        <th class="py-2 border border-black">Checked by</th>
-                        <th class="py-2 border border-black">Approved by</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td class="px-2 py-2 font-medium border border-black">Name</td>
-                        <td class="px-2 py-2 border border-black">
-                            {{ $cold->pic?->checkedBy?->name ?? '-' }}
-                        </td>
-                        <td class="px-2 py-2 border border-black">
-                            {{ $cold->pic?->approvedBy?->name ?? '-' }}
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="px-2 py-2 font-medium border border-black">Signature</td>
-                        <td class="px-2 py-4 border border-black">
-                            <img src="{{ asset('storage/' . $cold->pic->checked_signature) }}" alt="Signature"
-                                class="object-contain h-full" />
-                        </td>
-                        <td class="px-2 py-4 border border-black">
-                            <img src="{{ asset('storage/' . $cold->pic->approved_signature) }}" alt="Signature"
-                                class="object-contain h-full" />
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="px-2 py-2 font-medium border border-black">Date</td>
-                        <td class="px-2 py-2 border border-black">
-                            {{ $cold->pic->checked_date }}
-                        </td>
-                        <td class="px-2 py-2 border border-black">
-                            {{ $cold->pic->approved_date }}
-                        </td>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <div class="mt-6 mb-3 text-center">
-        <button onclick="exportPDF()"
-            class="inline-flex items-center gap-2 py-3 text-sm font-semibold text-black text-white bg-blue-600 border rounded border-animated px-7 border-black-400 hover:bg-purple-600 hover:text-white">
-            <!-- Icon download SVG -->
-            <svg class="w-5 h-5 transition-colors duration-300" fill="none" stroke="currentColor" stroke-width="2"
-                viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path stroke-linecap="round" stroke-linejoin="round"
-                    d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4">
-                </path>
-            </svg>
-            Download PDF
-        </button>
-    </div>
+        <tr>
+            <td style="padding:4px 8px; vertical-align:top;">
+                Client
+            </td>
+        </tr>
+    </table>
 @endsection
-<script>
-    function exportPDF() {
-        window.scrollTo(0, 0);
+@section('content')
 
-        const element = document.getElementById("export-area");
-        const images = element.getElementsByTagName("img");
-        const totalImages = images.length;
-        let loadedImages = 0;
+    @php
+        $rawDetails = $cold->detail->checklist ?? [];
+        $details = is_string($rawDetails) ? json_decode($rawDetails, true) : $rawDetails;
+        $rowNumber = 1;
+    @endphp
 
-        for (let img of images) {
-            if (img.complete) {
-                loadedImages++;
-            } else {
-                img.onload = () => {
-                    loadedImages++;
-                    if (loadedImages === totalImages) renderPDF();
-                };
-            }
-        }
+    <h2 style="text-align:center; font-weight:bold; margin-bottom:12px;">
+        MAINTENANCE CHECKLIST
+    </h2>
 
-        if (loadedImages === totalImages) {
-            renderPDF();
-        }
+    <p style="text-align:center; font-weight:bold; margin-bottom:16px;">
+        Name / Tag No : {{ $cold->tag_no }}
+    </p>
 
-        function renderPDF() {
-            html2pdf().set({
-                margin: [0.2, 0.2, 0.2, 0.2],
-                filename: "cold-room-maintenance.pdf",
-                image: {
-                    type: "jpeg",
-                    quality: 1
-                },
-                html2canvas: {
-                    scale: 3,
-                    useCORS: true,
-                    letterRendering: true
-                },
-                jsPDF: {
-                    unit: "in",
-                    format: "a4",
-                    orientation: "portrait"
-                },
-                pagebreak: {
-                    mode: ["avoid", "css"]
-                }
-            }).from(element).save();
-        }
+    <br>
+
+    <table class="checklist-table">
+        <thead>
+            <tr>
+                <th rowspan="2" class="col-no">NO</th>
+                <th rowspan="2" class="col-item">ITEM TO CHECK</th>
+                <th colspan="3" class="col-accepted">ACCEPTED</th>
+                <th rowspan="2" class="col-remark">REMARK</th>
+            </tr>
+            <tr>
+                <th class="col-acc">YES</th>
+                <th class="col-acc">NO</th>
+                <th class="col-acc">NA</th>
+            </tr>
+        </thead>
+
+        @foreach ($details as $group)
+            <tbody style="page-break-inside: avoid;">
+                <!-- MAIN PART -->
+                <tr class="main-part">
+                    <td class="center">{{ $rowNumber++ }}</td>
+                    <td>{{ $group['mainPart'] }}</td>
+                    <td class="center">{{ ($group['accepted'] ?? '') === 'yes' ? '✔' : '' }}</td>
+                    <td class="center">{{ ($group['accepted'] ?? '') === 'no' ? '✔' : '' }}</td>
+                    <td class="center">{{ ($group['accepted'] ?? '') === 'na' ? '✔' : '' }}</td>
+                    <td>{{ $group['remark'] ?? '-' }}</td>
+                </tr>
+
+                @foreach ($group['parts'] as $part)
+                    <tr>
+                        <td></td>
+                        <td>{{ $part['part'] }}</td>
+                        <td class="center">{{ ($part['accepted'] ?? '') === 'yes' ? '✔' : '' }}</td>
+                        <td class="center">{{ ($part['accepted'] ?? '') === 'no' ? '✔' : '' }}</td>
+                        <td class="center">{{ ($part['accepted'] ?? '') === 'na' ? '✔' : '' }}</td>
+                        <td>{{ $part['remark'] ?? '-' }}</td>
+                    </tr>
+                @endforeach
+            </tbody>
+        @endforeach
+    </table>
+
+    <br>
+
+    <p class="font-bold">Remark :</p>
+    <table>
+        <tr>
+            <td style="height:60px">
+                {{ trim($cold->remarks) }}
+            </td>
+        </tr>
+    </table>
+
+    <br>
+
+    <table>
+        <thead>
+            <tr>
+                <th></th>
+                <th>Checked By</th>
+                <th>Approved By</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="font-bold">Name</td>
+                <td>{{ $cold->pic?->checkedBy?->name ?? '-' }}</td>
+                <td>{{ $cold->pic?->approvedBy?->name ?? '-' }}</td>
+            </tr>
+            <tr>
+                <td class="font-bold text-center align-middle">
+                    Signature
+                </td>
+                <td class="sign-cell">
+                    <div class="sign-box">
+                        <img src="{{ public_path('storage/' . $cold->pic->checked_signature) }}">
+                    </div>
+                </td>
+                <td class="sign-cell">
+                    <div class="sign-box">
+                        <img src="{{ public_path('storage/' . $cold->pic->approved_signature) }}">
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td class="font-bold">Date</td>
+                <td>{{ \Carbon\Carbon::parse($cold->pic->checked_date)->translatedFormat('d F Y') }}
+                </td>
+                <td>{{ \Carbon\Carbon::parse($cold->pic->approved_date)->translatedFormat('d F Y') }}
+                </td>
+            </tr>
+        </tbody>
+    </table>
+@endsection
+
+<style>
+    .checklist-table {
+        width: 100%;
+        border-collapse: collapse;
+        table-layout: fixed;
+        /* WAJIB biar width kepake */
+        font-size: 11px;
     }
-</script>
+
+    .checklist-table th,
+    .checklist-table td {
+        border: 1px solid #666;
+        padding: 4px 6px;
+        vertical-align: middle;
+    }
+
+    /* ===== LEBAR KOLOM ===== */
+    .col-no {
+        width: 5%;
+    }
+
+    .col-item {
+        width: 45%;
+    }
+
+    .col-acc {
+        width: 6%;
+    }
+
+    .col-accepted {
+        width: 18%;
+        /* total YES+NO+NA */
+    }
+
+    .col-remark {
+        width: 14%;
+    }
+
+    .center {
+        text-align: center;
+    }
+
+    .main-part {
+        background-color: #ffffff;
+        /* putih sesuai request */
+        font-weight: bold;
+    }
+
+    .main-part td {
+        padding-top: 6px;
+        padding-bottom: 6px;
+    }
+
+    .sign-cell {
+        height: 90px;
+        text-align: center;
+        vertical-align: middle;
+    }
+
+    .sign-box {
+        height: 60px;
+        overflow: hidden;
+        margin: auto;
+    }
+
+    .sign-box img {
+        height: 60px;
+        width: auto;
+    }
+</style>

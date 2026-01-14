@@ -77,7 +77,7 @@ class CreatePermintaanBahan extends CreateRecord
 
     public function getTitle(): string
     {
-        return 'Tambah Data Permintaan Bahan Pembelian';
+        return 'Tambah Data Permintaan Bahan';
     }
 
     public function getBreadcrumb(): string

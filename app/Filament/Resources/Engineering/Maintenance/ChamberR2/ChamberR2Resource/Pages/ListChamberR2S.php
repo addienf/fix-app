@@ -14,7 +14,7 @@ class ListChamberR2S extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make()->label('Tambah Data Chamber R2'),
+            Actions\CreateAction::make()->label('Tambah Data Stability Chamber'),
         ];
     }
 

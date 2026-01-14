@@ -40,11 +40,13 @@ use App\Models\Warehouse\Peminjaman\PeminjamanAlat;
 use App\Models\Warehouse\PermintaanBahanWBB\PermintaanBahan;
 use App\Models\Warehouse\SerahTerima\SerahTerimaBahan;
 use Illuminate\Support\Facades\Storage;
+use App\Traits\SimpleFormResource;
 use ZipArchive;
 
 class PDFController extends Controller
 {
     //
+    use SimpleFormResource;
 
     public function pdfSpesifikasiProduct()
     {
@@ -383,116 +385,6 @@ class PDFController extends Controller
         return response()->download($zipPath)->deleteFileAfterSend(true);
     }
 
-    public function pdfSPKService($id)
-    {
-        $service = SPKService::with(['pelayananPelanggan', 'petugas', 'details', 'pic', 'pic.dikonfirmasiNama', 'pic.dibuatNama'])->findOrFail($id);
-
-        return view('pdf.engineering.pdfSPKService', compact('service'));
-    }
-
-    public function pdfSparepartAlatKerja($id)
-    {
-        $sparepart = PermintaanSparepart::with(['spkService', 'details', 'pic', 'pic.dibuatName', 'pic.diketahuiName', 'pic.diserahkanName'])->findOrFail($id);
-
-        return view('pdf.engineering.pdfSparepartAlatKerja', compact('sparepart'));
-    }
-
-    public function pdfBeritaAcara($id)
-    {
-        $berita = BeritaAcara::with(['spkService', 'detail', 'pic', 'pelanggan', 'penyediaJasa', 'pic.jasaName'])->findOrFail($id);
-
-        return view('pdf.engineering.pdfBeritaAcara', compact('berita'));
-    }
-
-    public function pdfMaintenanceChamberG2($id)
-    {
-        $G2 = ChamberG2::with(['spkService', 'detail', 'pic', 'pic.approvedBy', 'pic.checkedBy'])->findOrFail($id);
-
-        return view('pdf.engineering.pdfMaintenanceChamberG2', compact('G2'));
-    }
-    public function pdfWalkInChamberG2($id)
-    {
-        $walkinG2 = ChamberWalkinG2::with(['spkService', 'detail', 'pic', 'pic.approvedBy', 'pic.checkedBy'])->findOrFail($id);
-
-        return view('pdf.engineering.pdfWalkInChamberG2', compact('walkinG2'));
-    }
-
-    public function pdfRissingPipette($id)
-    {
-        $rissing = RissingPipette::with(['spkService', 'detail', 'pic', 'pic', 'pic.approvedBy', 'pic.checkedBy'])->findOrFail($id);
-
-        return view('pdf.engineering.pdfRissingPipette', compact('rissing'));
-    }
-
-    public function pdfWalkInChamberR1($id)
-    {
-        $walkin = WalkinChamber::with(['spkService', 'detail', 'pic', 'pic.approvedBy', 'pic.checkedBy'])->findOrFail($id);
-
-        return view('pdf.engineering.pdfWalkInChamberR1', compact('walkin'));
-    }
-
-    public function pdfWalkInChamberR2($id)
-    {
-        $R2 = ChamberR2::with(['spkService', 'detail', 'pic', 'pic.approvedBy', 'pic.checkedBy'])->findOrFail($id);
-
-        return view('pdf.engineering.pdfWalkInChamberR2', compact('R2'));
-    }
-    public function pdfMaintenanceRefrigator($id)
-    {
-        $refrigerator = Refrigerator::with(['spkService', 'detail', 'pic', 'pic.approvedBy', 'pic.checkedBy'])->findOrFail($id);
-
-        return view('pdf.engineering.pdfMaintenanceRefrigator', compact('refrigerator'));
-    }
-    public function pdfMaintenanceColdRoom($id)
-    {
-        $cold = ColdRoom::with(['spkService', 'detail', 'pic', 'pic.approvedBy', 'pic.checkedBy'])->findOrFail($id);
-
-        return view('pdf.engineering.pdfMaintenanceColdRoom', compact('cold'));
-    }
-
-    public function pdfServiceReport($id)
-    {
-        $serviceReport = ServiceReport::with(['spkService', 'details', 'produkServices', 'pic', 'pic.approvedBy', 'pic.checkedBy'])->findOrFail($id);
-
-        return view('pdf.engineering.pdfServiceReport', compact('serviceReport'));
-    }
-
-    public function pdfCatatanPelanggan($id)
-    {
-        $complaint = Complain::with(['details', 'pic', 'pic.reportedBy', 'companies'])->findOrFail($id);
-
-        return view('pdf.engineering.pdfCatatanPelanggan', compact('complaint'));
-    }
-
-    public function downloadZipserviceReport($id)
-    {
-        $serviceReport = ServiceReport::with(['spkService', 'details', 'produkServices', 'pic', 'pic.approvedBy', 'pic.checkedBy'])->findOrFail($id);
-
-        $zipFileName = 'service-report' . $serviceReport->id . '.zip';
-        $zipPath = storage_path('app/temp/' . $zipFileName);
-
-        if (!file_exists(storage_path('app/temp'))) {
-            mkdir(storage_path('app/temp'), 0755, true);
-        }
-
-        $zip = new ZipArchive;
-        if ($zip->open($zipPath, ZipArchive::CREATE | ZipArchive::OVERWRITE)) {
-
-            foreach ($serviceReport->details as $detail) {
-                foreach ($detail->upload_file ?? [] as $gambarPath) {
-                    $fullPath = storage_path('app/public/' . $gambarPath);
-                    if (file_exists($fullPath)) {
-                        $zip->addFile($fullPath, basename($gambarPath));
-                    }
-                }
-            }
-
-            $zip->close();
-        }
-
-        return response()->download($zipPath)->deleteFileAfterSend(true);
-    }
-
     public function pdfKetidaksesuaian($id)
     {
         $ketidaksesuaian = Ketidaksesuaian::with(['pengecekanPerforma', 'pic', 'details', 'snk', 'pic.pelaporName', 'pic.diterimaName'])->findOrFail($id);
@@ -505,12 +397,5 @@ class PDFController extends Controller
         $release = ProductRelease::with(['pic', 'pic.dibuatName', 'pic.dikonfirmasiName', 'pic.diterimaName', 'pic.diketahuiName'])->findOrFail($id);
 
         return view('pdf.quality.pdfProductRelease', compact('release'));
-    }
-
-    public function pdfPelayananPelanggan($id)
-    {
-        $pelayanan = PermintaanPelayananPelanggan::with(['pic', 'details', 'pic.diketahuiName', 'pic.diterimaName', 'pic.dibuatName'])->findOrFail($id);
-
-        return view('pdf.engineering.pdfPelayananPelanggan', compact('pelayanan'));
     }
 }

@@ -1,254 +1,294 @@
 @extends('pdf.layout.layout')
-@section('title', 'Catatan Keluhan Pelanggan Maintenance PDF')
+@section('title', 'Catatan Keluhan Pelanggan')
 @section('content')
-    <div id="export-area" class="p-2 text-black bg-white">
-        <!-- Header Table -->
-        <table
-            class="w-full max-w-4xl mx-auto text-sm border border-black dark:border-white dark:bg-gray-900 dark:text-white"
-            style="border-collapse: collapse;">
-            <tr>
-                <td rowspan="3"
-                    class="p-2 text-center align-middle border border-black w-28 h-28 dark:border-white dark:bg-gray-900">
-                    <img src="{{ asset('asset/logo.png') }}" alt="Logo" class="object-contain mx-auto h-30" />
-                </td>
-                <td colspan="2" class="font-bold text-center border border-black dark:border-white dark:bg-gray-900">
-                    PT. QLab Kinarya Sentosa
-                </td>
-            </tr>
-            <tr>
-                <td class="font-bold text-center border border-black dark:border-white dark:bg-gray-900"
-                    style="font-size: 20px;">
-                    Formulir Catatan Keluhan Pelanggan
-                </td>
-                <td rowspan="2" class="p-0 align-top border border-black dark:border-white dark:bg-gray-900">
-                    <table class="w-full text-sm dark:bg-gray-900 dark:text-white" style="border-collapse: collapse;">
-                        <tr>
-                            <td class="px-3 py-2 border-b border-black dark:border-white">No. Dokumen : </td>
-                            <td class="px-3 py-2 font-semibold border-b border-black dark:border-white">
-                                FO-QKS-CC-01-10
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="px-3 py-2 border-b border-black dark:border-white">Tanggal Rilis : </td>
-                            <td class="px-3 py-2 font-semibold border-b border-black dark:border-white">
-                                12 Maret 2025
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="px-3 py-2">Revisi : </td>
-                            <td class="px-3 py-2 font-semibold"> 0</td>
-                        </tr>
-                    </table>
-                </td>
-            </tr>
-        </table>
 
-        <div class="w-full max-w-4xl pt-4 mx-auto text-sm">
-            @php
-                use Carbon\Carbon;
-                Carbon::setLocale('id');
-                $datePart = Carbon::parse($complaint->tanggal)->format('Y-m-d');
-                $timePart = Carbon::parse($complaint->created_at)->format('H:i:s');
-                $combined = Carbon::parse($datePart . ' ' . $timePart);
+    @php
+        use Carbon\Carbon;
 
-                $datePartPIC = Carbon::parse($complaint->pic->reported_date)->format('Y-m-d');
-                $timePartPIC = Carbon::parse($complaint->pic->created_at)->format('H:i:s');
-                $combinedPIC = Carbon::parse($datePart . ' ' . $timePart);
+        Carbon::setLocale('id');
 
-                $formattedDateTime = $combined->translatedFormat('l, d - m - Y H:i');
-                $formattedDateTime3 = $combinedPIC->translatedFormat('l, d - m - Y H:i');
-                $formattedDateTime2 = $combined->translatedFormat('d/m/Y H:i');
-            @endphp
+        // ===== TANGGAL UTAMA =====
+        $combined = Carbon::parse(
+            Carbon::parse($complaint->tanggal)->format('Y-m-d') .
+                ' ' .
+                Carbon::parse($complaint->created_at)->format('H:i:s'),
+        );
 
-            <div class="flex items-center justify-between mb-4">
-                <h2 class="text-xl font-bold">Incoming Complaint Report</h2>
-                <span class="text-sm font-bold">
-                    {{ $formattedDateTime }}
-                </span>
-            </div>
+        // ===== TANGGAL PIC =====
+        $combinedPIC = Carbon::parse(
+            Carbon::parse($complaint->pic->reported_date)->format('Y-m-d') .
+                ' ' .
+                Carbon::parse($complaint->pic->created_at)->format('H:i:s'),
+        );
 
+        // ===== FORMAT =====
+        $formattedDateTime = $combined->translatedFormat('l, d - m - Y H:i');
+        $formattedDateTime2 = $combined->translatedFormat('d/m/Y H:i');
+        $formattedDateTime3 = $combinedPIC->translatedFormat('l, d - m - Y H:i');
 
+        // ===== FIELD CATEGORY =====
+        $fieldCategories = [
+            'controlling' => 'Controlling',
+            'air_cooling_system' => 'Air Cooling System',
+            'logging_system' => 'Logging System',
+            'server_computer' => 'Server Computer',
+            'networking' => 'Networking',
+            'water_feeding_system' => 'Water Feeding System',
+            'cooling_system' => 'Cooling System',
+            'humidifier_system' => 'Humidifier System',
+            'communication_system' => 'Communication System',
+            'air_heating_system' => 'Air Heating System',
+            'software' => 'Software',
+            'other' => 'Other',
+        ];
+    @endphp
 
-            @php
-                $fields = [
-                    [
-                        'label' => '',
-                        'value' => '<strong>Reported by</strong><br>' . '<em>Name: ' . $complaint->dari . '</em>',
-                    ],
-                    [
-                        'label' => '',
-                        'value' =>
-                            '<strong>To</strong><br>' .
-                            '<em>Engineering Department' .
-                            '</em>' .
-                            '<br>' .
-                            $complaint->kepada,
-                    ],
-                ];
-            @endphp
+    <table style="width:100%; border-collapse:collapse; table-layout:fixed;">
+        <tr>
+            <td rowspan="4" style="width:15%; text-align:center; vertical-align:middle; border:0.5px solid #000;">
+                <img src="{{ public_path('asset/logo.png') }}" style="height:55px;">
+            </td>
 
-            <div class="grid gap-4 mb-6">
-                @foreach ($fields as $field)
-                    <div class="text-sm leading-relaxed text-black">
-                        {!! $field['value'] !!}
-                    </div>
-                @endforeach
-            </div>
+            <td colspan="4" style="text-align:center; font-weight:bold; font-size:13px; border:0.5px solid #000;">
+                PT. QLab Kinarya Sentosa
+            </td>
+        </tr>
+
+        <tr>
+            <td rowspan="3" colspan="2"
+                style="text-align:center; font-size:16px; font-weight:bold; border:0.5px solid #000; vertical-align:middle;">
+                Formulir Catatan Keluhan Pelanggan
+            </td>
+
+            <td style="border:0.5px solid #000; padding-left:8px;">
+                No. Dokumen
+            </td>
+
+            <td style="border:0.5px solid #000; text-align:center;">
+                FO-QKS-CC-01-10
+            </td>
+        </tr>
+
+        <tr>
+            <td style="border:0.5px solid #000; padding-left:8px;">
+                Tanggal Rilis
+            </td>
+
+            <td style="border:0.5px solid #000; text-align:center;">
+                12 Maret 2025
+            </td>
+        </tr>
+
+        <tr>
+            <td style="border:0.5px solid #000; padding-left:8px;">
+                Revisi
+            </td>
+
+            <td style="border:0.5px solid #000; text-align:center;">
+                0
+            </td>
+        </tr>
+    </table>
+
+    <br>
+
+    <div style="width:100%; margin-bottom:8px;">
+        <div style="float:left; font-weight:bold;">
+            Incoming Complaint Report
         </div>
 
-        <div class="w-full max-w-4xl pt-4 mx-auto text-sm">
-            @php
-                $fields = [
-                    ['label' => 'Form No :', 'value' => $complaint->form_no],
-                    ['label' => 'Who Complaint :', 'value' => $complaint->name_complain],
-                    ['label' => 'Company Name :', 'value' => optional($complaint->companies->first())->name],
-                    ['label' => 'Department :', 'value' => $complaint->department],
-                    ['label' => 'Phone Number :', 'value' => $complaint->phone_number],
-                    ['label' => 'Complaint Received By :', 'value' => $complaint->receive_by],
-                ];
-            @endphp
-
-            <div class="grid gap-3 mb-6">
-                @foreach ($fields as $field)
-                    <div class="flex flex-wrap items-center gap-2">
-                        <label class="w-40 font-medium text-gray-700">{{ $field['label'] }}</label>
-                        <input type="text" readonly value="{{ $field['value'] }}"
-                            class="flex-1 min-w-[200px] px-3 py-2 text-black bg-white border border-gray-300 rounded-md cursor-not-allowed" />
-                    </div>
-                @endforeach
-            </div>
+        <div style="float:right; font-weight:bold;">
+            {{ $formattedDateTime }}
         </div>
 
-        @php
-            $fieldCategories = [
-                'controlling' => 'Controlling',
-                'air_cooling_system' => 'Air Cooling System',
-                'logging_system' => 'Logging System',
-                'server_computer' => 'Server Computer',
-                'networking' => 'Networking',
-                'water_feeding_system' => 'Water Feeding System',
-                'cooling_system' => 'Cooling System',
-                'humidifier_system' => 'Humidifier System',
-                'communication_system' => 'Communication System',
-                'air_heating_system' => 'Air Heating System',
-                'software' => 'Software',
-                'other' => 'Other',
-            ];
-        @endphp
+        <div style="clear:both;"></div>
+    </div>
 
-        <table class="w-full max-w-4xl pt-4 mx-auto text-sm border border-black table-fixed">
-            <thead class="text-black bg-gray-300">
+    <br>
+
+    <div style="margin-bottom:8px;">
+        <strong>Reported by</strong><br>
+        Name: {{ $complaint->dari }}
+    </div>
+
+    <div style="margin-top:6px;">
+        <strong>To</strong><br>
+        Engineering Department<br>
+        {{ $complaint->kepada }}
+    </div>
+
+    <br>
+
+    <div style="margin-bottom:12px;">
+
+        <div>
+            <span style="display:inline-block; width:140px; font-weight:bold;">Form No</span>
+            : {{ $complaint->form_no }}
+        </div>
+
+        <div>
+            <span style="display:inline-block; width:140px; font-weight:bold;">Who Complaint</span>
+            : {{ $complaint->name_complain }}
+        </div>
+
+        <div>
+            <span style="display:inline-block; width:140px; font-weight:bold;">Company Name</span>
+            : {{ optional($complaint->companies->first())->name }}
+        </div>
+
+        <div>
+            <span style="display:inline-block; width:140px; font-weight:bold;">Department</span>
+            : {{ $complaint->department }}
+        </div>
+
+        <div>
+            <span style="display:inline-block; width:140px; font-weight:bold;">Phone Number</span>
+            : {{ $complaint->phone_number }}
+        </div>
+
+        <div>
+            <span style="display:inline-block; width:140px; font-weight:bold;">Received By</span>
+            : {{ $complaint->receive_by }}
+        </div>
+
+    </div>
+
+    <br>
+
+    {{-- ================= DETAIL TABLE ================= --}}
+    <table>
+        <thead>
+            <tr class="font-bold text-center">
+                <td>No</td>
+                <td>Unit Name</td>
+                <td>Type / Model</td>
+                <td>Warranty</td>
+                <td>Field Category</td>
+                <td>Description</td>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach ($complaint->details as $i => $data)
                 <tr>
-                    <th class="p-2 border border-black">No</th>
-                    <th class="p-2 border border-black">Unit Name</th>
-                    <th class="p-2 border border-black">Type/model</th>
-                    <th class="p-2 border border-black">Under Warranty</th>
-                    <th class="p-2 border border-black">Field Category</th>
-                    <th class="p-2 border border-black">Description</th>
+                    <td class="text-center">{{ $i + 1 }}</td>
+                    <td>{{ $data->unit_name }}</td>
+                    <td>{{ $data->tipe_model }}</td>
+                    <td class="text-center">{{ $data->status_warranty ? 'Yes' : 'No' }}</td>
+                    <td>{{ $fieldCategories[$data->field_category] ?? '-' }}</td>
+                    <td>{{ $data->deskripsi }}</td>
                 </tr>
-            </thead>
-            <tbody>
-                @foreach ($complaint->details as $index => $data)
-                    <tr>
-                        <td class="px-4 py-2 border border-black">{{ $index + 1 }}</td>
-                        <td class="px-4 py-2 border border-black">{{ $data->unit_name }}</td>
-                        <td class="px-4 py-2 border border-black">{{ $data->tipe_model }}</td>
-                        <td class="px-4 py-2 border border-black">
-                            {{ $data->status_warranty == 1 ? 'Yes' : 'No' }}
-                        </td>
-                        <td class="px-4 py-2 border border-black">{{ $fieldCategories[$data->field_category] ?? '-' }}</td>
-                        <td class="px-4 py-2 border border-black">{{ $data->deskripsi }}</td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
+            @endforeach
+        </tbody>
+    </table>
 
-        <div class="w-full max-w-4xl pt-4 mx-auto text-sm">
-            <h2 class="mb-4 text-xl text-starts">Report Details :</h2>
+    <br>
 
-            @php
-                $fields = [
-                    ['label' => 'Reported Date :', 'value' => $formattedDateTime3],
-                    ['label' => 'Recorded By :', 'value' => $complaint->pic->reportedBy->name],
-                    ['label' => 'Recorded Date :', 'value' => $formattedDateTime2],
-                ];
-            @endphp
+    {{-- ================= REPORT DETAILS ================= --}}
+    <div style="margin-top:12px;">
 
-            <div class="grid gap-2 mb-6">
-                @foreach ($fields as $field)
-                    <div class="flex items-center">
-                        <label class="w-32 font-medium">{{ $field['label'] }}</label>
-                        <input type="text" readonly value="{{ $field['value'] }}"
-                            class="flex-1 px-3 py-2 text-black bg-white border border-gray-300 rounded-md cursor-not-allowed" />
-                    </div>
-                @endforeach
-            </div>
+        <div>
+            <strong>Reported Date</strong> : {{ $formattedDateTime3 }}
         </div>
+
+        <div>
+            <strong>Recorded By</strong> : {{ $complaint->pic->reportedBy->name }}
+        </div>
+
+        <div>
+            <strong>Recorded Date</strong> : {{ $formattedDateTime2 }}
+        </div>
+
     </div>
 
-    <div class="mt-6 mb-3 text-center">
-        <button onclick="exportPDF()"
-            class="inline-flex items-center gap-2 py-3 text-sm font-semibold text-black text-white bg-blue-600 border rounded border-animated px-7 border-black-400 hover:bg-purple-600 hover:text-white">
-            <!-- Icon download SVG -->
-            <svg class="w-5 h-5 transition-colors duration-300" fill="none" stroke="currentColor" stroke-width="2"
-                viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path stroke-linecap="round" stroke-linejoin="round"
-                    d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4">
-                </path>
-            </svg>
-            Download PDF
-        </button>
-    </div>
 @endsection
-
-<script>
-    function exportPDF(id) {
-        window.scrollTo(0, 0); // pastikan posisi di atas
-
-        const element = document.getElementById("export-area");
-
-        // Pastikan semua gambar sudah termuat sebelum render
-        const images = element.getElementsByTagName("img");
-        const totalImages = images.length;
-        let loadedImages = 0;
-
-        for (let img of images) {
-            if (img.complete) {
-                loadedImages++;
-            } else {
-                img.onload = () => {
-                    loadedImages++;
-                    if (loadedImages === totalImages) renderPDF();
-                };
-            }
-        }
-
-        if (loadedImages === totalImages) {
-            renderPDF();
-        }
-
-        function renderPDF() {
-            html2pdf().set({
-                margin: [0.2, 0.2, 0.2, 0.2],
-                filename: "complaint-form.pdf",
-                image: {
-                    type: "jpeg",
-                    quality: 1
-                },
-                html2canvas: {
-                    scale: 3,
-                    useCORS: true,
-                    letterRendering: true
-                },
-                jsPDF: {
-                    unit: "in",
-                    format: "a4",
-                    orientation: "portrait"
-                },
-                pagebreak: {
-                    mode: ["avoid", "css"]
-                }
-            }).from(element).save();
-        }
+<style>
+    body {
+        font-family: DejaVu Sans, sans-serif;
+        font-size: 14px;
     }
-</script>
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        table-layout: fixed;
+    }
+
+    td,
+    th {
+        vertical-align: top;
+    }
+
+    .header-table {
+        border: 1px solid #000;
+    }
+
+    .header-logo {
+        width: 15%;
+        text-align: center;
+        vertical-align: middle;
+        border-right: 1px solid #000;
+    }
+
+    .header-logo img {
+        height: 55px;
+    }
+
+    .header-company {
+        width: 55%;
+        text-align: center;
+        font-weight: bold;
+        border-bottom: 1px solid #000;
+    }
+
+    .header-title {
+        text-align: center;
+        font-size: 16px;
+        font-weight: bold;
+        padding: 10px 0;
+        border-bottom: 1px solid #000;
+    }
+
+    .header-spacer {
+        height: 18px;
+    }
+
+    .header-doc {
+        width: 30%;
+        padding: 0;
+        border-left: 1px solid #000;
+    }
+
+    .doc-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 10px;
+    }
+
+    .doc-table td {
+        padding: 4px;
+        border-bottom: 0.5px solid #000;
+    }
+
+    .doc-table tr:last-child td {
+        border-bottom: none;
+    }
+
+    td,
+    th {
+        border: 0.5px solid #000;
+        padding: 4px;
+        vertical-align: top;
+    }
+
+    .text-center {
+        text-align: center;
+    }
+
+    .font-bold {
+        font-weight: bold;
+    }
+
+    .mb-4 {
+        margin-bottom: 12px;
+    }
+</style>
