@@ -10,6 +10,7 @@ use Filament\Forms\Components\FileUpload;
 use Filament\Tables\Columns\TextColumn;
 use Illuminate\Support\Facades\Storage;
 use Spatie\LaravelImageOptimizer\Facades\ImageOptimizer;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 trait SimpleFormResource
 {
@@ -132,5 +133,31 @@ trait SimpleFormResource
                     }
                 }
             });
+    }
+
+    protected function renderWalkinPdf(
+        string $modelClass,
+        string $view,
+        int $id,
+        string $dataKey = 'walkin'
+    ) {
+        $data = $modelClass::with([
+            'spkService',
+            'detail',
+            'pic',
+            'pic.approvedBy',
+            'pic.checkedBy',
+        ])->findOrFail($id);
+
+        $tagNo = str_replace(['/', ' '], '-', $data->tag_no);
+        $date  = now()->format('Ymd');
+
+        $filename = "MT-{$tagNo}-{$date}.pdf";
+
+        return Pdf::loadView($view, [
+            $dataKey => $data,
+        ])
+            ->setPaper('A4', 'portrait')
+            ->stream($filename);
     }
 }

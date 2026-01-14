@@ -5,9 +5,11 @@ namespace App\Filament\Resources\Engineering\Maintenance\Refrigerator\Traits;
 use App\Traits\HasAutoNumber;
 use App\Traits\SimpleFormResource;
 use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 
 trait TabelChecklist
@@ -19,14 +21,39 @@ trait TabelChecklist
             ->map(function ($group) {
                 return [
                     'mainPart' => $group['mainPart'],
-                    'parts' => collect($group['parts'])
-                        ->map(fn($part) => ['part' => $part])
-                        ->toArray(),
+                    'parts' => collect($group['parts'])->map(function ($part) {
+
+                        // INFO
+                        if (is_array($part) && isset($part['info'])) {
+                            return [
+                                'part' => $part['info'],
+                                'type' => 'info',
+                                'show_value' => true,
+                            ];
+                        }
+
+                        // CHECK dengan override show_value
+                        if (is_array($part)) {
+                            return [
+                                'part' => $part['text'],
+                                'type' => 'check',
+                                'show_value' => $part['show'] ?? true,
+                            ];
+                        }
+
+                        // CHECK default (string)
+                        return [
+                            'part' => $part,
+                            'type' => 'check',
+                            'show_value' => true,
+                        ];
+                    })->toArray(),
                 ];
             })
             ->toArray();
 
-        return Section::make('Tabel Checklist')
+        return
+            Section::make('Tabel Checklist')
             ->collapsible()
             ->relationship('detail')
             ->schema([
@@ -45,49 +72,89 @@ trait TabelChecklist
                                         'readonly' => true,
                                         'style' => 'pointer-events: none;'
                                     ])
-                                    ->columnSpan(3),
-
-                                TextInput::make('before')
-                                    ->label('Before')
-                                    ->required()
-                                    ->columnSpan(1),
-
-                                TextInput::make('after')
-                                    ->label('After')
-                                    ->required()
-                                    ->columnSpan(1),
-
-                                Select::make('accepted')
-                                    ->label('Accepted')
-                                    ->required()
-                                    ->options([
-                                        'yes' => 'Yes',
-                                        'no' => 'No',
-                                        'na' => 'NA',
-                                    ])
-                                    ->columnSpan(1),
-
-                                TextInput::make('remark')
-                                    ->label('Remark')
-                                    ->required()
-                                    ->columnSpan(1),
+                                    ->columnSpan(7),
                             ]),
 
                         Repeater::make('parts')
-                            ->label('')
+                            ->extraAttributes([
+                                'class' => 'bg-gray-100 dark:bg-gray-800 rounded-lg p-4'
+                            ])
                             ->schema([
 
-                                TextInput::make('part')
+                                Hidden::make('type'),
+                                Hidden::make('show_value'),
+
+                                Textarea::make('part')
+                                    ->rows(1)
+                                    ->columnSpan(
+                                        fn(callable $get) =>
+                                        $get('type') === 'info' ? 7 : 3
+                                    )
+                                    ->readOnly(fn(callable $get) => $get('type') === 'info')
+                                    ->extraAttributes(
+                                        fn(callable $get) =>
+                                        $get('type') === 'info'
+                                            ? [
+                                                'style' => 'background:#f9fafb; border:none; resize:none;',
+                                            ]
+                                            : []
+                                    )
+                                    ->required(),
+
+                                Textarea::make('before')
+                                    ->rows(1)
+                                    ->columnSpan(1)
+                                    ->hidden(
+                                        fn($get) =>
+                                        $get('type') === 'info' || !$get('show_value')
+                                    ),
+
+
+                                Textarea::make('after')
+                                    ->rows(1)
+                                    ->columnSpan(1)
+                                    ->hidden(
+                                        fn($get) =>
+                                        $get('type') === 'info' || !$get('show_value')
+                                    ),
+
+
+                                Select::make('accepted')
+                                    ->options([
+                                        'yes' => 'Yes',
+                                        'no' => 'No',
+                                        'na' => 'NA',
+                                    ])
+                                    ->columnSpan(fn($get) => $get('show_value') ? 1 : 2)
+                                    ->required(fn($get) => $get('type') === 'check')
+                                    ->hidden(fn($get) => $get('type') === 'info'),
+
+
+                                TextInput::make('remark')
+                                    ->columnSpan(fn($get) => $get('show_value') ? 1 : 2)
+                                    ->hidden(fn($get) => $get('type') === 'info'),
+                            ])
+                            ->addable(false)
+                            ->deletable(false)
+                            ->reorderable(false)
+                            ->columns(7),
+
+                        Repeater::make('extra')
+                            ->default([])
+                            ->schema([
+
+                                self::textInput('part', 'Part')
                                     ->columnSpan(3)
-                                    ->required(),
+                                    ->required(false),
 
-                                TextInput::make('before')
+                                self::textInput('before', 'Before')
                                     ->columnSpan(1)
-                                    ->required(),
+                                    ->required(false),
 
-                                TextInput::make('after')
+
+                                self::textInput('after', 'After')
                                     ->columnSpan(1)
-                                    ->required(),
+                                    ->required(false),
 
                                 Select::make('accepted')
                                     ->options([
@@ -96,23 +163,20 @@ trait TabelChecklist
                                         'na' => 'NA',
                                     ])
                                     ->columnSpan(1)
-                                    ->required(),
+                                    ->required(false),
 
-                                TextInput::make('remark')
+
+                                self::textInput('remark', 'Remark')
                                     ->columnSpan(1)
-                                    ->required(),
-
+                                    ->required(false),
                             ])
+                            ->addActionLabel('Tambah Checklist')
                             ->columns(7)
-                            ->addable(false)
-                            ->deletable(false)
                             ->reorderable(false),
-
                     ])
                     ->addable(false)
                     ->deletable(false)
                     ->reorderable(false)
-
             ]);
     }
 }

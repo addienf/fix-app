@@ -22,10 +22,10 @@ class ChamberR2Resource extends Resource
     protected static ?string $model = ChamberR2::class;
     protected static ?int $navigationSort = 24;
     protected static ?string $navigationGroup = 'Engineering';
-    protected static ?string $navigationLabel = 'Chamber R2';
-    protected static ?string $pluralLabel = 'Chamber R2';
-    protected static ?string $modelLabel = 'Chamber R2';
-    protected static ?string $slug = 'engineering/chamber-r2';
+    protected static ?string $navigationLabel = 'Stability Chamber';
+    protected static ?string $pluralLabel = 'Stability Chamber';
+    protected static ?string $modelLabel = 'Stability Chamber';
+    protected static ?string $slug = 'engineering/stability-chamber';
     protected static ?string $navigationIcon = 'heroicon-o-wrench-screwdriver';
 
     public static function getNavigationBadge(): ?string
@@ -64,7 +64,7 @@ class ChamberR2Resource extends Resource
                         ],
                     ],
                     title: 'PIC',
-                    uploadPath: 'Engineering/Maintenance/ChamberR2/Signature'
+                    uploadPath: 'Engineering/Maintenance/StabilityChamber/Signature'
                 ),
 
             ]);
@@ -102,7 +102,7 @@ class ChamberR2Resource extends Resource
                         ->icon('heroicon-o-document')
                         ->color('success')
                         ->visible(fn($record) => $record->status_penyetujuan === 'Disetujui')
-                        ->url(fn($record) => route('pdf.walkInChamberR2', ['record' => $record->id])),
+                        ->url(fn($record) => route('pdf.stabilityChamber', ['record' => $record->id])),
                 ])
             ])
             ->bulkActions([

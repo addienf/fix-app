@@ -28,9 +28,9 @@ class CreateChamberR2 extends CreateRecord
                 $this->record,
                 ['sales', 'super_admin'],
                 GenericNotification::class,
-                '/admin/engineering/chamber-r2',
-                'Data Chamber R2 berhasil dibuat',
-                'Ada data Chamber R2 yang harus di tanda tangani.'
+                '/admin/engineering/stability-chamber',
+                'Data Stability Chamber berhasil dibuat',
+                'Ada data Stability Chamber yang harus di tanda tangani.'
             );
         } else {
             Log::error('Record belum lengkap.');
@@ -39,7 +39,7 @@ class CreateChamberR2 extends CreateRecord
 
     public function getTitle(): string
     {
-        return 'Tambah Data Chamber R2';
+        return 'Tambah Data Stability Chamber';
     }
 
     public function getBreadcrumb(): string

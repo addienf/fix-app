@@ -1,333 +1,334 @@
 @extends('pdf.layout.layout')
-@section('title', 'Service Report PDF')
+@section('title', 'Service Report')
 @section('content')
+    <table style="width:100%; border-collapse:collapse; table-layout:fixed;">
+        <tr>
+            <td rowspan="4" style="width:15%; text-align:center; vertical-align:middle; border:0.5px solid #000;">
+                <img src="{{ public_path('asset/logo.png') }}" style="height:55px;">
+            </td>
 
-    <div id="export-area" class="p-2 text-black bg-white">
-        <table
-            class="w-full max-w-4xl mx-auto text-sm border border-black dark:border-white dark:bg-gray-900 dark:text-white"
-            style="border-collapse: collapse;">
+            <td colspan="4" style="text-align:center; font-weight:bold; border:0.5px solid #000;">
+                PT. QLab Kinarya Sentosa
+            </td>
+        </tr>
+
+        <tr>
+            <td rowspan="3" colspan="3"
+                style="text-align:center; font-size:16px; font-weight:bold; border:0.5px solid #000; vertical-align:middle;">
+                SERVICE REPORT
+            </td>
+
+            <td style="border:0.5px solid #000;">
+                No. Dokumen : -
+            </td>
+        </tr>
+
+        <tr>
+            <td style="border:0.5px solid #000;">
+                Tanggal Rilis : -
+            </td>
+        </tr>
+
+        <tr>
+            <td style="border:0.5px solid #000;">
+                Revisi : -
+            </td>
+        </tr>
+    </table>
+
+    <div style="height:10px;"></div>
+
+    <div class="">
+        <table class="">
             <tr>
-                <td rowspan="3"
-                    class="p-2 text-center align-middle border border-black w-28 h-28 dark:border-white dark:bg-gray-900">
-                    <img src="{{ asset('asset/logo.png') }}" alt="Logo" class="object-contain mx-auto h-30" />
-                </td>
-                <td colspan="2" class="font-bold text-center border border-black dark:border-white dark:bg-gray-900">
-                    PT. QLab Kinarya Sentosa
-                </td>
+                <td class="label">Form No</td>
+                <td> : {{ $serviceReport->form_no }}</td>
             </tr>
             <tr>
-                <td class="font-bold text-center border border-black dark:border-white dark:bg-gray-900"
-                    style="font-size: 20px;">
-                    Service Report
+                <td class="label">Date</td>
+                <td> : {{ \Carbon\Carbon::parse($serviceReport->tanggal)->format('d F Y') }}</td>
+            </tr>
+            <tr>
+                <td class="label">Who Complaint</td>
+                <td> : {{ $serviceReport->name_complaint }}</td>
+            </tr>
+            <tr>
+                <td class="label">Company Name</td>
+                <td> : {{ $serviceReport->company_name }}</td>
+            </tr>
+            <tr>
+                <td class="label">Address</td>
+                <td> : {{ $serviceReport->address }}</td>
+            </tr>
+            <tr>
+                <td class="label">Phone Number</td>
+                <td> : {{ $serviceReport->phone_number }}</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="section">
+        <div class="section-title">Product List</div>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th style="width:5%">No</th>
+                    <th>Unit Name</th>
+                    <th>Type / Model</th>
+                    <th>Serial Number</th>
+                    <th style="width:15%">Warranty</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($serviceReport->produkServices as $i => $item)
+                    <tr>
+                        <td class="text-center">{{ $i + 1 }}</td>
+                        <td>{{ $item->produk_name }}</td>
+                        <td>{{ $item->type }}</td>
+                        <td>{{ $item->serial_number }}</td>
+                        <td class="text-center">{{ $item->status_warranty ? 'Yes' : 'No' }}</td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
+
+    <div class="section">
+        <div class="section-title">Service Category</div>
+        @foreach (['installation', 'maintenance', 'repair', 'consultation'] as $cat)
+            <div class="checkbox">
+                [{{ in_array($cat, $serviceReport->service_category) ? '✔' : ' ' }}]
+                {{ ucfirst($cat) }}
+            </div>
+        @endforeach
+    </div>
+
+    <div class="section">
+        <div class="section-title">Remark</div>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Remark</th>
+                    <th>Action & Taken Item</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($serviceReport->details as $detail)
+                    <tr>
+                        <td>{{ $detail->remark }}</td>
+                        <td>{{ $detail->service_status }}</td>
+                        <td>{{ $detail->taken_item }}</td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
+
+    <div class="section">
+        <table style="width:100%; border-collapse:collapse;">
+            <tr>
+                <td style="width:50%; vertical-align:top; padding-right:10px;">
+                    <div class="section-title">Action</div>
+                    @foreach (['cleaning', 'installation', 'repairing', 'maintenance', 'replacing', 'other'] as $action)
+                        <div>
+                            [{{ in_array($action, $serviceReport->actions ?? []) ? '✔' : ' ' }}]
+                            {{ ucwords($action) }}
+                        </div>
+                    @endforeach
                 </td>
-                <td rowspan="2" class="p-0 align-top border border-black dark:border-white dark:bg-gray-900">
-                    <table class="w-full text-sm dark:bg-gray-900 dark:text-white" style="border-collapse: collapse;">
-                        <tr>
-                            <td class="px-3 py-2 border-b border-black dark:border-white">No. Dokumen</td>
-                            <td class="px-3 py-2 font-semibold border-b border-black dark:border-white"> : -</td>
-                        </tr>
-                        <tr>
-                            <td class="px-3 py-2 border-b border-black dark:border-white">Tanggal Rilis</td>
-                            <td class="px-3 py-2 font-semibold border-b border-black dark:border-white"> : -</td>
-                        </tr>
-                        <tr>
-                            <td class="px-3 py-2">Revisi</td>
-                            <td class="px-3 py-2 font-semibold"> : -</td>
-                        </tr>
-                    </table>
+
+                <td style="width:50%; vertical-align:top; padding-left:10px;">
+                    <div class="section-title">Service Field</div>
+                    @foreach ($serviceReport->service_fields ?? [] as $field)
+                        <div>
+                            [✔] {{ ucwords(str_replace('_', ' ', $field)) }}
+                        </div>
+                    @endforeach
                 </td>
             </tr>
         </table>
+    </div>
 
-        <div class="w-full max-w-4xl pt-4 mx-auto text-sm">
-            {{-- Info Umum --}}
-            @php
-                $infoUmum = [
-                    ['label' => 'Form No:', 'value' => $serviceReport->form_no],
-                    [
-                        'label' => 'Date',
-                        'value' => \Carbon\Carbon::parse($serviceReport->tanggal)->translatedFormat('d F Y'),
-                    ],
-                ];
-            @endphp
-            <div class="grid w-full max-w-4xl grid-cols-1 pt-2 mx-auto mb-4 text-sm gap-y-4">
-                @foreach ($infoUmum as $field)
-                    <div class="flex items-center gap-4">
-                        <label class="w-40 font-medium">{{ $field['label'] }}</label>
-                        <input type="text"
-                            class="flex-1 px-3 py-2 text-black bg-white border border-gray-300 rounded-md cursor-not-allowed dark:border-gray-600 dark:bg-gray-800 dark:text-white"
-                            value="{{ $field['value'] }}" readonly />
-                    </div>
-                @endforeach
-            </div>
-
-            @php
-                $infoUmum = [
-                    ['label' => 'Who Complaint:', 'value' => $serviceReport->name_complaint],
-                    ['label' => 'Company Name', 'value' => $serviceReport->company_name],
-                    ['label' => 'Address', 'value' => $serviceReport->address],
-                    ['label' => 'Phone Number', 'value' => $serviceReport->phone_number],
-                ];
-            @endphp
-            <div class="grid w-full max-w-4xl grid-cols-1 pt-2 mx-auto mb-6 text-sm gap-y-4">
-                @foreach ($infoUmum as $field)
-                    <div class="flex items-center gap-4">
-                        <label class="w-40 font-medium">{{ $field['label'] }}</label>
-                        <input type="text"
-                            class="flex-1 px-3 py-2 text-black bg-white border border-gray-300 rounded-md cursor-not-allowed dark:border-gray-600 dark:bg-gray-800 dark:text-white"
-                            value="{{ $field['value'] }}" readonly />
-                    </div>
-                @endforeach
-            </div>
-
-            {{-- {{ $serviceReport->produkService->produk_name }} --}}
-
-            {{-- Tabel Produk --}}
-            <table class="items-center w-full max-w-4xl mb-5 text-sm border border-black">
-                <thead class="bg-gray-100">
-                    <tr>
-                        <th class="px-3 py-2 font-semibold text-center border border-black">No</th>
-                        <th class="px-3 py-2 font-semibold text-center border border-black">Unit Name</th>
-                        <th class="px-3 py-2 font-semibold text-center border border-black">Type/Model</th>
-                        <th class="px-3 py-2 font-semibold text-center border border-black">Serial Number</th>
-                        <th class="px-3 py-2 font-semibold text-center border border-black">Under Warranty</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($serviceReport->produkServices as $index => $data)
-                        <tr>
-                            <td class="px-4 py-2 border border-black">{{ $index + 1 }}</td>
-                            <td class="px-4 py-2 border border-black">{{ $data->produk_name }}</td>
-                            <td class="px-4 py-2 border border-black">{{ $data->type }}</td>
-                            <td class="px-4 py-2 border border-black">{{ $data->serial_number }}</td>
-                            <td class="px-4 py-2 border border-black">
-                                {{ $data->status_warranty == 1 ? 'Yes' : 'No' }}
-                            </td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
-
-            {{-- Kategori Service --}}
-            @php
-                $selectedServices = $serviceReport->service_category;
-                $selectedActions = $serviceReport->actions;
-                $selectedFields = $serviceReport->service_fields;
-            @endphp
-
-            <h2 class="mb-5 text-lg font-semibold">Service Category</h2>
-            <div class="flex flex-col gap-2 text-sm">
-                @foreach (['installation', 'maintenance', 'repair', 'consultation'] as $service)
-                    <label class="flex items-center gap-2">
-                        <input type="checkbox" class="text-blue-600 form-checkbox" value="{{ $service }}"
-                            {{ in_array(strtolower($service), $selectedServices) ? 'checked' : '' }} disabled />
-                        <span class="capitalize">{{ $service }}</span>
-                    </label>
-                @endforeach
-            </div>
-
-            {{-- Tabel Remark --}}
-            <table class="items-center w-full max-w-4xl mt-5 mb-4 text-sm border border-black">
-                <thead class="bg-gray-100">
-                    <tr>
-                        <th class="px-3 py-2 font-semibold text-center border border-black">Remark</th>
-                        <th class="px-3 py-2 font-semibold text-center border border-black">Action & Taken Item</th>
-                        <th class="px-3 py-2 font-semibold text-center border border-black">Service Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td class="px-4 py-2 border border-black">1</td>
-                        <td class="px-4 py-2 border border-black">Kabel Listrik</td>
-                        <td class="px-4 py-2 border border-black">100</td>
-                    </tr>
-                </tbody>
-            </table>
-
-            {{-- Action & Service Field --}}
-            @php
-                $actions = ['cleaning', 'installation', 'repairing', 'maintenance', 'replacing', 'other'];
-                $fields = [
-                    'controlling',
-                    'air_cooling_system',
-                    'logging_system',
-                    'server_computer',
-                    'networking',
-                    'water_feeding_system',
-                    'cooling_system',
-                    'humidifier_system',
-                    'communication_system',
-                    'air_heating_system',
-                    'software',
-                    'other',
-                ];
-            @endphp
-
-            <!-- Actions -->
-            <div class="pt-5 mb-8">
-                <h2 class="mb-2 text-lg font-semibold">Action</h2>
-                @foreach ($actions as $item)
-                    <label class="block mb-1">
-                        <input type="checkbox" class="mr-2 form-checkbox" name="actions[]" value="{{ $item }}"
-                            {{ in_array($item, $selectedActions ?? []) ? 'checked' : '' }} disabled>
-                        {{ ucwords(str_replace('_', ' ', $item)) }}
-                    </label>
-                @endforeach
-            </div>
-
-            <!-- Service Fields -->
-            <div class="pt-5 mb-8">
-                <h2 class="mb-2 text-lg font-semibold">Service Field</h2>
-                @foreach ($fields as $field)
-                    <label class="block mb-1">
-                        <input type="checkbox" class="mr-2 form-checkbox" name="service_fields[]"
-                            value="{{ $field }}" {{ in_array($field, $selectedFields ?? []) ? 'checked' : '' }}
-                            disabled>
-                        {{ ucwords(str_replace('_', ' ', $field)) }}
-                    </label>
-                @endforeach
-            </div>
-
-
-            {{-- Lampiran Gambar --}}
-            <div class="grid grid-cols-1 gap-4 mb-6 sm:grid-cols-2">
+    <div class="section">
+        <div class="section-title">Attachment</div>
+        <table class="table">
+            <tr>
                 @foreach ($serviceReport->details as $detail)
-                    @foreach ($detail->upload_file as $gambar)
-                        <div class="border border-gray-300 rounded shadow p-2 flex items-center justify-center h-[300px]">
-                            <img src="{{ asset('storage/' . $gambar) }}" alt="Lampiran"
-                                class="object-contain max-w-full max-h-full" />
-                        </div>
+                    @foreach ($detail->upload_file as $img)
+                        <td class="image-box">
+                            <img src="{{ public_path('storage/' . $img) }}">
+                        </td>
                     @endforeach
                 @endforeach
-            </div>
-
-            {{-- Tanda Tangan --}}
-            @php
-                $roles = [
-                    'Service By' => [
-                        'name' => $serviceReport->pic->checkedBy->name,
-                        'signature' => $serviceReport->pic->checked_signature,
-                        'date' => $serviceReport->pic->checked_date,
-                    ],
-                    'Approved By' => [
-                        'name' => $serviceReport->pic->approvedBy->name,
-                        'signature' => $serviceReport->pic->approved_signature,
-                        'date' => $serviceReport->pic->approved_date,
-                    ],
-                ];
-            @endphp
-
-            <div class="max-w-4xl mx-auto mb-6">
-                <table class="w-full text-sm border-collapse">
-                    <thead>
-                        <tr class="font-semibold text-center bg-gray-100">
-                            <th class="border border-black border-[1px] w-1/4"></th>
-                            @foreach ($roles as $role => $data)
-                                <th class="border border-black border-[1px] py-2">{{ $role }}</th>
-                            @endforeach
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td class="border border-black border-[1px] px-2 py-2 font-medium">Name</td>
-                            @foreach ($roles as $data)
-                                <td class="border border-black border-[1px] px-2 py-2">{{ $data['name'] }}</td>
-                            @endforeach
-                        </tr>
-                        <tr>
-                            <td class="border border-black border-[1px] px-2 py-2 font-medium">Signature</td>
-                            @foreach ($roles as $data)
-                                <td class="border border-black border-[1px] px-2 py-4">
-                                    <div class="flex items-center justify-center h-24">
-                                        @if ($data['signature'])
-                                            <img src="{{ asset('storage/' . $data['signature']) }}" alt="Signature"
-                                                class="object-contain h-full" />
-                                        @else
-                                            <span class="text-sm text-gray-400">No Signature</span>
-                                        @endif
-                                    </div>
-                                </td>
-                            @endforeach
-                        </tr>
-                        <tr>
-                            <td class="border border-black border-[1px] px-2 py-2 font-medium">Date</td>
-                            @foreach ($roles as $data)
-                                <td class="border border-black border-[1px] px-2 py-2">
-                                    {{ $data['date'] ? \Carbon\Carbon::parse($data['date'])->format('d M Y') : '-' }}
-                                </td>
-                            @endforeach
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-    <div class="mt-6 mb-3 text-center">
-        <button onclick="exportPDF({{ $serviceReport->id }})"
-            class="inline-flex items-center gap-2 py-3 text-sm font-semibold text-black text-white bg-blue-600 border rounded border-animated px-7 border-black-400 hover:bg-purple-600 hover:text-white">
-            <!-- Icon download SVG -->
-            <svg class="w-5 h-5 transition-colors duration-300" fill="none" stroke="currentColor" stroke-width="2"
-                viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path stroke-linecap="round" stroke-linejoin="round"
-                    d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4">
-                </path>
-            </svg>
-            Download PDF
-        </button>
+            </tr>
+        </table>
     </div>
 
+    <div class="section">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Service By</th>
+                    <th>Approved By</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Name</td>
+                    <td>{{ $serviceReport->pic->checkedBy->name }}</td>
+                    <td>{{ $serviceReport->pic->approvedBy->name }}</td>
+                </tr>
+                <tr>
+                    <td>Signature</td>
+                    <td class="signature-box">
+                        @if ($serviceReport->pic->checked_signature)
+                            <img src="{{ public_path('storage/' . $serviceReport->pic->checked_signature) }}">
+                        @endif
+                    </td>
+                    <td class="signature-box">
+                        @if ($serviceReport->pic->approved_signature)
+                            <img src="{{ public_path('storage/' . $serviceReport->pic->approved_signature) }}">
+                        @endif
+                    </td>
+                </tr>
+                <tr>
+                    <td>Date</td>
+                    <td>{{ $serviceReport->pic->checked_date }}</td>
+                    <td>{{ $serviceReport->pic->approved_date }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 @endsection
-<script>
-    function exportPDF(id) {
-        window.scrollTo(0, 0); // pastikan posisi di atas
 
-        const element = document.getElementById("export-area");
-
-        // Pastikan semua gambar sudah termuat sebelum render
-        const images = element.getElementsByTagName("img");
-        const totalImages = images.length;
-        let loadedImages = 0;
-
-        for (let img of images) {
-            if (img.complete) {
-                loadedImages++;
-            } else {
-                img.onload = () => {
-                    loadedImages++;
-                    if (loadedImages === totalImages) renderPDF();
-                };
-            }
-        }
-
-        if (loadedImages === totalImages) {
-            renderPDF();
-        }
-
-        function renderPDF() {
-            html2pdf().set({
-                margin: [0.2, 0.2, 0.2, 0.2],
-                filename: "service-report.pdf",
-                image: {
-                    type: "jpeg",
-                    quality: 1
-                },
-                html2canvas: {
-                    scale: 3,
-                    useCORS: true,
-                    letterRendering: true
-                },
-                jsPDF: {
-                    unit: "in",
-                    format: "a4",
-                    orientation: "portrait"
-                },
-                pagebreak: {
-                    mode: ["avoid", "css"]
-                }
-            }).from(element).save().then(() => {
-                // window.location.href = `/sales/spesifikasi-produk/${id}/download-file`;
-                window.location.href = `/engineering/service-report/${id}/download-zip`;
-            });
-        }
+<style>
+    body {
+        font-family: DejaVu Sans, sans-serif;
+        font-size: 10px;
     }
-</script>
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        table-layout: fixed;
+    }
+
+    td,
+    th {
+        vertical-align: top;
+    }
+
+    .header-table {
+        border: 1px solid #000;
+    }
+
+    .header-logo {
+        width: 15%;
+        text-align: center;
+        vertical-align: middle;
+        border-right: 1px solid #000;
+    }
+
+    .header-logo img {
+        height: 55px;
+    }
+
+    .header-company {
+        width: 55%;
+        text-align: center;
+        font-weight: bold;
+        border-bottom: 1px solid #000;
+    }
+
+    .header-title {
+        text-align: center;
+        font-size: 16px;
+        font-weight: bold;
+        padding: 10px 0;
+        border-bottom: 1px solid #000;
+    }
+
+    .header-spacer {
+        height: 18px;
+    }
+
+    .header-doc {
+        width: 30%;
+        padding: 0;
+        border-left: 1px solid #000;
+    }
+
+    .doc-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 10px;
+    }
+
+    .doc-table td {
+        padding: 4px;
+        border-bottom: 0.5px solid #000;
+    }
+
+    .doc-table tr:last-child td {
+        border-bottom: none;
+    }
+
+    .section {
+        margin-bottom: 12px;
+        page-break-inside: avoid;
+    }
+
+    .section-title {
+        font-weight: bold;
+        margin-bottom: 6px;
+    }
+
+    .table {
+        width: 100%;
+        border-collapse: collapse;
+        table-layout: fixed;
+    }
+
+    .table th,
+    .table td {
+        border: 0.5px solid #000;
+        padding: 4px;
+        word-wrap: break-word;
+    }
+
+    .table th {
+        background: #f2f2f2;
+        text-align: center;
+    }
+
+    .label {
+        width: 30%;
+        font-weight: bold;
+    }
+
+    .text-center {
+        text-align: center;
+    }
+
+    .image-box {
+        border: 0.5px solid #000;
+        height: 150px;
+        text-align: center;
+    }
+
+    .image-box img {
+        max-width: 100%;
+        max-height: 140px;
+    }
+
+    .signature-box {
+        height: 90px;
+        text-align: center;
+    }
+
+    .signature-box img {
+        max-height: 80px;
+    }
+</style>

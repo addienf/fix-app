@@ -16,8 +16,6 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class PermintaanPelayananPelangganResource extends Resource
 {
@@ -28,7 +26,7 @@ class PermintaanPelayananPelangganResource extends Resource
     protected static ?string $navigationLabel = 'Permintaan Pelayanan Pelanggan';
     protected static ?string $pluralLabel = 'Permintaan Pelayanan Pelanggan';
     protected static ?string $modelLabel = 'Permintaan Pelayanan Pelanggan';
-    protected static ?string $slug = 'engineering/permintaan-pelayanan-pelanggan';
+    protected static ?string $slug = 'customer-care/permintaan-pelayanan-pelanggan';
     protected static ?string $navigationIcon = 'heroicon-o-wrench-screwdriver';
 
     public static function form(Form $form): Form

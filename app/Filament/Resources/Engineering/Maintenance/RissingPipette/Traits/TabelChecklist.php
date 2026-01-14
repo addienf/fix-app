@@ -36,30 +36,22 @@ trait TabelChecklist
                             ])
                             ->required(),
 
-                        TextInput::make('before')
-                            ->columnSpan(1)
-                            ->required(),
-
-                        TextInput::make('after')
-                            ->columnSpan(1)
-                            ->required(),
-
                         Select::make('accepted')
                             ->options([
                                 'yes' => 'Yes',
                                 'no' => 'No',
                                 'na' => 'NA',
                             ])
-                            ->columnSpan(1)
+                            ->columnSpan(2)
                             ->required(),
 
                         TextInput::make('remark')
-                            ->columnSpan(1)
-                            ->required(),
+                            ->columnSpan(2),
 
                     ])
                     ->columns(7)
-                    ->addable(false)
+                    // ->addable(false)
+                    ->addActionLabel('Tambah Checklist')
                     ->deletable(false)
                     ->reorderable(false),
 

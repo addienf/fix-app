@@ -21,26 +21,12 @@ trait InformasiUmum
         $lastValue2 = ServiceReport::latest('form_no')->value('form_no');
         $isEdit = $form->getOperation() === 'edit';
 
-        return Section::make('Informasi Umum')
+        return
+            Section::make('Informasi Umum')
             ->collapsible()
             ->schema([
                 Select::make('spk_service_id')
                     ->label('Nomor SPK Service')
-                    // ->options(function () {
-                    //     return Cache::rememberForever(SPKService::$CACHE_KEYS['service'], function () {
-                    //         return SPKService::where('status_penyelesaian', 'Selesai')
-                    //             ->whereDoesntHave('service')
-                    //             ->get()
-                    //             ->pluck('no_spk_service', 'id');
-                    //     });
-                    // })
-                    // ->options(function () {
-                    //     return SPKService::query()
-                    //         ->where('status', 'Selesai')
-                    //         ->whereDoesntHave('service')
-                    //         ->limit(10)
-                    //         ->pluck('no_spk_service', 'id');
-                    // })
                     ->options(function () {
                         return SPKService::whereHas('permintaanSparepart', function ($query) {
                             $query->where('status', 'Selesai');
@@ -62,6 +48,7 @@ trait InformasiUmum
                     ->preload()
                     ->required()
                     ->reactive()
+                    ->hiddenOn('edit')
                     ->afterStateUpdated(function ($state, callable $set) {
                         if (!$state)
                             return;
@@ -86,7 +73,7 @@ trait InformasiUmum
 
                         $formNo = $spkS->pelayananPelanggan->complain->form_no ?? '-';
                         $namaComplain = $spkS->pelayananPelanggan->complain->name_complain ?? '-';
-                        $companyName = $spkS->pelayananPelanggan->complain->company_name ?? '-';
+                        $companyName = $spkS->pelayananPelanggan->companies?->first()?->name ?? '-';
                         $alamat = $spkS->pelayananPelanggan->alamat ?? '-';
                         $number = $spkS->pelayananPelanggan->complain->phone_number ?? '-';
 
@@ -104,7 +91,6 @@ trait InformasiUmum
                             ->placeholder($lastValue2 ? "Data Terakhir : {$lastValue2}" : 'Data Belum Tersedia')
                             ->hiddenOn('edit')
                             ->unique(ignoreRecord: true)
-                            // ->columnSpanFull()
                             ->required()
                             ->extraAttributes([
                                 'readonly' => true,
@@ -112,8 +98,6 @@ trait InformasiUmum
                             ]),
 
                         self::dateInput('tanggal', 'Tanggal'),
-                        // DatePicker::make('tanggal')
-                        //     ->required()
                     ])
             ]);
     }

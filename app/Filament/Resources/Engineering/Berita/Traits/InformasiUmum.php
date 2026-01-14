@@ -116,7 +116,7 @@ trait InformasiUmum
                 $namaPetugas = $service->petugas->pluck('nama_teknisi')->toArray();
                 $nama_teknisi = implode(', ', $namaPetugas);
                 $namaComplain = $service->pelayananPelanggan->complain->name_complain;
-                $companyName = $service->pelayananPelanggan->complain->company_name;
+                $companyName = $service->pelayananPelanggan->complain->companies->first()?->name;
                 $alamat = $service->pelayananPelanggan->alamat;
                 $department = $service->pelayananPelanggan->complain->department;
 

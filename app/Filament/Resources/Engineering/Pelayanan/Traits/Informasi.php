@@ -79,7 +79,8 @@ trait Informasi
 
                 if (!$complain) return;
 
-                $companyName = $complain->company_name ?? '-';
+                $companyName = $complain->companies->first()?->name ?? '-';
+                $companyAddress = $complain->companies->first()?->address ?? '-';
                 $no_form = $complain->form_no ?? '-';
 
                 $details = $complain->details->map(function ($detail) {
@@ -92,6 +93,7 @@ trait Informasi
 
                 // dd($details);
                 $set('perusahaan', $companyName);
+                $set('alamat', $companyAddress);
                 $set('no_form', $no_form);
                 $set('details', $details);
             });

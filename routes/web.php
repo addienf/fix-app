@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\CustomerCareController;
+use App\Http\Controllers\EngineeringController;
 use App\Http\Controllers\PDFController;
 use App\Jobs\Sales\SendSpesifikasiProductNotif;
 use App\Models\Sales\SpesifikasiProducts\SpesifikasiProduct;
@@ -62,29 +64,30 @@ Route::get('/quality/defect-status/{record}/download-file', [PDFController::clas
 Route::get('/quality/ketidaksesuaian/{record}/pdf-ketidaksesuaian', [PDFController::class, 'pdfKetidaksesuaian'])->name('pdf.ketidaksesuaian');
 Route::get('/quality/product-release/{record}/pdf-product-release', [PDFController::class, 'pdfProductRelease'])->name('pdf.productRelease');
 
+//CustomerCare
+Route::get('/customer-care/catatan-keluhan-pelanggan/{record}/pdf', [CustomerCareController::class, 'pdfCatatanPelanggan'])->name('pdf.CatatanPelanggan');
+Route::get('/customer-care/permintaan-pelayana-pelanggan/{record}/pdf', [CustomerCareController::class, 'pdfPelayananPelanggan'])->name('pdf.PelayananPelanggan');
+Route::get('/customer-care/spk-service/{record}/pdf', [CustomerCareController::class, 'pdfSPKService'])->name('pdf.spkService');
+
 //Engineering
-Route::get('/engineering/catatan-keluhan-pelanggan/{record}/pdfCatatanPelanggan', [PDFController::class, 'pdfCatatanPelanggan'])->name('pdf.CatatanPelanggan');
-Route::get('/engineering/permintaan-pelayana-pelanggan/{record}/pdfPelayananPelanggan', [PDFController::class, 'pdfPelayananPelanggan'])->name('pdf.PelayananPelanggan');
-Route::get('/engineering/spk-service/{record}/pdf-spk-service', [PDFController::class, 'pdfSPKService'])->name('pdf.spkService');
-Route::get('/engineering/sparepart-alat-kerja/{record}/pdf-sparepart-alat-kerja', [PDFController::class, 'pdfSparepartAlatKerja'])->name('pdf.sparepartAlatKerja');
-Route::get('/engineering/berita-acara/{record}/pdf-berita-acara', [PDFController::class, 'pdfBeritaAcara'])->name('pdf.beritaAcara');
-Route::get('/engineering/chamber-g2/{record}/pdf-chamber-g2', [PDFController::class, 'pdfMaintenanceChamberG2'])->name('pdf.MaintenanceChamberG2');
-Route::get('/engineering/walkin-chamber-g2/{record}/pdf-walkin-chamber-g2', [PDFController::class, 'pdfWalkInChamberG2'])->name('pdf.walkInChamberG2');
-Route::get('/engineering/rissing-pipette/{record}/pdf-rissing-pipette', [PDFController::class, 'pdfRissingPipette'])->name('pdf.rissingPipette');
-Route::get('/engineering/chamber-r1/{record}/pdf-chamber-r1', [PDFController::class, 'pdfWalkInChamberR1'])->name('pdf.walkInChamberR1');
-Route::get('/engineering/chamber-r2/{record}/pdf-chamber-r2', [PDFController::class, 'pdfWalkInChamberR2'])->name('pdf.walkInChamberR2');
-Route::get('/engineering/maintenance-refrigator/{record}/pdf-maintenance-refrigator', [PDFController::class, 'pdfMaintenanceRefrigator'])->name('pdf.MaintenanceRefrigator');
-Route::get('/engineering/maintenance-cold-room/{record}/pdf-cold-room', [PDFController::class, 'pdfMaintenanceColdRoom'])->name('pdf.MaintenanceColdRoom');
-Route::get('/engineering/service-report/{record}/pdf-service-report', [PDFController::class, 'pdfServiceReport'])->name('pdf.serviceReport');
-Route::get('/engineering/service-report/{record}/download-zip', [PDFController::class, 'downloadZipserviceReport'])->name('serviceReport.download-zip');
+Route::get('/engineering/walkin-chamber-g2/{record}/pdf', [EngineeringController::class, 'pdfWalkInChamberG2'])->name('pdf.walkInChamberG2');
+Route::get('/engineering/rissing-pipette/{record}/pdf', [EngineeringController::class, 'pdfRissingPipette'])->name('pdf.rissingPipette');
+Route::get('/engineering/walkin-chamber/{record}/pdf', [EngineeringController::class, 'pdfWalkInChamber'])->name('pdf.walkInChamber');
+Route::get('/engineering/stability-chamber/{record}/pdf', [EngineeringController::class, 'pdfStabilityChamber'])->name('pdf.stabilityChamber');
+Route::get('/engineering/maintenance-chamber-g2/{record}/pdf', [EngineeringController::class, 'pdfMaintenanceChamberG2'])->name('pdf.MaintenanceChamberG2');
+Route::get('/engineering/maintenance-refrigator/{record}/pdf', [EngineeringController::class, 'pdfMaintenanceRefrigator'])->name('pdf.MaintenanceRefrigator');
+Route::get('/engineering/maintenance-cold-room/{record}/pdf', [EngineeringController::class, 'pdfMaintenanceColdRoom'])->name('pdf.MaintenanceColdRoom');
+Route::get('/engineering/berita-acara/{record}/pdf', [EngineeringController::class, 'pdfBeritaAcara'])->name('pdf.beritaAcara');
+Route::get('/engineering/service-report/{record}/pdf', [EngineeringController::class, 'pdfServiceReport'])->name('pdf.serviceReport');
+Route::get('/engineering/sparepart-alat-kerja/{record}/pdf', [EngineeringController::class, 'pdfSparepartAlatKerja'])->name('pdf.sparepartAlatKerja');
 
+// Route::get('/customercare/pdfPermintaanPelayanan', function () {
+//     return view('pdf.customercare.pdfPermintaanPelayanan');
+// });
 
-Route::get('/customercare/pdfPermintaanPelayanan', function () {
-    return view('pdf.customercare.pdfPermintaanPelayanan');
-});
-Route::get('/customercare/pdfSuratPerintahKerja', function () {
-    return view('pdf.customercare.pdfSuratPerintahKerja');
-});
+// Route::get('/customercare/pdfSuratPerintahKerja', function () {
+//     return view('pdf.customercare.pdfSuratPerintahKerja');
+// });
 
 Route::get('admin/storage-link', function () {
     $targetFolder = storage_path('app/public');
