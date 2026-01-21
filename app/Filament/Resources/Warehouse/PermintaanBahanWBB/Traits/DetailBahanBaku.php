@@ -6,6 +6,7 @@ use App\Traits\HasAutoNumber;
 use App\Traits\SimpleFormResource;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Select;
 use Icetalker\FilamentTableRepeater\Forms\Components\TableRepeater;
 
 trait DetailBahanBaku
@@ -26,13 +27,19 @@ trait DetailBahanBaku
 
                                 self::textInput('bahan_baku', 'Bahan Baku'),
 
-                                self::textInput('spesifikasi', 'Spesifikasi'),
+                                self::textInput('spesifikasi', 'Spesifikasi')->required(false),
 
-                                self::textInput('jumlah', 'Jumlah')
-                                    ->numeric(),
+                                self::textInput('jumlah', 'Jumlah')->required(false),
 
                                 self::textareaInput('keperluan_barang', 'Keperluan Barang')
-                                    ->rows(1),
+                                    ->rows(1)->required(false),
+
+                                Select::make(name: 'status_stock')
+                                    ->label('Stock')
+                                    ->options([
+                                        'Tersedia' => 'Tersedia',
+                                        'Tidak Tersedia' => 'Tidak Tersedia',
+                                    ]),
 
                             ])
                             ->columns(4)

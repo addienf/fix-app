@@ -49,15 +49,6 @@ class IncommingMaterial extends Model
                 $model->status_penerimaan_pic !== 'Diterima'
             ) {
                 $model->status_penerimaan_pic = 'Diterima';
-
-                $permintaanBahanPro = $model->permintaanPembelian
-                    ?->permintaanBahanWBB
-                    ?->permintaanBahanPro;
-
-                if ($permintaanBahanPro) {
-                    $permintaanBahanPro->status = 'Tersedia';
-                    $permintaanBahanPro->save();
-                }
             }
         });
 

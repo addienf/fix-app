@@ -2,6 +2,7 @@
 
 namespace App\Models\Warehouse\PermintaanBahanWBB;
 
+use App\Models\Production\Jadwal\JadwalProduksi;
 use App\Models\Production\PermintaanBahanProduksi\PermintaanAlatDanBahan;
 use App\Models\Purchasing\Permintaan\PermintaanPembelian;
 use App\Models\Warehouse\PermintaanBahanWBB\Pivot\PermintaanBahanDetail;
@@ -15,7 +16,7 @@ class PermintaanBahan extends Model
     use HasFactory, HasCacheManager;
 
     protected $fillable = [
-        'permintaan_bahan_pro_id',
+        'perencanaan_id',
         'is_stock',
         'tanggal',
         'no_surat',
@@ -30,7 +31,7 @@ class PermintaanBahan extends Model
 
     public function permintaanBahanPro()
     {
-        return $this->belongsTo(PermintaanAlatDanBahan::class, 'permintaan_bahan_pro_id');
+        return $this->belongsTo(JadwalProduksi::class, 'perencanaan_id');
     }
 
     public function permintaanDetails()

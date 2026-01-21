@@ -68,7 +68,11 @@ trait NoSurat
                 if (!$state)
                     return;
 
-                $pab = PermintaanBahan::with('permintaanDetails')->find($state);
+                $pab = PermintaanBahan::with([
+                    'permintaanDetails' => function ($query) {
+                        $query->where('status_stock', 'Tidak Tersedia');
+                    }
+                ])->find($state);
 
                 if (!$pab)
                     return;

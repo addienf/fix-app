@@ -2,15 +2,12 @@
 
 namespace App\Filament\Resources\Warehouse\SerahTerima\Traits;
 
-use App\Models\Production\PermintaanBahanProduksi\PermintaanAlatDanBahan;
 use App\Models\Warehouse\Peminjaman\PeminjamanAlat;
-use App\Models\Warehouse\SerahTerima\SerahTerimaBahan;
 use App\Traits\HasAutoNumber;
 use App\Traits\SimpleFormResource;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
-use Illuminate\Support\Facades\Cache;
 
 trait InformasiUmum
 {
@@ -60,15 +57,15 @@ trait InformasiUmum
             ->reactive()
             ->options(function () {
                 return PeminjamanAlat::with([
-                    'spkVendor.permintaanBahanProduksi.jadwalProduksi.spk',
-                    'spkVendor.permintaanBahanProduksi.jadwalProduksi.identifikasiProduks'
+                    'spkVendor.perencanaanProduksi.spk',
+                    'spkVendor.perencanaanProduksi.identifikasiProduks'
                 ])
                     ->whereDoesntHave('serahTerimaBahan')
                     ->latest()
                     ->get()
                     ->mapWithKeys(function ($pinjam) {
 
-                        $jadwal = $pinjam->spkVendor->permintaanBahanProduksi->jadwalProduksi;
+                        $jadwal = $pinjam->spkVendor->perencanaanProduksi;
 
                         $spkNo = $jadwal->spk->no_spk ?? '-';
                         $noSeri = $jadwal->identifikasiProduks
@@ -84,11 +81,11 @@ trait InformasiUmum
             ->getSearchResultsUsing(function ($query) {
 
                 return PeminjamanAlat::with([
-                    'spkVendor.permintaanBahanProduksi.jadwalProduksi.spk',
-                    'spkVendor.permintaanBahanProduksi.jadwalProduksi.identifikasiProduks'
+                    'spkVendor.perencanaanProduksi.spk',
+                    'spkVendor.perencanaanProduksi.identifikasiProduks'
                 ])
                     ->whereDoesntHave('serahTerimaBahan')
-                    ->whereHas('spkVendor.permintaanBahanProduksi.jadwalProduksi.spk', function ($q) use ($query) {
+                    ->whereHas('spkVendor.perencanaanProduksi.spk', function ($q) use ($query) {
                         $q->where('no_spk', 'like', "%{$query}%");
                     })
                     ->latest()
@@ -96,7 +93,7 @@ trait InformasiUmum
                     ->get()
                     ->mapWithKeys(function ($pinjam) {
 
-                        $jadwal = $pinjam->spkVendor->permintaanBahanProduksi->jadwalProduksi;
+                        $jadwal = $pinjam->spkVendor->perencanaanProduksi;
 
                         $spkNo = $jadwal->spk->no_spk ?? '-';
                         $noSeri = $jadwal->identifikasiProduks
@@ -112,10 +109,10 @@ trait InformasiUmum
             ->afterStateUpdated(function ($state, callable $set) {
                 if (!$state) return;
 
-                $pinjam = PeminjamanAlat::with('spkVendor.permintaanBahanProduksi.details')->find($state);
+                $pinjam = PeminjamanAlat::with('spkVendor.perencanaanProduksi.sumbers')->find($state);
                 if (!$pinjam) return;
 
-                $details = $pinjam->spkVendor->permintaanBahanProduksi->details
+                $details = $pinjam->spkVendor->perencanaanProduksi->sumbers
                     ->map(fn($d) => [
                         'bahan_baku' => $d->bahan_baku ?? '',
                         'spesifikasi' => $d->spesifikasi ?? '',

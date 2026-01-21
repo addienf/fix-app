@@ -53,52 +53,52 @@ class PDFController extends Controller
         return view('pdf.pdfSpecProduct');
     }
 
-    public function previewSpesifikasiProduct($id)
-    {
-        $spesifikasi = SpesifikasiProduct::with(['urs.customer', 'pic', 'details.product', 'details.file', 'pic.signedName', 'pic.acceptedName', 'pic.acknowledgeName'])->findOrFail($id);
+    // public function previewSpesifikasiProduct($id)
+    // {
+    //     $spesifikasi = SpesifikasiProduct::with(['urs.customer', 'pic', 'details.product', 'details.file', 'pic.signedName', 'pic.acceptedName', 'pic.acknowledgeName'])->findOrFail($id);
 
-        return view('pdf.sales.pdfSpecProduct', compact('spesifikasi'));
-    }
+    //     return view('pdf.sales.pdfSpecProduct', compact('spesifikasi'));
+    // }
 
-    public function downloadFileSpesifikasiProduct($id)
-    {
-        $spesifikasi = SpesifikasiProduct::with(['details.file'])->findOrFail($id);
+    // public function downloadFileSpesifikasiProduct($id)
+    // {
+    //     $spesifikasi = SpesifikasiProduct::with(['details.file'])->findOrFail($id);
 
-        $detail = $spesifikasi->details->first();
+    //     $detail = $spesifikasi->details->first();
 
-        $filePath = $detail->file->file_path;
+    //     $filePath = $detail->file->file_path;
 
-        $fullPath = storage_path('app/public/' . $filePath);
+    //     $fullPath = storage_path('app/public/' . $filePath);
 
-        return response()->download($fullPath);
-    }
+    //     return response()->download($fullPath);
+    // }
 
-    public function pdfSPKMarketing($id)
-    {
-        $spk_mkt = SPKMarketing::with(['spesifikasiProduct', 'pic', 'pic.createName', 'pic.receiveName'])->findOrFail($id);
+    // public function pdfSPKMarketing($id)
+    // {
+    //     $spk_mkt = SPKMarketing::with(['spesifikasiProduct', 'pic', 'pic.createName', 'pic.receiveName'])->findOrFail($id);
 
-        return view('pdf.sales.pdfSPKMarketing', compact('spk_mkt'));
-    }
+    //     return view('pdf.sales.pdfSPKMarketing', compact('spk_mkt'));
+    // }
 
-    public function pdfJadwalProduksi($id)
-    {
-        $jadwal = JadwalProduksi::with(['spk', 'details', 'pic', 'sumbers', 'identifikasiProduks', 'timelines', 'pic.createName', 'pic.approveName'])->findOrFail($id);
+    // public function pdfJadwalProduksi($id)
+    // {
+    //     $jadwal = JadwalProduksi::with(['spk', 'details', 'pic', 'sumbers', 'identifikasiProduks', 'timelines', 'pic.createName', 'pic.approveName'])->findOrFail($id);
 
-        return view('pdf.production.pdfJadwalProduksi', compact('jadwal'));
-    }
+    //     return view('pdf.production.pdfJadwalProduksi', compact('jadwal'));
+    // }
 
-    public function downloadJadwalProduksi($id)
-    {
-        $jadwalProduksi = JadwalProduksi::findOrFail($id);
+    // public function downloadJadwalProduksi($id)
+    // {
+    //     $jadwalProduksi = JadwalProduksi::findOrFail($id);
 
-        $filePath = $jadwalProduksi->file_upload;
+    //     $filePath = $jadwalProduksi->file_upload;
 
-        if (!$filePath || !Storage::disk('public')->exists($filePath)) {
-            return response()->json(['message' => 'File not found'], 404);
-        }
+    //     if (!$filePath || !Storage::disk('public')->exists($filePath)) {
+    //         return response()->json(['message' => 'File not found'], 404);
+    //     }
 
-        return response()->download(storage_path('app/public/' . $filePath));
-    }
+    //     return response()->download(storage_path('app/public/' . $filePath));
+    // }
 
     public function pdfPermintaanAlatBahan($id)
     {
@@ -107,19 +107,19 @@ class PDFController extends Controller
         return view('pdf.production.pdfPermintaanAlatBahan', compact('permintaan_alat_bahan'));
     }
 
-    public function pdfPermintaanBahan($id)
-    {
-        $permintaan_bahan = PermintaanBahan::with(['permintaanBahanPro', 'permintaanDetails', 'pic', 'pic.dibuatName', 'pic.mengetahuiName', 'pic.diserahkanName'])->findOrFail($id);
+    // public function pdfPermintaanBahan($id)
+    // {
+    //     $permintaan_bahan = PermintaanBahan::with(['permintaanBahanPro', 'permintaanDetails', 'pic', 'pic.dibuatName', 'pic.mengetahuiName', 'pic.diserahkanName'])->findOrFail($id);
 
-        return view('pdf.warehouse.pdfPermintaanBahan', compact('permintaan_bahan'));
-    }
+    //     return view('pdf.warehouse.pdfPermintaanBahan', compact('permintaan_bahan'));
+    // }
 
-    public function pdfPermintaanPembelian($id)
-    {
-        $permintaan_pembelian = PermintaanPembelian::with(['permintaanBahanWBB', 'details', 'pic', 'pic.createName', 'pic.knowingName'])->findOrFail($id);
+    // public function pdfPermintaanPembelian($id)
+    // {
+    //     $permintaan_pembelian = PermintaanPembelian::with(['permintaanBahanWBB', 'details', 'pic', 'pic.createName', 'pic.knowingName'])->findOrFail($id);
 
-        return view('pdf.purchasing.pdfPermintaanPembelian', compact('permintaan_pembelian'));
-    }
+    //     return view('pdf.purchasing.pdfPermintaanPembelian', compact('permintaan_pembelian'));
+    // }
 
     public function pdfIncomingMaterialSS($id)
     {
@@ -135,33 +135,33 @@ class PDFController extends Controller
         return view('pdf.quality.pdfIncomingMaterialNonSS', compact('incomingNonSS'));
     }
 
-    public function pdfIncomingMaterial($id)
-    {
-        $incomingMaterial = IncommingMaterial::with(['permintaanPembelian', 'details', 'pic', 'pic.submitedName', 'pic.receivedName'])->findOrFail($id);
+    // public function pdfIncomingMaterial($id)
+    // {
+    //     $incomingMaterial = IncommingMaterial::with(['permintaanPembelian', 'details', 'pic', 'pic.submitedName', 'pic.receivedName'])->findOrFail($id);
 
-        return view('pdf.warehouse.pdfIncomingMaterial', compact('incomingMaterial'));
-    }
+    //     return view('pdf.warehouse.pdfIncomingMaterial', compact('incomingMaterial'));
+    // }
 
-    public function downloadIncomingMaterial($id)
-    {
-        $incomingMaterial = IncommingMaterial::findOrFail($id);
+    // public function downloadIncomingMaterial($id)
+    // {
+    //     $incomingMaterial = IncommingMaterial::findOrFail($id);
 
-        $filePath = $incomingMaterial->file_upload;
+    //     $filePath = $incomingMaterial->file_upload;
 
-        if (!$filePath || !Storage::disk('public')->exists($filePath)) {
+    //     if (!$filePath || !Storage::disk('public')->exists($filePath)) {
 
-            return response()->json(['message' => 'File not found'], 404);
-        }
+    //         return response()->json(['message' => 'File not found'], 404);
+    //     }
 
-        return response()->download(storage_path('app/public/' . $filePath));
-    }
+    //     return response()->download(storage_path('app/public/' . $filePath));
+    // }
 
-    public function pdfSerahTerima($id)
-    {
-        $serah_terima = SerahTerimaBahan::with(['peminjamanAlat', 'standarisasiDrawing', 'details', 'pic', 'pic.submitName', 'pic.receiveName'])->findOrFail($id);
+    // public function pdfSerahTerima($id)
+    // {
+    //     $serah_terima = SerahTerimaBahan::with(['peminjamanAlat', 'standarisasiDrawing', 'details', 'pic', 'pic.submitName', 'pic.receiveName'])->findOrFail($id);
 
-        return view('pdf.warehouse.pdfSerahTerima', compact('serah_terima'));
-    }
+    //     return view('pdf.warehouse.pdfSerahTerima', compact('serah_terima'));
+    // }
 
     public function pdfStandarisasiDrawing($id)
     {
@@ -303,12 +303,12 @@ class PDFController extends Controller
         return view('pdf.warehouse.pdfPelabelanQCPassed', compact('pelabelan'));
     }
 
-    public function pdfPeminjamanAlat($id)
-    {
-        $peminjaman = PeminjamanAlat::with(['details', 'pic', 'pic.NamaPeminjam'])->findOrFail($id);
+    // public function pdfPeminjamanAlat($id)
+    // {
+    //     $peminjaman = PeminjamanAlat::with(['details', 'pic', 'pic.NamaPeminjam'])->findOrFail($id);
 
-        return view('pdf.warehouse.pdfPeminjamanAlat', compact('peminjaman'));
-    }
+    //     return view('pdf.warehouse.pdfPeminjamanAlat', compact('peminjaman'));
+    // }
 
     public function pdfDefectStatus($id)
     {
@@ -332,7 +332,7 @@ class PDFController extends Controller
 
     public function pdfSPKVendor($id)
     {
-        $vendor = SPKVendor::with(['permintaanBahanProduksi'])->findOrFail($id);
+        $vendor = SPKVendor::with(['perencanaanProduksi'])->findOrFail($id);
 
         return view('pdf.production.pdfSPKVendor', compact('vendor'));
     }
@@ -381,7 +381,6 @@ class PDFController extends Controller
             $zip->close();
         }
 
-        // Kirimkan file ZIP sebagai download dan hapus setelah dikirim
         return response()->download($zipPath)->deleteFileAfterSend(true);
     }
 

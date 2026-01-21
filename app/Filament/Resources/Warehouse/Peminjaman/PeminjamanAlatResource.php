@@ -44,13 +44,13 @@ class PeminjamanAlatResource extends Resource
         return $table
             ->columns([
                 //
-                TextColumn::make('spkVendor.permintaanBahanProduksi.jadwalProduksi.spk.no_spk')
+                TextColumn::make('spkVendor.perencanaanProduksi.spk.no_spk')
                     ->label('No SPK Marketing'),
 
                 // TextColumn::make('spkVendor.no_spk_vendor')
                 //     ->label('No SPK Vendor'),
 
-                TextColumn::make('spkVendor.permintaanBahanProduksi.jadwalProduksi.identifikasiProduks.no_seri')
+                TextColumn::make('spkVendor.perencanaanProduksi.identifikasiProduks.no_seri')
                     ->label('No Seri'),
 
                 self::textColumn('pic.department', 'Department'),
@@ -60,7 +60,6 @@ class PeminjamanAlatResource extends Resource
                 self::textColumn('tanggal_kembali', 'Tanggal Kembali')->date('d F Y'),
 
                 self::textColumn('pic.NamaPeminjam.name', 'Nama Peminjam'),
-                // self::textColumn('peminjam.name', 'Nama Peminjam'),
             ])
             ->filters([
                 //
@@ -108,8 +107,8 @@ class PeminjamanAlatResource extends Resource
     {
         return parent::getEloquentQuery()
             ->with([
-                'spkVendor.permintaanBahanProduksi.jadwalProduksi.spk',
-                'spkVendor.permintaanBahanProduksi.jadwalProduksi.identifikasiProduks',
+                'spkVendor.perencanaanProduksi.spk',
+                'spkVendor.perencanaanProduksi.identifikasiProduks',
                 'details',
                 'pic',
             ]);

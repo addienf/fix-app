@@ -2,17 +2,12 @@
 
 namespace App\Filament\Resources\Production\SPKVendor\Traits;
 
+use App\Models\Production\Jadwal\JadwalProduksi;
 use App\Models\Production\PermintaanBahanProduksi\PermintaanAlatDanBahan;
-use App\Models\Sales\SPKMarketings\SPKMarketing;
-use App\Models\Sales\URS;
 use App\Traits\HasAutoNumber;
 use App\Traits\SimpleFormResource;
-use Filament\Forms\Components\Fieldset;
-use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
-use Illuminate\Support\Facades\Cache;
-use Wallo\FilamentSelectify\Components\ButtonGroup;
 
 trait InformasiUmum
 {
@@ -31,8 +26,6 @@ trait InformasiUmum
                     'table' => 'spk_vendors',
                 ])
                     ->columnSpanFull(),
-                // ->hiddenOn('edit')
-                // ->placeholder($lastValue ? "Data Terakhir : {$lastValue}" : 'Data Belum Tersedia'),
 
                 self::select(),
 
@@ -45,7 +38,7 @@ trait InformasiUmum
     private static function select(): Select
     {
         return
-            Select::make('permintaan_bahan_pro_id')
+            Select::make('perencanaan_id')
             ->label('Nomor SPK')
             ->placeholder('Pilih Nomor SPK')
             ->searchable()
@@ -54,86 +47,84 @@ trait InformasiUmum
             ->preload()
             ->required()
             ->options(function () {
-                return PermintaanAlatDanBahan::with([
-                    'jadwalProduksi.spk',
-                    'jadwalProduksi.identifikasiProduks'
+                return JadwalProduksi::with([
+                    'spk',
+                    'identifikasiProduks'
                 ])
                     ->whereDoesntHave('spkVendor')
                     ->latest()
                     ->limit(10)
                     ->get()
-                    ->mapWithKeys(function ($permintaan) {
+                    ->mapWithKeys(function ($perencanaanProduksi) {
 
-                        $jadwal = $permintaan->jadwalProduksi;
-                        $spkNo = $jadwal->spk->no_spk ?? '-';
-                        $noSeri = $jadwal->identifikasiProduks
+                        $spkNo = $perencanaanProduksi->spk->no_spk ?? '-';
+                        $noSeri = $perencanaanProduksi->identifikasiProduks
                             ->pluck('no_seri')
                             ->filter()
                             ->implode(', ') ?: '-';
 
                         return [
-                            $permintaan->id => "{$spkNo} - {$noSeri}",
+                            $perencanaanProduksi->id => "{$spkNo} - {$noSeri}",
                         ];
                     });
             })
-            ->getSearchResultsUsing(function (string $search) {
+            // ->getSearchResultsUsing(function (string $search) {
 
-                if ($search === '') {
-                    return [];
-                }
+            //     if ($search === '') {
+            //         return [];
+            //     }
 
-                return PermintaanAlatDanBahan::with([
-                    'jadwalProduksi.spk',
-                    'jadwalProduksi.identifikasiProduks'
-                ])
-                    ->whereDoesntHave('spkVendor')
-                    ->where(function ($query) use ($search) {
-                        $query->whereHas(
-                            'jadwalProduksi',
-                            fn($q) =>
-                            $q->where('no_surat', 'LIKE', "%{$search}%")
-                        )
-                            ->orWhereHas(
-                                'jadwalProduksi.spk',
-                                fn($q) =>
-                                $q->where('no_spk', 'LIKE', "%{$search}%")
-                            )
-                            ->orWhereHas(
-                                'jadwalProduksi.identifikasiProduks',
-                                fn($q) =>
-                                $q->where('no_seri', 'LIKE', "%{$search}%")
-                            );
-                    })
-                    ->latest()
-                    ->limit(20)
-                    ->get()
-                    ->mapWithKeys(function ($permintaan) {
+            //     return JadwalProduksi::with([
+            //         'spk',
+            //         'identifikasiProduks'
+            //     ])
+            //         ->whereDoesntHave('spkVendor')
+            //         ->where(function ($query) use ($search) {
+            //             $query->whereHas(
+            //                 'jadwalProduksi',
+            //                 fn($q) =>
+            //                 $q->where('no_surat', 'LIKE', "%{$search}%")
+            //             )
+            //                 ->orWhereHas(
+            //                     'spk',
+            //                     fn($q) =>
+            //                     $q->where('no_spk', 'LIKE', "%{$search}%")
+            //                 )
+            //                 ->orWhereHas(
+            //                     'identifikasiProduks',
+            //                     fn($q) =>
+            //                     $q->where('no_seri', 'LIKE', "%{$search}%")
+            //                 );
+            //         })
+            //         ->latest()
+            //         ->limit(20)
+            //         ->get()
+            //         ->mapWithKeys(function ($permintaan) {
 
-                        $jadwal = $permintaan->jadwalProduksi;
-                        $spkNo = $jadwal->spk->no_spk ?? '-';
-                        $noSurat = $jadwal->no_surat ?? '-';
-                        $noSeri = $jadwal->identifikasiProduks
-                            ->pluck('no_seri')
-                            ->filter()
-                            ->implode(', ') ?: '-';
+            //             $jadwal = $permintaan->jadwalProduksi;
+            //             $spkNo = $jadwal->spk->no_spk ?? '-';
+            //             $noSurat = $jadwal->no_surat ?? '-';
+            //             $noSeri = $jadwal->identifikasiProduks
+            //                 ->pluck('no_seri')
+            //                 ->filter()
+            //                 ->implode(', ') ?: '-';
 
-                        return [
-                            $permintaan->id => "{$noSurat} - {$spkNo} - {$noSeri}",
-                        ];
-                    })
-                    ->toArray();
-            })
+            //             return [
+            //                 $permintaan->id => "{$noSurat} - {$spkNo} - {$noSeri}",
+            //             ];
+            //         })
+            //         ->toArray();
+            // })
             ->getOptionLabelUsing(function ($value) {
 
-                $permintaan = PermintaanAlatDanBahan::with([
-                    'jadwalProduksi.spk',
-                    'jadwalProduksi.identifikasiProduks'
+                $jadwal = JadwalProduksi::with([
+                    'spk',
+                    'identifikasiProduks'
                 ])
                     ->find($value);
 
-                if (!$permintaan) return '-';
+                if (!$jadwal) return '-';
 
-                $jadwal = $permintaan->jadwalProduksi;
                 $spkNo = $jadwal->spk->no_spk ?? '-';
                 $noSurat = $jadwal->no_surat ?? '-';
                 $noSeri = $jadwal->identifikasiProduks
@@ -145,22 +136,18 @@ trait InformasiUmum
             })
             ->afterStateUpdated(function ($state, callable $set) {
                 if (!$state) return;
-                $permintaan = PermintaanAlatDanBahan::with([
-                    'jadwalProduksi:id,spk_marketing_id',
-                    'jadwalProduksi.spk:id,spesifikasi_product_id',
-                    'jadwalProduksi.spk.spesifikasiProduct:id,urs_id',
-                    'jadwalProduksi.spk.spesifikasiProduct.urs:id,customer_id',
-                    'jadwalProduksi.spk.spesifikasiProduct.urs.customer:id,company_name',
-                    'jadwalProduksi.sumbers:id,jadwal_produksi_id,bahan_baku,spesifikasi,jumlah,keperluan'
-                ])->find($state);
 
-                if (!$permintaan) return;
+                $jadwal = JadwalProduksi::with([
+                    'spk',
+                    'identifikasiProduks'
+                ])
+                    ->find($state);
 
-                $company = optional(
-                    $permintaan->jadwalProduksi?->spk?->spesifikasiProduct?->urs?->customer
-                )->company_name ?? '-';
+                if (!$jadwal) return;
 
-                $details = $permintaan->details->map(fn($d) => [
+                $company = $jadwal?->spk?->spesifikasiProduct?->urs?->customer?->company?->name ?? '-';
+
+                $details = $jadwal->sumbers->map(fn($d) => [
                     'bahan_baku' => $d->bahan_baku,
                     'spesifikasi' => $d->spesifikasi,
                     'jumlah' => $d->jumlah,

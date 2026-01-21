@@ -3,6 +3,10 @@
 use App\Http\Controllers\CustomerCareController;
 use App\Http\Controllers\EngineeringController;
 use App\Http\Controllers\PDFController;
+use App\Http\Controllers\ProductionController;
+use App\Http\Controllers\PurchaseController;
+use App\Http\Controllers\SalesMarketingController;
+use App\Http\Controllers\WarehouseController;
 use App\Jobs\Sales\SendSpesifikasiProductNotif;
 use App\Models\Sales\SpesifikasiProducts\SpesifikasiProduct;
 use Illuminate\Support\Facades\Route;
@@ -23,13 +27,13 @@ Route::get('/', function () {
 });
 
 // Sales
-Route::get('/sales/spesifikasi-produk/{record}/pdf-spesifikasi-produk', [PDFController::class, 'previewSpesifikasiProduct'])->name('specProduct.preview');
-Route::get('/sales/spesifikasi-produk/{record}/download-file', [PDFController::class, 'downloadFileSpesifikasiProduct'])->name('specProduct.file-download');
-Route::get('/sales/spk/{record}/pdf-spk-marketing', [PDFController::class, 'pdfSPKMarketing'])->name('pdf.SPKMarketing');
+Route::get('/sales/spesifikasi-produk/{record}/pdf-spesifikasi-produk', [SalesMarketingController::class, 'previewSpesifikasiProduct'])->name('specProduct.preview');
+Route::get('/sales/spesifikasi-produk/{record}/download-file', [SalesMarketingController::class, 'downloadFileSpesifikasiProduct'])->name('specProduct.file-download');
+Route::get('/sales/spk/{record}/pdf-spk-marketing', [SalesMarketingController::class, 'pdfSPKMarketing'])->name('pdf.SPKMarketing');
 
 // Produksi
-Route::get('/produksi/jadwal-produksi/{record}/pdf-jadwal-produksi', [PDFController::class, 'pdfJadwalProduksi'])->name('pdf.jadwalProduksi');
-Route::get('/produksi/jadwal-produksi/{record}/download-file', [PDFController::class, 'downloadJadwalProduksi'])->name('jadwalProduksi.file-download');
+Route::get('/produksi/jadwal-produksi/{record}/pdf-jadwal-produksi', [ProductionController::class, 'pdfJadwalProduksi'])->name('pdf.jadwalProduksi');
+// Route::get('/produksi/jadwal-produksi/{record}/download-file', [ProductionController::class, 'downloadJadwalProduksi'])->name('jadwalProduksi.file-download');
 Route::get('/produksi/permintaan-alat-dan-bahan/{record}/pdf-permintaan-alat-dan-bahan', [PDFController::class, 'pdfPermintaanAlatBahan'])->name('pdf.permintaanAlatBahan');
 Route::get('/produksi/penyerahan-electrical/{record}/pdf-penyerahan-electrical', [PDFController::class, 'pdfPenyerahanElectrical'])->name('pdf.penyerahanElectrical');
 Route::get('/produksi/penyerahan-electrical/{record}/download-file', [PDFController::class, 'downloadPenyerahanElectrical'])->name('penyerahanElectrical.file-download');
@@ -39,15 +43,15 @@ Route::get('/produksi/spk-vendor/{record}/pdf-spk-vendor', [PDFController::class
 Route::get('/produksi/spk-vendor/{record}/download-zip', [PDFController::class, 'downloadSPKVendor'])->name('spkVendor.download-zip');
 
 // Warehouse
-Route::get('/warehouse/permintaan-bahan/{record}/pdf-permintaan-bahan', [PDFController::class, 'pdfPermintaanBahan'])->name('pdf.permintaanBahan');
-Route::get('/warehouse/incoming-material/{record}/pdf-incoming-material', [PDFController::class, 'pdfIncomingMaterial'])->name('pdf.IncomingMaterial');
-Route::get('/warehouse/incoming-material/{record}/download-file', [PDFController::class, 'downloadIncomingMaterial'])->name('IncomingMaterial.file-download');
-Route::get('/warehouse/serah-terima-bahan/{record}/pdf-serah-terima-bahan', [PDFController::class, 'pdfSerahTerima'])->name('pdf.serahTerima');
+Route::get('/warehouse/permintaan-bahan/{record}/pdf-permintaan-bahan', [WarehouseController::class, 'pdfPermintaanBahan'])->name('pdf.permintaanBahan');
+Route::get('/warehouse/incoming-material/{record}/pdf-incoming-material', [WarehouseController::class, 'pdfIncomingMaterial'])->name('pdf.IncomingMaterial');
+Route::get('/warehouse/incoming-material/{record}/download-file', [WarehouseController::class, 'downloadIncomingMaterial'])->name('IncomingMaterial.file-download');
+Route::get('/warehouse/serah-terima-bahan/{record}/pdf-serah-terima-bahan', [WarehouseController::class, 'pdfSerahTerima'])->name('pdf.serahTerima');
 Route::get('/warehouse/pelabelan-qc-passed/{record}/pdf-pelabelan-qc-passed', [PDFController::class, 'pdfPelabelanQCPassed'])->name('pdf.PelabelanQCPassed');
-Route::get('/warehouse/peminjaman-alat/{record}/pdf-peminjaman-alat', [PDFController::class, 'pdfPeminjamanAlat'])->name('pdf.PeminjamanAlat');
+Route::get('/warehouse/peminjaman-alat/{record}/pdf-peminjaman-alat', [WarehouseController::class, 'pdfPeminjamanAlat'])->name('pdf.PeminjamanAlat');
 
 // Purchasing
-Route::get('/purchasing/permintaan-pembelian/{record}/pdf-permintaan-pembelian', [PDFController::class, 'pdfPermintaanPembelian'])->name('pdf.PermintaanPembelian');
+Route::get('/purchasing/permintaan-pembelian/{record}/pdf-permintaan-pembelian', [PurchaseController::class, 'pdfPermintaanPembelian'])->name('pdf.PermintaanPembelian');
 
 // Quality
 Route::get('/quality/incoming-material-ss/{record}/pdf-incoming-material-ss', [PDFController::class, 'pdfIncomingMaterialSS'])->name('pdf.incomingMaterialSS');
