@@ -5,6 +5,7 @@ use App\Http\Controllers\EngineeringController;
 use App\Http\Controllers\PDFController;
 use App\Http\Controllers\ProductionController;
 use App\Http\Controllers\PurchaseController;
+use App\Http\Controllers\QualityController;
 use App\Http\Controllers\SalesMarketingController;
 use App\Http\Controllers\WarehouseController;
 use App\Jobs\Sales\SendSpesifikasiProductNotif;
@@ -39,8 +40,8 @@ Route::get('/produksi/penyerahan-electrical/{record}/pdf-penyerahan-electrical',
 Route::get('/produksi/penyerahan-electrical/{record}/download-file', [PDFController::class, 'downloadPenyerahanElectrical'])->name('penyerahanElectrical.file-download');
 Route::get('/produksi/spk-quality/{record}/pdf-spk-quality', [PDFController::class, 'pdfSPKQuality'])->name('pdf.spkQuality');
 Route::get('/produksi/penyerahan-produk-jadi/{record}/pdf-penyerahan-produk-jadi', [PDFController::class, 'pdfPenyerahanProdukJadi'])->name('pdf.PenyerahanProdukJadi');
-Route::get('/produksi/spk-vendor/{record}/pdf-spk-vendor', [PDFController::class, 'pdfSPKVendor'])->name('pdf.spkVendor');
-Route::get('/produksi/spk-vendor/{record}/download-zip', [PDFController::class, 'downloadSPKVendor'])->name('spkVendor.download-zip');
+Route::get('/produksi/spk-vendor/{record}/pdf-spk-vendor', [ProductionController::class, 'pdfSPKVendor'])->name('pdf.spkVendor');
+Route::get('/produksi/spk-vendor/{record}/download-zip', [ProductionController::class, 'downloadSPKVendor'])->name('spkVendor.download-zip');
 
 // Warehouse
 Route::get('/warehouse/permintaan-bahan/{record}/pdf-permintaan-bahan', [WarehouseController::class, 'pdfPermintaanBahan'])->name('pdf.permintaanBahan');
@@ -56,11 +57,11 @@ Route::get('/purchasing/permintaan-pembelian/{record}/pdf-permintaan-pembelian',
 // Quality
 Route::get('/quality/incoming-material-ss/{record}/pdf-incoming-material-ss', [PDFController::class, 'pdfIncomingMaterialSS'])->name('pdf.incomingMaterialSS');
 Route::get('/quality/incoming-material-non-ss/{record}/pdf-incoming-material-non-ss', [PDFController::class, 'pdfIncomingMaterialNonSS'])->name('pdf.incomingMaterialNonSS');
-Route::get('/quality/standarisasi-gambar-kerja/{record}/pdf-standarisasi-gambar-kerja', [PDFController::class, 'pdfStandarisasiDrawing'])->name('pdf.StandarisasiDrawing');
-Route::get('/quality/standarisasi-gambar-kerja/{record}/pdf-lampiran-standarisasi-gambar-kerja', [PDFController::class, 'pdfStandarisasiDrawingLampiran'])->name('pdf.StandarisasiDrawingLampiran');
-Route::get('/quality/standarisasi-gambar-kerja/{record}/download-zip', [PDFController::class, 'downloadZipStandarisasiDrawing'])->name('StandarisasiDrawing.download-zip');
-Route::get('/quality/kelengkapan-material-ss/{record}/pdf-kelengkapan-material-ss', [PDFController::class, 'pdfKelengkapanMaterialSS'])->name('pdf.kelengkapanMaterialSS');
-Route::get('/quality/pengecekan-material-ss/{record}/pdf-kelengkapan-material-ss', [PDFController::class, 'pdfPengecekanMaterialSS'])->name('pdf.pengecekanMaterialSS');
+Route::get('/quality/standarisasi-gambar-kerja/{record}/pdf-standarisasi-gambar-kerja', [QualityController::class, 'pdfStandarisasiDrawing'])->name('pdf.StandarisasiDrawing');
+Route::get('/quality/standarisasi-gambar-kerja/{record}/pdf-lampiran-standarisasi-gambar-kerja', [QualityController::class, 'pdfStandarisasiDrawingLampiran'])->name('pdf.StandarisasiDrawingLampiran');
+Route::get('/quality/standarisasi-gambar-kerja/{record}/download-zip', [QualityController::class, 'downloadZipStandarisasiDrawing'])->name('StandarisasiDrawing.download-zip');
+Route::get('/quality/kelengkapan-material-ss/{record}/pdf-kelengkapan-material-ss', [QualityController::class, 'pdfKelengkapanMaterialSS'])->name('pdf.kelengkapanMaterialSS');
+Route::get('/quality/pengecekan-material-ss/{record}/pdf-kelengkapan-material-ss', [QualityController::class, 'pdfPengecekanMaterialSS'])->name('pdf.pengecekanMaterialSS');
 Route::get('/quality/pengecekan-electrical/{record}/pdf-pengecekan-electrical', [PDFController::class, 'pdfPengecekanElectrical'])->name('pdf.pengecekanElectrical');
 Route::get('/quality/pengecekan-performa/{record}/pdf-pengecekan-performa', [PDFController::class, 'pdfPengecekanPerforma'])->name('pdf.pengecekanPerforma');
 Route::get('/quality/defect-status/{record}/pdf-defect-status', [PDFController::class, 'pdfDefectStatus'])->name('pdf.defectStatus');

@@ -163,90 +163,88 @@ class PDFController extends Controller
     //     return view('pdf.warehouse.pdfSerahTerima', compact('serah_terima'));
     // }
 
-    public function pdfStandarisasiDrawing($id)
-    {
-        $standarisasi = StandarisasiDrawing::with(['serahTerimaWarehouse', 'identitas', 'detail', 'pemeriksaan', 'pic', 'pic.createName', 'pic.checkName'])->findOrFail($id);
+    // public function pdfStandarisasiDrawing($id)
+    // {
+    //     $standarisasi = StandarisasiDrawing::with(['serahTerimaWarehouse', 'identitas', 'detail', 'pemeriksaan', 'pic', 'pic.createName', 'pic.checkName'])->findOrFail($id);
 
-        $no_spk = optional(
-            $standarisasi->serahTerimaWarehouse
-                ?->peminjamanAlat
-                ?->spkVendor
-                ?->permintaanBahanProduksi
-                ?->jadwalProduksi
-                ?->spk
-        )->no_spk ?? '-';
+    //     $no_spk = optional(
+    //         $standarisasi->serahTerimaWarehouse
+    //             ?->peminjamanAlat
+    //             ?->spkVendor
+    //             ?->permintaanBahanProduksi
+    //             ?->jadwalProduksi
+    //             ?->spk
+    //     )->no_spk ?? '-';
 
-        return view('pdf.quality.pdfStandarisasiDrawing', compact('standarisasi', 'no_spk'));
-    }
+    //     return view('pdf.quality.pdfStandarisasiDrawing', compact('standarisasi', 'no_spk'));
+    // }
 
-    public function pdfStandarisasiDrawingLampiran($id)
-    {
-        $standarisasi_lampiran = StandarisasiDrawing::with(['detail'])->findOrFail($id);
+    // public function pdfStandarisasiDrawingLampiran($id)
+    // {
+    //     $standarisasi_lampiran = StandarisasiDrawing::with(['detail'])->findOrFail($id);
 
-        return view('pdf.quality.pdfLampiranStandarisasiDrawing', compact('standarisasi_lampiran'));
-    }
+    //     return view('pdf.quality.pdfLampiranStandarisasiDrawing', compact('standarisasi_lampiran'));
+    // }
 
-    public function downloadZipStandarisasiDrawing($id)
-    {
-        $standarisasi = StandarisasiDrawing::with(['detail'])->findOrFail($id);
+    // public function downloadZipStandarisasiDrawing($id)
+    // {
+    //     $standarisasi = StandarisasiDrawing::with(['detail'])->findOrFail($id);
 
-        $zipFileName = 'gambar-produk-' . $standarisasi->id . '.zip';
-        $zipPath = storage_path('app/temp/' . $zipFileName);
+    //     $zipFileName = 'gambar-produk-' . $standarisasi->id . '.zip';
+    //     $zipPath = storage_path('app/temp/' . $zipFileName);
 
-        if (!file_exists(storage_path('app/temp'))) {
-            mkdir(storage_path('app/temp'), 0755, true);
-        }
+    //     if (!file_exists(storage_path('app/temp'))) {
+    //         mkdir(storage_path('app/temp'), 0755, true);
+    //     }
 
-        $zip = new ZipArchive;
-        if ($zip->open($zipPath, ZipArchive::CREATE | ZipArchive::OVERWRITE)) {
+    //     $zip = new ZipArchive;
+    //     if ($zip->open($zipPath, ZipArchive::CREATE | ZipArchive::OVERWRITE)) {
 
-            foreach ($standarisasi->detail->lampiran ?? [] as $gambarPath) {
-                $fullPath = storage_path('app/public/' . $gambarPath);
-                if (file_exists($fullPath)) {
-                    $zip->addFile($fullPath, basename($gambarPath));
-                }
-            }
+    //         foreach ($standarisasi->detail->lampiran ?? [] as $gambarPath) {
+    //             $fullPath = storage_path('app/public/' . $gambarPath);
+    //             if (file_exists($fullPath)) {
+    //                 $zip->addFile($fullPath, basename($gambarPath));
+    //             }
+    //         }
 
-            $zip->close();
-        }
+    //         $zip->close();
+    //     }
 
-        return response()->download($zipPath)->deleteFileAfterSend(true);
-    }
+    //     return response()->download($zipPath)->deleteFileAfterSend(true);
+    // }
 
-    public function pdfKelengkapanMaterialSS($id)
-    {
-        $kelengkapan = KelengkapanMaterialSS::with(['standarisasiDrawing', 'pic', 'detail', 'pic.inspectedName', 'pic.acceptedName', 'pic.approvedName'])->findOrFail($id);
+    // public function pdfKelengkapanMaterialSS($id)
+    // {
+    //     $kelengkapan = KelengkapanMaterialSS::with(['standarisasiDrawing', 'pic', 'detail', 'pic.inspectedName', 'pic.acceptedName', 'pic.approvedName'])->findOrFail($id);
 
-        $no_spk = optional(
-            $kelengkapan?->standarisasiDrawing
-                ?->serahTerimaWarehouse
-                ?->peminjamanAlat
-                ?->spkVendor
-                ?->permintaanBahanProduksi
-                ?->jadwalProduksi
-                ?->spk
-        )->no_spk ?? '-';
+    //     $no_spk = optional(
+    //         $kelengkapan?->standarisasiDrawing
+    //             ?->serahTerimaWarehouse
+    //             ?->peminjamanAlat
+    //             ?->spkVendor
+    //             ?->perencanaanProduksi
+    //             ?->spk
+    //     )->no_spk ?? '-';
 
-        return view('pdf.quality.pdfKelengkapanMaterialSS', compact('kelengkapan', 'no_spk'));
-    }
+    //     return view('pdf.quality.pdfKelengkapanMaterialSS', compact('kelengkapan', 'no_spk'));
+    // }
 
-    public function pdfPengecekanMaterialSS($id)
-    {
-        $pengecekanSS = PengecekanMaterialSS::with(['kelengkapanMaterial', 'pic', 'detail', 'penyerahan', 'pic.inspectedName', 'pic.acceptedName', 'pic.approvedName'])->findOrFail($id);
+    // public function pdfPengecekanMaterialSS($id)
+    // {
+    //     $pengecekanSS = PengecekanMaterialSS::with(['kelengkapanMaterial', 'pic', 'detail', 'penyerahan', 'pic.inspectedName', 'pic.acceptedName', 'pic.approvedName'])->findOrFail($id);
 
-        $no_spk = optional(
-            $pengecekanSS?->kelengkapanMaterial
-                ?->standarisasiDrawing
-                ?->serahTerimaWarehouse
-                ?->peminjamanAlat
-                ?->spkVendor
-                ?->permintaanBahanProduksi
-                ?->jadwalProduksi
-                ?->spk
-        )->no_spk ?? '-';
+    //     $no_spk = optional(
+    //         $pengecekanSS?->kelengkapanMaterial
+    //             ?->standarisasiDrawing
+    //             ?->serahTerimaWarehouse
+    //             ?->peminjamanAlat
+    //             ?->spkVendor
+    //             ?->perencanaanProduksi
+    //             ?->spk
+    //     )->no_spk ?? '-';
 
-        return view('pdf.quality.pdfPengecekanMaterialSS', compact('pengecekanSS', 'no_spk'));
-    }
+    //     return view('pdf.quality.pdfPengecekanMaterialSS', compact('pengecekanSS', 'no_spk'));
+    // }
 
     public function pdfPenyerahanElectrical($id)
     {
@@ -330,59 +328,59 @@ class PDFController extends Controller
         return response()->download(storage_path('app/public/' . $filePath));
     }
 
-    public function pdfSPKVendor($id)
-    {
-        $vendor = SPKVendor::with(['perencanaanProduksi'])->findOrFail($id);
+    // public function pdfSPKVendor($id)
+    // {
+    //     $vendor = SPKVendor::with(['perencanaanProduksi'])->findOrFail($id);
 
-        return view('pdf.production.pdfSPKVendor', compact('vendor'));
-    }
+    //     return view('pdf.production.pdfSPKVendor', compact('vendor'));
+    // }
 
-    public function downloadSPKVendor($id)
-    {
-        $vendor = SPKVendor::findOrFail($id);
+    // public function downloadSPKVendor($id)
+    // {
+    //     $vendor = SPKVendor::findOrFail($id);
 
-        //PDF
-        $filePath = $vendor->file_path;
-        $pdfFullPath = storage_path('app/public/' . $filePath);
+    //     //PDF
+    //     $filePath = $vendor->file_path;
+    //     $pdfFullPath = storage_path('app/public/' . $filePath);
 
-        //Gambar
-        $zipFileName = 'lampiran-' . $vendor->id . '.zip';
-        $zipDir = storage_path('app/temp');
-        $zipPath = $zipDir . '/' . $zipFileName;
+    //     //Gambar
+    //     $zipFileName = 'lampiran-' . $vendor->id . '.zip';
+    //     $zipDir = storage_path('app/temp');
+    //     $zipPath = $zipDir . '/' . $zipFileName;
 
-        // Buat folder sementara jika belum ada
-        if (!file_exists($zipDir)) {
-            mkdir($zipDir, 0755, true);
-        }
+    //     // Buat folder sementara jika belum ada
+    //     if (!file_exists($zipDir)) {
+    //         mkdir($zipDir, 0755, true);
+    //     }
 
-        $zip = new ZipArchive;
-        if ($zip->open($zipPath, ZipArchive::CREATE | ZipArchive::OVERWRITE)) {
+    //     $zip = new ZipArchive;
+    //     if ($zip->open($zipPath, ZipArchive::CREATE | ZipArchive::OVERWRITE)) {
 
-            // Tambahkan file PDF ke dalam folder 'dokumen/' di ZIP
-            if (file_exists($pdfFullPath)) {
-                $zip->addFile($pdfFullPath, 'dokumen/' . basename($filePath));
-            }
+    //         // Tambahkan file PDF ke dalam folder 'dokumen/' di ZIP
+    //         if (file_exists($pdfFullPath)) {
+    //             $zip->addFile($pdfFullPath, 'dokumen/' . basename($filePath));
+    //         }
 
-            // Tambahkan semua gambar ke dalam folder 'gambar/' di ZIP
-            // foreach ($vendor->lampiran ?? [] as $gambarPath) {
-            //     $fullGambarPath = storage_path('app/public/' . $gambarPath);
-            //     if (file_exists($fullGambarPath)) {
-            //         $zip->addFile($fullGambarPath, 'gambar/' . basename($gambarPath));
-            //     }
-            // }
-            foreach ((array) $vendor->lampiran as $gambarPath) {
-                $fullGambarPath = storage_path('app/public/' . $gambarPath);
+    //         // Tambahkan semua gambar ke dalam folder 'gambar/' di ZIP
+    //         // foreach ($vendor->lampiran ?? [] as $gambarPath) {
+    //         //     $fullGambarPath = storage_path('app/public/' . $gambarPath);
+    //         //     if (file_exists($fullGambarPath)) {
+    //         //         $zip->addFile($fullGambarPath, 'gambar/' . basename($gambarPath));
+    //         //     }
+    //         // }
+    //         foreach ((array) $vendor->lampiran as $gambarPath) {
+    //             $fullGambarPath = storage_path('app/public/' . $gambarPath);
 
-                if (file_exists($fullGambarPath)) {
-                    $zip->addFile($fullGambarPath, 'gambar/' . basename($gambarPath));
-                }
-            }
+    //             if (file_exists($fullGambarPath)) {
+    //                 $zip->addFile($fullGambarPath, 'gambar/' . basename($gambarPath));
+    //             }
+    //         }
 
-            $zip->close();
-        }
+    //         $zip->close();
+    //     }
 
-        return response()->download($zipPath)->deleteFileAfterSend(true);
-    }
+    //     return response()->download($zipPath)->deleteFileAfterSend(true);
+    // }
 
     public function pdfKetidaksesuaian($id)
     {

@@ -66,6 +66,20 @@
             <td>: {{ $jadwal->spk->no_spk }}</td>
         </tr>
     </table>
+    {{-- <table class="no-border" width="100%">
+        <tr>
+            <td width="15%">Nomor</td>
+            <td width="35%">: {{ $jadwal->no_surat }}</td>
+            <td width="15%">Tanggal</td>
+            <td width="35%">: {{ \Carbon\Carbon::parse($jadwal->tanggal)->translatedFormat('d F Y') }}</td>
+        </tr>
+        <tr>
+            <td>Dari</td>
+            <td>: {{ $jadwal->dari }}</td>
+            <td>Kepada</td>
+            <td>: {{ $jadwal->kepada }}</td>
+        </tr>
+    </table> --}}
 
     {{-- B. IDENTIFIKASI PRODUK --}}
     <div class="title">B. Identifikasi Produk</div>

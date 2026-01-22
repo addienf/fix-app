@@ -73,7 +73,7 @@
         </tr>
     </table>
 
-    <table class="no-border" style="margin-top:12px;">
+    {{-- <table class="no-border" style="margin-top:12px;">
         <tr>
             <td width="25%">Nomor</td>
             <td>: {{ $permintaan_bahan->no_surat }}</td>
@@ -90,6 +90,21 @@
             <td>Kepada</td>
             <td>: {{ $permintaan_bahan->kepada }}</td>
         </tr>
+    </table> --}}
+
+    <table class="no-border" width="100%">
+        <tr>
+            <td width="15%">Nomor</td>
+            <td width="35%">: {{ $permintaan_bahan->no_surat }}</td>
+            <td width="15%">Tanggal</td>
+            <td width="35%">: {{ \Carbon\Carbon::parse($permintaan_bahan->tanggal)->translatedFormat('d F Y') }}</td>
+        </tr>
+        <tr>
+            <td>Dari</td>
+            <td>: {{ $permintaan_bahan->dari }}</td>
+            <td>Kepada</td>
+            <td>: {{ $permintaan_bahan->kepada }}</td>
+        </tr>
     </table>
 
     <p style="margin-top:12px;">
@@ -99,6 +114,8 @@
         <b>{{ Str::headline($permintaan_bahan->pic->dibuatName->roles->first()?->name ?? '-') }}</b>,
         mohon bantuan untuk memenuhi kebutuhan bahan/sparepart dengan rincian sebagai berikut:
     </p>
+
+    <br>
 
     @foreach ($groupedByStock as $status => $items)
         <div class="section-title">

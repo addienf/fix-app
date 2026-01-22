@@ -86,13 +86,13 @@ class PengecekanElectricalResource extends Resource
                 // TextColumn::make('penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.identifikasiProduks.no_seri')
                 //     ->label('No Seri'),
 
-                self::textColumn('penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.spk.no_spk', 'No SPK Marketing'),
+                self::textColumn('penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.perencanaanProduksi.spk.no_spk', 'No SPK Marketing'),
 
                 self::textColumn('no_seri', 'No Seri')
                     ->getStateUsing(function ($record) {
                         return $record?->penyerahanElectrical?->pengecekanSS
                             ?->kelengkapanMaterial?->standarisasiDrawing?->serahTerimaWarehouse
-                            ?->peminjamanAlat?->spkVendor?->permintaanBahanProduksi?->jadwalProduksi
+                            ?->peminjamanAlat?->spkVendor?->perencanaanProduksi
                             ?->identifikasiProduks?->pluck('no_seri')->filter()->implode(', ') ?? '-';
                     }),
 
@@ -157,8 +157,8 @@ class PengecekanElectricalResource extends Resource
     {
         return parent::getEloquentQuery()
             ->with([
-                'penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.spk',
-                'penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.identifikasiProduks',
+                'penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.perencanaanProduksi.spk',
+                'penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.perencanaanProduksi.identifikasiProduks',
             ]);
     }
 }

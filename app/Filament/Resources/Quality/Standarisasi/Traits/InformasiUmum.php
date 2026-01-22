@@ -44,8 +44,8 @@ trait InformasiUmum
             ->options(function () {
 
                 return SerahTerimaBahan::with([
-                    'peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.spk',
-                    'peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.identifikasiProduks',
+                    'peminjamanAlat.spkVendor.perencanaanProduksi.spk',
+                    'peminjamanAlat.spkVendor.perencanaanProduksi.identifikasiProduks',
                 ])
                     ->whereDoesntHave('standarisasiDrawing')
                     ->latest()
@@ -55,8 +55,7 @@ trait InformasiUmum
 
                         $jadwal = $serah->peminjamanAlat
                             ->spkVendor
-                            ->permintaanBahanProduksi
-                            ->jadwalProduksi;
+                            ->perencanaanProduksi;
 
                         $spkNo = $jadwal->spk->no_spk ?? '-';
 
@@ -73,15 +72,15 @@ trait InformasiUmum
             ->getSearchResultsUsing(function (string $search) {
 
                 return SerahTerimaBahan::with([
-                    'peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.spk',
-                    'peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.identifikasiProduks',
+                    'peminjamanAlat.spkVendor.perencanaanProduksi.spk',
+                    'peminjamanAlat.spkVendor.perencanaanProduksi.identifikasiProduks',
                 ])
                     ->whereDoesntHave('standarisasiDrawing')
                     ->where(function ($query) use ($search) {
-                        $query->whereHas('peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.spk', function ($q) use ($search) {
+                        $query->whereHas('peminjamanAlat.spkVendor.perencanaanProduksi.spk', function ($q) use ($search) {
                             $q->where('no_spk', 'LIKE', "%{$search}%");
                         })
-                            ->orWhereHas('peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.identifikasiProduks', function ($q) use ($search) {
+                            ->orWhereHas('peminjamanAlat.spkVendor.perencanaanProduksi.identifikasiProduks', function ($q) use ($search) {
                                 $q->where('no_seri', 'LIKE', "%{$search}%");
                             });
                     })
@@ -91,8 +90,7 @@ trait InformasiUmum
 
                         $jadwal = $serah->peminjamanAlat
                             ->spkVendor
-                            ->permintaanBahanProduksi
-                            ->jadwalProduksi;
+                            ->perencanaanProduksi;
 
                         $spkNo = $jadwal->spk->no_spk ?? '-';
 
@@ -110,8 +108,8 @@ trait InformasiUmum
         // ->getOptionLabelUsing(function ($value) {
 
         //     $serah = SerahTerimaBahan::with([
-        //         'peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.spk',
-        //         'peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.identifikasiProduks',
+        //         'peminjamanAlat.spkVendor.perencanaanProduksi.spk',
+        //         'peminjamanAlat.spkVendor.perencanaanProduksi.identifikasiProduks',
         //     ])->find($value);
 
         //     if (!$serah) return '-';

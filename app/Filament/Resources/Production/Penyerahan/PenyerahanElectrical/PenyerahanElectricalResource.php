@@ -84,7 +84,7 @@ class PenyerahanElectricalResource extends Resource
                 self::textColumn('no_seri', 'No Seri')
                     ->getStateUsing(function ($record) {
                         return $record?->pengecekanSS?->kelengkapanMaterial?->standarisasiDrawing?->serahTerimaWarehouse
-                            ?->peminjamanAlat?->spkVendor?->permintaanBahanProduksi?->jadwalProduksi
+                            ?->peminjamanAlat?->spkVendor?->perencanaanProduksi
                             ?->identifikasiProduks?->pluck('no_seri')->filter()->implode(', ') ?? '-';
                     }),
 

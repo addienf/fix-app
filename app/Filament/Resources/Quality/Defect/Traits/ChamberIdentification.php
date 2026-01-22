@@ -84,7 +84,7 @@ trait ChamberIdentification
                 return match ($tipe) {
                     'electrical' =>
                     PengecekanMaterialElectrical::with([
-                        'penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi'
+                        'penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.perencanaanProduksi'
                     ])
                         ->whereDoesntHave('defectStatus')
                         ->get()
@@ -92,13 +92,13 @@ trait ChamberIdentification
                             $spkNo =
                                 $item?->penyerahanElectrical?->pengecekanSS?->kelengkapanMaterial
                                 ?->standarisasiDrawing?->serahTerimaWarehouse?->peminjamanAlat
-                                ?->spkVendor?->permintaanBahanProduksi?->jadwalProduksi?->spk?->no_spk
+                                ?->spkVendor?->perencanaanProduksi?->spk?->no_spk
                                 ?? '-';
 
                             $seri =
                                 $item?->penyerahanElectrical?->pengecekanSS?->kelengkapanMaterial
                                 ?->standarisasiDrawing?->serahTerimaWarehouse?->peminjamanAlat
-                                ?->spkVendor?->permintaanBahanProduksi?->jadwalProduksi
+                                ?->spkVendor?->perencanaanProduksi
                                 ?->identifikasiProduks?->pluck('no_seri')->implode(', ')
                                 ?: '-';
 
@@ -109,7 +109,7 @@ trait ChamberIdentification
 
                     'stainless_steel' =>
                     PengecekanMaterialSS::with([
-                        'kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi'
+                        'kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.perencanaanProduksi'
                     ])
                         ->whereDoesntHave('defectStatus')
                         ->get()
@@ -117,14 +117,12 @@ trait ChamberIdentification
 
                             $spkNo =
                                 $item?->kelengkapanMaterial?->standarisasiDrawing?->serahTerimaWarehouse
-                                ?->peminjamanAlat?->spkVendor?->permintaanBahanProduksi
-                                ?->jadwalProduksi?->spk?->no_spk
+                                ?->peminjamanAlat?->spkVendor?->perencanaanProduksi?->spk?->no_spk
                                 ?? '-';
 
                             $seri =
                                 $item?->kelengkapanMaterial?->standarisasiDrawing?->serahTerimaWarehouse
-                                ?->peminjamanAlat?->spkVendor?->permintaanBahanProduksi
-                                ?->jadwalProduksi?->identifikasiProduks?->pluck('no_seri')->implode(', ')
+                                ?->peminjamanAlat?->spkVendor?->perencanaanProduksi?->identifikasiProduks?->pluck('no_seri')->implode(', ')
                                 ?: '-';
 
                             return [
@@ -152,15 +150,13 @@ trait ChamberIdentification
 
                 $seri =
                     $root?->kelengkapanMaterial?->standarisasiDrawing?->serahTerimaWarehouse
-                    ?->peminjamanAlat?->spkVendor?->permintaanBahanProduksi
-                    ?->jadwalProduksi?->identifikasiProduks?->pluck('no_seri')
+                    ?->peminjamanAlat?->spkVendor?->perencanaanProduksi?->identifikasiProduks?->pluck('no_seri')
                     ->implode(', ')
                     ?: '-';
 
                 $tipeProduk =
                     $root?->kelengkapanMaterial?->standarisasiDrawing?->serahTerimaWarehouse
-                    ?->peminjamanAlat?->spkVendor?->permintaanBahanProduksi
-                    ?->jadwalProduksi?->identifikasiProduks?->first()?->tipe
+                    ?->peminjamanAlat?->spkVendor?->perencanaanProduksi?->identifikasiProduks?->first()?->tipe
                     ?? '-';
 
                 $set('serial_number', $seri);

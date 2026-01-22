@@ -64,8 +64,8 @@ trait ChamberIdentification
             ->options(
                 fn() =>
                 PenyerahanProdukJadi::with([
-                    'pengecekanElectrical.penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.spk',
-                    'pengecekanElectrical.penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.identifikasiProduks',
+                    'pengecekanElectrical.penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.perencanaanProduksi.spk',
+                    'pengecekanElectrical.penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.perencanaanProduksi.identifikasiProduks',
                 ])
                     ->latest()
                     ->limit(20)
@@ -73,7 +73,7 @@ trait ChamberIdentification
                     ->mapWithKeys(function ($item) {
 
                         $jadwal = $item->pengecekanElectrical->penyerahanElectrical->pengecekanSS->kelengkapanMaterial->standarisasiDrawing
-                            ->serahTerimaWarehouse->peminjamanAlat->spkVendor->permintaanBahanProduksi->jadwalProduksi;
+                            ->serahTerimaWarehouse->peminjamanAlat->spkVendor->perencanaanProduksi;
 
                         $spkNo = $jadwal->spk->no_spk ?? '-';
 
@@ -90,12 +90,12 @@ trait ChamberIdentification
             ->getSearchResultsUsing(function (string $search) {
 
                 return PenyerahanProdukJadi::with([
-                    'pengecekanElectrical.penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.spk',
-                    'pengecekanElectrical.penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.identifikasiProduks',
+                    'pengecekanElectrical.penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.perencanaanProduksi.spk',
+                    'pengecekanElectrical.penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.perencanaanProduksi.identifikasiProduks',
                 ])
                     ->when(strlen($search) > 0, function ($q) use ($search) {
                         $q->whereHas(
-                            'pengecekanElectrical.penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.spk',
+                            'pengecekanElectrical.penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.perencanaanProduksi.spk',
                             fn($s) => $s->where('no_spk', 'like', "%{$search}%")
                         );
                     })
@@ -112,8 +112,7 @@ trait ChamberIdentification
                             ->serahTerimaWarehouse
                             ->peminjamanAlat
                             ->spkVendor
-                            ->permintaanBahanProduksi
-                            ->jadwalProduksi;
+                            ->perencanaanProduksi;
 
                         $spkNo = $jadwal->spk->no_spk ?? '-';
 
@@ -130,8 +129,8 @@ trait ChamberIdentification
             // ->getOptionLabelUsing(function ($value) {
 
             //     $item = PenyerahanProdukJadi::with([
-            //         'pengecekanElectrical.penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.spk',
-            //         'pengecekanElectrical.penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.identifikasiProduks',
+            //         'pengecekanElectrical.penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.perencanaanProduksi.spk',
+            //         'pengecekanElectrical.penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.perencanaanProduksi.identifikasiProduks',
             //     ])->find($value);
 
             //     if (!$item) return null;
@@ -161,7 +160,7 @@ trait ChamberIdentification
 
                 $penyerahan = PenyerahanProdukJadi::with([
                     'pengecekanElectrical.penyerahanElectrical',
-                    'pengecekanElectrical.penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.identifikasiProduks',
+                    'pengecekanElectrical.penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.perencanaanProduksi.identifikasiProduks',
                 ])->find($state);
 
 
@@ -171,7 +170,7 @@ trait ChamberIdentification
 
                 $no_seri = $penyerahan?->pengecekanElectrical?->penyerahanElectrical->pengecekanSS
                     ->kelengkapanMaterial->standarisasiDrawing->serahTerimaWarehouse->peminjamanAlat->spkVendor
-                    ->permintaanBahanProduksi->jadwalProduksi->identifikasiProduks
+                    ->perencanaanProduksi->identifikasiProduks
                     ->pluck('no_seri')
                     ->filter()
                     ->implode(', ') ?: '-';

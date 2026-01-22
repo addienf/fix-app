@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Production\Jadwal\JadwalProduksi;
+use App\Models\Production\SPK\SPKVendor;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -14,12 +15,6 @@ class ProductionController extends Controller
     //
     public function pdfJadwalProduksi($id)
     {
-        // $jadwal = JadwalProduksi::with(['spk', 'details', 'pic', 'sumbers', 'identifikasiProduks', 'timelines', 'pic.createName', 'pic.approveName'])->findOrFail($id);
-
-        // $pdf = Pdf::loadView('pdf.production.pdfJadwalProduksi', compact('jadwal'))
-        //     ->setPaper('A4', 'portrait');
-
-        // return $pdf->stream('jadwal-produksi.pdf');
         $jadwalProduksi = JadwalProduksi::with([
             'spk',
             'details',
@@ -33,7 +28,7 @@ class ProductionController extends Controller
 
         $tanggal = Carbon::parse($jadwalProduksi->tanggal)->format('Y-m-d');
         $noSuratSafe = str_replace(['/', '\\', ' '], '-', $jadwalProduksi->no_surat);
-        $baseName = $noSuratSafe . '-' . $tanggal;
+        $baseName = $noSuratSafe . ' - ' . $tanggal;
 
         $pdf = Pdf::loadView('pdf.production.pdfJadwalProduksi', [
             'jadwal' => $jadwalProduksi
@@ -71,16 +66,51 @@ class ProductionController extends Controller
         return Storage::disk('public')->download($zipRelativePath);
     }
 
-    // public function downloadJadwalProduksi($id)
-    // {
-    //     $jadwalProduksi = JadwalProduksi::findOrFail($id);
+    public function pdfSPKVendor($id)
+    {
+        $vendor = SPKVendor::with(['perencanaanProduksi'])->findOrFail($id);
 
-    //     $filePath = $jadwalProduksi->file_upload;
+        return view('pdf.production.pdfSPKVendor', compact('vendor'));
+    }
 
-    //     if (!$filePath || !Storage::disk('public')->exists($filePath)) {
-    //         return response()->json(['message' => 'File not found'], 404);
-    //     }
+    public function downloadSPKVendor($id)
+    {
+        $vendor = SPKVendor::findOrFail($id);
 
-    //     return response()->download(storage_path('app/public/' . $filePath));
-    // }
+        //PDF
+        $filePath = $vendor->file_path;
+        $pdfFullPath = storage_path('app/public/' . $filePath);
+
+        //Gambar
+        $zipFileName = 'lampiran-' . $vendor->id . '.zip';
+        $zipDir = storage_path('app/temp');
+        $zipPath = $zipDir . '/' . $zipFileName;
+
+        // Buat folder sementara jika belum ada
+        if (!file_exists($zipDir)) {
+            mkdir($zipDir, 0755, true);
+        }
+
+        $zip = new ZipArchive;
+        if ($zip->open($zipPath, ZipArchive::CREATE | ZipArchive::OVERWRITE)) {
+
+            // Tambahkan file PDF ke dalam folder 'dokumen/' di ZIP
+            if (file_exists($pdfFullPath)) {
+                $zip->addFile($pdfFullPath, 'dokumen/' . basename($filePath));
+            }
+
+            // Tambahkan semua gambar ke dalam folder 'gambar/' di ZIP
+            foreach ((array) $vendor->lampiran as $gambarPath) {
+                $fullGambarPath = storage_path('app/public/' . $gambarPath);
+
+                if (file_exists($fullGambarPath)) {
+                    $zip->addFile($fullGambarPath, 'gambar/' . basename($gambarPath));
+                }
+            }
+
+            $zip->close();
+        }
+
+        return response()->download($zipPath)->deleteFileAfterSend(true);
+    }
 }

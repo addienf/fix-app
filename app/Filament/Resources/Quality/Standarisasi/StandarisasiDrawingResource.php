@@ -86,7 +86,7 @@ class StandarisasiDrawingResource extends Resource
                 // TextColumn::make('serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.spk.no_spk')
                 //     ->label('No SPK Marketing'),
 
-                self::textColumn('serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.spk.no_spk', 'No SPK Marketing'),
+                self::textColumn('serahTerimaWarehouse.peminjamanAlat.spkVendor.perencanaanProduksi.spk.no_spk', 'No SPK Marketing'),
 
                 self::textColumn('no_seri', 'No Seri')
                     ->getStateUsing(function ($record) {
@@ -94,8 +94,7 @@ class StandarisasiDrawingResource extends Resource
                             ->serahTerimaWarehouse
                             ?->peminjamanAlat
                             ?->spkVendor
-                            ?->permintaanBahanProduksi
-                            ?->jadwalProduksi
+                            ?->perencanaanProduksi
                             ?->identifikasiProduks
                             ?->pluck('no_seri')
                             ->filter()
@@ -176,8 +175,8 @@ class StandarisasiDrawingResource extends Resource
     {
         return parent::getEloquentQuery()
             ->with([
-                'serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.spk',
-                'serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.identifikasiProduks',
+                'serahTerimaWarehouse.peminjamanAlat.spkVendor.perencanaanProduksi.spk',
+                'serahTerimaWarehouse.peminjamanAlat.spkVendor.perencanaanProduksi.identifikasiProduks',
                 'identitas',
                 'pic',
                 'detail',
