@@ -75,12 +75,12 @@ class PDFController extends Controller
         return view('pdf.quality.pdfPengecekanElectrical', compact('electrical'));
     }
 
-    public function pdfPenyerahanProdukJadi($id)
-    {
-        $produkJadi = PenyerahanProdukJadi::with(['details', 'pic', 'pic.submitName', 'pic.receiveName'])->findOrFail($id);
+    // public function pdfPenyerahanProdukJadi($id)
+    // {
+    //     $produkJadi = PenyerahanProdukJadi::with(['details', 'pic', 'pic.submitName', 'pic.receiveName'])->findOrFail($id);
 
-        return view('pdf.production.pdfPenyerahanProdukJadi', compact('produkJadi'));
-    }
+    //     return view('pdf.production.pdfPenyerahanProdukJadi', compact('produkJadi'));
+    // }
 
     public function pdfPengecekanPerforma($id)
     {
