@@ -25,6 +25,11 @@ class CustomerResource extends Resource
     protected static ?string $modelLabel = 'Customer';
     protected static ?string $slug = 'general/customer';
 
+    public static function shouldRegisterNavigation(): bool
+    {
+        return false;
+    }
+
     public static function form(Form $form): Form
     {
         return $form

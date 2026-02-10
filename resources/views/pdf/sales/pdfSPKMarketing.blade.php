@@ -51,7 +51,7 @@
                         'value' => \Carbon\Carbon::parse($spk_mkt->tanggal)->translatedFormat('d F Y'),
                     ],
                     ['label' => 'No SPK :', 'value' => $spk_mkt->no_spk],
-                    ['label' => 'Customer :', 'value' => $spk_mkt->spesifikasiProduct->urs->customer->name],
+                    // ['label' => 'Customer :', 'value' => $spk_mkt->spesifikasiProduct->urs->customer->name],
                     ['label' => 'Dari :', 'value' => $spk_mkt->dari],
                     ['label' => 'No Order :', 'value' => $spk_mkt->no_order],
                     ['label' => 'Kepada :', 'value' => $spk_mkt->kepada],

@@ -10,7 +10,7 @@ class SalesMarketingController extends Controller
     //
     public function previewSpesifikasiProduct($id)
     {
-        $spesifikasi = SpesifikasiProduct::with(['urs.customer', 'pic', 'details.product', 'details.file', 'pic.signedName', 'pic.acceptedName', 'pic.acknowledgeName'])->findOrFail($id);
+        $spesifikasi = SpesifikasiProduct::with(['urs.company', 'pic', 'details.product', 'details.file', 'pic.signedName', 'pic.acceptedName', 'pic.acknowledgeName'])->findOrFail($id);
 
         return view('pdf.sales.pdfSpecProduct', compact('spesifikasi'));
     }

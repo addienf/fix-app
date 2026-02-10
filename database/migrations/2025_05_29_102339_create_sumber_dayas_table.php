@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('jumlah')->nullable();
             $table->string('status')->nullable();
             $table->string('keperluan')->nullable();
+            $table->string('kategori')->nullable();
             $table->timestamps();
         });
     }

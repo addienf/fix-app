@@ -24,10 +24,10 @@ class SPKServiceResource extends Resource
     protected static ?string $model = SPKService::class;
     protected static ?int $navigationSort = 20;
     protected static ?string $navigationGroup = 'Customer Care';
-    protected static ?string $navigationLabel = 'SPK Service';
-    protected static ?string $pluralLabel = 'SPK Service';
-    protected static ?string $modelLabel = 'SPK Service';
-    protected static ?string $slug = 'customer-care/spk-service';
+    protected static ?string $navigationLabel = 'SPK Pelayanan Pelanggan';
+    protected static ?string $pluralLabel = 'SPK Pelayanan Pelanggan';
+    protected static ?string $modelLabel = 'SPK Pelayanan Pelanggan';
+    protected static ?string $slug = 'customer-care/spk-pelayanan-pelanggan';
     protected static ?string $navigationIcon = 'heroicon-o-wrench-screwdriver';
 
     public static function getNavigationBadge(): ?string

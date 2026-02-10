@@ -41,11 +41,11 @@
             <!-- FORM -->
             @php
                 $fields = [
-                    ['label' => 'Nama', 'value' => $spesifikasi->urs->customer->name],
-                    ['label' => 'Department', 'value' => $spesifikasi->urs->customer->department],
-                    ['label' => 'Phone Number', 'value' => $spesifikasi->urs->customer->company->phone],
-                    ['label' => 'Company Name', 'value' => $spesifikasi->urs->customer->company->name],
-                    ['label' => 'Company Address', 'value' => $spesifikasi->urs->customer->company->address],
+                    ['label' => 'Nama', 'value' => $spesifikasi->name],
+                    ['label' => 'Department', 'value' => $spesifikasi->department],
+                    ['label' => 'Phone Number', 'value' => $spesifikasi->phone_number],
+                    ['label' => 'Company Name', 'value' => $spesifikasi->urs->company->name],
+                    ['label' => 'Company Address', 'value' => $spesifikasi->urs->company->address],
                 ];
             @endphp
 
