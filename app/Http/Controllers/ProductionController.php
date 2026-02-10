@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Production\Jadwal\JadwalProduksi;
+use App\Models\Production\Penyerahan\PenyerahanElectrical\PenyerahanElectrical;
+use App\Models\Production\Penyerahan\PenyerahanProdukJadi;
+use App\Models\Production\SPK\SPKQuality;
 use App\Models\Production\SPK\SPKVendor;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use ZipArchive;
 
@@ -112,5 +114,37 @@ class ProductionController extends Controller
         }
 
         return response()->download($zipPath)->deleteFileAfterSend(true);
+    }
+
+    public function pdfSPKQuality($id)
+    {
+        $spk_qc = SPKQuality::with(['penyerahanElectrical', 'details', 'pic', 'pic.createName', 'pic.receiveName'])->findOrFail($id);
+
+        return view('pdf.production.pdfSPKQuality', compact('spk_qc'));
+    }
+
+    public function pdfPenyerahanElectrical($id)
+    {
+        $serahElectrical = PenyerahanElectrical::with(['pengecekanSS', 'sebelumSerahTerima', 'pic', 'penerimaElectrical', 'pic.submitName', 'pic.receiveName', 'pic.knowingName'])->findOrFail($id);
+
+        return view('pdf.production.pdfPenyerahanElectrical', compact('serahElectrical'));
+    }
+
+    public function downloadPenyerahanElectrical($id)
+    {
+        $spesifikasi = PenyerahanElectrical::with(['sebelumSerahTerima'])->findOrFail($id);
+
+        $filePath = $spesifikasi->sebelumSerahTerima->file_pendukung;
+
+        $fullPath = storage_path('app/public/' . $filePath);
+
+        return response()->download($fullPath);
+    }
+
+    public function pdfPenyerahanProdukJadi($id)
+    {
+        $produkJadi = PenyerahanProdukJadi::with(['details', 'pic', 'pic.submitName', 'pic.receiveName'])->findOrFail($id);
+
+        return view('pdf.production.pdfPenyerahanProdukJadi', compact('produkJadi'));
     }
 }

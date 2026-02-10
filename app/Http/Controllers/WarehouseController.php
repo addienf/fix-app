@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Warehouse\Incomming\IncommingMaterial;
+use App\Models\Warehouse\Pelabelan\QCPassed;
 use App\Models\Warehouse\Peminjaman\PeminjamanAlat;
 use App\Models\Warehouse\PermintaanBahanWBB\PermintaanBahan;
 use App\Models\Warehouse\SerahTerima\SerahTerimaBahan;
@@ -89,5 +90,12 @@ class WarehouseController extends Controller
             ->setPaper('a4', 'portrait');
 
         return $pdf->stream($fileName);
+    }
+
+    public function pdfPelabelanQCPassed($id)
+    {
+        $pelabelan = QCPassed::with(['pic', 'details', 'pic.createdName', 'pic.approvedName', 'productRelease'])->findOrFail($id);
+
+        return view('pdf.warehouse.pdfPelabelanQCPassed', compact('pelabelan'));
     }
 }
