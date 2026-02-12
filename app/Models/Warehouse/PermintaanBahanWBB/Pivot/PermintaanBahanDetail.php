@@ -16,6 +16,7 @@ class PermintaanBahanDetail extends Model
         'spesifikasi',
         'jumlah',
         'keperluan_barang',
+        'status_stock',
     ];
 
     public function permintaanBahanWBB()

@@ -50,13 +50,12 @@ class SPKVendorResource extends Resource
 
                 self::textColumn('no_spk_vendor', 'No SPK Vendor'),
 
-                self::textColumn('permintaanBahanProduksi.jadwalProduksi.spk.no_spk', 'No SPK Marketing'),
+                self::textColumn('perencanaanProduksi.spk.no_spk', 'No SPK Marketing'),
 
                 self::textColumn('no_seri', 'No Seri Product')
                     ->getStateUsing(function ($record) {
                         return $record
-                            ->permintaanBahanProduksi
-                            ?->jadwalProduksi
+                            ->perencanaanProduksi
                             ?->identifikasiProduks
                             ?->pluck('no_seri')
                             ->implode(', ') ?? '-';
@@ -110,8 +109,8 @@ class SPKVendorResource extends Resource
     {
         return parent::getEloquentQuery()
             ->with([
-                'permintaanBahanProduksi.jadwalProduksi.spk',
-                'permintaanBahanProduksi.jadwalProduksi.identifikasiProduks'
+                'perencanaanProduksi.spk',
+                'perencanaanProduksi.identifikasiProduks'
             ]);
     }
 }

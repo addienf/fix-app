@@ -57,6 +57,10 @@ trait DetailPekerjaan
                     ->label('Deskripsi Pekerjaan')
                     ->columnSpanFull(),
             ])
-            ->columns(2);
+            ->columns([
+                'default' => 1,
+                'md' => 2,
+                'lg' => 2,
+            ]);
     }
 }

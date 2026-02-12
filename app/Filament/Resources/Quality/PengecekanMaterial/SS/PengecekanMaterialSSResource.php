@@ -82,13 +82,12 @@ class PengecekanMaterialSSResource extends Resource
             ->columns([
                 //
 
-                self::textColumn('kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.spk.no_spk', 'No SPK Marketing'),
+                self::textColumn('kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.perencanaanProduksi.spk.no_spk', 'No SPK Marketing'),
 
                 self::textColumn('no_seri', 'No Seri')
                     ->getStateUsing(function ($record) {
                         return $record->kelengkapanMaterial?->standarisasiDrawing?->serahTerimaWarehouse
-                            ?->peminjamanAlat?->spkVendor?->permintaanBahanProduksi?->jadwalProduksi
-                            ?->identifikasiProduks?->pluck('no_seri')->filter()->implode(', ') ?? '-';
+                            ?->perencanaanProduksi?->identifikasiProduks?->pluck('no_seri')->filter()->implode(', ') ?? '-';
                     }),
 
                 self::textColumn('tipe', 'Type/Model'),
@@ -152,8 +151,8 @@ class PengecekanMaterialSSResource extends Resource
     {
         return parent::getEloquentQuery()
             ->with([
-                'kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.spk',
-                'kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.identifikasiProduks',
+                'kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.perencanaanProduksi.spk',
+                'kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.perencanaanProduksi.identifikasiProduks',
                 'pic',
                 'detail',
             ]);

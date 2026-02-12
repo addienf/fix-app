@@ -14,7 +14,7 @@ class ListSPKServices extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make()->label('Tambah Data SPK Service'),
+            Actions\CreateAction::make()->label('Tambah Data SPK Pelayanan Pelanggan'),
         ];
     }
 

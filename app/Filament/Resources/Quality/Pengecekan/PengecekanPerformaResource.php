@@ -149,7 +149,6 @@ class PengecekanPerformaResource extends Resource
                 'pic',
                 'ketidaksesuaian',
                 'productRelease',
-                // 'qcPassed',
                 'detail'
             ]);
     }

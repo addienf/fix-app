@@ -14,7 +14,7 @@ class PermintaanPelayananPelanggan extends Model
     use HasFactory;
 
     protected $fillable = [
-        'complain_id',
+        // 'complain_id',
         'no_form',
         'tanggal',
         'alamat',
@@ -31,15 +31,15 @@ class PermintaanPelayananPelanggan extends Model
         'jenis_permintaan' => 'array'
     ];
 
-    public function spkService()
-    {
-        return $this->hasOne(SPKService::class, 'pelayanan_id');
-    }
+    // public function spkService()
+    // {
+    //     return $this->hasOne(SPKService::class, 'pelayanan_id');
+    // }
 
-    public function complain()
-    {
-        return $this->belongsTo(Complain::class, 'complain_id');
-    }
+    // public function complain()
+    // {
+    //     return $this->belongsTo(Complain::class, 'complain_id');
+    // }
 
     public function details()
     {
@@ -62,10 +62,10 @@ class PermintaanPelayananPelanggan extends Model
             }
 
             if (
-                $model->pic?->dibuat_signature &&
-                $model->status !== 'Dibuat'
+                $model->pic?->diketahui_signature &&
+                $model->status !== 'Diketahui'
             ) {
-                $model->status = 'Dibuat';
+                $model->status = 'Diketahui';
             }
         });
 

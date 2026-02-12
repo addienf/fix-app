@@ -150,6 +150,18 @@
                     'name' => $pelayanan->pic->dibuatName->name ?? '-',
                     'signature' => $pelayanan->pic->dibuat_signature ?? null,
                 ],
+                // 'Dibuat Oleh' => [
+                //     'name' => $pelayanan->pic->dibuatName->name ?? '-',
+                //     'signature' => $pelayanan->pic->dibuat_signature ?? null,
+                // ],
+                // 'Diterima Oleh' => [
+                //     'name' => $pelayanan->pic->diterimaName->name ?? '-',
+                //     'signature' => $pelayanan->pic->diterima_signature ?? null,
+                // ],
+                // 'Diketahui Oleh' => [
+                //     'name' => $pelayanan->pic->diketahuiName->name ?? '-',
+                //     'signature' => $pelayanan->pic->diketahui_signature ?? null,
+                // ],
             ];
         @endphp
 

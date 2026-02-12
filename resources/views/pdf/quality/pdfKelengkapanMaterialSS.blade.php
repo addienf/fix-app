@@ -78,7 +78,7 @@
 
                 $jadwal =
                     $kelengkapan->standarisasiDrawing->serahTerimaWarehouse->peminjamanAlat->spkVendor
-                        ->permintaanBahanProduksi->jadwalProduksi;
+                        ->perencanaanProduksi;
 
                 $spkOrder = $jadwal->spk->no_order ?? '-';
 

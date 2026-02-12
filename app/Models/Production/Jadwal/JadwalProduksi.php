@@ -3,12 +3,15 @@
 namespace App\Models\Production\Jadwal;
 
 use App\Models\Production\Jadwal\Pivot\IdentifikasiProduk;
-use App\Models\Production\Jadwal\Pivot\JadwalProduksiDetail as PivotJadwalProduksiDetail;
+use App\Models\Production\Jadwal\Pivot\JadwalProduksiDetail;
 use App\Models\Production\Jadwal\Pivot\JadwalProduksiPIC;
-use App\Models\Production\Jadwal\Pivot\SumberDaya as PivotSumberDaya;
+use App\Models\Production\Jadwal\Pivot\SumberDaya;
 use App\Models\Production\Jadwal\Pivot\TimelineProduksi;
 use App\Models\Production\PermintaanBahanProduksi\PermintaanAlatDanBahan;
+use App\Models\Production\SPK\SPKVendor;
 use App\Models\Sales\SPKMarketings\SPKMarketing;
+use App\Models\Warehouse\PermintaanBahanWBB\PermintaanBahan;
+use App\Models\Warehouse\SerahTerima\SerahTerimaBahan;
 use App\Traits\HasCacheManager;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -46,7 +49,7 @@ class JadwalProduksi extends Model
 
     public function details()
     {
-        return $this->hasMany(PivotJadwalProduksiDetail::class);
+        return $this->hasMany(JadwalProduksiDetail::class);
     }
 
     public function timelines()
@@ -61,8 +64,46 @@ class JadwalProduksi extends Model
 
     public function sumbers()
     {
-        return $this->hasMany(PivotSumberDaya::class);
+        return $this->hasMany(SumberDaya::class);
     }
+
+    public function permintaanBahanWBB()
+    {
+        return $this->hasOne(PermintaanBahan::class, 'perencanaan_id');
+    }
+
+    public function serahTerimaBahan()
+    {
+        return $this->hasOne(SerahTerimaBahan::class, 'perencanaan_id');
+    }
+
+    public function spkVendor()
+    {
+        return $this->hasOne(SPKVendor::class, 'perencanaan_id');
+    }
+
+    public function serahTerimaWarehouse()
+    {
+        return $this->hasOne(SerahTerimaBahan::class, 'perencanaan_id');
+    }
+
+    // public function sumbersElectrical()
+    // {
+    //     return $this->hasMany(SumberDaya::class)
+    //         ->where('kategori', 'electrical');
+    // }
+
+    // public function sumbersUps()
+    // {
+    //     return $this->hasMany(SumberDaya::class)
+    //         ->where('kategori', 'ups');
+    // }
+
+    // public function sumbersMechanical()
+    // {
+    //     return $this->hasMany(SumberDaya::class)
+    //         ->where('kategori', 'mechanical');
+    // }
 
     public function pic()
     {
@@ -99,8 +140,8 @@ class JadwalProduksi extends Model
                 $model->pic->delete();
             }
 
-            if ($model->sumber) {
-                $model->sumber->delete();
+            foreach ($model->sumbers as $sumber) {
+                $sumber->delete();
             }
 
             if ($model->file_upload && Storage::disk('public')->exists($model->file_upload)) {

@@ -77,8 +77,25 @@ class IncommingMaterialResource extends Resource
         return $table
             ->columns([
                 //
-                TextColumn::make('permintaanPembelian.permintaanBahanWBB.no_surat')
-                    ->label('No Surat Permintaan Bahan'),
+                // TextColumn::make('permintaanPembelian.permintaanBahanWBB.no_surat')
+                //     ->label('No Surat Permintaan Bahan'),
+
+                TextColumn::make('no_surat')
+                    ->label('No Surat Permintaan Bahan')
+                    ->getStateUsing(function ($record) {
+
+                        $noSurat = $record->permintaanPembelian?->permintaanBahanWBB?->no_surat;
+
+                        if ($noSurat) {
+                            return $noSurat;
+                        }
+
+                        $createdAt = $record->permintaanPembelian?->created_at
+                            ? $record->permintaanPembelian->created_at->format('YmdHis')
+                            : now()->format('YmdHis');
+
+                        return "Untuk Stock Pembelian - {$createdAt}";
+                    }),
 
                 self::textColumn('tanggal', 'Tanggal Penerimaan')
                     ->formatStateUsing(fn($state) => \Carbon\Carbon::parse($state)->format('d F Y')),

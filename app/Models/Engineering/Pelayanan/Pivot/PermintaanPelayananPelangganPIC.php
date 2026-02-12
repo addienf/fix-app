@@ -16,12 +16,12 @@ class PermintaanPelayananPelangganPIC extends Model
 
     protected $fillable = [
         'pelayanan_id',
-        'diketahui_signature',
-        'diketahui_name',
-        'diterima_signature',
-        'diterima_name',
         'dibuat_signature',
         'dibuat_name',
+        'diterima_signature',
+        'diterima_name',
+        'diketahui_signature',
+        'diketahui_name',
     ];
 
     public function pelayananPelanggan()
@@ -29,9 +29,9 @@ class PermintaanPelayananPelangganPIC extends Model
         return $this->belongsTo(PermintaanPelayananPelanggan::class, 'pelayanan_id');
     }
 
-    public function diketahuiName()
+    public function dibuatName()
     {
-        return $this->belongsTo(User::class, 'diketahui_name');
+        return $this->belongsTo(User::class, 'dibuat_name');
     }
 
     public function diterimaName()
@@ -39,20 +39,20 @@ class PermintaanPelayananPelangganPIC extends Model
         return $this->belongsTo(User::class, 'diterima_name');
     }
 
-    public function dibuatName()
+    public function diketahuiName()
     {
-        return $this->belongsTo(User::class, 'dibuat_name');
+        return $this->belongsTo(User::class, 'diketahui_name');
     }
 
     protected static function booted(): void
     {
         static::updating(function ($model) {
             if (
-                $model->isDirty('diketahui_signature') &&
-                $model->getOriginal('diketahui_signature') &&
-                Storage::disk('public')->exists($model->getOriginal('diketahui_signature'))
+                $model->isDirty('dibuat_signature') &&
+                $model->getOriginal('dibuat_signature') &&
+                Storage::disk('public')->exists($model->getOriginal('dibuat_signature'))
             ) {
-                Storage::disk('public')->delete($model->getOriginal('diketahui_signature'));
+                Storage::disk('public')->delete($model->getOriginal('dibuat_signature'));
             }
 
             if (
@@ -64,25 +64,26 @@ class PermintaanPelayananPelangganPIC extends Model
             }
 
             if (
-                $model->isDirty('dibuat_signature') &&
-                $model->getOriginal('dibuat_signature') &&
-                Storage::disk('public')->exists($model->getOriginal('dibuat_signature'))
+                $model->isDirty('diketahui_signature') &&
+                $model->getOriginal('diketahui_signature') &&
+                Storage::disk('public')->exists($model->getOriginal('diketahui_signature'))
             ) {
-                Storage::disk('public')->delete($model->getOriginal('dibuat_signature'));
+                Storage::disk('public')->delete($model->getOriginal('diketahui_signature'));
             }
         });
 
         static::deleting(function ($model) {
-            if ($model->diketahui_signature && Storage::disk('public')->exists($model->diketahui_signature)) {
-                Storage::disk('public')->delete($model->diketahui_signature);
+            if ($model->dibuat_signature && Storage::disk('public')->exists($model->dibuat_signature)) {
+                Storage::disk('public')->delete($model->dibuat_signature);
             }
 
             if ($model->diterima_signature && Storage::disk('public')->exists($model->diterima_signature)) {
                 Storage::disk('public')->delete($model->diterima_signature);
             }
 
-            if ($model->dibuat_signature && Storage::disk('public')->exists($model->dibuat_signature)) {
-                Storage::disk('public')->delete($model->dibuat_signature);
+
+            if ($model->diketahui_signature && Storage::disk('public')->exists($model->diketahui_signature)) {
+                Storage::disk('public')->delete($model->diketahui_signature);
             }
         });
     }

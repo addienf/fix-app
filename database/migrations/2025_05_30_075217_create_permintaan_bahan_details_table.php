@@ -15,9 +15,10 @@ return new class extends Migration
             $table->id();
             $table->foreignId('permintaan_bahan_wbb_id')->constrained('permintaan_bahans')->onDelete('cascade');
             $table->string('bahan_baku');
-            $table->string('spesifikasi');
-            $table->integer('jumlah');
-            $table->string('keperluan_barang');
+            $table->string('spesifikasi')->nullable();
+            $table->string('jumlah')->nullable();
+            $table->string('keperluan_barang')->nullable();
+            $table->string('status_stock')->nullable();
             $table->timestamps();
         });
     }

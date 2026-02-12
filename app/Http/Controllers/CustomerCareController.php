@@ -33,14 +33,35 @@ class CustomerCareController extends Controller
         return Pdf::loadView('pdf.engineering.pdfPelayananPelanggan', compact('pelayanan'))->setPaper('a4', 'portrait')->stream($filename);
     }
 
+    // public function pdfSPKService($id)
+    // {
+    //     $service = SPKService::with(['pelayananPelanggan', 'petugas', 'details', 'pic', 'pic.dikonfirmasiNama', 'pic.dibuatNama'])->findOrFail($id);
+
+    //     $tanggal = Carbon::parse($service->tanggal)->format('Y-m-d');
+    //     $filename = $service->no_spk_service . ' - ' . $tanggal . '.pdf';
+
+    //     $pdf = Pdf::loadView('pdf.engineering.pdfSPKService', compact('service'))->setPaper('a4', 'portrait');
+
+    //     return $pdf->stream($filename);
+    // }
     public function pdfSPKService($id)
     {
-        $service = SPKService::with(['pelayananPelanggan', 'petugas', 'details', 'pic', 'pic.dikonfirmasiNama', 'pic.dibuatNama'])->findOrFail($id);
+        $service = SPKService::with([
+            'pelayananPelanggan',
+            'petugas',
+            'details',
+            'pic',
+            'pic.dikonfirmasiNama',
+            'pic.dibuatNama'
+        ])->findOrFail($id);
 
         $tanggal = Carbon::parse($service->tanggal)->format('Y-m-d');
-        $filename = $service->pelayananPelanggan->no_form . ' - ' . $tanggal . '.pdf';
 
-        $pdf = Pdf::loadView('pdf.engineering.pdfSPKService', compact('service'))->setPaper('a4', 'portrait');
+        $rawName = $service->no_spk_service . ' - ' . $tanggal;
+        $filename = preg_replace('/[\/\\\\]/', '-', $rawName) . '.pdf';
+
+        $pdf = Pdf::loadView('pdf.engineering.pdfSPKService', compact('service'))
+            ->setPaper('a4', 'portrait');
 
         return $pdf->stream($filename);
     }

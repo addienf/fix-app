@@ -18,7 +18,9 @@ class StandarisasiDrawing extends Model
 
     protected $fillable = [
         // 'spk_marketing_id',
+        'sumber',
         'serah_terima_bahan_id',
+        'spk_marketing_id',
         'tanggal',
         'jenis_gambar',
         'format_gambar',
@@ -39,6 +41,20 @@ class StandarisasiDrawing extends Model
     public function serahTerimaWarehouse()
     {
         return $this->belongsTo(SerahTerimaBahan::class, 'serah_terima_bahan_id');
+    }
+
+    public function spkMarketing()
+    {
+        return $this->belongsTo(SPKMarketing::class, 'spk_marketing_id');
+    }
+
+    public function getSpkAttribute()
+    {
+        if ($this->sumber === 'spk') {
+            return $this->spkMarketing;
+        }
+
+        return $this->serahTerimaWarehouse?->perencanaanProduksi?->spk;
     }
 
     public function identitas()

@@ -18,11 +18,17 @@ trait InformasiUmum
                 self::selectNoURS()
                     ->hiddenOn('edit'),
 
+                self::textInput('name', 'Name'),
+
+                self::textInput('department', 'Department/Position'),
+
+                self::textInput('phone_number', 'Phone Number'),
+
                 self::textInput('delivery_address', 'Alamat Pengiriman'),
 
                 self::buttonGroup('is_stock', 'Untuk Stock ?'),
             ])
-            ->columns($isEdit ? 2 : 3)
+            ->columns($isEdit ? 5 : 3)
             ->collapsible();
     }
 

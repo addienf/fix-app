@@ -48,7 +48,13 @@ trait IdentifikasiProduk
                             ->default('')
                             ->dehydrated(true),
 
-                        self::textInput('custom_standar', 'Custom/Stardar'),
+                        // self::textInput('custom_standar', 'Custom/Stardar'),
+                        Select::make('custom_standar')
+                            ->label('Custom/Stardar')
+                            ->options([
+                                'Custom' => 'Custom',
+                                'Standard' => 'Standard',
+                            ]),
 
                         self::textInput('jumlah', 'Quantity')->numeric(),
 

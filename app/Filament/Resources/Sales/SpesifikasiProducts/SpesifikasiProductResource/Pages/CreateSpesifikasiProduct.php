@@ -22,7 +22,7 @@ class CreateSpesifikasiProduct extends CreateRecord
         if ($this->record && $this->record->id) {
             SendGenericNotif::dispatch(
                 $this->record,
-                ['sales', 'production', 'MR'],
+                ['sales', 'production', 'MR', 'quality'],
                 GenericNotification::class,
                 '/admin/sales/spesifikasi-produk',
                 'Data Spesifikasi Produk berhasil dibuat',

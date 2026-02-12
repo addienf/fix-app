@@ -28,8 +28,9 @@ class SPKService extends Model
     protected $table = 'spk_services';
 
     protected $fillable = [
-        'pelayanan_id',
+        // 'pelayanan_id',
         'no_spk_service',
+        'jenis_spk',
         'perusahaan',
         'alamat',
         'deskripsi_pekerjaan',
@@ -43,10 +44,10 @@ class SPKService extends Model
         'deskripsi_pekerjaan' => 'array'
     ];
 
-    public function pelayananPelanggan()
-    {
-        return $this->belongsTo(PermintaanPelayananPelanggan::class, 'pelayanan_id');
-    }
+    // public function pelayananPelanggan()
+    // {
+    //     return $this->belongsTo(PermintaanPelayananPelanggan::class, 'pelayanan_id');
+    // }
 
     public function petugas()
     {

@@ -28,10 +28,11 @@ trait InformasiUmum
                 Select::make('spk_service_id')
                     ->label('Nomor SPK Service')
                     ->options(function () {
-                        return SPKService::whereHas('permintaanSparepart', function ($query) {
-                            $query->where('status', 'Selesai');
-                        })
-                            ->whereDoesntHave('service')
+                        // return SPKService::whereHas('permintaanSparepart', function ($query) {
+                        //     $query->where('status', 'Selesai');
+                        // })
+                        return SPKService::whereDoesntHave('service')
+                            ->where('jenis_spk', 'Service')
                             ->limit(10)
                             ->pluck('no_spk_service', 'id');
                     })
@@ -48,54 +49,59 @@ trait InformasiUmum
                     ->preload()
                     ->required()
                     ->reactive()
-                    ->hiddenOn('edit')
-                    ->afterStateUpdated(function ($state, callable $set) {
-                        if (!$state)
-                            return;
+                    ->hiddenOn('edit'),
+                // ->afterStateUpdated(function ($state, callable $set) {
+                //     if (!$state)
+                //         return;
 
-                        $spkS = SPKService::with('pelayananPelanggan.complain')->find($state);
-                        if (!$spkS)
-                            return;
+                //     $spkS = SPKService::with('pelayananPelanggan.complain')->find($state);
+                //     if (!$spkS)
+                //         return;
 
-                        $serialNumber = $spkS->pelayananPelanggan
-                            ?->details
-                            ?->first()
-                            ?->nomor_seri ?? '-';
+                //     $serialNumber = $spkS->pelayananPelanggan
+                //         ?->details
+                //         ?->first()
+                //         ?->nomor_seri ?? '-';
 
-                        $details = $spkS->pelayananPelanggan->complain->details->map(function ($detail) use ($serialNumber) {
-                            return [
-                                'produk_name' => $detail->unit_name ?? '-',
-                                'type' => $detail?->tipe_model ?? '-',
-                                'status_warranty' => $detail?->status_warranty  ?? '-',
-                                'serial_number' => $serialNumber  ?? '-',
-                            ];
-                        })->toArray();
+                //     $details = $spkS->pelayananPelanggan->complain->details->map(function ($detail) use ($serialNumber) {
+                //         return [
+                //             'produk_name' => $detail->unit_name ?? '-',
+                //             'type' => $detail?->tipe_model ?? '-',
+                //             'status_warranty' => $detail?->status_warranty  ?? '-',
+                //             'serial_number' => $serialNumber  ?? '-',
+                //         ];
+                //     })->toArray();
 
-                        $formNo = $spkS->pelayananPelanggan->complain->form_no ?? '-';
-                        $namaComplain = $spkS->pelayananPelanggan->complain->name_complain ?? '-';
-                        $companyName = $spkS->pelayananPelanggan->companies?->first()?->name ?? '-';
-                        $alamat = $spkS->pelayananPelanggan->alamat ?? '-';
-                        $number = $spkS->pelayananPelanggan->complain->phone_number ?? '-';
+                //     $formNo = $spkS->pelayananPelanggan->complain->form_no ?? '-';
+                //     $namaComplain = $spkS->pelayananPelanggan->complain->name_complain ?? '-';
+                //     $companyName = $spkS->pelayananPelanggan->companies?->first()?->name ?? '-';
+                //     $alamat = $spkS->pelayananPelanggan->alamat ?? '-';
+                //     $number = $spkS->pelayananPelanggan->complain->phone_number ?? '-';
 
-                        $set('form_no', $formNo);
-                        $set('name_complaint', $namaComplain);
-                        $set('company_name', $companyName);
-                        $set('address', $alamat);
-                        $set('phone_number', $number);
-                        $set('serviceProduk', $details);
-                    }),
-                Grid::make($isEdit ? 1 : 2)
+                //     $set('form_no', $formNo);
+                //     $set('name_complaint', $namaComplain);
+                //     $set('company_name', $companyName);
+                //     $set('address', $alamat);
+                //     $set('phone_number', $number);
+                //     $set('serviceProduk', $details);
+                // }),
+
+                Grid::make([
+                    'default' => 1,
+                    'md' => 2,
+                    'lg' => $isEdit ? 1 : 2,
+                ])
                     ->schema([
                         TextInput::make('form_no')
                             ->label('Nomor Form')
                             ->placeholder($lastValue2 ? "Data Terakhir : {$lastValue2}" : 'Data Belum Tersedia')
                             ->hiddenOn('edit')
                             ->unique(ignoreRecord: true)
-                            ->required()
-                            ->extraAttributes([
-                                'readonly' => true,
-                                'style' => 'pointer-events: none;'
-                            ]),
+                            ->required(),
+                        // ->extraAttributes([
+                        //     'readonly' => true,
+                        //     'style' => 'pointer-events: none;'
+                        // ]),
 
                         self::dateInput('tanggal', 'Tanggal'),
                     ])

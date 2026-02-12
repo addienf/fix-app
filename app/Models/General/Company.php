@@ -3,6 +3,7 @@
 namespace App\Models\General;
 
 use App\Models\Engineering\Complain\Complain;
+use App\Models\Sales\URS;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -16,9 +17,14 @@ class Company extends Model
         'phone',
     ];
 
-    public function customer()
+    // public function customer()
+    // {
+    //     return $this->hasOne(Company::class, 'company_id');
+    // }
+
+    public function urs()
     {
-        return $this->hasOne(Company::class, 'company_id');
+        return $this->hasOne(URS::class, 'company_id');
     }
 
     public function complains()

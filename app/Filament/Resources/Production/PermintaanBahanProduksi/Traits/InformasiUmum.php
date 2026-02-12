@@ -27,7 +27,6 @@ trait InformasiUmum
                     ->schema([
                         self::selectInputPermintaanBahan()
                             ->placeholder('Pilih Nomor Surat Perencanaan Produksi')
-                            // ->label('No SPK')
                             ->hiddenOn('edit')
                             ->columnSpanFull(),
 
@@ -73,28 +72,6 @@ trait InformasiUmum
             ->lazy()
             ->preload()
             ->required()
-            // ->options(function () {
-            //     return Cache::rememberForever(JadwalProduksi::$CACHE_KEYS['select_jadwal'], function () {
-            //         return JadwalProduksi::with(['spk', 'identifikasiProduks'])
-            //             ->where('status_persetujuan', 'Disetujui')
-            //             ->whereDoesntHave('permintaanBahanProduksi')
-            //             ->latest()
-            //             ->limit(10)
-            //             ->get()
-            //             ->mapWithKeys(function ($jadwal) {
-            //                 $spkNo = $jadwal->spk->no_spk ?? '-';
-            //                 $noSurat = $jadwal->no_surat ?? '-';
-            //                 $noSeri   = $jadwal->identifikasiProduks
-            //                     ->pluck('no_seri')
-            //                     ->filter()
-            //                     ->implode(', ') ?: '-';
-
-            //                 return [
-            //                     $jadwal->id => "{$noSurat} - {$spkNo} - {$noSeri}"
-            //                 ];
-            //             });
-            //     });
-            // })
             ->options(function () {
                 return JadwalProduksi::with(['spk', 'identifikasiProduks'])
                     ->where('status_persetujuan', 'Disetujui')
@@ -116,10 +93,6 @@ trait InformasiUmum
                     });
             })
             ->getSearchResultsUsing(function (string $search) {
-                // if ($search === '') {
-                //     return Cache::get(JadwalProduksi::$CACHE_PREFIXES['search_jadwal'], []);
-                // }
-
                 return JadwalProduksi::with(['spk', 'identifikasiProduks'])
                     ->where('status_persetujuan', 'Disetujui')
                     ->whereDoesntHave('permintaanBahanProduksi')

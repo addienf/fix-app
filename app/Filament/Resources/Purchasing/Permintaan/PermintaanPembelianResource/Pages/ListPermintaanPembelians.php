@@ -23,8 +23,8 @@ class ListPermintaanPembelians extends ListRecords
         return
             [
                 null => Tab::make('All'),
-                'Disetujui' => Tab::make()->query(fn($query) => $query->where('status_persetujuan', 'Disetujui')),
-                'Belum Disetujui' => Tab::make()->query(fn($query) => $query->where('status_persetujuan', 'Belum Disetujui')),
+                'Diketahui' => Tab::make()->query(fn($query) => $query->where('status_persetujuan', 'Diketahui')),
+                'Belum Diketahui' => Tab::make()->query(fn($query) => $query->where('status_persetujuan', 'Belum Diketahui')),
             ];
     }
 

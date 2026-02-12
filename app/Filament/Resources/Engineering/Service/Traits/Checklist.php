@@ -16,7 +16,11 @@ trait Checklist
         return Section::make('Checklist')
             ->label('')
             ->schema([
-                Grid::make(3)
+                Grid::make([
+                    'default' => 1,
+                    'md' => 3,
+                    'lg' => 3,
+                ])
                     ->schema([
                         Select::make('service_category')
                             ->multiple()
