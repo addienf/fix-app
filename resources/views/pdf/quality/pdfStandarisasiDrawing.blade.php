@@ -40,13 +40,11 @@
             </tr>
         </table>
 
-        @php
+        {{-- @php
             $fields = [
                 [
                     'label' => 'No SPK Produksi :',
-                    'value' =>
-                        $standarisasi->serahTerimaWarehouse->peminjamanAlat->spkVendor->perencanaanProduksi->spk
-                            ->no_spk,
+                    'value' => $standarisasi->serahTerimaWarehouse->perencanaanProduksi->spk->no_spk,
                 ],
                 [
                     'label' => 'Tanggal Pemeriksaan :',
@@ -60,9 +58,38 @@
             <div class="flex items-center gap-4">
                 <label class="w-48 font-medium">No SPK Produksi :</label>
                 <input type="text" readonly
-                    value="{{ $standarisasi->serahTerimaWarehouse->peminjamanAlat->spkVendor->perencanaanProduksi->spk->no_spk }}"
+                    value="{{ $standarisasi->serahTerimaWarehouse->perencanaanProduksi->spk->no_spk }}"
                     class="flex-1 px-3 py-2 text-black bg-white border border-gray-300 rounded-md cursor-not-allowed" />
             </div>
+            <div class="flex items-center gap-4">
+                <label class="w-48 font-medium">Tanggal Pemeriksaan :</label>
+                <input type="text" readonly value="{{ \Carbon\Carbon::parse($standarisasi->tanggal)->format('d M Y') }}"
+                    class="flex-1 px-3 py-2 text-black bg-white border border-gray-300 rounded-md cursor-not-allowed" />
+            </div>
+        </div> --}}
+
+        @php
+            $noSpk = $standarisasi->spk?->no_spk ?? '-';
+
+            $fields = [
+                [
+                    'label' => 'No SPK Produksi :',
+                    'value' => $noSpk,
+                ],
+                [
+                    'label' => 'Tanggal Pemeriksaan :',
+                    'value' => \Carbon\Carbon::parse($standarisasi->tanggal)->format('d M Y'),
+                ],
+            ];
+        @endphp
+
+        <div class="flex flex-col w-full max-w-4xl gap-4 pt-6 mx-auto text-sm">
+            <div class="flex items-center gap-4">
+                <label class="w-48 font-medium">No SPK Produksi :</label>
+                <input type="text" readonly value="{{ $noSpk }}"
+                    class="flex-1 px-3 py-2 text-black bg-white border border-gray-300 rounded-md cursor-not-allowed" />
+            </div>
+
             <div class="flex items-center gap-4">
                 <label class="w-48 font-medium">Tanggal Pemeriksaan :</label>
                 <input type="text" readonly value="{{ \Carbon\Carbon::parse($standarisasi->tanggal)->format('d M Y') }}"

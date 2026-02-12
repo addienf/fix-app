@@ -35,10 +35,6 @@ trait ChamberIdentification
                             ]),
 
                         self::textInput('ref_document', 'Ref Document'),
-                        // ->extraAttributes([
-                        //     'readonly' => true,
-                        //     'style' => 'pointer-events: none;'
-                        // ]),
 
                     ]),
 
@@ -59,8 +55,8 @@ trait ChamberIdentification
             ->options(function () {
 
                 return KelengkapanMaterialSS::with([
-                    'standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.perencanaanProduksi.spk',
-                    'standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.perencanaanProduksi.identifikasiProduks',
+                    'standarisasiDrawing.serahTerimaWarehouse.perencanaanProduksi.spk',
+                    'standarisasiDrawing.serahTerimaWarehouse.perencanaanProduksi.identifikasiProduks',
                 ])
                     ->whereDoesntHave('pengecekanSS')
                     ->latest()
@@ -68,11 +64,7 @@ trait ChamberIdentification
                     ->get()
                     ->mapWithKeys(function ($std) {
 
-                        $jadwal = $std->standarisasiDrawing
-                            ->serahTerimaWarehouse
-                            ->peminjamanAlat
-                            ->spkVendor
-                            ->perencanaanProduksi;
+                        $jadwal = $std->standarisasiDrawing->serahTerimaWarehouse->perencanaanProduksi;
 
                         $spkNo = $jadwal->spk->no_spk ?? '-';
 
@@ -91,23 +83,19 @@ trait ChamberIdentification
             ->getSearchResultsUsing(function ($search) {
 
                 return KelengkapanMaterialSS::with([
-                    'standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.perencanaanProduksi.spk',
-                    'standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.perencanaanProduksi.identifikasiProduks',
+                    'standarisasiDrawing.serahTerimaWarehouse.perencanaanProduksi.spk',
+                    'standarisasiDrawing.serahTerimaWarehouse.perencanaanProduksi.identifikasiProduks',
                 ])
                     ->whereDoesntHave('pengecekanSS')
                     ->whereHas(
-                        'standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.perencanaanProduksi.spk',
+                        'standarisasiDrawing.serahTerimaWarehouse.perencanaanProduksi.spk',
                         fn($q) => $q->where('no_spk', 'like', "%{$search}%")
                     )
                     ->limit(10)
                     ->get()
                     ->mapWithKeys(function ($std) {
 
-                        $jadwal = $std->standarisasiDrawing
-                            ->serahTerimaWarehouse
-                            ->peminjamanAlat
-                            ->spkVendor
-                            ->perencanaanProduksi;
+                        $jadwal = $std->standarisasiDrawing->serahTerimaWarehouse->perencanaanProduksi;
 
                         $spkNo = $jadwal->spk->no_spk ?? '-';
 
@@ -125,15 +113,13 @@ trait ChamberIdentification
                 if (!$state) return;
 
                 $kelengkapan = KelengkapanMaterialSS::with([
-                    'standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.perencanaanProduksi.spk'
+                    'standarisasiDrawing.serahTerimaWarehouse.perencanaanProduksi.spk'
                 ])->find($state);
 
                 $no_order =
                     $kelengkapan
                     ?->standarisasiDrawing
                     ?->serahTerimaWarehouse
-                    ?->peminjamanAlat
-                    ?->spkVendor
                     ?->perencanaanProduksi
                     ?->spk
                     ?->no_order
@@ -143,8 +129,6 @@ trait ChamberIdentification
                     $kelengkapan
                     ?->standarisasiDrawing
                     ?->serahTerimaWarehouse
-                    ?->peminjamanAlat
-                    ?->spkVendor
                     ?->perencanaanProduksi
                     ?->identifikasiProduks
                     ?->first()

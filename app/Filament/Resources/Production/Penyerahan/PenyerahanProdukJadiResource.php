@@ -84,13 +84,12 @@ class PenyerahanProdukJadiResource extends Resource
             ->columns([
                 //
 
-                self::textColumn('pengecekanElectrical.penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.perencanaanProduksi.spk.no_spk', 'No SPK Marketing'),
+                self::textColumn('pengecekanElectrical.penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.perencanaanProduksi.spk.no_spk', 'No SPK Marketing'),
 
                 self::textColumn('no_seri', 'No Seri')
                     ->getStateUsing(function ($record) {
                         return $record?->pengecekanElectrical?->penyerahanElectrical?->pengecekanSS
-                            ?->kelengkapanMaterial?->standarisasiDrawing?->serahTerimaWarehouse
-                            ?->peminjamanAlat?->spkVendor?->perencanaanProduksi
+                            ?->kelengkapanMaterial?->standarisasiDrawing?->serahTerimaWarehouse?->perencanaanProduksi
                             ?->identifikasiProduks?->pluck('no_seri')->filter()->implode(', ') ?? '-';
                     }),
 
@@ -153,8 +152,8 @@ class PenyerahanProdukJadiResource extends Resource
     {
         return parent::getEloquentQuery()
             ->with([
-                'pengecekanElectrical.penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.perencanaanProduksi.spk',
-                'pengecekanElectrical.penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.perencanaanProduksi.identifikasiProduks',
+                'pengecekanElectrical.penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.perencanaanProduksi.spk',
+                'pengecekanElectrical.penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.perencanaanProduksi.identifikasiProduks',
             ]);
     }
 }

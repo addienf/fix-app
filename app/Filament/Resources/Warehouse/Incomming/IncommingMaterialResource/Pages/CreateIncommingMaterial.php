@@ -26,7 +26,7 @@ class CreateIncommingMaterial extends CreateRecord
         if ($this->record && $this->record->id) {
             SendGenericNotif::dispatch(
                 $this->record,
-                ['sales', 'super_admin'],
+                ['warehouse'],
                 GenericNotification::class,
                 '/admin/warehouse/incoming-material',
                 'Data Incoming Material berhasil dibuat',

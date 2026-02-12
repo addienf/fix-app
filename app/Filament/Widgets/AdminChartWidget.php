@@ -25,69 +25,54 @@ class AdminChartWidget extends AdvancedChartWidget
 
     public function getHeading(): string
     {
-        $selectedDepartment = $this->filters['selectedDepartment'] ?? null;
-        $selectedModel = $this->filters['selectedModel'] ?? null;
-        $selectedMonth = $this->filters['selectedMonth'] ?? now()->month;
-        $monthName = Carbon::create()->month($selectedMonth)->translatedFormat('F');
+        $dept  = $this->filters['selectedDepartment'] ?? null;
+        $model = $this->filters['selectedModel'] ?? null;
+        $month = $this->filters['selectedMonth'] ?? now()->month;
+        $year  = $this->filters['selectedYear'] ?? now()->year;
 
-        if (!$selectedModel) {
-            return '';
-        }
+        if (!$dept || !$model) return '';
 
-        if (!$selectedDepartment || !config("models.$selectedDepartment.$selectedModel")) {
-            return 'Pilih Model Terlebih Dahulu';
-        }
+        $config = $this->getSelectedModelConfig($dept, $model);
+        if (!$config) return '';
 
-        $config = $this->getSelectedModelConfig($selectedDepartment, $selectedModel);
-        return $config ? "Total Data {$config['label']} Bulan - {$monthName}" : "Pilih Model Terlebih Dahulu";
+        $monthName = Carbon::create($year, $month, 1)->translatedFormat('F Y');
+
+        return "Total Data {$config['label']} Bulan - {$monthName}";
     }
 
     protected function getData(): array
     {
-        $selectedDepartment = $this->filters['selectedDepartment'] ?? null;
-        $selectedModel = $this->filters['selectedModel'] ?? null;
+        $dept  = $this->filters['selectedDepartment'] ?? null;
+        $model = $this->filters['selectedModel'] ?? null;
         $month = $this->filters['selectedMonth'] ?? now()->month;
-        $year = now()->year;
+        $year  = $this->filters['selectedYear'] ?? now()->year;
 
-        if (!$selectedDepartment || !$selectedModel) {
-            return [
-                'datasets' => [],
-                'labels' => [],
-            ];
-        }
+        if (!$dept || !$model) return ['datasets' => [], 'labels' => []];
 
-        $config = $this->getSelectedModelConfig($selectedDepartment, $selectedModel);
+        $config = $this->getSelectedModelConfig($dept, $model);
+        if (!$config) return ['datasets' => [], 'labels' => []];
 
-        if (!$config) {
-            return [
-                'datasets' => [],
-                'labels' => [],
-            ];
-        }
+        $start = Carbon::create($year, $month, 1)->startOfMonth();
+        $end   = Carbon::create($year, $month, 1)->endOfMonth();
 
-        $modelClass = $config['class'];
-        $label = $config['label'];
+        $cacheKey = "chart-daily-{$config['key']}-{$year}-{$month}";
 
-        $start = Carbon::create($year, $month)->startOfMonth();
-        $end = Carbon::create($year, $month)->endOfMonth();
-
-        $cacheKey = $this->getCacheKey('chart-daily', $config['key'], "{$year}-{$month}");
-
-        $data = Cache::remember($cacheKey, now()->addMinutes(10), function () use ($modelClass, $start, $end) {
-            return Trend::query($modelClass::query())
+        $data = Cache::remember($cacheKey, now()->addMinutes(10), function () use ($config, $start, $end) {
+            return Trend::query($config['class']::query())
                 ->between($start, $end)
                 ->perDay()
                 ->count();
         });
 
         return [
-            'datasets' => [
-                [
-                    'label' => "Jumlah Data {$label} per Hari",
-                    'data' => $data->map(fn(TrendValue $val) => $val->aggregate),
-                ],
-            ],
-            'labels' => $data->map(fn(TrendValue $val) => Carbon::parse($val->date)->format('d M')),
+            'datasets' => [[
+                'label' => "Jumlah per Hari",
+                'data'  => $data->map(fn(TrendValue $v) => $v->aggregate),
+            ]],
+            'labels' => $data->map(
+                fn(TrendValue $v) =>
+                Carbon::parse($v->date)->format('d M')
+            ),
         ];
     }
 
@@ -114,8 +99,9 @@ class AdminChartWidget extends AdvancedChartWidget
         $selectedDepartment = $this->filters['selectedDepartment'] ?? null;
         $selectedModel = $this->filters['selectedModel'] ?? null;
 
-        // Sembunyikan widget jika belum memilih model yang valid
-        return $selectedDepartment && $selectedModel && config("models.$selectedDepartment.$selectedModel");
+        return $selectedDepartment
+            && $selectedModel
+            && config("models.$selectedDepartment.$selectedModel");
     }
 
     protected function getSelectedModelConfig(string $department, string $modelKey): ?array
@@ -127,7 +113,7 @@ class AdminChartWidget extends AdvancedChartWidget
         }
 
         return [
-            'key' => $modelKey,
+            'key'   => $modelKey,
             'label' => $config['label'],
             'class' => $config['model'],
         ];

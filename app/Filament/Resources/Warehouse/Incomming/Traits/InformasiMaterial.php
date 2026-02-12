@@ -56,10 +56,7 @@ trait InformasiMaterial
                             ]),
 
                         self::textInput('batch_no', 'Batch No')
-                            ->extraAttributes([
-                                'readonly' => true,
-                                'style' => 'pointer-events: none;'
-                            ]),
+                            ->required(false),
 
                         self::textInput('jumlah', 'Jumlah Diterima')
                             ->required(false),

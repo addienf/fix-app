@@ -21,12 +21,25 @@ class CreateStandarisasiDrawing extends CreateRecord
         return $this->getResource()::getUrl('index');
     }
 
+    // protected function mutateFormDataBeforeCreate(array $data): array
+    // {
+    //     if ($data['sumber'] === 'spk') {
+    //         $data['serah_terima_bahan_id'] = null;
+    //     }
+
+    //     if ($data['sumber'] === 'serah') {
+    //         $data['spk_id'] = null;
+    //     }
+
+    //     return $data;
+    // }
+
     protected function afterCreate(): void
     {
         if ($this->record && $this->record->id) {
             SendGenericNotif::dispatch(
                 $this->record,
-                ['sales', 'super_admin'],
+                ['quality', 'MR'],
                 GenericNotification::class,
                 '/admin/quality/standarisasi-gambar-kerja',
                 'Data Standarisasi Drawing berhasil dibuat',

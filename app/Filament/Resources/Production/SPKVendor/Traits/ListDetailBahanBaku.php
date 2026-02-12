@@ -17,55 +17,20 @@ trait ListDetailBahanBaku
             ->collapsible()
             ->hiddenOn('edit')
             ->schema([
-
                 TableRepeater::make('details')
+                    ->relationship('details')
                     ->label('')
                     ->schema([
 
-                        self::textInput('bahan_baku', 'Bahan Baku')
-                            ->extraAttributes([
-                                'readonly' => true,
-                                'style' => 'pointer-events: none;'
-                            ]),
-
-                        TextInput::make('spesifkikasi'),
+                        self::textInput('nama_bahan', 'Bahan Baku'),
+                        TextInput::make('spesifikasi'),
                         TextInput::make('jumlah'),
-                        TextInput::make('keperluan_barang'),
-                        // self::textInput('spesifikasi', 'Spesifikasi')
-                        //     ->extraAttributes([
-                        //         'readonly' => true,
-                        //         'style' => 'pointer-events: none;'
-                        //     ]),
-
-                        // self::textInput('jumlah', 'Jumlah')
-                        //     ->numeric()
-                        //     ->extraAttributes([
-                        //         'readonly' => true,
-                        //         'style' => 'pointer-events: none;'
-                        //     ])
-                        //     ->required(false),
-
-                        // self::textareaInput('keperluan_barang', 'Keperluan Barang')
-                        //     ->rows(1)
-                        //     ->extraAttributes([
-                        //         'readonly' => true,
-                        //         'style' => 'pointer-events: none;'
-                        //     ])
-                        //     ->required(false),
-
-                        // Textarea::make('keperluan_barang')
-                        //     ->required()
-                        //     ->rows(1)
-                        //     ->label('Keperluan Barang')
-                        //     ->extraAttributes([
-                        //         'readonly' => true,
-                        //         'style' => 'pointer-events: none;'
-                        //     ])
-
+                        TextInput::make('keperluan')
+                            ->required(false),
                     ])
-                    ->deletable(false)
+                    ->addActionLabel('Tambah Bahan Baku')
+                    // ->deletable(false)
                     ->reorderable(false)
-                    ->addable(false)
                     ->columnSpanFull()
             ]);
     }

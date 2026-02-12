@@ -29,7 +29,11 @@ trait TabelChecklist
                     ->schema([
 
                         TextInput::make('part')
-                            ->columnSpan(3)
+                            ->columnSpan([
+                                'default' => 1,
+                                'md' => 1,
+                                'lg' => 3,
+                            ])
                             ->extraAttributes([
                                 'readonly' => true,
                                 'style' => 'pointer-events: none;'
@@ -42,14 +46,27 @@ trait TabelChecklist
                                 'no' => 'No',
                                 'na' => 'NA',
                             ])
-                            ->columnSpan(2)
+                            ->columnSpan([
+                                'default' => 1,
+                                'md' => 1,
+                                'lg' => 2,
+                            ])
                             ->required(),
 
                         TextInput::make('remark')
-                            ->columnSpan(2),
+                            ->columnSpan([
+                                'default' => 1,
+                                'md' => 1,
+                                'lg' => 2,
+                            ])
 
                     ])
-                    ->columns(7)
+                    // ->columns(7)
+                    ->columns([
+                        'default' => 1,
+                        'md' => 3,
+                        'lg' => 7,
+                    ])
                     // ->addable(false)
                     ->addActionLabel('Tambah Checklist')
                     ->deletable(false)

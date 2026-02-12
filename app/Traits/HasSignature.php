@@ -41,7 +41,12 @@ trait HasSignature
                                             $component->state(auth()->id());
                                         }),
 
-                                    Grid::make(2)
+                                    // Grid::make(2)
+                                    Grid::make([
+                                        'default' => 1,
+                                        'md' => 2,
+                                        'lg' => 2,
+                                    ])
                                         ->schema([
                                             TextInput::make("{$prefix}_name_placeholder")
                                                 ->label($role)

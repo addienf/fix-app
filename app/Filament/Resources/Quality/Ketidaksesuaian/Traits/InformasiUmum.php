@@ -49,8 +49,8 @@ trait InformasiUmum
             ->options(
                 fn() =>
                 PengecekanPerforma::with([
-                    'penyerahanProdukJadi.pengecekanElectrical.penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.perencanaanProduksi.spk',
-                    'penyerahanProdukJadi.pengecekanElectrical.penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.perencanaanProduksi.identifikasiProduks',
+                    'penyerahanProdukJadi.pengecekanElectrical.penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.perencanaanProduksi.spk',
+                    'penyerahanProdukJadi.pengecekanElectrical.penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.perencanaanProduksi.identifikasiProduks',
                 ])
                     ->latest()
                     ->limit(20)
@@ -59,7 +59,7 @@ trait InformasiUmum
 
                         $jadwal = $item->penyerahanProdukJadi->pengecekanElectrical->penyerahanElectrical
                             ->pengecekanSS->kelengkapanMaterial->standarisasiDrawing
-                            ->serahTerimaWarehouse->peminjamanAlat->spkVendor->perencanaanProduksi;
+                            ->serahTerimaWarehouse->perencanaanProduksi;
 
                         $spkNo = $jadwal->spk->no_spk ?? '-';
 
@@ -77,7 +77,7 @@ trait InformasiUmum
         //     if (!$state) return;
 
         //     $pengecekan = PengecekanPerforma::with([
-        //         'penyerahanProdukJadi.pengecekanElectrical.penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.perencanaanProduksi.spk'
+        //         'penyerahanProdukJadi.pengecekanElectrical.penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.perencanaanProduksi.spk'
         //     ])->find($state);
 
         //     $model_pengecekan =

@@ -16,10 +16,10 @@ class SPKServicePIC extends Model
 
     protected $fillable = [
         'spk_service_id',
-        'dikonfirmasi_signature',
-        'dikonfirmasi_name',
         'dibuat_signature',
         'dibuat_name',
+        'dikonfirmasi_signature',
+        'dikonfirmasi_name',
     ];
 
     public function spkService()

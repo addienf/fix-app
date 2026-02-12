@@ -23,72 +23,122 @@ class AdminChartYearWidget extends AdvancedChartWidget
     protected static ?string $iconBackgroundColor = 'info';
     protected static ?string $label = null;
 
+    // public function getHeading(): string
+    // {
+    //     $selectedDepartment = $this->filters['selectedDepartment'] ?? null;
+    //     $selectedModel = $this->filters['selectedModel'] ?? null;
+    //     $year = now()->year;
+
+    //     if (!$selectedModel) {
+    //         return '';
+    //     }
+
+    //     if (!$selectedDepartment || !config("models.$selectedDepartment.$selectedModel")) {
+    //         return 'Pilih Model Terlebih Dahulu';
+    //     }
+
+    //     $config = $this->getSelectedModelConfig($selectedDepartment, $selectedModel);
+    //     return $config ? "Total Data {$config['label']} Tahun - {$year}" : "Pilih Model Terlebih Dahulu";
+    // }
+
+    // protected function getData(): array
+    // {
+    //     $selectedDepartment = $this->filters['selectedDepartment'] ?? null;
+    //     $selectedModel = $this->filters['selectedModel'] ?? null;
+    //     $year = now()->year;
+    //     $start = Carbon::create($year, 1, 1)->startOfDay();
+    //     $end = Carbon::create($year, 12, 31)->endOfDay();
+
+    //     if (!$selectedDepartment || !$selectedModel) {
+    //         return [
+    //             'datasets' => [],
+    //             'labels' => [],
+    //         ];
+    //     }
+
+    //     $config = $this->getSelectedModelConfig($selectedDepartment, $selectedModel);
+
+    //     if (!$config) {
+    //         return [
+    //             'datasets' => [],
+    //             'labels' => [],
+    //         ];
+    //     }
+
+    //     $modelClass = $config['class'];
+    //     $label = $config['label'];
+
+    //     $cacheKey = $this->getCacheKey('chart-yearly', $config['key'], $year);
+
+    //     $data = Cache::remember($cacheKey, now()->addMinutes(10), function () use ($modelClass, $start, $end) {
+    //         return Trend::query($modelClass::query())
+    //             ->between($start, $end)
+    //             ->perMonth()
+    //             ->count();
+    //     });
+
+    //     return [
+    //         'datasets' => [
+    //             [
+    //                 'label' => "Jumlah Data {$label} per Bulan",
+    //                 'data' => collect(range(1, 12))->map(function ($month) use ($data) {
+    //                     return $data->firstWhere(
+    //                         fn(TrendValue $val) => Carbon::parse($val->date)->month === $month
+    //                     )?->aggregate ?? 0;
+    //                 }),
+    //             ],
+    //         ],
+    //         'labels' => $this->getMonthLabels(),
+    //     ];
+    // }
     public function getHeading(): string
     {
-        $selectedDepartment = $this->filters['selectedDepartment'] ?? null;
-        $selectedModel = $this->filters['selectedModel'] ?? null;
-        $year = now()->year;
+        $dept  = $this->filters['selectedDepartment'] ?? null;
+        $model = $this->filters['selectedModel'] ?? null;
+        $year  = $this->filters['selectedYear'] ?? now()->year;
 
-        if (!$selectedModel) {
-            return '';
-        }
+        if (!$dept || !$model) return '';
 
-        if (!$selectedDepartment || !config("models.$selectedDepartment.$selectedModel")) {
-            return 'Pilih Model Terlebih Dahulu';
-        }
+        $config = $this->getSelectedModelConfig($dept, $model);
+        if (!$config) return '';
 
-        $config = $this->getSelectedModelConfig($selectedDepartment, $selectedModel);
-        return $config ? "Total Data {$config['label']} Tahun - {$year}" : "Pilih Model Terlebih Dahulu";
+        return "Total Data {$config['label']} Tahun - {$year}";
     }
 
     protected function getData(): array
     {
-        $selectedDepartment = $this->filters['selectedDepartment'] ?? null;
-        $selectedModel = $this->filters['selectedModel'] ?? null;
-        $year = now()->year;
-        $start = Carbon::create($year, 1, 1)->startOfDay();
-        $end = Carbon::create($year, 12, 31)->endOfDay();
+        $dept  = $this->filters['selectedDepartment'] ?? null;
+        $model = $this->filters['selectedModel'] ?? null;
+        $year  = $this->filters['selectedYear'] ?? now()->year;
 
-        if (!$selectedDepartment || !$selectedModel) {
-            return [
-                'datasets' => [],
-                'labels' => [],
-            ];
-        }
+        if (!$dept || !$model) return ['datasets' => [], 'labels' => []];
 
-        $config = $this->getSelectedModelConfig($selectedDepartment, $selectedModel);
+        $config = $this->getSelectedModelConfig($dept, $model);
+        if (!$config) return ['datasets' => [], 'labels' => []];
 
-        if (!$config) {
-            return [
-                'datasets' => [],
-                'labels' => [],
-            ];
-        }
+        $start = Carbon::create($year, 1, 1)->startOfYear();
+        $end   = Carbon::create($year, 12, 31)->endOfYear();
 
-        $modelClass = $config['class'];
-        $label = $config['label'];
+        $cacheKey = "chart-yearly-{$config['key']}-{$year}";
 
-        $cacheKey = $this->getCacheKey('chart-yearly', $config['key'], $year);
-
-        $data = Cache::remember($cacheKey, now()->addMinutes(10), function () use ($modelClass, $start, $end) {
-            return Trend::query($modelClass::query())
+        $data = Cache::remember($cacheKey, now()->addMinutes(10), function () use ($config, $start, $end) {
+            return Trend::query($config['class']::query())
                 ->between($start, $end)
                 ->perMonth()
                 ->count();
         });
 
         return [
-            'datasets' => [
-                [
-                    'label' => "Jumlah Data {$label} per Bulan",
-                    'data' => collect(range(1, 12))->map(function ($month) use ($data) {
-                        return $data->firstWhere(
-                            fn(TrendValue $val) => Carbon::parse($val->date)->month === $month
-                        )?->aggregate ?? 0;
-                    }),
-                ],
-            ],
-            'labels' => $this->getMonthLabels(),
+            'datasets' => [[
+                'label' => "Jumlah per Bulan",
+                'data' => collect(range(1, 12))->map(function ($m) use ($data) {
+                    return $data->firstWhere(
+                        fn(TrendValue $v) => Carbon::parse($v->date)->month === $m
+                    )?->aggregate ?? 0;
+                }),
+            ]],
+            'labels' => collect(range(1, 12))
+                ->map(fn($m) => Carbon::create($year, $m, 1)->translatedFormat('M')),
         ];
     }
 

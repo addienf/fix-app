@@ -29,6 +29,13 @@ class PermintaanPelayananPelangganResource extends Resource
     protected static ?string $slug = 'customer-care/permintaan-pelayanan-pelanggan';
     protected static ?string $navigationIcon = 'heroicon-o-wrench-screwdriver';
 
+    public static function getNavigationBadge(): ?string
+    {
+        $count = PermintaanPelayananPelanggan::where('status', '!=', 'Diketahui')->count();
+
+        return $count > 0 ? (string) $count : null;
+    }
+
     public static function form(Form $form): Form
     {
         return $form
@@ -47,9 +54,14 @@ class PermintaanPelayananPelangganResource extends Resource
 
                 static::signatureSection(
                     [
+                        // [
+                        //     'prefix' => 'diketahui',
+                        //     'role' => 'Diketahui Oleh',
+                        //     'hideLogic' => fn($operation) => $operation === 'edit',
+                        // ],
                         [
-                            'prefix' => 'diketahui',
-                            'role' => 'Diketahui Oleh',
+                            'prefix' => 'dibuat',
+                            'role' => 'Dibuat Oleh',
                             'hideLogic' => fn($operation) => $operation === 'edit',
                         ],
                         [
@@ -58,11 +70,17 @@ class PermintaanPelayananPelangganResource extends Resource
                             'hideLogic' => fn($operation, $record) =>
                             $operation === 'create' || filled($record?->diterima_signature)
                         ],
+                        // [
+                        //     'prefix' => 'dibuat',
+                        //     'role' => 'Dibuat Oleh',
+                        //     'hideLogic' => fn($operation, $record) =>
+                        //     $operation === 'create' || blank($record?->diterima_signature) || filled($record?->dibuat_signature)
+                        // ],
                         [
-                            'prefix' => 'dibuat',
-                            'role' => 'Dibuat Oleh',
+                            'prefix' => 'diketahui',
+                            'role' => 'Diketahui Oleh',
                             'hideLogic' => fn($operation, $record) =>
-                            $operation === 'create' || blank($record?->diterima_signature) || filled($record?->dibuat_signature)
+                            $operation === 'create' || blank($record?->diterima_signature) || filled($record?->diketahui_signature)
                         ],
                     ],
                     title: 'PIC',
@@ -86,7 +104,7 @@ class PermintaanPelayananPelangganResource extends Resource
                     ->color(fn($state) => [
                         'Belum Diterima' => 'danger',
                         'Diterima' => 'warning',
-                        'Dibuat' => 'success',
+                        'Diketahui' => 'success',
                     ][$state] ?? 'gray')
                     ->alignCenter(),
             ])
@@ -106,7 +124,7 @@ class PermintaanPelayananPelangganResource extends Resource
                         ->label(_('Lihat PDF'))
                         ->icon('heroicon-o-document')
                         ->color('success')
-                        ->visible(fn($record) => $record->status === 'Dibuat')
+                        ->visible(fn($record) => $record->status === 'Diketahui')
                         ->url(fn($record) => route('pdf.PelayananPelanggan', ['record' => $record->id])),
                 ])
             ])

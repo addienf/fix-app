@@ -10,6 +10,7 @@ use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Illuminate\Support\Facades\Cache;
+use Wallo\FilamentSelectify\Components\ButtonGroup;
 
 trait InformasiUmum
 {
@@ -21,17 +22,22 @@ trait InformasiUmum
         return Section::make('Informasi Umum')
             ->collapsible()
             ->schema([
-                Grid::make($isEdit ? 1 : 2)
+                Grid::make($isEdit ? 3 : 3)
                     ->schema([
-                        static::select()
-                            ->hiddenOn('edit'),
+                        static::getSumber(),
+
+                        static::selectSerah()
+                            ->hidden(fn($get) => $get('sumber') !== 'serah'),
+
+                        static::selectSpk()
+                            ->hidden(fn($get) => $get('sumber') !== 'spk'),
 
                         static::dateInput('tanggal', 'Tanggal'),
                     ]),
             ]);
     }
 
-    private static function select()
+    private static function selectSerah()
     {
         return
             Select::make('serah_terima_bahan_id')
@@ -44,8 +50,8 @@ trait InformasiUmum
             ->options(function () {
 
                 return SerahTerimaBahan::with([
-                    'peminjamanAlat.spkVendor.perencanaanProduksi.spk',
-                    'peminjamanAlat.spkVendor.perencanaanProduksi.identifikasiProduks',
+                    'perencanaanProduksi.spk',
+                    'perencanaanProduksi.identifikasiProduks',
                 ])
                     ->whereDoesntHave('standarisasiDrawing')
                     ->latest()
@@ -53,9 +59,7 @@ trait InformasiUmum
                     ->get()
                     ->mapWithKeys(function ($serah) {
 
-                        $jadwal = $serah->peminjamanAlat
-                            ->spkVendor
-                            ->perencanaanProduksi;
+                        $jadwal = $serah->perencanaanProduksi;
 
                         $spkNo = $jadwal->spk->no_spk ?? '-';
 
@@ -72,15 +76,15 @@ trait InformasiUmum
             ->getSearchResultsUsing(function (string $search) {
 
                 return SerahTerimaBahan::with([
-                    'peminjamanAlat.spkVendor.perencanaanProduksi.spk',
-                    'peminjamanAlat.spkVendor.perencanaanProduksi.identifikasiProduks',
+                    'perencanaanProduksi.spk',
+                    'perencanaanProduksi.identifikasiProduks',
                 ])
                     ->whereDoesntHave('standarisasiDrawing')
                     ->where(function ($query) use ($search) {
-                        $query->whereHas('peminjamanAlat.spkVendor.perencanaanProduksi.spk', function ($q) use ($search) {
+                        $query->whereHas('perencanaanProduksi.spk', function ($q) use ($search) {
                             $q->where('no_spk', 'LIKE', "%{$search}%");
                         })
-                            ->orWhereHas('peminjamanAlat.spkVendor.perencanaanProduksi.identifikasiProduks', function ($q) use ($search) {
+                            ->orWhereHas('perencanaanProduksi.identifikasiProduks', function ($q) use ($search) {
                                 $q->where('no_seri', 'LIKE', "%{$search}%");
                             });
                     })
@@ -88,9 +92,7 @@ trait InformasiUmum
                     ->get()
                     ->mapWithKeys(function ($serah) {
 
-                        $jadwal = $serah->peminjamanAlat
-                            ->spkVendor
-                            ->perencanaanProduksi;
+                        $jadwal = $serah->perencanaanProduksi;
 
                         $spkNo = $jadwal->spk->no_spk ?? '-';
 
@@ -108,8 +110,8 @@ trait InformasiUmum
         // ->getOptionLabelUsing(function ($value) {
 
         //     $serah = SerahTerimaBahan::with([
-        //         'peminjamanAlat.spkVendor.perencanaanProduksi.spk',
-        //         'peminjamanAlat.spkVendor.perencanaanProduksi.identifikasiProduks',
+        //         'perencanaanProduksi.spk',
+        //         'perencanaanProduksi.identifikasiProduks',
         //     ])->find($value);
 
         //     if (!$serah) return '-';
@@ -128,5 +130,48 @@ trait InformasiUmum
 
         //     return "{$spkNo} - {$noSeri}";
         // });
+    }
+
+    private static function getSumber()
+    {
+        return ButtonGroup::make('sumber')
+            ->label('Sumber Data')
+            ->options([
+                'serah' => 'Dari Serah Terima',
+                'spk'   => 'Langsung dari SPK',
+            ])
+            ->required()
+            ->reactive()
+            // ->columnSpanFull()
+            ->onColor('primary')
+            ->offColor('gray')
+            ->gridDirection('row')
+            ->afterStateUpdated(function ($state, callable $set) {
+                $set('serah_terima_bahan_id', null);
+                $set('spk_marketing_id', null);
+            });
+    }
+
+    private static function selectSpk(): Select
+    {
+        return Select::make('spk_marketing_id')
+            ->label('Nomor SPK / No Seri')
+            ->placeholder('Pilih SPK / No Seri')
+            ->searchable()
+            ->native(false)
+            ->preload()
+            ->required(fn($get) => $get('sumber') === 'spk')
+            ->options(function () {
+                return SPKMarketing::query()
+                    ->latest()
+                    ->limit(10)
+                    ->pluck('no_spk', 'id');
+            })
+            ->getSearchResultsUsing(function (string $search) {
+                return SPKMarketing::query()
+                    ->where('no_spk', 'like', "%{$search}%")
+                    ->limit(10)
+                    ->pluck('no_spk', 'id');
+            });
     }
 }

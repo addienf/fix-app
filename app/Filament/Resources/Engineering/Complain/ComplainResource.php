@@ -115,7 +115,7 @@ class ComplainResource extends Resource
         return parent::getEloquentQuery()
             ->with([
                 // 'spkService',
-                'pelayananPelanggan',
+                // 'pelayananPelanggan',
                 'details',
                 'pic'
             ]);

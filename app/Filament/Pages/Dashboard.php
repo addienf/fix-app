@@ -21,9 +21,15 @@ class Dashboard extends BaseDashboard
     {
         Carbon::setLocale('id'); // Set locale ke Bahasa Indonesia
 
-        $months = collect(range(1, 12))->mapWithKeys(function ($month) {
-            return [$month => Carbon::create()->month($month)->translatedFormat('F')];
-        })->toArray();
+        $months = collect(range(1, 12))
+            ->mapWithKeys(fn($m) => [
+                $m => Carbon::create(2025, $m, 1)->translatedFormat('F')
+            ])
+            ->toArray();
+
+        $years = collect(range(now()->year - 5, now()->year + 1))
+            ->mapWithKeys(fn($y) => [$y => $y])
+            ->toArray();
 
         return $form
             ->schema([
@@ -34,11 +40,12 @@ class Dashboard extends BaseDashboard
                             ->schema([
                                 Select::make('selectedDepartment')
                                     ->label('Pilih Departemen')
-                                    ->options(collect(config('models'))->keys()->mapWithKeys(fn($key) => [$key => ucfirst($key)]))
+                                    ->options(collect(config('models'))
+                                        ->keys()
+                                        ->mapWithKeys(fn($key) => [$key => ucfirst($key)]))
                                     ->reactive()
-                                    // ->default('general')
                                     ->afterStateUpdated(fn($state, callable $set) => $set('selectedModel', null))
-                                    ->columnSpan(fn(callable $get) => filled($get('selectedDepartment')) ? 2 : 3),
+                                    ->columnSpan(2),
 
                                 Select::make('selectedModel')
                                     ->label('Pilih Model')
@@ -50,19 +57,29 @@ class Dashboard extends BaseDashboard
                                             ->mapWithKeys(fn($item, $key) => [$key => $item['label']])
                                             ->toArray();
                                     })
-                                    // ->default('user')
                                     ->placeholder('Pilih Model')
                                     ->visible(fn(callable $get) => filled($get('selectedDepartment')))
                                     ->reactive()
-                                    ->columnSpan(fn(callable $get) => filled($get('selectedDepartment')) ? 2 : 0),
+                                    ->columnSpan(2),
 
                                 Select::make('selectedMonth')
-                                    ->label('Filter by Month')
-                                    ->placeholder('Pilih Bulan')
+                                    ->label('Filter Bulan')
                                     ->options($months)
-                                    ->default(Carbon::now()->month)
+                                    ->nullable()
+                                    ->default(null)
+                                    ->placeholder('Semua Bulan')
                                     ->reactive()
-                                    ->columnSpan(fn(callable $get) => filled($get('selectedDepartment')) ? 2 : 3),
+                                    ->columnSpan(2),
+
+                                // 🔥 YEAR (AMAN)
+                                Select::make('selectedYear')
+                                    ->label('Filter Tahun')
+                                    ->options($years)
+                                    ->nullable()
+                                    ->default(null)
+                                    ->placeholder('Semua Tahun')
+                                    ->reactive()
+                                    ->columnSpan(2),
                             ])
                     ])
                     ->columns(2),

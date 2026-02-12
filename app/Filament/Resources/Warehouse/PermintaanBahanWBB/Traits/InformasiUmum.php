@@ -38,19 +38,20 @@ trait InformasiUmum
                 Grid::make($isEdit ? 3 : 2)
                     ->schema([
 
-                        self::autoNumberField2('no_surat', 'No Surat', [
-                            'prefix' => 'QKS',
-                            'section' => 'WBB',
-                            'type' => 'PERMINTAAN',
-                            'table' => 'permintaan_bahans',
-                        ])
-                            ->rules(function (callable $get) {
-                                return $get('is_stock') == 0
-                                    ? ['nullable']
-                                    : ['required', Rule::unique('permintaan_bahans', 'no_surat')];
-                            })
+                        // self::autoNumberField2('no_surat', 'No Surat', [
+                        //     'prefix' => 'QKS',
+                        //     'section' => 'WBB',
+                        //     'type' => 'PERMINTAAN',
+                        //     'table' => 'permintaan_bahans',
+                        // ])
+                        //     ->rules(function (callable $get) {
+                        //         return $get('is_stock') == 0
+                        //             ? ['nullable']
+                        //             : ['required', Rule::unique('permintaan_bahans', 'no_surat')];
+                        //     })
+                        //     ->hiddenOn('edit'),
+                        self::autoNumberField3('no_surat', 'No Surat')
                             ->hiddenOn('edit'),
-                        // ->hidden(fn($get) => $get('is_stock') != 1),
 
                         self::dateInput('tanggal', 'Tanggal')
                             ->required(),
@@ -74,7 +75,6 @@ trait InformasiUmum
             ->options(function () {
                 return JadwalProduksi::query()
                     ->where('status_persetujuan', 'Disetujui')
-                    // ->where('status', 'Tidak Tersedia')
                     ->whereDoesntHave('permintaanBahanWBB')
                     ->orderBy('id', 'desc')
                     ->limit(10)
@@ -83,7 +83,6 @@ trait InformasiUmum
             ->getSearchResultsUsing(function (string $search) {
                 return JadwalProduksi::query()
                     ->where('status_persetujuan', 'Disetujui')
-                    // ->where('status', 'Tidak Tersedia')
                     ->whereDoesntHave('permintaanBahanWBB')
                     ->where('no_surat', 'like', "%{$search}%")
                     ->orderBy('id', 'desc')
@@ -117,12 +116,34 @@ trait InformasiUmum
             });
     }
 
+    // private static function getIsStock()
+    // {
+    //     return
+    //         ButtonGroup::make('is_stock')
+    //         ->label('')
+    //         ->required()
+    //         ->options([
+    //             1 => 'Permintaan Biasa',
+    //             0 => 'Untuk Stock',
+    //         ])
+    //         ->reactive()
+    //         ->columnSpanFull()
+    //         ->onColor('primary')
+    //         ->offColor('gray')
+    //         ->gridDirection('row')
+    //         ->afterStateUpdated(function ($state, callable $set) {
+    //             if ($state == 0) {
+    //                 $kode = now()->format('YmdHis');
+    //                 $set('no_surat', "Untuk Stock - {$kode}");
+    //                 $set('dari', null);
+    //                 $set('kepada', null);
+    //             }
+    //         });
+    // }
+
     private static function getIsStock()
     {
-        return
-            ButtonGroup::make('is_stock')
-            ->label('')
-            ->required()
+        return ButtonGroup::make('is_stock')
             ->options([
                 1 => 'Permintaan Biasa',
                 0 => 'Untuk Stock',
@@ -132,10 +153,27 @@ trait InformasiUmum
             ->onColor('primary')
             ->offColor('gray')
             ->gridDirection('row')
-            ->afterStateUpdated(function ($state, callable $set) {
+            ->afterStateHydrated(function (callable $set, callable $get) {
+                $set(
+                    'no_surat',
+                    self::generateNoSurat(
+                        $get('is_stock'),
+                        'permintaan_bahans',
+                        'no_surat'
+                    )
+                );
+            })
+            ->afterStateUpdated(function ($state, callable $set, callable $get) {
+                $set(
+                    'no_surat',
+                    self::generateNoSurat(
+                        $get('is_stock'),
+                        'permintaan_bahans',
+                        'no_surat'
+                    )
+                );
+
                 if ($state == 0) {
-                    $kode = now()->format('YmdHis');
-                    $set('no_surat', "Untuk Stock - {$kode}");
                     $set('dari', null);
                     $set('kepada', null);
                 }

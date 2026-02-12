@@ -35,7 +35,7 @@ class BeritaAcaraResource extends Resource
         return $form
             ->schema([
                 //
-                self::getInformasiUmumSection(),
+                self::getInformasiUmumSection($form),
 
                 self::getInformasiBioSection(),
 

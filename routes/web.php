@@ -10,6 +10,7 @@ use App\Http\Controllers\SalesMarketingController;
 use App\Http\Controllers\WarehouseController;
 use App\Jobs\Sales\SendSpesifikasiProductNotif;
 use App\Models\Sales\SpesifikasiProducts\SpesifikasiProduct;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -94,8 +95,13 @@ Route::get('/engineering/sparepart-alat-kerja/{record}/pdf', [EngineeringControl
 //     return view('pdf.customercare.pdfSuratPerintahKerja');
 // });
 
+// Route::get('admin/storage-link', function () {
+//     $targetFolder = storage_path('app/public');
+//     $linkFolder = $_SERVER['DOCUMENT_ROOT'] . '/storage';
+//     symlink($targetFolder, $linkFolder);
+// });
+
 Route::get('admin/storage-link', function () {
-    $targetFolder = storage_path('app/public');
-    $linkFolder = $_SERVER['DOCUMENT_ROOT'] . '/storage';
-    symlink($targetFolder, $linkFolder);
+    Artisan::call('storage:link');
+    return ('Storage:link berhasil');
 });

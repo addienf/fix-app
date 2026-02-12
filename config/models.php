@@ -13,6 +13,7 @@ use App\Models\Engineering\Pelayanan\PermintaanPelayananPelanggan;
 use App\Models\Engineering\Permintaan\PermintaanSparepart;
 use App\Models\Engineering\Service\ServiceReport;
 use App\Models\Engineering\SPK\SPKService;
+use App\Models\General\Company;
 use App\Models\General\Customer;
 use App\Models\General\Product;
 use App\Models\Production\Jadwal\JadwalProduksi;
@@ -51,6 +52,10 @@ return [
         'customer' => [
             'label' => 'Customer',
             'model' => Customer::class,
+        ],
+        'company' => [
+            'label' => 'Company',
+            'model' => Company::class,
         ],
         'produk' => [
             'label' => 'Produk',

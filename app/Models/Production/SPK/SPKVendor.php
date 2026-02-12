@@ -4,6 +4,7 @@ namespace App\Models\Production\SPK;
 
 use App\Models\Production\Jadwal\JadwalProduksi;
 use App\Models\Production\PermintaanBahanProduksi\PermintaanAlatDanBahan;
+use App\Models\Production\SPK\Pivot\SPKVendorDetail;
 use App\Models\Sales\SPKMarketings\SPKMarketing;
 use App\Models\Warehouse\Peminjaman\PeminjamanAlat;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -27,6 +28,11 @@ class SPKVendor extends Model
     protected $casts = [
         'lampiran' => 'array'
     ];
+
+    public function details()
+    {
+        return $this->hasMany(SPKVendorDetail::class, 'spk_vendor_id');
+    }
 
     public function peminjamanAlat()
     {

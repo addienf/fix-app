@@ -66,8 +66,6 @@ trait DataPeminjamAlat
                     ->get()
                     ->mapWithKeys(function ($spkVendor) {
 
-                        // $jadwal = $spkVendor->permintaanBahanProduksi->jadwalProduksi;
-
                         $spkNo = $spkVendor->perencanaanProduksi->spk->no_spk ?? '-';
 
                         $noSeri = $spkVendor->perencanaanProduksi->identifikasiProduks

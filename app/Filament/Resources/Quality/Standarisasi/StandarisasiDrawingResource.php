@@ -86,14 +86,29 @@ class StandarisasiDrawingResource extends Resource
                 // TextColumn::make('serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.spk.no_spk')
                 //     ->label('No SPK Marketing'),
 
-                self::textColumn('serahTerimaWarehouse.peminjamanAlat.spkVendor.perencanaanProduksi.spk.no_spk', 'No SPK Marketing'),
+                // self::textColumn('serahTerimaWarehouse.perencanaanProduksi.spk.no_spk', 'No SPK Marketing'),
+
+                // TextColumn::make('spk.no_spk')
+                //     ->label('No SPK Marketing')
+                //     ->placeholder('-'),
+                TextColumn::make('no_spk')
+                    ->label('No SPK Marketing')
+                    ->getStateUsing(function ($record) {
+
+                        if ($record->sumber === 'serah') {
+                            return $record->serahTerimaWarehouse
+                                ?->perencanaanProduksi
+                                ?->spk
+                                ?->no_spk ?? '-';
+                        }
+
+                        return $record->spkMarketing?->no_spk ?? '-';
+                    }),
 
                 self::textColumn('no_seri', 'No Seri')
                     ->getStateUsing(function ($record) {
                         return $record
                             ->serahTerimaWarehouse
-                            ?->peminjamanAlat
-                            ?->spkVendor
                             ?->perencanaanProduksi
                             ?->identifikasiProduks
                             ?->pluck('no_seri')
@@ -175,8 +190,8 @@ class StandarisasiDrawingResource extends Resource
     {
         return parent::getEloquentQuery()
             ->with([
-                'serahTerimaWarehouse.peminjamanAlat.spkVendor.perencanaanProduksi.spk',
-                'serahTerimaWarehouse.peminjamanAlat.spkVendor.perencanaanProduksi.identifikasiProduks',
+                'serahTerimaWarehouse.perencanaanProduksi.spk',
+                'serahTerimaWarehouse.perencanaanProduksi.identifikasiProduks',
                 'identitas',
                 'pic',
                 'detail',

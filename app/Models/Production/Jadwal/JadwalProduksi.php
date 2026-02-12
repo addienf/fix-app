@@ -82,6 +82,11 @@ class JadwalProduksi extends Model
         return $this->hasOne(SPKVendor::class, 'perencanaan_id');
     }
 
+    public function serahTerimaWarehouse()
+    {
+        return $this->hasOne(SerahTerimaBahan::class, 'perencanaan_id');
+    }
+
     // public function sumbersElectrical()
     // {
     //     return $this->hasMany(SumberDaya::class)

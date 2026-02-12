@@ -23,7 +23,12 @@ trait DetailProduk
                 Repeater::make('details')
                     ->relationship('details')
                     ->schema([
-                        Grid::make(2)
+                        // Grid::make(2)
+                        Grid::make([
+                            'default' => 1,
+                            'md' => 2,
+                            'lg' => 2,
+                        ])
                             ->schema([
                                 TextInput::make('remark')
                                     ->label('Remark')
@@ -40,7 +45,8 @@ trait DetailProduk
 
                                 Textarea::make('taken_item')
                                     ->label('Taken Item')
-                                    ->columnSpanFull()
+                                    ->rows(4)
+                                    // ->columnSpanFull()
                                     ->required(),
 
                                 FileUpload::make('upload_file')
@@ -53,12 +59,17 @@ trait DetailProduk
                                     ->downloadable()
                                     ->reorderable()
                                     ->maxSize(10240)
-                                    ->columnSpanFull()
+                                    // ->columnSpanFull()
                                     ->required(),
                             ]),
                     ])
                     ->columnSpanFull()
-                    ->columns(2)
+                    // ->columns(2)
+                    ->columns([
+                        'default' => 1,
+                        'md' => 2,
+                        'lg' => 2,
+                    ])
                     ->addable(false)
                     ->reorderable(false)
                     ->deletable(false),

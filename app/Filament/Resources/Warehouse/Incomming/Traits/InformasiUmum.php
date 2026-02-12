@@ -43,9 +43,34 @@ trait InformasiUmum
                     ->orderBy('id', 'desc')
                     ->limit(10)
                     ->get()
+                    // ->mapWithKeys(function ($item) {
+                    //     $noSurat = $item->permintaanBahanWBB->no_surat ?? '-';
+                    //     return [$item->id => "{$item->id} - {$noSurat}"];
+                    // });
+                    // ->mapWithKeys(function ($item) {
+
+                    //     $noSurat = $item->permintaanBahanWBB->no_surat ?? null;
+
+                    //     if ($noSurat) {
+                    //         return [$item->id => "{$noSurat}"];
+                    //     }
+
+                    //     return [$item->id => "Untuk Stock Pembelian"];
+                    // });
                     ->mapWithKeys(function ($item) {
-                        $noSurat = $item->permintaanBahanWBB->no_surat ?? '-';
-                        return [$item->id => "{$item->id} - {$noSurat}"];
+
+                        $noSurat = $item->permintaanBahanWBB->no_surat ?? null;
+
+                        if ($noSurat) {
+                            return [$item->id => "{$noSurat}"];
+                        }
+
+                        // kalau untuk stock pembelian
+                        $createdAt = $item->created_at
+                            ? $item->created_at->format('YmdHis')
+                            : now()->format('YmdHis');
+
+                        return [$item->id => "Untuk Stock Pembelian - {$createdAt}"];
                     });
             })
             ->getSearchResultsUsing(function (string $search) {
@@ -91,7 +116,7 @@ trait InformasiUmum
                     return [
                         'nama_material' => $detail->nama_barang ?? '-',
                         'jumlah' => $detail->jumlah ?? '-',
-                        'batch_no' => $no_batch ?? '-',
+                        // 'batch_no' => $no_batch ?? '-',
                     ];
                 })->toArray();
 

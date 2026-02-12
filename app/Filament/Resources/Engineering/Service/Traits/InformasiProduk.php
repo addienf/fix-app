@@ -16,7 +16,8 @@ trait InformasiProduk
     use SimpleFormResource, HasAutoNumber;
     public static function getInformasiProdukSection()
     {
-        return Section::make('Informasi Produk')
+        return
+            Section::make('Informasi Produk')
             ->collapsible()
             ->schema([
                 Repeater::make('serviceProduk')
@@ -46,11 +47,19 @@ trait InformasiProduk
                             ])
                     ])
                     ->columnSpanFull()
-                    ->columns(2)
+                    ->columns([
+                        'default' => 1,
+                        'md' => 2,
+                        'lg' => 2,
+                    ])
                     ->addable(false)
                     ->reorderable(false)
                     ->deletable(false)
             ])
-            ->columns(2);
+            ->columns([
+                'default' => 1,
+                'md' => 2,
+                'lg' => 2,
+            ]);
     }
 }

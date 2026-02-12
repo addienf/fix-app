@@ -37,7 +37,11 @@ trait InformasiBio
                     TextInput::make('jabatan')
                         ->required(),
                 ])
-                ->columns(2),
+                ->columns([
+                    'default' => 1,
+                    'md' => 2,
+                    'lg' => 2,
+                ]),
 
             Section::make('Data Pelanggan')
                 ->collapsible()
@@ -55,7 +59,11 @@ trait InformasiBio
                     TextInput::make('jabatan')
                         ->required(),
                 ])
-                ->columns(2),
+                ->columns([
+                    'default' => 1,
+                    'md' => 2,
+                    'lg' => 2,
+                ]),
         ])
             ->columnSpanFull();
     }

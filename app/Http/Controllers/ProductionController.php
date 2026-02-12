@@ -70,7 +70,7 @@ class ProductionController extends Controller
 
     public function pdfSPKVendor($id)
     {
-        $vendor = SPKVendor::with(['perencanaanProduksi'])->findOrFail($id);
+        $vendor = SPKVendor::with(['perencanaanProduksi', 'details'])->findOrFail($id);
 
         return view('pdf.production.pdfSPKVendor', compact('vendor'));
     }

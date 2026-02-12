@@ -51,7 +51,7 @@ trait InformasiUmum
                     'spk',
                     'identifikasiProduks'
                 ])
-                    ->whereDoesntHave('spkVendor')
+                    // ->whereDoesntHave('spkVendor')
                     ->latest()
                     ->limit(10)
                     ->get()
@@ -145,7 +145,7 @@ trait InformasiUmum
 
                 if (!$jadwal) return;
 
-                $company = $jadwal?->spk?->spesifikasiProduct?->urs?->customer?->company?->name ?? '-';
+                $company = $jadwal?->spk?->spesifikasiProduct?->urs?->company?->name ?? '-';
 
                 $details = $jadwal->sumbers->map(fn($d) => [
                     'bahan_baku' => $d->bahan_baku,
@@ -154,8 +154,8 @@ trait InformasiUmum
                     'keperluan_barang' => $d->keperluan_barang,
                 ])->toArray();
 
-                $set('nama_perusahaan', $company);
-                $set('details', $details);
+                // $set('nama_perusahaan', $company);
+                // $set('details', $details);
             });
     }
 }
