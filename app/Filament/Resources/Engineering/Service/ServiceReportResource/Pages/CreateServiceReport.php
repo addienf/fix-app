@@ -26,7 +26,7 @@ class CreateServiceReport extends CreateRecord
         if ($this->record && $this->record->id) {
             SendGenericNotif::dispatch(
                 $this->record,
-                ['sales', 'super_admin'],
+                ['MR', 'engineering'],
                 GenericNotification::class,
                 '/admin/engineering/service-report',
                 'Data Service Report berhasil dibuat',

@@ -50,7 +50,11 @@ trait DetailLaporanProduk
 
                         self::textInput('keterangan', 'Keterangan'),
                     ])
-                    ->columns(6)
+                    ->columns([
+                        'default' => 1,
+                        'md' => 3,
+                        'lg' => 6,
+                    ])
                     ->deletable(false)
                     ->reorderable(false)
                     ->addable(false)

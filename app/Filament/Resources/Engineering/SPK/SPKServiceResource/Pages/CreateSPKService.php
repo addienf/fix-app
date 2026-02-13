@@ -26,7 +26,7 @@ class CreateSPKService extends CreateRecord
         if ($this->record && $this->record->id) {
             SendGenericNotif::dispatch(
                 $this->record,
-                ['sales', 'super_admin'],
+                ['customer_care', 'engineering'],
                 GenericNotification::class,
                 '/admin/engineering/spk-pelayanan-pelanggan',
                 'Data SPK Pelayanan Pelanggan berhasil dibuat',

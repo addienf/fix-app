@@ -30,7 +30,12 @@ trait SpesifikasiTeknis
                     ->multiple()
                     ->required(),
 
-            ])->columns(2);
+            ])
+            ->columns([
+                'default' => 1,
+                'md' => 2,
+                'lg' => 2,
+            ]);
     }
 
     protected static function selectInputOptions(string $fieldName, string $label, string $config): Select

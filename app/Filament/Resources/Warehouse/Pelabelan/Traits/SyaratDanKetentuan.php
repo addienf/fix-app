@@ -23,6 +23,10 @@ trait SyaratDanKetentuan
 
                 self::textInput('sisa_stock', 'Sisa Stock')
 
-            ])->columns(3);
+            ])->columns([
+                'default' => 1,
+                'md' => 3,
+                'lg' => 3,
+            ]);
     }
 }

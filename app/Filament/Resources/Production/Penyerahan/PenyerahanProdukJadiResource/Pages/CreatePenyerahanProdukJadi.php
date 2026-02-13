@@ -26,7 +26,7 @@ class CreatePenyerahanProdukJadi extends CreateRecord
         if ($this->record && $this->record->id) {
             SendGenericNotif::dispatch(
                 $this->record,
-                ['sales', 'super_admin'],
+                ['production', 'warehouse'],
                 GenericNotification::class,
                 '/admin/produksi/penyerahan-produk-jadi',
                 'Data Penyerahan Produk Jadi berhasil dibuat',

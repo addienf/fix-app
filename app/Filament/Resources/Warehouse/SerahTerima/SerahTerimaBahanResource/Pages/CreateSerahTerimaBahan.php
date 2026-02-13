@@ -26,7 +26,8 @@ class CreateSerahTerimaBahan extends CreateRecord
         if ($this->record && $this->record->id) {
             SendGenericNotif::dispatch(
                 $this->record,
-                ['sales', 'super_admin'],
+                // ['warehouse', 'production', 'engineering'],
+                ['warehouse', 'production'],
                 GenericNotification::class,
                 '/admin/warehouse/serah-terima-bahan',
                 'Data Serah Terima Bahan berhasil dibuat',

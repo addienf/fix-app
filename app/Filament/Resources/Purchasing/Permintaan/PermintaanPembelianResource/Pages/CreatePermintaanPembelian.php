@@ -28,7 +28,7 @@ class CreatePermintaanPembelian extends CreateRecord
         if ($this->record && $this->record->id) {
             SendGenericNotif::dispatch(
                 $this->record,
-                ['sales', 'super_admin'],
+                ['purchase', 'MR'],
                 GenericNotification::class,
                 '/admin/purchasing/permintaan-pembelian',
                 'Data Permintaan Pembelian berhasil dibuat',

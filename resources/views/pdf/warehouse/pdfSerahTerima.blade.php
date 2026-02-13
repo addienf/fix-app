@@ -5,7 +5,9 @@
     <table style="width:100%; border-collapse:collapse; table-layout:fixed;">
         <tr>
             <td rowspan="4" style="width:15%; text-align:center; vertical-align:middle; border:0.5px solid #000;">
-                <img src="{{ public_path('asset/logo.png') }}" style="height:55px;">
+                @if ($logoBase64)
+                    <img src="{{ $logoBase64 }}" style="height:55px;">
+                @endif
             </td>
 
             <td colspan="4" style="text-align:center; font-weight:bold; font-size:11px; border:0.5px solid #000;">
@@ -75,7 +77,7 @@
     <p>
         Dengan hormat,<br>
         Berdasarkan Permintaan Barang No
-        <b>{{ $serah_terima->peminjamanAlat->spkVendor->perencanaanProduksi->no_surat }}</b>
+        <b>{{ $serah_terima->perencanaanProduksi->no_surat }}</b>
         dari Departemen
         <b>{{ Str::headline($serah_terima->pic?->submitName?->roles?->first()?->name ?? '') }}</b>,
         berikut material/bahan/barang yang telah diserahkan:

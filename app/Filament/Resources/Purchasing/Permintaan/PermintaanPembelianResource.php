@@ -75,11 +75,20 @@ class PermintaanPembelianResource extends Resource
         return $table
             ->columns([
                 //
+                // self::textColumn('permintaanBahanWBB.no_surat', 'No Surat WBB')
+                //     ->getStateUsing(
+                //         fn($record) =>
+                //         $record->permintaanBahanWBB->no_surat ?? "Untuk Stock"
+                //     ),
                 self::textColumn('permintaanBahanWBB.no_surat', 'No Surat WBB')
-                    ->getStateUsing(
-                        fn($record) =>
-                        $record->permintaanBahanWBB->no_surat ?? "Untuk Stock"
-                    ),
+                    ->getStateUsing(function ($record) {
+
+                        if ($record->permintaanBahanWBB?->no_surat) {
+                            return $record->permintaanBahanWBB->no_surat;
+                        }
+
+                        return 'Untuk Stock - ' . $record->created_at->format('YmdHis');
+                    }),
 
                 self::textColumn('is_stock', 'Jenis Stock')
                     ->formatStateUsing(fn($state) => $state == 0 ? 'Untuk Stock' : 'Permintaan')
@@ -123,7 +132,7 @@ class PermintaanPembelianResource extends Resource
                         ->tooltip('Lihat Dokumen PDF')
                         ->icon('heroicon-o-document')
                         ->color('success')
-                        ->visible(fn($record) => $record->status_persetujuan === 'Disetujui')
+                        ->visible(fn($record) => $record->status_persetujuan === 'Diketahui')
                         ->url(fn($record) => route('pdf.PermintaanPembelian', ['record' => $record->id])),
                 ])
             ])

@@ -52,7 +52,11 @@ trait HasilPemeriksaan
                     ->reorderable(false)
                     ->addable(false)
                     ->default($defaultParts)
-                    ->columns(3),
+                    ->columns([
+                        'default' => 1,
+                        'md' => 3,
+                        'lg' => 3,
+                    ]),
 
                 TableRepeater::make('details_tambahan')
                     ->label('')
@@ -77,7 +81,11 @@ trait HasilPemeriksaan
                     ->default([])
                     ->reorderable(false)
                     ->addActionLabel('Tambah Checklist')
-                    ->columns(3)
+                    ->columns([
+                        'default' => 1,
+                        'md' => 3,
+                        'lg' => 3,
+                    ])
 
             ]);
     }

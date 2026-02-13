@@ -24,7 +24,11 @@ trait Summary
             ->label('')
             ->relationship('summary')
             ->schema([
-                Grid::make(2)
+                Grid::make([
+                    'default' => 1,
+                    'md' => 2,
+                    'lg' => 2,
+                ])
                     ->schema(
                         collect(config('summarySS.fields'))->map(function ($label, $key) {
                             return [

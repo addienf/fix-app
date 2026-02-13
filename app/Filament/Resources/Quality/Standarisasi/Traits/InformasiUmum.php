@@ -22,15 +22,27 @@ trait InformasiUmum
         return Section::make('Informasi Umum')
             ->collapsible()
             ->schema([
-                Grid::make($isEdit ? 3 : 3)
+                // Grid::make($isEdit ? 3 : 3)
+                Grid::make([
+                    'default' => 1,
+                    'md' => $isEdit ? 1 : 3,
+                    'lg' => $isEdit ? 1 : 3,
+                ])
                     ->schema([
-                        static::getSumber(),
+                        static::getSumber()
+                            ->hiddenOn('edit'),
 
                         static::selectSerah()
-                            ->hidden(fn($get) => $get('sumber') !== 'serah'),
+                            ->hidden(
+                                fn($get, $operation) =>
+                                $operation === 'edit' || $get('sumber') !== 'serah'
+                            ),
 
                         static::selectSpk()
-                            ->hidden(fn($get) => $get('sumber') !== 'spk'),
+                            ->hidden(
+                                fn($get, $operation) =>
+                                $operation === 'edit' || $get('sumber') !== 'spk'
+                            ),
 
                         static::dateInput('tanggal', 'Tanggal'),
                     ]),

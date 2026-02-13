@@ -25,7 +25,7 @@ class CreateProductRelease extends CreateRecord
         if ($this->record && $this->record->id) {
             SendGenericNotif::dispatch(
                 $this->record,
-                ['sales', 'super_admin'],
+                ['quality', 'MR', 'warehouse'],
                 GenericNotification::class,
                 '/admin/quality/product-release',
                 'Data Product Release berhasil dibuat',
