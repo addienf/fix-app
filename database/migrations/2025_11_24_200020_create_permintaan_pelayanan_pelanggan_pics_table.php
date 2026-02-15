@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('pelayanan_pelanggan_pics', function (Blueprint $table) {
             $table->id();
             $table->foreignId(column: 'pelayanan_id')->constrained('permintaan_pelayanan_pelanggans')->cascadeOnDelete();
-            $table->string('dibuat_signature');
-            $table->string('dibuat_name');
+            $table->string('dibuat_signature')->nullable();
+            $table->string('dibuat_name')->nullable();
             $table->string('diterima_signature')->nullable();
             $table->string('diterima_name')->nullable();
             $table->string('diketahui_signature')->nullable();

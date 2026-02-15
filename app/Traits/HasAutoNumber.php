@@ -113,6 +113,33 @@ trait HasAutoNumber
         return "{$num}/{$prefix}/{$section}/{$type}/{$month}/{$year}";
     }
 
+    public static function generateNoSurat2(string $table, string $column): string
+    {
+        $prefix  = 'QKS';
+        $section = 'WBB';
+        $type    = 'PERMINTAAN';
+
+        $month = now()->format('m');
+        $year  = now()->format('y');
+
+        $last = DB::table($table)
+            ->whereMonth('created_at', now()->month)
+            ->whereYear('created_at', now()->year)
+            ->where($column, 'like', "%/{$month}/{$year}")
+            ->orderByDesc($column)
+            ->value($column);
+
+        if ($last && preg_match('/^(\d{3})/', $last, $m)) {
+            $num = intval($m[1]) + 1;
+        } else {
+            $num = 1;
+        }
+
+        $num = str_pad($num, 3, '0', STR_PAD_LEFT);
+
+        return "{$num}/{$prefix}/{$section}/{$type}/{$month}/{$year}";
+    }
+
     public static function autoNumberField3(string $name, string $label): TextInput
     {
         return TextInput::make($name)

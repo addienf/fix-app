@@ -28,7 +28,7 @@ trait InformasiUmum
                 Grid::make([
                     'default' => 1,
                     'md' => $isEdit ? 3 : 2,
-                    'lg' => 2,
+                    'lg' => $isEdit ? 3 : 2,
                 ])
                     ->schema([
                         TextInput::make('no_surat')

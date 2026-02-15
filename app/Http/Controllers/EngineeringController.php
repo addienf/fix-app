@@ -20,6 +20,21 @@ class EngineeringController extends Controller
 {
     //
     use SimpleFormResource;
+
+    private function getBase64Logo()
+    {
+        $logoPath = public_path('asset/logo.png');
+
+        if (!file_exists($logoPath)) {
+            return null;
+        }
+
+        $type = pathinfo($logoPath, PATHINFO_EXTENSION);
+
+        return 'data:image/' . $type . ';base64,' .
+            base64_encode(file_get_contents($logoPath));
+    }
+
     public function pdfWalkInChamberG2($id)
     {
         return $this->renderWalkinPdf(ChamberWalkinG2::class, 'pdf.engineering.pdfWalkInChamberG2', $id, 'walkinG2');
@@ -60,13 +75,21 @@ class EngineeringController extends Controller
 
         $serviceReport = ServiceReport::with(['spkService', 'details', 'produkServices', 'pic', 'pic.approvedBy', 'pic.checkedBy'])->findOrFail($id);
 
-        $tanggal = \Carbon\Carbon::parse($serviceReport->tanggal)->format('Y-m-d'); // contoh: 2026-01-14
+        $tanggal = \Carbon\Carbon::parse($serviceReport->tanggal)->format('d-m-Y'); // contoh: 2026-01-14
 
         $formNo = str_replace(['/', '\\', ' '], '-', $serviceReport->form_no);
 
         $fileBaseName = $formNo . '-' . $tanggal;
 
-        $pdf = Pdf::loadView('pdf.engineering.pdfServiceReport', compact('serviceReport'))->setPaper('a4', 'portrait');
+        // $pdf = Pdf::loadView('pdf.engineering.pdfServiceReport', compact('serviceReport'))->setPaper('a4', 'portrait');
+
+        $pdf = Pdf::loadView(
+            'pdf.engineering.pdfServiceReport',
+            [
+                'serviceReport' => $serviceReport,
+                'logoBase64' => $this->getBase64Logo(),
+            ]
+        )->setPaper('a4', 'portrait');
 
         $pdfName = $fileBaseName . '.pdf';
         $pdfPath = storage_path('app/temp/' . $pdfName);
@@ -103,11 +126,19 @@ class EngineeringController extends Controller
     {
         $berita = BeritaAcara::with(['spkService', 'detail', 'pic', 'pelanggan', 'penyediaJasa', 'pic.jasaName'])->findOrFail($id);
 
-        $tanggal = \Carbon\Carbon::parse($berita->tanggal)->format('Y-m-d');
+        $tanggal = \Carbon\Carbon::parse($berita->tanggal)->format('d-m-Y');
         $noSurat = str_replace(['/', '\\'], '-', $berita->no_surat);
         $fileName = $noSurat . ' - ' . $tanggal . '.pdf';
 
-        $pdf = Pdf::loadView('pdf.engineering.pdfBeritaAcara', compact('berita'))->setPaper('a4', 'portrait');
+        // $pdf = Pdf::loadView('pdf.engineering.pdfBeritaAcara', compact('berita'))->setPaper('a4', 'portrait');
+
+        $pdf = Pdf::loadView(
+            'pdf.engineering.pdfBeritaAcara',
+            [
+                'berita' => $berita,
+                'logoBase64' => $this->getBase64Logo(),
+            ]
+        )->setPaper('a4', 'portrait');
 
         return $pdf->stream($fileName);
     }
@@ -116,11 +147,19 @@ class EngineeringController extends Controller
     {
         $sparepart = PermintaanSparepart::with(['spkService', 'details', 'pic', 'pic.dibuatName', 'pic.diketahuiName', 'pic.diserahkanName'])->findOrFail($id);
 
-        $tanggal = \Carbon\Carbon::parse($sparepart->tanggal)->format('Y-m-d');
+        $tanggal = \Carbon\Carbon::parse($sparepart->tanggal)->format('d-m-Y');
         $noSurat = str_replace(['/', '\\'], '-', $sparepart->no_surat);
         $fileName = $noSurat . ' - ' . $tanggal . '.pdf';
 
-        $pdf = Pdf::loadView('pdf.engineering.pdfSparepartAlatKerja', compact('sparepart'))->setPaper('a4', 'portrait');
+        // $pdf = Pdf::loadView('pdf.engineering.pdfSparepartAlatKerja', compact('sparepart'))->setPaper('a4', 'portrait');
+
+        $pdf = Pdf::loadView(
+            'pdf.engineering.pdfSparepartAlatKerja',
+            [
+                'sparepart' => $sparepart,
+                'logoBase64' => $this->getBase64Logo(),
+            ]
+        )->setPaper('a4', 'portrait');
 
         return $pdf->stream($fileName);
     }

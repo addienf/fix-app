@@ -17,7 +17,6 @@ class StandarisasiDrawing extends Model
     use HasFactory;
 
     protected $fillable = [
-        // 'spk_marketing_id',
         'sumber',
         'serah_terima_bahan_id',
         'spk_marketing_id',
@@ -32,11 +31,6 @@ class StandarisasiDrawing extends Model
         'format_gambar' => 'array',
         'tanggal' => 'date',
     ];
-
-    // public function spk()
-    // {
-    //     return $this->belongsTo(SPKMarketing::class, 'spk_marketing_id');
-    // }
 
     public function serahTerimaWarehouse()
     {

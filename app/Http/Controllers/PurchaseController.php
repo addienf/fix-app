@@ -14,7 +14,7 @@ class PurchaseController extends Controller
     {
         $permintaan_pembelian = PermintaanPembelian::with(['permintaanBahanWBB', 'details', 'pic', 'pic.createName', 'pic.knowingName'])->findOrFail($id);
 
-        $tanggal = now('Asia/Jakarta')->format('Y-m-d');
+        $tanggal = now('Asia/Jakarta')->format('d-m-Y');
         $fileName = 'FO-QKS-PUR-01-01' . ' - ' . $tanggal . '.pdf';
 
         // $pdf = Pdf::loadView('pdf.purchasing.pdfPermintaanPembelian', compact('permintaan_pembelian'))

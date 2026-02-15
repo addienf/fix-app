@@ -28,7 +28,7 @@ class ProductionController extends Controller
             'pic.approveName',
         ])->findOrFail($id);
 
-        $tanggal = Carbon::parse($jadwalProduksi->tanggal)->format('Y-m-d');
+        $tanggal = Carbon::parse($jadwalProduksi->tanggal)->format('d-m-Y');
         $noSuratSafe = str_replace(['/', '\\', ' '], '-', $jadwalProduksi->no_surat);
         $baseName = $noSuratSafe . ' - ' . $tanggal;
 

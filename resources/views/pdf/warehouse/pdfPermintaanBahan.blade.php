@@ -111,7 +111,7 @@
 
     <p style="margin-top:12px;">
         Berdasarkan Permintaan Barang No
-        <b>{{ $permintaan_bahan->permintaanBahanPro->no_surat ?? 'Untuk Stock' }}</b>
+        <b>{{ $permintaan_bahan->no_surat ?? 'Untuk Stock' }}</b>
         dari Departemen
         <b>{{ Str::headline($permintaan_bahan->pic->dibuatName->roles->first()?->name ?? '-') }}</b>,
         mohon bantuan untuk memenuhi kebutuhan bahan/sparepart dengan rincian sebagai berikut:

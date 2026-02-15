@@ -75,11 +75,6 @@ class PermintaanPembelianResource extends Resource
         return $table
             ->columns([
                 //
-                // self::textColumn('permintaanBahanWBB.no_surat', 'No Surat WBB')
-                //     ->getStateUsing(
-                //         fn($record) =>
-                //         $record->permintaanBahanWBB->no_surat ?? "Untuk Stock"
-                //     ),
                 self::textColumn('permintaanBahanWBB.no_surat', 'No Surat WBB')
                     ->getStateUsing(function ($record) {
 
@@ -87,7 +82,7 @@ class PermintaanPembelianResource extends Resource
                             return $record->permintaanBahanWBB->no_surat;
                         }
 
-                        return 'Untuk Stock - ' . $record->created_at->format('YmdHis');
+                        return 'Untuk Stock - ' . $record->created_at->format('d/m/Y');
                     }),
 
                 self::textColumn('is_stock', 'Jenis Stock')

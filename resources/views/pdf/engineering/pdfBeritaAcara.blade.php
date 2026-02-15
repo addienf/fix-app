@@ -7,7 +7,10 @@
     <table style="width:100%; border-collapse:collapse; table-layout:fixed;">
         <tr>
             <td rowspan="4" style="width:15%; text-align:center; vertical-align:middle; border:0.5px solid #000;">
-                <img src="{{ public_path('asset/logo.png') }}" style="height:55px;">
+                {{-- <img src="{{ public_path('asset/logo.png') }}" style="height:55px;"> --}}
+                @if ($logoBase64)
+                    <img src="{{ $logoBase64 }}" style="height:55px;">
+                @endif
             </td>
 
             <td colspan="4" style="text-align:center; font-weight:bold; font-size:11px; border:0.5px solid #000;">
@@ -179,7 +182,7 @@
                 <td>
                     ( Pihak 2 Pelanggan )<br><br><br><br><br><br>
                     <div class="signature-name">
-                        ( {{ $berita->pelanggan->nama }} )
+                        ( <span style="display:inline-block; width:75px;"></span> )
                     </div>
                 </td>
             </tr>
@@ -310,5 +313,8 @@
 
     .signature-name {
         margin-top: 8px;
+        width: 200px;
+        text-align: center;
+        margin: 0 auto;
     }
 </style>

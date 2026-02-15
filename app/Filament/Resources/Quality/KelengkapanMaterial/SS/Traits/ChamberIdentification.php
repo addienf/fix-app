@@ -65,7 +65,8 @@ trait ChamberIdentification
                         'serahTerimaWarehouse.perencanaanProduksi.spk',
                         'serahTerimaWarehouse.perencanaanProduksi.identifikasiProduks',
                     ])
-                    ->where('sumber', 'serah') // 🔥 kunci utamanya
+                    // ->where('sumber', 'serah')
+                    ->whereNotNull('serah_terima_bahan_id')
                     ->whereDoesntHave('kelengkapanMaterial')
                     ->latest()
                     ->limit(10)

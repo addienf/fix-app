@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Quality\Standarisasi\Traits;
 
+use App\Models\Quality\Standarisasi\StandarisasiDrawing;
 use App\Models\Sales\SPKMarketings\SPKMarketing;
 use App\Models\Warehouse\SerahTerima\SerahTerimaBahan;
 use App\Traits\HasAutoNumber;
@@ -33,9 +34,17 @@ trait InformasiUmum
                             ->hiddenOn('edit'),
 
                         static::selectSerah()
-                            ->hidden(
+                            ->visible(function ($get, $operation, $record) {
+
+                                if ($operation === 'create') {
+                                    return $get('sumber') === 'serah';
+                                }
+
+                                return blank($record?->serah_terima_bahan_id);
+                            })
+                            ->required(
                                 fn($get, $operation) =>
-                                $operation === 'edit' || $get('sumber') !== 'serah'
+                                $operation === 'create' && $get('sumber') === 'serah'
                             ),
 
                         static::selectSpk()
@@ -57,6 +66,7 @@ trait InformasiUmum
             ->placeholder('Pilih Nomor SPK / No Seri')
             ->searchable()
             ->native(false)
+            ->dehydrated(true)
             ->preload()
             ->required()
             ->options(function () {
@@ -84,41 +94,41 @@ trait InformasiUmum
                             $serah->id => "{$spkNo} - {$noSeri}",
                         ];
                     });
-            })
-            ->getSearchResultsUsing(function (string $search) {
-
-                return SerahTerimaBahan::with([
-                    'perencanaanProduksi.spk',
-                    'perencanaanProduksi.identifikasiProduks',
-                ])
-                    ->whereDoesntHave('standarisasiDrawing')
-                    ->where(function ($query) use ($search) {
-                        $query->whereHas('perencanaanProduksi.spk', function ($q) use ($search) {
-                            $q->where('no_spk', 'LIKE', "%{$search}%");
-                        })
-                            ->orWhereHas('perencanaanProduksi.identifikasiProduks', function ($q) use ($search) {
-                                $q->where('no_seri', 'LIKE', "%{$search}%");
-                            });
-                    })
-                    ->limit(10)
-                    ->get()
-                    ->mapWithKeys(function ($serah) {
-
-                        $jadwal = $serah->perencanaanProduksi;
-
-                        $spkNo = $jadwal->spk->no_spk ?? '-';
-
-                        $noSeri = $jadwal->identifikasiProduks
-                            ->pluck('no_seri')
-                            ->filter()
-                            ->implode(', ') ?: '-';
-
-                        return [
-                            $serah->id => "{$spkNo} - {$noSeri}",
-                        ];
-                    })
-                    ->toArray();
             });
+        // ->getSearchResultsUsing(function (string $search) {
+
+        //     return SerahTerimaBahan::with([
+        //         'perencanaanProduksi.spk',
+        //         'perencanaanProduksi.identifikasiProduks',
+        //     ])
+        //         ->whereDoesntHave('standarisasiDrawing')
+        //         ->where(function ($query) use ($search) {
+        //             $query->whereHas('perencanaanProduksi.spk', function ($q) use ($search) {
+        //                 $q->where('no_spk', 'LIKE', "%{$search}%");
+        //             })
+        //                 ->orWhereHas('perencanaanProduksi.identifikasiProduks', function ($q) use ($search) {
+        //                     $q->where('no_seri', 'LIKE', "%{$search}%");
+        //                 });
+        //         })
+        //         ->limit(10)
+        //         ->get()
+        //         ->mapWithKeys(function ($serah) {
+
+        //             $jadwal = $serah->perencanaanProduksi;
+
+        //             $spkNo = $jadwal->spk->no_spk ?? '-';
+
+        //             $noSeri = $jadwal->identifikasiProduks
+        //                 ->pluck('no_seri')
+        //                 ->filter()
+        //                 ->implode(', ') ?: '-';
+
+        //             return [
+        //                 $serah->id => "{$spkNo} - {$noSeri}",
+        //             ];
+        //         })
+        //         ->toArray();
+        // });
         // ->getOptionLabelUsing(function ($value) {
 
         //     $serah = SerahTerimaBahan::with([
@@ -154,7 +164,6 @@ trait InformasiUmum
             ])
             ->required()
             ->reactive()
-            // ->columnSpanFull()
             ->onColor('primary')
             ->offColor('gray')
             ->gridDirection('row')
@@ -174,16 +183,42 @@ trait InformasiUmum
             ->preload()
             ->required(fn($get) => $get('sumber') === 'spk')
             ->options(function () {
+
+                $directSpkIds = StandarisasiDrawing::query()
+                    ->whereNotNull('spk_marketing_id')
+                    ->pluck('spk_marketing_id')
+                    ->toArray();
+
+                $serahSpkIds = StandarisasiDrawing::query()
+                    ->whereNotNull('serah_terima_bahan_id')
+                    ->with('serahTerimaWarehouse.perencanaanProduksi.spk')
+                    ->get()
+                    ->pluck('serahTerimaWarehouse.perencanaanProduksi.spk.id')
+                    ->filter()
+                    ->toArray();
+
+                $usedSpkIds = collect($directSpkIds)
+                    ->merge($serahSpkIds)
+                    ->unique()
+                    ->toArray();
+
                 return SPKMarketing::query()
+                    ->whereNotIn('id', $usedSpkIds)
                     ->latest()
                     ->limit(10)
                     ->pluck('no_spk', 'id');
-            })
-            ->getSearchResultsUsing(function (string $search) {
-                return SPKMarketing::query()
-                    ->where('no_spk', 'like', "%{$search}%")
-                    ->limit(10)
-                    ->pluck('no_spk', 'id');
             });
+        // ->getSearchResultsUsing(function (string $search) {
+        //     $usedSpkIds = StandarisasiDrawing::query()
+        //         ->whereNotNull('spk_marketing_id')
+        //         ->pluck('spk_marketing_id')
+        //         ->toArray();
+
+        //     return SPKMarketing::query()
+        //         ->whereNotIn('id', $usedSpkIds)
+        //         ->where('no_spk', 'like', "%{$search}%")
+        //         ->limit(10)
+        //         ->pluck('no_spk', 'id');
+        // });
     }
 }
