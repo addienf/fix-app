@@ -26,7 +26,7 @@ class CreatePengecekanMaterialSS extends CreateRecord
         if ($this->record && $this->record->id) {
             SendGenericNotif::dispatch(
                 $this->record,
-                ['sales', 'super_admin'],
+                ['quality', 'MR', 'production'],
                 GenericNotification::class,
                 '/admin/quality/pengecekan-material-stainless-steel',
                 'Data Pengecekan Material Stainless Steel berhasil dibuat',

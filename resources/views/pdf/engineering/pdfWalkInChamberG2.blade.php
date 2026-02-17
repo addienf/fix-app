@@ -5,7 +5,10 @@
         <tr>
             <!-- LOGO -->
             <td rowspan="2" style="width:110px; text-align:center; vertical-align:middle;">
-                <img src="{{ public_path('asset/logo.png') }}" style="height:50px;">
+                {{-- <img src="{{ public_path('asset/logo.png') }}" style="height:55px;"> --}}
+                @if ($logoBase64)
+                    <img src="{{ $logoBase64 }}" style="height:55px;">
+                @endif
             </td>
 
             <!-- PROJECT -->
@@ -165,7 +168,7 @@
             <tr>
                 <td class="font-bold">Name</td>
                 <td>{{ $walkinG2->pic?->checkedBy?->name ?? '-' }}</td>
-                <td>{{ $walkinG2->pic?->approvedBy?->name ?? '-' }}</td>
+                <td>{{ optional(value: $walkinG2->pic)->approved_name }}</td>
             </tr>
             <tr>
                 <td class="font-bold text-center align-middle">
@@ -178,14 +181,20 @@
                 </td>
                 <td class="sign-cell">
                     <div class="sign-box">
-                        <img src="{{ public_path('storage/' . $walkinG2->pic->approved_signature) }}">
+                        @if ($walkinG2->pic?->approved_signature)
+                            <img src="{{ public_path('storage/' . $walkinG2->pic->approved_signature) }}">
+                        @endif
                     </div>
                 </td>
             </tr>
             <tr>
                 <td class="font-bold">Date</td>
                 <td>{{ \Carbon\Carbon::parse($walkinG2->pic->checked_date)->translatedFormat('d F Y') }}</td>
-                <td>{{ \Carbon\Carbon::parse($walkinG2->pic->approved_date)->translatedFormat('d F Y') }}</td>
+                <td>
+                    @if ($walkinG2->pic?->approved_date)
+                        {{ \Carbon\Carbon::parse($walkinG2->pic->approved_date)->translatedFormat('d F Y') }}
+                    @endif
+                </td>
             </tr>
         </tbody>
     </table>

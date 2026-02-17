@@ -20,7 +20,12 @@ trait DokumenPendukung
             Section::make('Dokumen Pendukung')
             ->collapsible()
             ->schema([
-                Grid::make(2)
+                // Grid::make(2)
+                Grid::make([
+                    'default' => 1,
+                    'md' => 2,
+                    'lg' => 2,
+                ])
                     ->schema([
                         self::uploadField(
                             'file_path',

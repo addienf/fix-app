@@ -15,7 +15,7 @@ trait ListDetailBahanBaku
         return
             Section::make('List Detail Bahan Baku')
             ->collapsible()
-            ->hiddenOn('edit')
+            // ->hiddenOn('edit')
             ->schema([
                 TableRepeater::make('details')
                     ->relationship('details')

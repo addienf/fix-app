@@ -26,7 +26,7 @@ class CreatePermintaanSparepart extends CreateRecord
         if ($this->record && $this->record->id) {
             SendGenericNotif::dispatch(
                 $this->record,
-                ['sales', 'super_admin'],
+                ['MR', 'engineering'],
                 GenericNotification::class,
                 '/admin/engineering/permintaan-spareparts',
                 'Data Permintaan Sparepart berhasil dibuat',

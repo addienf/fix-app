@@ -38,7 +38,13 @@ trait ChamberIdentification
                         'style' => 'pointer-events: none;'
                     ]),
 
-            ])->columns($isEdit ? 2 : 3);
+            ])
+            // ->columns($isEdit ? 2 : 3);
+            ->columns([
+                'default' => 1,
+                'md' => $isEdit ? 2 : 3,
+                'lg' => $isEdit ? 2 : 3,
+            ]);
     }
 
     private static function getSelectedSPK()
@@ -59,7 +65,8 @@ trait ChamberIdentification
                         'serahTerimaWarehouse.perencanaanProduksi.spk',
                         'serahTerimaWarehouse.perencanaanProduksi.identifikasiProduks',
                     ])
-                    ->where('sumber', 'serah') // 🔥 kunci utamanya
+                    // ->where('sumber', 'serah')
+                    ->whereNotNull('serah_terima_bahan_id')
                     ->whereDoesntHave('kelengkapanMaterial')
                     ->latest()
                     ->limit(10)

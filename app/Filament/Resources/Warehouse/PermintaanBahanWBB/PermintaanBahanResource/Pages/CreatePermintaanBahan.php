@@ -29,7 +29,7 @@ class CreatePermintaanBahan extends CreateRecord
         if ($this->record && $this->record->id) {
             SendGenericNotif::dispatch(
                 $this->record,
-                ['sales', 'super_admin'],
+                ['warehouse', 'MR', 'purchase'],
                 GenericNotification::class,
                 '/admin/warehouse/permintaan-bahan-warehouse',
                 'Data Permintaan Bahan Warehouse berhasil dibuat',

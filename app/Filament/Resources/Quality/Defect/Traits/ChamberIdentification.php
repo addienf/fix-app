@@ -21,7 +21,11 @@ trait ChamberIdentification
             Section::make('Product Identification')
             ->collapsible()
             ->schema([
-                Grid::make(2)
+                Grid::make([
+                    'default' => 1,
+                    'md' => 2,
+                    'lg' => 2,
+                ])
                     ->schema([
                         self::pilihModel()
                             ->hiddenOn('edit'),
@@ -46,7 +50,13 @@ trait ChamberIdentification
                         'style' => 'pointer-events: none;'
                     ]),
 
-            ])->columns($isEdit ? 4 : 2);
+            ])
+            // ->columns($isEdit ? 4 : 2);
+            ->columns([
+                'default' => 1,
+                'md' => $isEdit ? 4 : 2,
+                'lg' => $isEdit ? 4 : 2,
+            ]);
     }
 
     protected static function pilihModel(): Select

@@ -27,7 +27,13 @@ trait InformasiUmum
 
                 self::textInput('penanggung_jawab', 'Penanggung Jawab')
 
-            ])->columns($isEdit ? 2 : 3);
+            ])
+            // ->columns($isEdit ? 2 : 3);
+            ->columns([
+                'default' => 1,
+                'md' => $isEdit ? 2 : 3,
+                'lg' => $isEdit ? 2 : 3,
+            ]);
     }
 
     private static function getSelect()

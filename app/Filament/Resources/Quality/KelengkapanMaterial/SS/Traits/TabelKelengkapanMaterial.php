@@ -51,7 +51,11 @@ trait TabelKelengkapanMaterial
 
                     ])
                     ->default($defaultParts)
-                    ->columns(3)
+                    ->columns([
+                        'default' => 1,
+                        'md' => 3,
+                        'lg' => 3,
+                    ])
                     ->addable(true)
                     ->reorderable(false)
                     ->deletable(false)

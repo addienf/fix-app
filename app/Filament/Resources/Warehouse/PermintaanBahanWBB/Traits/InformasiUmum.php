@@ -33,9 +33,12 @@ trait InformasiUmum
                         $get('is_stock') != 1 ||
                             $livewire instanceof \Filament\Resources\Pages\EditRecord
                     ),
-                // ->hiddenOn('edit'),
 
-                Grid::make($isEdit ? 3 : 2)
+                Grid::make([
+                    'default' => 1,
+                    'md' => $isEdit ? 3 : 2,
+                    'lg' => $isEdit ? 3 : 2,
+                ])
                     ->schema([
 
                         // self::autoNumberField2('no_surat', 'No Surat', [
@@ -70,7 +73,7 @@ trait InformasiUmum
     {
         return
             Select::make('perencanaan_id')
-            ->label('No Surat')
+            ->label('No Surat Perencanaan Produksi')
             ->searchable()
             ->options(function () {
                 return JadwalProduksi::query()
@@ -116,31 +119,6 @@ trait InformasiUmum
             });
     }
 
-    // private static function getIsStock()
-    // {
-    //     return
-    //         ButtonGroup::make('is_stock')
-    //         ->label('')
-    //         ->required()
-    //         ->options([
-    //             1 => 'Permintaan Biasa',
-    //             0 => 'Untuk Stock',
-    //         ])
-    //         ->reactive()
-    //         ->columnSpanFull()
-    //         ->onColor('primary')
-    //         ->offColor('gray')
-    //         ->gridDirection('row')
-    //         ->afterStateUpdated(function ($state, callable $set) {
-    //             if ($state == 0) {
-    //                 $kode = now()->format('YmdHis');
-    //                 $set('no_surat', "Untuk Stock - {$kode}");
-    //                 $set('dari', null);
-    //                 $set('kepada', null);
-    //             }
-    //         });
-    // }
-
     private static function getIsStock()
     {
         return ButtonGroup::make('is_stock')
@@ -153,21 +131,19 @@ trait InformasiUmum
             ->onColor('primary')
             ->offColor('gray')
             ->gridDirection('row')
-            ->afterStateHydrated(function (callable $set, callable $get) {
+            ->afterStateHydrated(function (callable $set) {
                 $set(
                     'no_surat',
-                    self::generateNoSurat(
-                        $get('is_stock'),
+                    self::generateNoSurat2(
                         'permintaan_bahans',
                         'no_surat'
                     )
                 );
             })
-            ->afterStateUpdated(function ($state, callable $set, callable $get) {
+            ->afterStateUpdated(function ($state, callable $set) {
                 $set(
                     'no_surat',
-                    self::generateNoSurat(
-                        $get('is_stock'),
+                    self::generateNoSurat2(
                         'permintaan_bahans',
                         'no_surat'
                     )

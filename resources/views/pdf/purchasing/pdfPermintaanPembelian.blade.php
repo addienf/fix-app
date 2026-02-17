@@ -12,7 +12,8 @@
     <table style="width:100%; border-collapse:collapse; table-layout:fixed;">
         <tr>
             <td rowspan="4" style="width:15%; text-align:center; vertical-align:middle; border:0.5px solid #000;">
-                <img src="{{ public_path('asset/logo.png') }}" style="height:55px;">
+                {{-- <img src="{{ public_path('asset/logo.png') }}" style="height:55px;"> --}}
+                <img src="{{ $logoBase64 }}" style="height:55px;">
             </td>
 
             <td colspan="4" style="text-align:center; font-weight:bold; font-size:11px; border:0.5px solid #000;">
@@ -48,7 +49,10 @@
 
     <p>
         Berdasarkan Permintaan Barang No
-        <b>{{ $permintaan_pembelian->permintaanBahanWBB->no_surat ?? 'Untuk Stock' }}</b>,
+        <b>
+            {{ $permintaan_pembelian->permintaanBahanWBB?->no_surat ??
+                'Untuk Stock - ' . $permintaan_pembelian->created_at->timezone('Asia/Jakarta')->format('YmdHis') }}
+        </b>,
         mohon bantuan untuk memenuhi kebutuhan bahan / sparepart dengan rincian sebagai berikut:
     </p>
 

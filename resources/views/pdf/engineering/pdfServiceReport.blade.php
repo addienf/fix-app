@@ -4,7 +4,10 @@
     <table style="width:100%; border-collapse:collapse; table-layout:fixed;">
         <tr>
             <td rowspan="4" style="width:15%; text-align:center; vertical-align:middle; border:0.5px solid #000;">
-                <img src="{{ public_path('asset/logo.png') }}" style="height:55px;">
+                {{-- <img src="{{ public_path('asset/logo.png') }}" style="height:55px;"> --}}
+                @if ($logoBase64)
+                    <img src="{{ $logoBase64 }}" style="height:55px;">
+                @endif
             </td>
 
             <td colspan="4" style="text-align:center; font-weight:bold; border:0.5px solid #000;">
@@ -174,7 +177,7 @@
                     <th>Approved By</th>
                 </tr>
             </thead>
-            <tbody>
+            {{-- <tbody>
                 <tr>
                     <td>Name</td>
                     <td>{{ $serviceReport->pic->checkedBy->name }}</td>
@@ -197,6 +200,45 @@
                     <td>Date</td>
                     <td>{{ $serviceReport->pic->checked_date }}</td>
                     <td>{{ $serviceReport->pic->approved_date }}</td>
+                </tr>
+            </tbody> --}}
+            <tbody>
+                <tr>
+                    <td>Name</td>
+                    <td>{{ $serviceReport->pic->checkedBy->name ?? '-' }}</td>
+                    <td>
+                        {{ optional($serviceReport->pic)->approved_name }}
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>Signature</td>
+
+                    {{-- CHECKED (pakai TTD image) --}}
+                    <td class="signature-box">
+                        @if ($serviceReport->pic->checked_signature)
+                            <img src="{{ public_path('storage/' . $serviceReport->pic->checked_signature) }}"
+                                style="height:60px;">
+                        @endif
+                    </td>
+
+                    {{-- APPROVED (kosong untuk tanda tangan basah) --}}
+                    <td class="signature-box">
+                        @if ($serviceReport->pic?->approved_signature)
+                            <img src="{{ public_path('storage/' . $serviceReport->pic->approved_signature) }}">
+                        @endif
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>Date</td>
+                    <td>{{ $serviceReport->pic->checked_date ?? '-' }}</td>
+                    {{-- <td>{{ $serviceReport->pic->approved_date ?? '-' }}</td> --}}
+                    <td>
+                        @if ($serviceReport->pic?->approved_date)
+                            {{ \Carbon\Carbon::parse($serviceReport->pic->approved_date)->translatedFormat('d F Y') }}
+                        @endif
+                    </td>
                 </tr>
             </tbody>
         </table>

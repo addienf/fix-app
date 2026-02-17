@@ -26,7 +26,7 @@ class CreateRissingPipette extends CreateRecord
         if ($this->record && $this->record->id) {
             SendGenericNotif::dispatch(
                 $this->record,
-                ['sales', 'super_admin'],
+                ['engineering'],
                 GenericNotification::class,
                 '/admin/engineering/rissing-pipette',
                 'Data Rissing Pipette berhasil dibuat',

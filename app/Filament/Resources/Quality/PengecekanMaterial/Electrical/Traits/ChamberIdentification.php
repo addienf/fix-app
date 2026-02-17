@@ -23,7 +23,12 @@ trait ChamberIdentification
             ->collapsible()
             ->schema([
 
-                Grid::make($isEdit ? 2 : 3)
+                // Grid::make($isEdit ? 2 : 3)
+                Grid::make([
+                    'default' => 1,
+                    'md' => $isEdit ? 2 : 3,
+                    'lg' => $isEdit ? 2 : 3,
+                ])
                     ->schema([
 
                         //

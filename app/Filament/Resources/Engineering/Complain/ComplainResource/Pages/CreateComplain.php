@@ -24,7 +24,7 @@ class CreateComplain extends CreateRecord
         if ($this->record && $this->record->id) {
             SendGenericNotif::dispatch(
                 $this->record,
-                ['sales', 'super_admin'],
+                ['customer_care'],
                 GenericNotification::class,
                 '/admin/engineering/complaint',
                 'Data Complaint berhasil dibuat',

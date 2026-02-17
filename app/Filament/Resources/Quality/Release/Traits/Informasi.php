@@ -34,7 +34,11 @@ trait Informasi
 
                 self::textareaInput('remarks', 'Remark')->columnSpanFull(),
             ])
-            ->columns(2)
+            ->columns([
+                'default' => 1,
+                'md' => 2,
+                'lg' => 2,
+            ])
             ->collapsible();
     }
 

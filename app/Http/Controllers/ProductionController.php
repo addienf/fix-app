@@ -28,13 +28,27 @@ class ProductionController extends Controller
             'pic.approveName',
         ])->findOrFail($id);
 
-        $tanggal = Carbon::parse($jadwalProduksi->tanggal)->format('Y-m-d');
+        $tanggal = Carbon::parse($jadwalProduksi->tanggal)->format('d-m-Y');
         $noSuratSafe = str_replace(['/', '\\', ' '], '-', $jadwalProduksi->no_surat);
         $baseName = $noSuratSafe . ' - ' . $tanggal;
 
+        $logoPath = public_path('asset/logo.png');
+        $type = pathinfo($logoPath, PATHINFO_EXTENSION);
+        $logoBase64 = null;
+
+        if (file_exists($logoPath)) {
+            $logoBase64 = 'data:image/' . $type . ';base64,' .
+                base64_encode(file_get_contents($logoPath));
+        }
+
         $pdf = Pdf::loadView('pdf.production.pdfJadwalProduksi', [
-            'jadwal' => $jadwalProduksi
+            'jadwal' => $jadwalProduksi,
+            'logoBase64' => $logoBase64,
         ])->setPaper('a4', 'portrait');
+
+        // $pdf = Pdf::loadView('pdf.production.pdfJadwalProduksi', [
+        //     'jadwal' => $jadwalProduksi
+        // ])->setPaper('a4', 'portrait');
 
         $pdfName = $baseName . '.pdf';
         $pdfTempPath = storage_path('app/temp/' . $pdfName);

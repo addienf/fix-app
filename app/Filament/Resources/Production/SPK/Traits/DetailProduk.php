@@ -65,6 +65,11 @@ trait DetailProduk
                                     : []
                             ),
                     ])
+                    ->columns([
+                        'default' => 1,
+                        'md' => 3,
+                        'lg' => 3,
+                    ])
                     ->deletable(true)
                     ->reorderable(false)
                     ->addable(true)

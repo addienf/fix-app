@@ -21,7 +21,12 @@ trait InformasiUmum
             ->collapsible()
             ->schema([
 
-                Grid::make($isEdit ? 3 : 2)
+                // Grid::make($isEdit ? 3 : 2)
+                Grid::make([
+                    'default' => 1,
+                    'md' => $isEdit ? 3 : 2,
+                    'lg' => $isEdit ? 3 : 2,
+                ])
                     ->schema([
                         self::select()
                             ->columnSpanFull()

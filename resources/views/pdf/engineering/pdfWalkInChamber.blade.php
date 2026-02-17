@@ -4,7 +4,10 @@
     <table style="width:100%; border-collapse:collapse; margin-bottom:12px;">
         <tr>
             <td rowspan="2" style="width:110px; text-align:center; vertical-align:middle;">
-                <img src="{{ public_path('asset/logo.png') }}" style="height:50px;">
+                {{-- <img src="{{ public_path('asset/logo.png') }}" style="height:55px;"> --}}
+                @if ($logoBase64)
+                    <img src="{{ $logoBase64 }}" style="height:55px;">
+                @endif
             </td>
 
             <td style="padding:4px 8px; vertical-align:top;">
@@ -161,7 +164,10 @@
             <tr>
                 <td class="font-bold">Name</td>
                 <td>{{ $walkin->pic?->checkedBy?->name ?? '-' }}</td>
-                <td>{{ $walkin->pic?->approvedBy?->name ?? '-' }}</td>
+                <td>
+                    {{ optional($walkin->pic)->approved_name }}
+                </td>
+                {{-- <td></td> --}}
             </tr>
             <tr>
                 <td class="font-bold text-center align-middle">
@@ -174,14 +180,21 @@
                 </td>
                 <td class="sign-cell">
                     <div class="sign-box">
-                        <img src="{{ public_path('storage/' . $walkin->pic->approved_signature) }}">
+                        @if ($walkin->pic?->approved_signature)
+                            <img src="{{ public_path('storage/' . $walkin->pic->approved_signature) }}">
+                        @endif
                     </div>
                 </td>
             </tr>
             <tr>
                 <td class="font-bold">Date</td>
                 <td>{{ \Carbon\Carbon::parse($walkin->pic->checked_date)->translatedFormat('d F Y') }}</td>
-                <td>{{ \Carbon\Carbon::parse($walkin->pic->approved_date)->translatedFormat('d F Y') }}</td>
+                <td>
+                    @if ($walkin->pic?->approved_date)
+                        {{ \Carbon\Carbon::parse($walkin->pic->approved_date)->translatedFormat('d F Y') }}
+                    @endif
+                </td>
+                {{-- <td></td> --}}
             </tr>
         </tbody>
     </table>

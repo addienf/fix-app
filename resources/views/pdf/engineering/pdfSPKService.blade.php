@@ -8,7 +8,10 @@
         <table class="header-table">
             <tr>
                 <td rowspan="4" class="logo-cell">
-                    <img src="{{ public_path('asset/logo.png') }}">
+                    {{-- <img src="{{ public_path('asset/logo.png') }}" style="height:55px;"> --}}
+                    @if ($logoBase64)
+                        <img src="{{ $logoBase64 }}">
+                    @endif
                 </td>
                 <td colspan="4" class="company-cell">
                     PT. QLab Kinarya Sentosa

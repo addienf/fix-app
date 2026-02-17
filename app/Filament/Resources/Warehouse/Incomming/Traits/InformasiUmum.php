@@ -15,7 +15,8 @@ trait InformasiUmum
     use SimpleFormResource, HasAutoNumber;
     protected static function informasiUmumSection(): Section
     {
-        return Section::make('Informasi Umum')
+        return
+            Section::make('Informasi Umum')
             ->collapsible()
             ->schema([
 

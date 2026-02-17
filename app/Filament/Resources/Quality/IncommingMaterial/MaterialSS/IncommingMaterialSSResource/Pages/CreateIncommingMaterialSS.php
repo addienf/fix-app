@@ -26,7 +26,7 @@ class CreateIncommingMaterialSS extends CreateRecord
         if ($this->record && $this->record->id) {
             SendGenericNotif::dispatch(
                 $this->record,
-                ['sales', 'super_admin'],
+                ['quality', 'warehouse', 'MR'],
                 GenericNotification::class,
                 '/admin/quality/incoming-material-stainless-steel',
                 'Data Incoming Material Stainless Steel berhasil dibuat',

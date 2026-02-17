@@ -41,7 +41,11 @@ trait TabelKelengkapanMaterial
                     ->default($defaultParts)
                     ->schema([
 
-                        Grid::make(3)
+                        Grid::make([
+                            'default' => 1,
+                            'md' => 3,
+                            'lg' => 3,
+                        ])
                             ->schema([
                                 TextInput::make('mainPart')
                                     ->label('Main Part')

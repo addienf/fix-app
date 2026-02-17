@@ -13,22 +13,37 @@ use Illuminate\Support\Facades\Storage;
 
 class WarehouseController extends Controller
 {
+    private function getBase64Logo()
+    {
+        $logoPath = public_path('asset/logo.png');
+
+        if (!file_exists($logoPath)) {
+            return null;
+        }
+
+        $type = pathinfo($logoPath, PATHINFO_EXTENSION);
+
+        return 'data:image/' . $type . ';base64,' .
+            base64_encode(file_get_contents($logoPath));
+    }
     //
     public function pdfPermintaanBahan($id)
     {
         $permintaan_bahan = PermintaanBahan::with(['permintaanBahanPro', 'permintaanDetails', 'pic', 'pic.dibuatName', 'pic.mengetahuiName', 'pic.diserahkanName'])->findOrFail($id);
 
-        // return Pdf::loadView(
-        //     'pdf.warehouse.pdfPermintaanBahan',
-        //     compact('permintaan_bahan')
-        // )->stream('permintaan-bahan-warehouse.pdf');
-
-        $tanggal = \Carbon\Carbon::parse($permintaan_bahan->tanggal)->format('Y-m-d');
+        $tanggal = \Carbon\Carbon::parse($permintaan_bahan->tanggal)->format('d-m-Y');
         $noSurat = str_replace(['/', '\\'], '-', $permintaan_bahan->no_surat);
         $fileName = $noSurat . ' - ' . $tanggal . '.pdf';
 
-        $pdf = Pdf::loadView('pdf.warehouse.pdfPermintaanBahan', compact('permintaan_bahan'))
-            ->setPaper('a4', 'portrait');
+        // $pdf = Pdf::loadView('pdf.warehouse.pdfPermintaanBahan', compact('permintaan_bahan'))
+        //     ->setPaper('a4', 'portrait');
+        $pdf = Pdf::loadView(
+            'pdf.warehouse.pdfPermintaanBahan',
+            [
+                'permintaan_bahan' => $permintaan_bahan,
+                'logoBase64' => $this->getBase64Logo(),
+            ]
+        )->setPaper('a4', 'portrait');
 
         return $pdf->stream($fileName);
     }
@@ -37,17 +52,18 @@ class WarehouseController extends Controller
     {
         $incomingMaterial = IncommingMaterial::with(['permintaanPembelian', 'details', 'pic', 'pic.submitedName', 'pic.receivedName'])->findOrFail($id);
 
-        // return Pdf::loadView(
-        //     'pdf.warehouse.pdfIncomingMaterial',
-        //     compact('incomingMaterial')
-        // )->stream('incoming-material-warehouse.pdf');
-
-        $tanggal = \Carbon\Carbon::parse($incomingMaterial->tanggal)->format('Y-m-d');
-        // $noSurat = str_replace(['/', '\\'], '-', $permintaan_bahan->no_surat);
+        $tanggal = \Carbon\Carbon::parse($incomingMaterial->tanggal)->format('d-m-Y');
         $fileName = 'FO-QKS-WRH-01-01' . ' - ' . $tanggal . '.pdf';
 
-        $pdf = Pdf::loadView('pdf.warehouse.pdfIncomingMaterial', compact('incomingMaterial'))
-            ->setPaper('a4', 'portrait');
+        // $pdf = Pdf::loadView('pdf.warehouse.pdfIncomingMaterial', compact('incomingMaterial'))
+        //     ->setPaper('a4', 'portrait');
+        $pdf = Pdf::loadView(
+            'pdf.warehouse.pdfIncomingMaterial',
+            [
+                'incomingMaterial' => $incomingMaterial,
+                'logoBase64' => $this->getBase64Logo(),
+            ]
+        )->setPaper('a4', 'portrait');
 
         return $pdf->stream($fileName);
     }
@@ -75,19 +91,21 @@ class WarehouseController extends Controller
 
     public function pdfSerahTerima($id)
     {
-        $serah_terima = SerahTerimaBahan::with(['peminjamanAlat', 'standarisasiDrawing', 'details', 'pic', 'pic.submitName', 'pic.receiveName'])->findOrFail($id);
+        $serah_terima = SerahTerimaBahan::with(['standarisasiDrawing', 'details', 'pic', 'pic.submitName', 'pic.receiveName'])->findOrFail($id);
 
-        // return Pdf::loadView(
-        //     'pdf.warehouse.pdfSerahTerima',
-        //     compact('serah_terima')
-        // )->stream('serah-terima-warehouse.pdf');
-
-        $tanggal = \Carbon\Carbon::parse($serah_terima->tanggal)->format('Y-m-d');
+        $tanggal = \Carbon\Carbon::parse($serah_terima->tanggal)->format('d-m-Y');
         $noSurat = str_replace(['/', '\\'], '-', $serah_terima->no_surat);
         $fileName = $noSurat . ' - ' . $tanggal . '.pdf';
 
-        $pdf = Pdf::loadView('pdf.warehouse.pdfSerahTerima', compact('serah_terima'))
-            ->setPaper('a4', 'portrait');
+        // $pdf = Pdf::loadView('pdf.warehouse.pdfSerahTerima', compact('serah_terima'))
+        //     ->setPaper('a4', 'portrait');
+        $pdf = Pdf::loadView(
+            'pdf.warehouse.pdfSerahTerima',
+            [
+                'serah_terima' => $serah_terima,
+                'logoBase64' => $this->getBase64Logo(),
+            ]
+        )->setPaper('a4', 'portrait');
 
         return $pdf->stream($fileName);
     }

@@ -26,7 +26,7 @@ class CreateKelengkapanMaterialSS extends CreateRecord
         if ($this->record && $this->record->id) {
             SendGenericNotif::dispatch(
                 $this->record,
-                ['sales', 'super_admin'],
+                ['quality', 'MR'],
                 GenericNotification::class,
                 '/admin/quality/kelengkapan-material',
                 'Data Kelengkapan Material berhasil dibuat',

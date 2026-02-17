@@ -37,9 +37,7 @@ trait DetailBahanBaku
                                     ->required(false),
 
                             ])
-                            // ->deletable(false)
                             ->reorderable(false)
-                            // ->addable(false)
                             ->columnSpanFull()
                             ->addActionLabel('Tambah Detail Permintaan Pembelian')
 

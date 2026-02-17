@@ -26,7 +26,7 @@ class CreateQCPassed extends CreateRecord
         if ($this->record && $this->record->id) {
             SendGenericNotif::dispatch(
                 $this->record,
-                ['warehouse', 'MR', 'quality', 'warehouse'],
+                ['quality', 'warehouse'],
                 GenericNotification::class,
                 '/admin/warehouse/pelabelan-qc-passed',
                 'Data Pelabelan QC Passed berhasil dibuat',

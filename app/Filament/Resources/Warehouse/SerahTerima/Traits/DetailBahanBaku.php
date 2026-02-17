@@ -17,7 +17,11 @@ trait DetailBahanBaku
             ->collapsible()
             ->schema([
 
-                Grid::make(2)
+                Grid::make([
+                    'default' => 1,
+                    'md' => 2,
+                    'lg' => 2,
+                ])
                     ->schema([
 
                         TableRepeater::make('details')

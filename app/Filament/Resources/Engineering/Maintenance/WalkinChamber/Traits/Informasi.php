@@ -9,6 +9,7 @@ use App\Traits\SimpleFormResource;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Illuminate\Support\Facades\Cache;
+use Wallo\FilamentSelectify\Components\ButtonGroup;
 
 trait Informasi
 {
@@ -78,5 +79,28 @@ trait Informasi
             ->schema([
                 self::textareaInput('remarks', 'Remarks'),
             ]);
+    }
+
+    public static function getJenisTTD()
+    {
+        return ButtonGroup::make('jenis_ttd')
+            ->label('Jenis Tanda Tangan')
+            ->options([
+                'On Site'   => 'On Site',
+                'TTD Basah' => 'TTD Basah',
+            ])
+            ->default('On Site')
+            ->afterStateHydrated(function ($component, $state) {
+                if (blank($state)) {
+                    $component->state('On Site');
+                }
+            })
+            ->hiddenOn('create')
+            ->reactive()
+            ->dehydrated(false)
+            ->columnSpanFull()
+            ->onColor('primary')
+            ->offColor('gray')
+            ->gridDirection('row');
     }
 }

@@ -7,7 +7,10 @@
         <table class="w-full max-w-4xl mx-auto text-sm border border-black" style="border-collapse: collapse;">
             <tr>
                 <td rowspan="3" class="p-2 text-center align-middle border border-black w-28 h-28">
-                    <img src="{{ asset('asset/logo.png') }}" alt="Logo" class="object-contain mx-auto h-30" />
+                    {{-- <img src="{{ asset('asset/logo.png') }}" alt="Logo" class="object-contain mx-auto h-30" /> --}}
+                    @if ($logoBase64)
+                        <img src="{{ $logoBase64 }}" style="height:55px;">
+                    @endif
                 </td>
                 <td colspan="2" class="font-bold text-center border border-black">
                     PT. QLab Kinarya Sentosa

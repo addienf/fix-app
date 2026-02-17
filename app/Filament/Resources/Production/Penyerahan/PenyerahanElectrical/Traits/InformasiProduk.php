@@ -64,7 +64,11 @@ trait InformasiProduk
                 self::textareaInput('deskripsi_kondisi', 'Deskripsi Produk')
                     ->columnSpanFull(),
 
-            ])->columns(3);
+            ])->columns([
+                'default' => 1,
+                'md' => 3,
+                'lg' => 3,
+            ]);
     }
 
     private static function selectMaterialID(): Select

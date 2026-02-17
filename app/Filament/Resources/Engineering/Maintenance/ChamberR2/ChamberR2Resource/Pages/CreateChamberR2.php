@@ -26,7 +26,7 @@ class CreateChamberR2 extends CreateRecord
         if ($this->record && $this->record->id) {
             SendGenericNotif::dispatch(
                 $this->record,
-                ['sales', 'super_admin'],
+                ['engineering'],
                 GenericNotification::class,
                 '/admin/engineering/stability-chamber',
                 'Data Stability Chamber berhasil dibuat',
