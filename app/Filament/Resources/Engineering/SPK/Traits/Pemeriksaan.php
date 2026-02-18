@@ -48,11 +48,19 @@ trait Pemeriksaan
                             ->label('Quantity'),
                     ])
                     ->columnSpanFull()
-                    ->columns(2)
+                    ->columns([
+                        'default' => 1,
+                        'md' => 2,
+                        'lg' => 2,
+                    ])
                     ->addable(false)
                     ->reorderable(false)
                     ->deletable(false)
             ])
-            ->columns(2);
+            ->columns([
+                'default' => 1,
+                'md' => 2,
+                'lg' => 2,
+            ]);
     }
 }

@@ -1,288 +1,310 @@
 @extends('pdf.layout.layout')
 @section('title', 'Formulir Permintaan Pelayanan Pelanggan')
 @section('content')
-    <div id="export-area" class="p-2 text-black bg-white">
-        <!-- Header Table -->
-        <table
-            class="w-full max-w-4xl mx-auto text-sm border border-black dark:border-white dark:bg-gray-900 dark:text-white"
-            style="border-collapse: collapse;">
+
+    <div class="container">
+
+        {{-- ================= HEADER ================= --}}
+        <table style="width:100%; border-collapse:collapse; table-layout:fixed;">
             <tr>
-                <td rowspan="3"
-                    class="p-2 text-center align-middle border border-black w-28 h-28 dark:border-white dark:bg-gray-900">
-                    <img src="{{ asset('asset/logo.png') }}" alt="Logo" class="object-contain mx-auto h-30" />
+                <td rowspan="4" style="width:15%; text-align:center; vertical-align:middle; border:0.5px solid #000;">
+                    {{-- <img src="{{ public_path('asset/logo.png') }}" style="height:55px;"> --}}
+                    @if ($logoBase64)
+                        <img src="{{ $logoBase64 }}" style="height:55px;">
+                    @endif
                 </td>
-                <td colspan="2" class="font-bold text-center border border-black dark:border-white dark:bg-gray-900">
+                <td colspan="4" style="text-align:center; font-weight:bold; font-size:11px; border:0.5px solid #000;">
                     PT. QLab Kinarya Sentosa
                 </td>
             </tr>
             <tr>
-                <td class="font-bold text-center border border-black dark:border-white dark:bg-gray-900"
-                    style="font-size: 20px;">
+                <td rowspan="3" colspan="2"
+                    style="text-align:center; font-size:16px; font-weight:bold; border:0.5px solid #000; vertical-align:middle;">
                     Formulir Permintaan <br> Pelayanan Pelanggan
                 </td>
-                <td rowspan="2" class="p-0 align-top border border-black dark:border-white dark:bg-gray-900">
-                    <table class="w-full text-sm dark:bg-gray-900 dark:text-white" style="border-collapse: collapse;">
-                        <tr>
-                            <td class="px-3 py-2 border-b border-black dark:border-white">No. Dokumen : </td>
-                            <td class="px-3 py-2 font-semibold border-b border-black dark:border-white">
-                                FO-QKS-CC-01-03
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="px-3 py-2 border-b border-black dark:border-white">Tanggal Rilis : </td>
-                            <td class="px-3 py-2 font-semibold border-b border-black dark:border-white">
-                                13 Oktober 2025
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="px-3 py-2">Revisi : </td>
-                            <td class="px-3 py-2 font-semibold"> 01</td>
-                        </tr>
-                    </table>
-                </td>
+                <td style="border:0.5px solid #000; padding-left:8px;">No. Dokumen</td>
+                <td style="border:0.5px solid #000; text-align:center;">FO-QKS-CC-01-03</td>
+            </tr>
+            <tr>
+                <td style="border:0.5px solid #000; padding-left:8px;">Tanggal Rilis</td>
+                <td style="border:0.5px solid #000; text-align:center;">13 Oktober 2025</td>
+            </tr>
+            <tr>
+                <td style="border:0.5px solid #000; padding-left:8px;">Revisi</td>
+                <td style="border:0.5px solid #000; text-align:center;">021</td>
             </tr>
         </table>
 
-        <div class="max-w-4xl p-6 mx-auto text-sm text-black bg-white">
-            <!-- Header -->
-            <div class="flex justify-start mb-3">
-                <label class="font-semibold">Complaint Form. No : {{ $pelayanan->no_form }}</label>
-            </div>
+        <br>
 
-            @php
-                $infoUmumFields = [
-                    [
-                        'label' => 'Tanggal :',
-                        'value' => \Carbon\Carbon::parse($pelayanan->tanggal)->translatedFormat('d F Y'),
-                    ],
-                    ['label' => 'Alamat :', 'value' => $pelayanan->alamat],
-                    ['label' => 'Perusahaan :', 'value' => $pelayanan->perusahaan],
-                ];
-            @endphp
+        <div class="font-bold">
+            Complaint Form. No : {{ $pelayanan->no_form }}
+        </div>
 
-            <div class="mb-2 space-y-2">
-                @foreach ($infoUmumFields as $field)
-                    <div class="flex items-center gap-2">
-                        <label class="w-40">{{ $field['label'] }}</label>
-                        <input value="{{ $field['value'] }}" class="flex-1 px-2 py-1 border rounded" />
-                    </div>
-                @endforeach
-            </div>
-
-            <h3 class="mt-4 font-bold">A. JENIS PERMINTAAN</h3>
-
-            @php
-                $jenis = $pelayanan->jenis_permintaan ?? [];
-                $lainnya = $pelayanan->jenis_permintaan_lainnya ?? null;
-            @endphp
-
-            <div class="grid grid-cols-2 mt-2 gap-y-2">
-
-                <label class="flex items-center gap-2">
-                    <input type="checkbox" disabled {{ in_array('pengiriman', $jenis) ? 'checked' : '' }}>
-                    <span>Pengiriman</span>
-                </label>
-
-                <label class="flex items-center gap-2">
-                    <input type="checkbox" disabled {{ in_array('service', $jenis) ? 'checked' : '' }}>
-                    <span>Service</span>
-                </label>
-
-                <label class="flex items-center gap-2">
-                    <input type="checkbox" disabled {{ in_array('perakitan', $jenis) ? 'checked' : '' }}>
-                    <span>Perakitan</span>
-                </label>
-
-                <label class="flex items-center gap-2">
-                    <input type="checkbox" disabled {{ in_array('maintenance', $jenis) ? 'checked' : '' }}>
-                    <span>Maintenance</span>
-                </label>
-
-                <label class="flex items-center gap-2">
-                    <input type="checkbox" disabled {{ in_array('kualifikasi', $jenis) ? 'checked' : '' }}>
-                    <span>Kualifikasi</span>
-                </label>
-
-                <label class="flex items-center gap-2">
-                    <input type="checkbox" disabled {{ in_array('kalibrasi', $jenis) ? 'checked' : '' }}>
-                    <span>Kalibrasi</span>
-                </label>
-
-                <div class="flex items-center col-span-2 gap-2">
-                    <input type="checkbox" disabled {{ in_array('lainnya', $jenis) ? 'checked' : '' }}>
-                    <span>Lainnya :</span>
-
-                    <input type="text" class="flex-1 px-1 py-0.5 bg-transparent" readonly value="{{ $lainnya ?? '' }}"
-                        placeholder="...................................................." />
-                </div>
-            </div>
-
-
-            <h3 class="mt-4 font-bold">B. IDENTITAS ALAT</h3>
-            <table class="w-full text-sm text-left border border-gray-300 dark:border-gray-600">
-                <thead class="text-black bg-gray-100 dark:bg-gray-800 dark:text-white">
-                    <tr>
-                        <th class="px-4 py-2 border border-gray-300 dark:border-gray-600">Nomor</th>
-                        <th class="px-4 py-2 border border-gray-300 dark:border-gray-600">Nama Alat</th>
-                        <th class="px-4 py-2 border border-gray-300 dark:border-gray-600">Tipe</th>
-                        <th class="px-4 py-2 border border-gray-300 dark:border-gray-600">Nomor Seri</th>
-                        <th class="px-4 py-2 border border-gray-300 dark:border-gray-600">Deskripsi Pekerjaan</th>
-                        <th class="px-4 py-2 border border-gray-300 dark:border-gray-600">Quantity</th>
-                    </tr>
-                </thead>
-                <tbody class="text-black bg-white dark:bg-gray-900 dark:text-white">
-                    @foreach ($pelayanan->details as $item)
-                        <tr>
-                            <td class="px-4 py-2 border border-gray-300 dark:border-gray-600">{{ $loop->iteration }}
-                            </td>
-                            <td class="px-4 py-2 border border-gray-300 dark:border-gray-600">{{ $item->nama_alat }}</td>
-                            <td class="px-4 py-2 border border-gray-300 dark:border-gray-600">{{ $item->tipe }}</td>
-                            <td class="px-4 py-2 border border-gray-300 dark:border-gray-600">{{ $item->nomor_seri }}</td>
-                            <td class="px-4 py-2 border border-gray-300 dark:border-gray-600">{{ $item->deskripsi }}</td>
-                            <td class="px-4 py-2 border border-gray-300 dark:border-gray-600">{{ $item->quantity }}</td>
-                        </tr>
-                    @endforeach
-                </tbody>
+        {{-- ================= INFO UMUM ================= --}}
+        <div class="section">
+            <table class="form-table">
+                <tr>
+                    <td class="label">Tanggal</td>
+                    <td>: {{ \Carbon\Carbon::parse($pelayanan->tanggal)->translatedFormat('d F Y') }}</td>
+                </tr>
+                <tr>
+                    <td class="label">Alamat</td>
+                    <td>: {{ $pelayanan->alamat }}</td>
+                </tr>
+                <tr>
+                    <td class="label">Perusahaan</td>
+                    <td>: {{ $pelayanan->perusahaan }}</td>
+                </tr>
             </table>
+        </div>
 
-            <h3 class="mt-4 font-bold">C. PELAKSANAAN</h3>
-            @php
-                $pelaksanaan = [
-                    [
-                        'label' => 'Tanggal Pelaksanaan :',
-                        'value' => \Carbon\Carbon::parse($pelayanan->tanggal_pelaksanaan)->translatedFormat('d F Y'),
-                    ],
-                    ['label' => 'Tempat Pelaksanaan :', 'value' => $pelayanan->tempat_pelaksanaan],
-                    ['label' => 'PIC/No. Kontak/Dept :', 'value' => $pelayanan->no_kontak],
-                ];
-            @endphp
+        {{-- ================= A. JENIS PERMINTAAN ================= --}}
+        <div class="section-title">A. JENIS PERMINTAAN</div>
 
-            <div class="mb-2 space-y-2">
-                @foreach ($pelaksanaan as $field)
-                    <div class="flex items-center gap-2">
-                        <label class="w-40">{{ $field['label'] }}</label>
-                        <input value="{{ $field['value'] }}" class="flex-1 px-2 py-1 border rounded" />
-                    </div>
+        @php
+            $jenis = $pelayanan->jenis_permintaan ?? [];
+        @endphp
+
+        <div class="checkbox-grid">
+            <label><input type="checkbox" disabled {{ in_array('pengiriman', $jenis) ? 'checked' : '' }}> Pengiriman</label>
+            <label><input type="checkbox" disabled {{ in_array('service', $jenis) ? 'checked' : '' }}> Service</label>
+
+            <label><input type="checkbox" disabled {{ in_array('perakitan', $jenis) ? 'checked' : '' }}> Perakitan</label>
+            <label><input type="checkbox" disabled {{ in_array('maintenance', $jenis) ? 'checked' : '' }}>
+                Maintenance</label>
+
+            <label><input type="checkbox" disabled {{ in_array('kualifikasi', $jenis) ? 'checked' : '' }}>
+                Kualifikasi</label>
+            <label><input type="checkbox" disabled {{ in_array('kalibrasi', $jenis) ? 'checked' : '' }}> Kalibrasi</label>
+
+            <label class="checkbox-lainnya">
+                <input type="checkbox" disabled {{ in_array('lainnya', $jenis) ? 'checked' : '' }}>
+                Lainnya :
+                <span class="lainnya-text">{{ $pelayanan->jenis_permintaan_lainnya }}</span>
+            </label>
+        </div>
+
+        {{-- ================= B. IDENTITAS ALAT ================= --}}
+        <div class="section-title">B. IDENTITAS ALAT</div>
+
+        <table class="table-bordered">
+            <thead>
+                <tr class="font-bold text-center">
+                    <td class="col-no">No</td>
+                    <td>Nama Alat</td>
+                    <td>Tipe</td>
+                    <td>Nomor Seri</td>
+                    <td>Deskripsi Pekerjaan</td>
+                    <td class="col-qty">Qty</td>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($pelayanan->details as $item)
+                    <tr>
+                        <td class="text-center">{{ $loop->iteration }}</td>
+                        <td>{{ $item->nama_alat }}</td>
+                        <td>{{ $item->tipe }}</td>
+                        <td>{{ $item->nomor_seri }}</td>
+                        <td>{{ $item->deskripsi }}</td>
+                        <td class="text-center">{{ $item->quantity }}</td>
+                    </tr>
                 @endforeach
-            </div>
+            </tbody>
+        </table>
 
-            @php
-                $roles = [
-                    'Diketahui Oleh' => [
-                        'name' => $pelayanan->pic->diketahuiName->name ?? '-',
-                        'signature' => $pelayanan->pic->diketahui_signature ?? null,
-                    ],
-                    'Diterima Oleh,' => [
-                        'name' => $pelayanan->pic->diterimaName->name ?? '-',
-                        'signature' => $pelayanan->pic->diterima_signature ?? null,
-                    ],
-                    'Dibuat Oleh' => [
-                        'name' => $pelayanan->pic->dibuatName->name ?? '-',
-                        'signature' => $pelayanan->pic->dibuat_signature ?? null,
-                    ],
-                ];
-            @endphp
+        {{-- ================= C. PELAKSANAAN ================= --}}
+        <div class="section-title">C. PELAKSANAAN</div>
 
-            <div class="max-w-4xl pt-4 mx-auto text-sm ttd">
-                <table class="w-full text-sm border-collapse">
-                    <thead>
-                        <tr class="font-semibold text-center bg-gray-100">
-                            @foreach ($roles as $role => $data)
-                                <th class="border border-gray-300 border-[1px] py-2">{{ $role }}</th>
-                            @endforeach
-                        </tr>
-                    </thead>
-                    <tbody>
-
-                        <tr>
-                            @foreach ($roles as $data)
-                                <td class="border border-gray-300 border-[1px] px-2 py-4">
-                                    <div class="flex items-center justify-center h-24">
-                                        @if ($data['signature'])
-                                            <img src="{{ asset('storage/' . $data['signature']) }}"
-                                                class="object-contain h-full" />
-                                        @else
-                                            <span class="text-sm text-gray-400">No Signature</span>
-                                        @endif
-                                    </div>
-                                </td>
-                            @endforeach
-                        </tr>
-
-                        <tr>
-                            @foreach ($roles as $data)
-                                <td class="border border-gray-300 border-[1px] px-2 py-2 text-center font-medium">
-                                    {{ $data['name'] }}
-                                </td>
-                            @endforeach
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+        <div class="section">
+            <table class="form-table">
+                <tr>
+                    <td class="label">Tanggal Pelaksanaan</td>
+                    <td>: {{ \Carbon\Carbon::parse($pelayanan->tanggal_pelaksanaan)->translatedFormat('d F Y') }}</td>
+                </tr>
+                <tr>
+                    <td class="label">Tempat Pelaksanaan</td>
+                    <td>: {{ $pelayanan->tempat_pelaksanaan }}</td>
+                </tr>
+                <tr>
+                    <td class="label">PIC / No. Kontak / Dept</td>
+                    <td>: {{ $pelayanan->no_kontak }}</td>
+                </tr>
+            </table>
         </div>
 
+        <p class="closing-text">
+            Demikian Permintaan Pelayanan ini dibuat agar dapat dipergunakan sebagai mestinya.
+            Terima kasih.
+        </p>
 
-        <div class="mt-6 mb-3 text-center">
-            <button onclick="exportPDF()"
-                class="inline-flex items-center gap-2 py-3 text-sm font-semibold text-black text-white bg-blue-600 border rounded border-animated px-7 border-black-400 hover:bg-purple-600 hover:text-white">
-                <!-- Icon download SVG -->
-                <svg class="w-5 h-5 transition-colors duration-300" fill="none" stroke="currentColor" stroke-width="2"
-                    viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                        d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4">
-                    </path>
-                </svg>
-                Download PDF
-            </button>
+        {{-- ================= TANDA TANGAN ================= --}}
+        @php
+            $roles = [
+                'Diketahui Oleh' => [
+                    'name' => $pelayanan->pic->diketahuiName->name ?? '-',
+                    'signature' => $pelayanan->pic->diketahui_signature ?? null,
+                ],
+                'Diterima Oleh' => [
+                    'name' => $pelayanan->pic->diterimaName->name ?? '-',
+                    'signature' => $pelayanan->pic->diterima_signature ?? null,
+                ],
+                'Dibuat Oleh' => [
+                    'name' => $pelayanan->pic->dibuat_name ?? '-',
+                    'signature' => $pelayanan->pic->dibuat_signature ?? null,
+                ],
+                // 'Dibuat Oleh' => [
+                //     'name' => $pelayanan->pic->dibuatName->name ?? '-',
+                //     'signature' => $pelayanan->pic->dibuat_signature ?? null,
+                // ],
+                // 'Diterima Oleh' => [
+                //     'name' => $pelayanan->pic->diterimaName->name ?? '-',
+                //     'signature' => $pelayanan->pic->diterima_signature ?? null,
+                // ],
+                // 'Diketahui Oleh' => [
+                //     'name' => $pelayanan->pic->diketahuiName->name ?? '-',
+                //     'signature' => $pelayanan->pic->diketahui_signature ?? null,
+                // ],
+            ];
+        @endphp
+
+        <div class="clearfix signature-wrapper">
+            @foreach ($roles as $title => $data)
+                <div class="signature-item">
+                    <div class="signature-title">{{ $title }}</div>
+                    <div class="signature-box">
+                        @if ($data['signature'])
+                            <img src="{{ public_path('storage/' . $data['signature']) }}">
+                        @endif
+                    </div>
+                    <div class="signature-name">{{ $data['name'] }}</div>
+                </div>
+            @endforeach
         </div>
-    @endsection
 
-    <script>
-        function exportPDF() {
-            window.scrollTo(0, 0);
+    </div>
+@endsection
 
-            const element = document.getElementById("export-area");
-            const images = element.getElementsByTagName("img");
-            const totalImages = images.length;
-            let loadedImages = 0;
+<style>
+    body {
+        font-family: DejaVu Sans, sans-serif;
+        font-size: 11px;
+    }
 
-            for (let img of images) {
-                if (img.complete) {
-                    loadedImages++;
-                } else {
-                    img.onload = () => {
-                        loadedImages++;
-                        if (loadedImages === totalImages) renderPDF();
-                    };
-                }
-            }
+    .container {
+        padding: 10px;
+    }
 
-            if (loadedImages === totalImages) {
-                renderPDF();
-            }
+    .font-bold {
+        font-weight: bold;
+    }
 
-            function renderPDF() {
-                html2pdf().set({
-                    margin: [0.2, 0.2, 0.2, 0.2],
-                    filename: "permintaan-pelayanan-pelanggan.pdf",
-                    image: {
-                        type: "jpeg",
-                        quality: 1
-                    },
-                    html2canvas: {
-                        scale: 3,
-                        useCORS: true,
-                        letterRendering: true
-                    },
-                    jsPDF: {
-                        unit: "in",
-                        format: "a4",
-                        orientation: "portrait"
-                    },
-                    pagebreak: {
-                        mode: ["avoid", "css"]
-                    }
-                }).from(element).save();
-            }
-        }
-    </script>
+    .section {
+        margin-bottom: 14px;
+        page-break-inside: avoid;
+    }
+
+    .section-title {
+        font-weight: bold;
+        margin: 18px 0 8px;
+    }
+
+    .form-table tr td {
+        padding: 3px 0;
+    }
+
+    .form-table .label {
+        width: 30%;
+    }
+
+    .checkbox-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        column-gap: 28px;
+        /* lebih lebar */
+        row-gap: 8px;
+        margin-top: 6px;
+        margin-bottom: 14px;
+    }
+
+    .checkbox-grid label {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        white-space: nowrap;
+    }
+
+    .checkbox-lainnya {
+        grid-column: 1 / -1;
+    }
+
+    .lainnya-text {
+        border-bottom: 0.5px dotted #000;
+        min-width: 320px;
+        /* lebih panjang = lebih lega */
+        display: inline-block;
+    }
+
+    .table-bordered {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .table-bordered td {
+        border: 1px solid #000;
+        padding: 6px 6px;
+    }
+
+    .table-bordered thead td {
+        padding: 7px 6px;
+        font-weight: bold;
+    }
+
+    .col-no {
+        width: 40px;
+    }
+
+    .col-qty {
+        width: 50px;
+    }
+
+    .text-center {
+        text-align: center;
+    }
+
+    .signature-wrapper {
+        width: 100%;
+        margin-top: 30px;
+    }
+
+    .signature-item {
+        float: left;
+        width: 33.33%;
+        text-align: center;
+    }
+
+    .signature-title {
+        font-weight: bold;
+        margin-bottom: 6px;
+    }
+
+    .signature-box {
+        height: 85px;
+    }
+
+    .signature-box img {
+        max-height: 75px;
+    }
+
+    .signature-name {
+        margin-top: 6px;
+        font-weight: bold;
+    }
+
+    /* clearfix */
+    .clearfix::after {
+        content: "";
+        display: block;
+        clear: both;
+    }
+</style>

@@ -26,11 +26,11 @@ class CreateSPKService extends CreateRecord
         if ($this->record && $this->record->id) {
             SendGenericNotif::dispatch(
                 $this->record,
-                ['sales', 'super_admin'],
+                ['customer_care', 'engineering'],
                 GenericNotification::class,
-                '/admin/engineering/spk-service',
-                'Data SPK Service berhasil dibuat',
-                'Ada data SPK Service yang harus di tanda tangani.'
+                '/admin/engineering/spk-pelayanan-pelanggan',
+                'Data SPK Pelayanan Pelanggan berhasil dibuat',
+                'Ada data SPK Pelayanan Pelanggan yang harus di tanda tangani.'
             );
         } else {
             Log::error('Record belum lengkap.');
@@ -39,7 +39,7 @@ class CreateSPKService extends CreateRecord
 
     public function getTitle(): string
     {
-        return 'Tambah Data SPK Service';
+        return 'Tambah Data SPK Pelayanan Pelanggan';
     }
 
     public function getBreadcrumb(): string

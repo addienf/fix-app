@@ -26,7 +26,7 @@ class CreateSPKQuality extends CreateRecord
         if ($this->record && $this->record->id) {
             SendGenericNotif::dispatch(
                 $this->record,
-                ['sales', 'super_admin'],
+                ['production', 'quality'],
                 GenericNotification::class,
                 '/admin/produksi/spk-quality',
                 'Data SPK Quality berhasil dibuat',

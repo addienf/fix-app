@@ -30,7 +30,11 @@ trait DeskripsiPekerjaan
                     ->visible(fn($get) => in_array('lainnya', (array) $get('deskripsi_pekerjaan')))
                     ->required(fn($get) => in_array('lainnya', (array) $get('deskripsi_pekerjaan'))),
             ])
-            ->columns(2);
+            ->columns([
+                'default' => 1,
+                'md' => 1,
+                'lg' => 1,
+            ]);
     }
 
     public static function getPelaksanaanSection()
@@ -46,6 +50,10 @@ trait DeskripsiPekerjaan
 
                 self::getPetugasSection(),
             ])
-            ->columns(2);
+            ->columns([
+                'default' => 1,
+                'md' => 2,
+                'lg' => 2,
+            ]);
     }
 }

@@ -76,7 +76,13 @@
 
                 $details = is_string($rawDetails) ? json_decode($rawDetails, true) : $rawDetails;
 
-                $orderNumber = $kelengkapan->spk->no_order ?? '-';
+                $jadwal =
+                    $kelengkapan->standarisasiDrawing->serahTerimaWarehouse->peminjamanAlat->spkVendor
+                        ->perencanaanProduksi;
+
+                $spkOrder = $jadwal->spk->no_order ?? '-';
+
+                $orderNumber = $spkOrder ?? '-';
 
                 $fields = collect($details)
                     ->map(function ($item) use ($orderNumber) {

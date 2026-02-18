@@ -26,7 +26,7 @@ class CreateColdRoom extends CreateRecord
         if ($this->record && $this->record->id) {
             SendGenericNotif::dispatch(
                 $this->record,
-                ['sales', 'super_admin'],
+                ['engineering'],
                 GenericNotification::class,
                 '/admin/engineering/cold-room',
                 'Data Cold Room berhasil dibuat',

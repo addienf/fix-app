@@ -29,25 +29,30 @@ trait Informasi
 
                 Select::make('spk_service_id')
                     ->label('Nomor SPK Service')
-                    // ->options(function () {
-                    //     return Cache::rememberForever(SPKService::$CACHE_KEYS['chamberR2'], function () {
-                    //         return SPKService::where('status_penyelesaian', 'Selesai')
-                    //             ->whereDoesntHave('chamberR2')
-                    //             ->get()
-                    //             ->pluck('no_spk_service', 'id');
-                    //     });
-                    // })
                     ->options(function () {
                         return SPKService::query()
+                            ->where('jenis_spk', 'Maintenance')
                             ->where('status', 'Selesai')
-                            ->whereDoesntHave('chamberR2')
+                            ->whereDoesntHave('walkinChamber')
+                            ->whereDoesntHave(relation: 'chamberR2')
+                            ->whereDoesntHave(relation: 'refrigerator')
+                            ->whereDoesntHave(relation: 'coldRoom')
+                            ->whereDoesntHave(relation: 'rissing')
+                            ->whereDoesntHave(relation: 'walkinG2')
+                            ->whereDoesntHave(relation: 'chamberG2')
                             ->limit(10)
                             ->pluck('no_spk_service', 'id');
                     })
                     ->getSearchResultsUsing(function (string $search) {
                         return SPKService::query()
                             ->where('status', 'Selesai')
-                            ->whereDoesntHave('chamberR2')
+                            ->whereDoesntHave('walkinChamber')
+                            ->whereDoesntHave(relation: 'chamberR2')
+                            ->whereDoesntHave(relation: 'refrigerator')
+                            ->whereDoesntHave(relation: 'coldRoom')
+                            ->whereDoesntHave(relation: 'rissing')
+                            ->whereDoesntHave(relation: 'walkinG2')
+                            ->whereDoesntHave(relation: 'chamberG2')
                             ->where('no_spk_service', 'like', "%{$search}%")
                             ->limit(10)
                             ->pluck('no_spk_service', 'id');
@@ -58,7 +63,11 @@ trait Informasi
                     ->required()
                     ->hiddenOn(operations: 'edit'),
             ])
-            ->columns($isEdit ? 1 : 2);
+            ->columns([
+                'default' => 1,
+                'md' => 2,
+                'lg' => $isEdit ? 1 : 2,
+            ]);
     }
 
     public static function getRemarksSection()

@@ -11,13 +11,12 @@ use App\Traits\HasSignature;
 use Filament\Actions\Action;
 use Filament\Forms;
 use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\Section;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class PermintaanPelayananPelangganResource extends Resource
 {
@@ -28,8 +27,15 @@ class PermintaanPelayananPelangganResource extends Resource
     protected static ?string $navigationLabel = 'Permintaan Pelayanan Pelanggan';
     protected static ?string $pluralLabel = 'Permintaan Pelayanan Pelanggan';
     protected static ?string $modelLabel = 'Permintaan Pelayanan Pelanggan';
-    protected static ?string $slug = 'engineering/permintaan-pelayanan-pelanggan';
+    protected static ?string $slug = 'customer-care/permintaan-pelayanan-pelanggan';
     protected static ?string $navigationIcon = 'heroicon-o-wrench-screwdriver';
+
+    public static function getNavigationBadge(): ?string
+    {
+        $count = PermintaanPelayananPelanggan::where('status', '!=', 'Diketahui')->count();
+
+        return $count > 0 ? (string) $count : null;
+    }
 
     public static function form(Form $form): Form
     {
@@ -47,30 +53,48 @@ class PermintaanPelayananPelangganResource extends Resource
 
                 self::getPelaksanaan(),
 
-                static::signatureSection(
-                    [
-                        [
-                            'prefix' => 'diketahui',
-                            'role' => 'Diketahui Oleh',
-                            'hideLogic' => fn($operation) => $operation === 'edit',
-                        ],
-                        [
-                            'prefix' => 'diterima',
-                            'role' => 'Diterima Oleh,',
-                            'hideLogic' => fn($operation, $record) =>
-                            $operation === 'create' || filled($record?->diterima_signature)
-                        ],
-                        [
-                            'prefix' => 'dibuat',
-                            'role' => 'Dibuat Oleh',
-                            'hideLogic' => fn($operation, $record) =>
-                            $operation === 'create' || blank($record?->diterima_signature) || filled($record?->dibuat_signature)
-                        ],
-                    ],
-                    title: 'PIC',
-                    uploadPath: 'Engineering/PelayananPelanggan/Signatures'
-                )
+                Section::make('Customer Info')
+                    ->collapsible()
+                    ->relationship('pic')
+                    ->schema([
+                        self::textInput('dibuat_name', 'Pembuat Form'),
 
+                        self::uploadField2(
+                            'dibuat_signature',
+                            'Tanda Tangan Pembuat Form',
+                            'Engineering/PelayananPelanggan/Signatures',
+                            '*Hanya file gambar (PNG, JPG, JPEG) yang diperbolehkan. Maksimal ukuran 10 MB.',
+                            ['image/png', 'image/jpeg'],
+                            10240,
+                            true,
+                            true,
+                            false
+                        ),
+
+                        static::signatureSection2(
+                            [
+                                [
+                                    'prefix' => 'diterima',
+                                    'role' => 'Diterima Oleh',
+                                    'hideLogic' => fn($operation) => $operation === 'edit',
+                                ],
+                                [
+                                    'prefix' => 'diketahui',
+                                    'role' => 'Diketahui Oleh,',
+                                    'hideLogic' => fn($operation, $record) =>
+                                    $operation === 'create' || filled($record?->diketahui_signature)
+                                ],
+                                // [
+                                //     'prefix' => 'diketahui',
+                                //     'role' => 'Diketahui Oleh',
+                                //     'hideLogic' => fn($operation, $record) =>
+                                //     $operation === 'create' || blank($record?->diterima_signature) || filled($record?->diketahui_signature)
+                                // ],
+                            ],
+                            title: 'PIC',
+                            uploadPath: 'Engineering/PelayananPelanggan/Signatures'
+                        )
+                    ]),
             ]);
     }
 
@@ -88,7 +112,7 @@ class PermintaanPelayananPelangganResource extends Resource
                     ->color(fn($state) => [
                         'Belum Diterima' => 'danger',
                         'Diterima' => 'warning',
-                        'Dibuat' => 'success',
+                        'Diketahui' => 'success',
                     ][$state] ?? 'gray')
                     ->alignCenter(),
             ])
@@ -108,7 +132,7 @@ class PermintaanPelayananPelangganResource extends Resource
                         ->label(_('Lihat PDF'))
                         ->icon('heroicon-o-document')
                         ->color('success')
-                        ->visible(fn($record) => $record->status === 'Dibuat')
+                        ->visible(fn($record) => $record->status === 'Diketahui')
                         ->url(fn($record) => route('pdf.PelayananPelanggan', ['record' => $record->id])),
                 ])
             ])

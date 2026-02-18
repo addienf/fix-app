@@ -98,7 +98,7 @@ class SpesifikasiProductResource extends Resource
                 //
                 self::textColumn('urs.no_urs', 'No URS'),
 
-                self::textColumn('urs.customer.name', 'Nama Customer'),
+                self::textColumn('urs.company.name', 'Nama Company'),
 
                 self::textColumn('is_stock', 'Status Produk')
                     ->badge()
@@ -189,7 +189,7 @@ class SpesifikasiProductResource extends Resource
     {
         return parent::getEloquentQuery()
             ->with([
-                'urs.customer',
+                'urs.company',
                 'details.product',
                 'details.file',
                 'pic',

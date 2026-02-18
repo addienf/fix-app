@@ -23,6 +23,7 @@ trait HasSignature
     {
         return Section::make($title)
             ->collapsible()
+            ->reactive()
             ->relationship('pic')
             ->schema([
                 Grid::make(count($signatures))
@@ -41,7 +42,68 @@ trait HasSignature
                                             $component->state(auth()->id());
                                         }),
 
-                                    Grid::make(2)
+                                    // Grid::make(2)
+                                    Grid::make([
+                                        'default' => 1,
+                                        'md' => 2,
+                                        'lg' => 2,
+                                    ])
+                                        ->schema([
+                                            TextInput::make("{$prefix}_name_placeholder")
+                                                ->label($role)
+                                                ->default(fn() => auth()->user()?->name)
+                                                ->placeholder(fn() => auth()->user()?->name)
+                                                ->extraAttributes([
+                                                    'readonly' => true,
+                                                    'style' => 'pointer-events: none;',
+                                                ]),
+
+                                            DatePicker::make("{$prefix}_date")
+                                                ->label('Tanggal')
+                                                ->default(now())
+                                                ->required(),
+                                        ]),
+
+                                    // 👇 kirim $uploadPath ke helper
+                                    self::signatureInput("{$prefix}_signature", '', $uploadPath),
+
+
+                                ])
+                                ->hidden($hideLogic ?? fn() => false);
+                        })->toArray()
+                    ),
+            ]);
+    }
+
+    public static function signatureSection2(array $signatures, string $title = 'PIC', ?string $uploadPath = null): Section
+    {
+        return Section::make($title)
+            ->collapsible()
+            ->reactive()
+            // ->relationship('pic')
+            ->schema([
+                Grid::make(count($signatures))
+                    ->schema(
+                        collect($signatures)->map(function ($item) use ($uploadPath) {
+                            $prefix = $item['prefix'];
+                            $role = $item['role'];
+                            $hideLogic = $item['hideLogic'] ?? null;
+
+                            return Grid::make(1)
+                                ->schema([
+                                    Hidden::make("{$prefix}_name")
+                                        ->default(fn() => auth()->id())
+                                        ->dehydrated(true)
+                                        ->afterStateHydrated(function ($component) {
+                                            $component->state(auth()->id());
+                                        }),
+
+                                    // Grid::make(2)
+                                    Grid::make([
+                                        'default' => 1,
+                                        'md' => 2,
+                                        'lg' => 2,
+                                    ])
                                         ->schema([
                                             TextInput::make("{$prefix}_name_placeholder")
                                                 ->label($role)

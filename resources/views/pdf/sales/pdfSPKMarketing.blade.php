@@ -51,7 +51,7 @@
                         'value' => \Carbon\Carbon::parse($spk_mkt->tanggal)->translatedFormat('d F Y'),
                     ],
                     ['label' => 'No SPK :', 'value' => $spk_mkt->no_spk],
-                    ['label' => 'Customer :', 'value' => $spk_mkt->spesifikasiProduct->urs->customer->name],
+                    // ['label' => 'Customer :', 'value' => $spk_mkt->spesifikasiProduct->urs->customer->name],
                     ['label' => 'Dari :', 'value' => $spk_mkt->dari],
                     ['label' => 'No Order :', 'value' => $spk_mkt->no_order],
                     ['label' => 'Kepada :', 'value' => $spk_mkt->kepada],
@@ -110,7 +110,8 @@
                     <img src="{{ asset('storage/' . $spk_mkt->pic->create_signature) }}" alt="Product Signature"
                         class="h-20 w-80" />
                     <p class="mt-1 font-semibold dark:text-white">{{ $spk_mkt->pic->createName->name }}</p>
-                    <p class="mt-1 font-semibold dark:text-white">( Marketing )</p>
+                    <p class="mt-1 font-semibold dark:text-white">( {{ $spk_mkt->pic->createName->roles->first()?->name }}
+                        )</p>
                 </div>
                 <!-- Kanan -->
                 <div class="flex flex-col items-center">
@@ -118,7 +119,8 @@
                     <img src="{{ asset('storage/' . $spk_mkt->pic->receive_signature) }}" alt="Product Signature"
                         class="h-20 w-80" />
                     <p class="mt-1 font-semibold dark:text-white">{{ $spk_mkt->pic->receiveName->name }}</p>
-                    <p class="mt-1 font-semibold dark:text-white">( Produksi )</p>
+                    <p class="mt-1 font-semibold dark:text-white">( {{ $spk_mkt->pic->receiveName->roles->first()?->name }}
+                        )</p>
                 </div>
             </div>
         </div>

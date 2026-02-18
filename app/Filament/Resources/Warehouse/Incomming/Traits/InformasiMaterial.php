@@ -9,6 +9,7 @@ use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
+use Icetalker\FilamentTableRepeater\Forms\Components\TableRepeater;
 use Illuminate\Support\Facades\Cache;
 
 trait InformasiMaterial
@@ -20,34 +21,54 @@ trait InformasiMaterial
             ->collapsible()
             ->schema([
 
-                Repeater::make('details')
+                TableRepeater::make('details')
                     ->relationship('details')
                     ->schema([
 
-                        Grid::make(6)
-                            ->schema([
+                        // Grid::make(6)
+                        //     ->schema([
 
-                                self::textInput('nama_material', 'Nama Material')
-                                    ->extraAttributes([
-                                        'readonly' => true,
-                                        'style' => 'pointer-events: none;'
-                                    ]),
+                        //         self::textInput('nama_material', 'Nama Material')
+                        //             ->extraAttributes([
+                        //                 'readonly' => true,
+                        //                 'style' => 'pointer-events: none;'
+                        //             ]),
 
-                                self::textInput('batch_no', 'Batch No')
-                                    ->extraAttributes([
-                                        'readonly' => true,
-                                        'style' => 'pointer-events: none;'
-                                    ]),
+                        //         self::textInput('batch_no', 'Batch No')
+                        //             ->extraAttributes([
+                        //                 'readonly' => true,
+                        //                 'style' => 'pointer-events: none;'
+                        //             ]),
 
-                                self::textInput('jumlah', 'Jumlah Diterima')
-                                    ->numeric(),
+                        //         self::textInput('jumlah', 'Jumlah Diterima')
+                        //             ->numeric(),
 
-                                self::textInput('satuan', 'Satuan'),
+                        //         self::textInput('satuan', 'Satuan'),
 
-                                self::textInput('kondisi_material', 'Kondisi Material'),
+                        //         self::textInput('kondisi_material', 'Kondisi Material'),
 
-                                self::selectStatusLabel(),
+                        //         self::selectStatusLabel(),
+                        //     ]),
+                        self::textInput('nama_material', 'Nama Material')
+                            ->extraAttributes([
+                                'readonly' => true,
+                                'style' => 'pointer-events: none;'
                             ]),
+
+                        self::textInput('batch_no', 'Batch No')
+                            ->required(false),
+
+                        self::textInput('jumlah', 'Jumlah Diterima')
+                            ->required(false),
+
+                        self::textInput('satuan', 'Satuan')
+                            ->required(false),
+
+                        self::textInput('kondisi_material', 'Kondisi Material')
+                            ->required(false),
+
+                        self::selectStatusLabel()
+                            ->required(false),
 
                     ])
                     ->deletable(false)

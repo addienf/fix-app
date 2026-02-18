@@ -24,10 +24,10 @@ class SPKServiceResource extends Resource
     protected static ?string $model = SPKService::class;
     protected static ?int $navigationSort = 20;
     protected static ?string $navigationGroup = 'Customer Care';
-    protected static ?string $navigationLabel = 'SPK Service';
-    protected static ?string $pluralLabel = 'SPK Service';
-    protected static ?string $modelLabel = 'SPK Service';
-    protected static ?string $slug = 'engineering/spk-service';
+    protected static ?string $navigationLabel = 'SPK Pelayanan Pelanggan';
+    protected static ?string $pluralLabel = 'SPK Pelayanan Pelanggan';
+    protected static ?string $modelLabel = 'SPK Pelayanan Pelanggan';
+    protected static ?string $slug = 'customer-care/spk-pelayanan-pelanggan';
     protected static ?string $navigationIcon = 'heroicon-o-wrench-screwdriver';
 
     public static function getNavigationBadge(): ?string
@@ -59,15 +59,15 @@ class SPKServiceResource extends Resource
                 static::signatureSection(
                     [
                         [
-                            'prefix' => 'dikonfirmasi',
-                            'role' => 'Dikonfirmasi Oleh',
+                            'prefix' => 'dibuat',
+                            'role' => 'Dibuat Oleh',
                             'hideLogic' => fn($operation) => $operation === 'edit',
                         ],
                         [
-                            'prefix' => 'dibuat',
-                            'role' => 'Dibuat Oleh',
+                            'prefix' => 'dikonfirmasi',
+                            'role' => 'Dikonfirmasi Oleh',
                             'hideLogic' => fn($operation, $record) =>
-                            $operation === 'create' || filled($record?->dibuat_signature)
+                            $operation === 'create' || filled($record?->dikonfirmasi_signature)
                         ],
                     ],
                     title: 'PIC',
@@ -82,7 +82,7 @@ class SPKServiceResource extends Resource
         return $table
             ->columns([
                 //
-                self::textColumn('pelayananPelanggan.no_form', 'No Compaint Form'),
+                self::textColumn('jenis_spk', 'Jenis SPK'),
 
                 self::textColumn('no_spk_service', 'No SPK Service'),
 
@@ -143,7 +143,7 @@ class SPKServiceResource extends Resource
     {
         return parent::getEloquentQuery()
             ->with([
-                'pelayananPelanggan',
+                // 'pelayananPelanggan',
                 'petugas',
                 'details',
                 'beritaAcara',

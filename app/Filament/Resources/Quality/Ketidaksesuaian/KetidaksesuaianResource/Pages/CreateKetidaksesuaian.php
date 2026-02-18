@@ -25,7 +25,7 @@ class CreateKetidaksesuaian extends CreateRecord
         if ($this->record && $this->record->id) {
             SendGenericNotif::dispatch(
                 $this->record,
-                ['sales', 'super_admin'],
+                ['quality', 'production'],
                 GenericNotification::class,
                 '/admin/quality/ketidaksesuaian-produk-dan-material',
                 'Data Ketidaksesuaian Produk dan Material berhasil dibuat',

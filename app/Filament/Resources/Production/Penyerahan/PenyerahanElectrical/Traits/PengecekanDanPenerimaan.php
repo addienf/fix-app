@@ -63,7 +63,7 @@ trait PengecekanDanPenerimaan
                                         maxSize: 10240,
                                     ),
                                 ])
-                                ->columns(1),
+                            // ->columns(1),
                         ]),
                 ]),
 
@@ -79,7 +79,7 @@ trait PengecekanDanPenerimaan
                                     self::textareaInput('catatan_tambahan', 'Catatan Tambahan'),
                                     self::selectStatusPenerimaan()
                                 ])
-                                ->columns(1),
+                            // ->columns(1),
                         ]),
                 ]),
             ]);

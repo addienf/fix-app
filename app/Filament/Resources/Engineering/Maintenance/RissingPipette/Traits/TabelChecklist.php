@@ -29,19 +29,15 @@ trait TabelChecklist
                     ->schema([
 
                         TextInput::make('part')
-                            ->columnSpan(3)
+                            ->columnSpan([
+                                'default' => 1,
+                                'md' => 1,
+                                'lg' => 3,
+                            ])
                             ->extraAttributes([
                                 'readonly' => true,
                                 'style' => 'pointer-events: none;'
                             ])
-                            ->required(),
-
-                        TextInput::make('before')
-                            ->columnSpan(1)
-                            ->required(),
-
-                        TextInput::make('after')
-                            ->columnSpan(1)
                             ->required(),
 
                         Select::make('accepted')
@@ -50,16 +46,29 @@ trait TabelChecklist
                                 'no' => 'No',
                                 'na' => 'NA',
                             ])
-                            ->columnSpan(1)
+                            ->columnSpan([
+                                'default' => 1,
+                                'md' => 1,
+                                'lg' => 2,
+                            ])
                             ->required(),
 
                         TextInput::make('remark')
-                            ->columnSpan(1)
-                            ->required(),
+                            ->columnSpan([
+                                'default' => 1,
+                                'md' => 1,
+                                'lg' => 2,
+                            ])
 
                     ])
-                    ->columns(7)
-                    ->addable(false)
+                    // ->columns(7)
+                    ->columns([
+                        'default' => 1,
+                        'md' => 3,
+                        'lg' => 7,
+                    ])
+                    // ->addable(false)
+                    ->addActionLabel('Tambah Checklist')
                     ->deletable(false)
                     ->reorderable(false),
 

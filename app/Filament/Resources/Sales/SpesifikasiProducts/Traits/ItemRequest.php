@@ -15,7 +15,8 @@ trait ItemRequest
 {
     protected static function itemRequestSection(): Section
     {
-        return Section::make('Item Request')
+        return
+            Section::make('Item Request')
             ->collapsible()
             ->schema([
                 Repeater::make('details')
@@ -52,17 +53,28 @@ trait ItemRequest
 
                         TableRepeater::make('specification')
                             ->label('Spesifikasi')
+                            // ->visible(function ($get) {
+                            //     static $cache = [];
+                            //     $id = $get('product_id');
+
+                            //     if (!$id) return false;
+
+                            //     if (!isset($cache[$id])) {
+                            //         $cache[$id] = Product::find($id)?->category_id;
+                            //     }
+
+                            //     return $cache[$id] === 1;
+                            // })
                             ->visible(function ($get) {
-                                static $cache = [];
                                 $id = $get('product_id');
 
-                                if (!$id) return false;
-
-                                if (!isset($cache[$id])) {
-                                    $cache[$id] = Product::find($id)?->category_id;
+                                if (!$id) {
+                                    return false;
                                 }
 
-                                return $cache[$id] === 1;
+                                $product = Product::select('category_id')->find($id);
+
+                                return (int) $product?->category_id === 1;
                             })
                             ->schema([
                                 Select::make('name')
@@ -131,17 +143,28 @@ trait ItemRequest
                         Repeater::make('specification_mecmesin')
                             ->lazy()
                             ->label('Spesifikasi Mecmesin')
+                            // ->visible(function ($get) {
+                            //     static $cache = [];
+                            //     $id = $get('product_id');
+
+                            //     if (!$id) return false;
+
+                            //     if (!isset($cache[$id])) {
+                            //         $cache[$id] = Product::find($id)?->category_id;
+                            //     }
+
+                            //     return $cache[$id] === 2;
+                            // })
                             ->visible(function ($get) {
-                                static $cache = [];
                                 $id = $get('product_id');
 
-                                if (!$id) return false;
-
-                                if (!isset($cache[$id])) {
-                                    $cache[$id] = Product::find($id)?->category_id;
+                                if (!$id) {
+                                    return false;
                                 }
 
-                                return $cache[$id] === 2;
+                                $product = Product::select('category_id')->find($id);
+
+                                return (int) $product?->category_id === 2;
                             })
                             ->schema([
                                 Grid::make(2)

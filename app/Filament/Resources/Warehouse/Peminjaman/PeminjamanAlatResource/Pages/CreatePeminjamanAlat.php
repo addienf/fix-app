@@ -21,21 +21,21 @@ class CreatePeminjamanAlat extends CreateRecord
         return $this->getResource()::getUrl('index');
     }
 
-    protected function afterCreate(): void
-    {
-        if ($this->record && $this->record->id) {
-            SendGenericNotif::dispatch(
-                $this->record,
-                ['sales', 'super_admin'],
-                GenericNotification::class,
-                '/admin/warehouse/peminjaman-alat',
-                'Data Peminjaman Alat berhasil dibuat',
-                'Ada data Peminjaman Alat yang harus ditanda tangani.'
-            );
-        } else {
-            Log::error('afterCreate dipanggil tapi record belum lengkap.');
-        }
-    }
+    // protected function afterCreate(): void
+    // {
+    //     if ($this->record && $this->record->id) {
+    //         SendGenericNotif::dispatch(
+    //             $this->record,
+    //             ['production'],
+    //             GenericNotification::class,
+    //             '/admin/warehouse/peminjaman-alat',
+    //             'Data Peminjaman Alat berhasil dibuat',
+    //             'Ada data Peminjaman Alat yang harus ditanda tangani.'
+    //         );
+    //     } else {
+    //         Log::error('afterCreate dipanggil tapi record belum lengkap.');
+    //     }
+    // }
 
     public function getTitle(): string
     {

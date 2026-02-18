@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Quality\Standarisasi\Traits;
 
+use App\Models\Quality\Standarisasi\StandarisasiDrawing;
 use App\Models\Sales\SPKMarketings\SPKMarketing;
 use App\Models\Warehouse\SerahTerima\SerahTerimaBahan;
 use App\Traits\HasAutoNumber;
@@ -10,6 +11,7 @@ use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Illuminate\Support\Facades\Cache;
+use Wallo\FilamentSelectify\Components\ButtonGroup;
 
 trait InformasiUmum
 {
@@ -21,17 +23,42 @@ trait InformasiUmum
         return Section::make('Informasi Umum')
             ->collapsible()
             ->schema([
-                Grid::make($isEdit ? 1 : 2)
+                // Grid::make($isEdit ? 3 : 3)
+                Grid::make([
+                    'default' => 1,
+                    'md' => $isEdit ? 1 : 3,
+                    'lg' => $isEdit ? 1 : 3,
+                ])
                     ->schema([
-                        static::select()
+                        static::getSumber()
                             ->hiddenOn('edit'),
+
+                        static::selectSerah()
+                            ->visible(function ($get, $operation, $record) {
+
+                                if ($operation === 'create') {
+                                    return $get('sumber') === 'serah';
+                                }
+
+                                return blank($record?->serah_terima_bahan_id);
+                            })
+                            ->required(
+                                fn($get, $operation) =>
+                                $operation === 'create' && $get('sumber') === 'serah'
+                            ),
+
+                        static::selectSpk()
+                            ->hidden(
+                                fn($get, $operation) =>
+                                $operation === 'edit' || $get('sumber') !== 'spk'
+                            ),
 
                         static::dateInput('tanggal', 'Tanggal'),
                     ]),
             ]);
     }
 
-    private static function select()
+    private static function selectSerah()
     {
         return
             Select::make('serah_terima_bahan_id')
@@ -39,13 +66,14 @@ trait InformasiUmum
             ->placeholder('Pilih Nomor SPK / No Seri')
             ->searchable()
             ->native(false)
+            ->dehydrated(true)
             ->preload()
             ->required()
             ->options(function () {
 
                 return SerahTerimaBahan::with([
-                    'peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.spk',
-                    'peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.identifikasiProduks',
+                    'perencanaanProduksi.spk',
+                    'perencanaanProduksi.identifikasiProduks',
                 ])
                     ->whereDoesntHave('standarisasiDrawing')
                     ->latest()
@@ -53,10 +81,7 @@ trait InformasiUmum
                     ->get()
                     ->mapWithKeys(function ($serah) {
 
-                        $jadwal = $serah->peminjamanAlat
-                            ->spkVendor
-                            ->permintaanBahanProduksi
-                            ->jadwalProduksi;
+                        $jadwal = $serah->perencanaanProduksi;
 
                         $spkNo = $jadwal->spk->no_spk ?? '-';
 
@@ -69,49 +94,46 @@ trait InformasiUmum
                             $serah->id => "{$spkNo} - {$noSeri}",
                         ];
                     });
-            })
-            ->getSearchResultsUsing(function (string $search) {
-
-                return SerahTerimaBahan::with([
-                    'peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.spk',
-                    'peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.identifikasiProduks',
-                ])
-                    ->whereDoesntHave('standarisasiDrawing')
-                    ->where(function ($query) use ($search) {
-                        $query->whereHas('peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.spk', function ($q) use ($search) {
-                            $q->where('no_spk', 'LIKE', "%{$search}%");
-                        })
-                            ->orWhereHas('peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.identifikasiProduks', function ($q) use ($search) {
-                                $q->where('no_seri', 'LIKE', "%{$search}%");
-                            });
-                    })
-                    ->limit(10)
-                    ->get()
-                    ->mapWithKeys(function ($serah) {
-
-                        $jadwal = $serah->peminjamanAlat
-                            ->spkVendor
-                            ->permintaanBahanProduksi
-                            ->jadwalProduksi;
-
-                        $spkNo = $jadwal->spk->no_spk ?? '-';
-
-                        $noSeri = $jadwal->identifikasiProduks
-                            ->pluck('no_seri')
-                            ->filter()
-                            ->implode(', ') ?: '-';
-
-                        return [
-                            $serah->id => "{$spkNo} - {$noSeri}",
-                        ];
-                    })
-                    ->toArray();
             });
+        // ->getSearchResultsUsing(function (string $search) {
+
+        //     return SerahTerimaBahan::with([
+        //         'perencanaanProduksi.spk',
+        //         'perencanaanProduksi.identifikasiProduks',
+        //     ])
+        //         ->whereDoesntHave('standarisasiDrawing')
+        //         ->where(function ($query) use ($search) {
+        //             $query->whereHas('perencanaanProduksi.spk', function ($q) use ($search) {
+        //                 $q->where('no_spk', 'LIKE', "%{$search}%");
+        //             })
+        //                 ->orWhereHas('perencanaanProduksi.identifikasiProduks', function ($q) use ($search) {
+        //                     $q->where('no_seri', 'LIKE', "%{$search}%");
+        //                 });
+        //         })
+        //         ->limit(10)
+        //         ->get()
+        //         ->mapWithKeys(function ($serah) {
+
+        //             $jadwal = $serah->perencanaanProduksi;
+
+        //             $spkNo = $jadwal->spk->no_spk ?? '-';
+
+        //             $noSeri = $jadwal->identifikasiProduks
+        //                 ->pluck('no_seri')
+        //                 ->filter()
+        //                 ->implode(', ') ?: '-';
+
+        //             return [
+        //                 $serah->id => "{$spkNo} - {$noSeri}",
+        //             ];
+        //         })
+        //         ->toArray();
+        // });
         // ->getOptionLabelUsing(function ($value) {
 
         //     $serah = SerahTerimaBahan::with([
-        //         'peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.spk',
-        //         'peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.identifikasiProduks',
+        //         'perencanaanProduksi.spk',
+        //         'perencanaanProduksi.identifikasiProduks',
         //     ])->find($value);
 
         //     if (!$serah) return '-';
@@ -129,6 +151,74 @@ trait InformasiUmum
         //         ->implode(', ') ?: '-';
 
         //     return "{$spkNo} - {$noSeri}";
+        // });
+    }
+
+    private static function getSumber()
+    {
+        return ButtonGroup::make('sumber')
+            ->label('Sumber Data')
+            ->options([
+                'serah' => 'Dari Serah Terima',
+                'spk'   => 'Langsung dari SPK',
+            ])
+            ->required()
+            ->reactive()
+            ->onColor('primary')
+            ->offColor('gray')
+            ->gridDirection('row')
+            ->afterStateUpdated(function ($state, callable $set) {
+                $set('serah_terima_bahan_id', null);
+                $set('spk_marketing_id', null);
+            });
+    }
+
+    private static function selectSpk(): Select
+    {
+        return Select::make('spk_marketing_id')
+            ->label('Nomor SPK / No Seri')
+            ->placeholder('Pilih SPK / No Seri')
+            ->searchable()
+            ->native(false)
+            ->preload()
+            ->required(fn($get) => $get('sumber') === 'spk')
+            ->options(function () {
+
+                $directSpkIds = StandarisasiDrawing::query()
+                    ->whereNotNull('spk_marketing_id')
+                    ->pluck('spk_marketing_id')
+                    ->toArray();
+
+                $serahSpkIds = StandarisasiDrawing::query()
+                    ->whereNotNull('serah_terima_bahan_id')
+                    ->with('serahTerimaWarehouse.perencanaanProduksi.spk')
+                    ->get()
+                    ->pluck('serahTerimaWarehouse.perencanaanProduksi.spk.id')
+                    ->filter()
+                    ->toArray();
+
+                $usedSpkIds = collect($directSpkIds)
+                    ->merge($serahSpkIds)
+                    ->unique()
+                    ->toArray();
+
+                return SPKMarketing::query()
+                    ->whereNotIn('id', $usedSpkIds)
+                    ->latest()
+                    ->limit(10)
+                    ->pluck('no_spk', 'id');
+            });
+        // ->getSearchResultsUsing(function (string $search) {
+        //     $usedSpkIds = StandarisasiDrawing::query()
+        //         ->whereNotNull('spk_marketing_id')
+        //         ->pluck('spk_marketing_id')
+        //         ->toArray();
+
+        //     return SPKMarketing::query()
+        //         ->whereNotIn('id', $usedSpkIds)
+        //         ->where('no_spk', 'like', "%{$search}%")
+        //         ->limit(10)
+        //         ->pluck('no_spk', 'id');
         // });
     }
 }

@@ -57,8 +57,8 @@ trait DataPeminjamAlat
             ->options(function () {
                 return SPKVendor::query()
                     ->with([
-                        'permintaanBahanProduksi.jadwalProduksi.spk:id,no_spk',
-                        'permintaanBahanProduksi.jadwalProduksi.identifikasiProduks:id,jadwal_produksi_id,no_seri'
+                        'perencanaanProduksi.spk:id,no_spk',
+                        'perencanaanProduksi.identifikasiProduks:id,jadwal_produksi_id,no_seri'
                     ])
                     ->whereDoesntHave('peminjamanAlat')
                     ->latest()
@@ -66,11 +66,9 @@ trait DataPeminjamAlat
                     ->get()
                     ->mapWithKeys(function ($spkVendor) {
 
-                        $jadwal = $spkVendor->permintaanBahanProduksi->jadwalProduksi;
+                        $spkNo = $spkVendor->perencanaanProduksi->spk->no_spk ?? '-';
 
-                        $spkNo = $jadwal->spk->no_spk ?? '-';
-
-                        $noSeri = $jadwal->identifikasiProduks
+                        $noSeri = $spkVendor->perencanaanProduksi->identifikasiProduks
                             ->pluck('no_seri')
                             ->filter()
                             ->implode(', ') ?: '-';
@@ -83,17 +81,17 @@ trait DataPeminjamAlat
             ->getSearchResultsUsing(function (string $search) {
                 return SPKVendor::query()
                     ->with([
-                        'permintaanBahanProduksi.jadwalProduksi.spk:id,no_spk',
-                        'permintaanBahanProduksi.jadwalProduksi.identifikasiProduks:id,jadwal_produksi_id,no_seri'
+                        'perencanaanProduksi.spk:id,no_spk',
+                        'perencanaanProduksi.identifikasiProduks:id,jadwal_produksi_id,no_seri'
                     ])
                     ->whereDoesntHave('peminjamanAlat')
                     ->where(function ($q) use ($search) {
                         // Search by SPK No
-                        $q->whereHas('permintaanBahanProduksi.jadwalProduksi.spk', function ($spk) use ($search) {
+                        $q->whereHas('perencanaanProduksi.spk', function ($spk) use ($search) {
                             $spk->where('no_spk', 'like', "%{$search}%");
                         });
 
-                        $q->orWhereHas('permintaanBahanProduksi.jadwalProduksi.identifikasiProduks', function ($prod) use ($search) {
+                        $q->orWhereHas('perencanaanProduksi.identifikasiProduks', function ($prod) use ($search) {
                             $prod->where('no_seri', 'like', "%{$search}%");
                         });
                     })
@@ -102,11 +100,11 @@ trait DataPeminjamAlat
                     ->get()
                     ->mapWithKeys(function ($spkVendor) {
 
-                        $jadwal = $spkVendor->permintaanBahanProduksi->jadwalProduksi;
+                        // $jadwal = $spkVendor->permintaanBahanProduksi->jadwalProduksi;
 
-                        $spkNo = $jadwal->spk->no_spk ?? '-';
+                        $spkNo = $spkVendor->perencanaanProduksi->spk->no_spk ?? '-';
 
-                        $noSeri = $jadwal->identifikasiProduks
+                        $noSeri = $spkVendor->perencanaanProduksi->identifikasiProduks
                             ->pluck('no_seri')
                             ->filter()
                             ->implode(', ') ?: '-';

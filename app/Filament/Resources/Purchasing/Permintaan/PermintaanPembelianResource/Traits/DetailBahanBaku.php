@@ -7,6 +7,7 @@ use App\Traits\SimpleFormResource;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Section;
+use Icetalker\FilamentTableRepeater\Forms\Components\TableRepeater;
 
 trait DetailBahanBaku
 {
@@ -20,30 +21,23 @@ trait DetailBahanBaku
                 Grid::make(2)
                     ->schema([
 
-                        Repeater::make('details')
+                        TableRepeater::make('details')
                             ->relationship('details')
                             ->schema([
 
-                                Grid::make(4)
-                                    ->schema([
+                                self::textInput('kode_barang', 'Kode Barang')
+                                    ->required(false),
 
-                                        self::textInput('kode_barang', 'Kode Barang'),
+                                self::textInput('nama_barang', 'Nama Barang'),
 
-                                        self::textInput('nama_barang', 'Nama Barang'),
+                                self::textInput('jumlah', 'Jumlah'),
 
-                                        self::textInput('jumlah', 'Jumlah')
-                                            ->numeric(),
-
-                                        self::textareaInput('keterangan', 'Keterangan')
-                                            ->columnSpan(1)
-                                            ->rows(1),
-
-                                    ])
+                                self::textareaInput('keterangan', 'Keterangan')
+                                    ->rows(1)
+                                    ->required(false),
 
                             ])
-                            // ->deletable(false)
                             ->reorderable(false)
-                            // ->addable(false)
                             ->columnSpanFull()
                             ->addActionLabel('Tambah Detail Permintaan Pembelian')
 

@@ -75,10 +75,10 @@ class SerahTerimaBahanResource extends Resource
             ->columns([
                 //
                 // self::textColumn('permintaanBahanPro.no_surat', 'No Surat Production'),
-                TextColumn::make('peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.spk.no_spk')
+                TextColumn::make('perencanaanProduksi.spk.no_spk')
                     ->label('No SPK Marketing'),
 
-                TextColumn::make('peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.identifikasiProduks.no_seri')
+                TextColumn::make('perencanaanProduksi.identifikasiProduks.no_seri')
                     ->label('No Seri'),
 
                 self::textColumn('no_surat', 'Nomor Surat Serah Terima Bahan'),
@@ -142,8 +142,8 @@ class SerahTerimaBahanResource extends Resource
     {
         return parent::getEloquentQuery()
             ->with([
-                'peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.spk',
-                'peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.identifikasiProduks',
+                'perencanaanProduksi.spk',
+                'perencanaanProduksi.identifikasiProduks',
                 'details',
                 'pic',
             ]);

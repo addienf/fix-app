@@ -3,13 +3,12 @@
 namespace App\Filament\Resources\General\URS;
 
 use App\Filament\Resources\General\URS\URSResource\Pages;
+use App\Models\General\Company;
 use App\Models\General\Customer;
 use \App\Models\Sales\URS;
 use App\Traits\HasAutoNumber;
 use App\Traits\HasSelectCache;
-use Filament\Forms;
 use Filament\Forms\Components\Section;
-use Filament\Forms\Components\Textarea;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -18,9 +17,6 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use App\Traits\SimpleFormResource;
 use Filament\Forms\Components\Select;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class URSResource extends Resource
 {
@@ -60,7 +56,7 @@ class URSResource extends Resource
 
     protected static function getTableQuery(): Builder
     {
-        return URS::query()->with(['customer']);
+        return URS::query()->with(['company']);
     }
 
     public static function table(Table $table): Table
@@ -69,7 +65,7 @@ class URSResource extends Resource
             ->columns([
                 //
                 self::textColumn('no_urs', 'No URS'),
-                self::textColumn('customer.name', 'Nama Customer'),
+                self::textColumn('company.name', 'Nama Company'),
             ])
             ->filters([
                 //
@@ -106,19 +102,19 @@ class URSResource extends Resource
     private static function select()
     {
         return
-            Select::make('customer_id')
-            ->label('Customer')
-            ->placeholder('Pilih Data Customer')
+            Select::make('company_id')
+            ->label('Company')
+            ->placeholder('Pilih Data Company')
             ->searchable()
             ->getSearchResultsUsing(function (string $search) {
-                return Customer::query()
+                return Company::query()
                     ->where('name', 'like', "%{$search}%")
                     ->orderBy('id', 'desc')
                     ->limit(10)
                     ->pluck('name', 'id');
             })
             ->options(function () {
-                return Customer::query()
+                return Company::query()
                     ->orderBy('id', 'desc')
                     ->limit(10)
                     ->pluck('name', 'id');

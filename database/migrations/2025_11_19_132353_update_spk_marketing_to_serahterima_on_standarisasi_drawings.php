@@ -11,17 +11,32 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // Schema::table('standarisasi_drawings', function (Blueprint $table) {
+        //     $table->dropForeign(['spk_marketing_id']);
+        //     $table->renameColumn('spk_marketing_id', 'serah_terima_bahan_id');
+        // });
+
+        // Schema::table('standarisasi_drawings', function (Blueprint $table) {
+        //     // Tambah foreign key baru
+        //     $table->foreign('serah_terima_bahan_id')
+        //         ->references('id')
+        //         ->on('serah_terima_bahans')
+        //         ->onDelete('cascade')
+        //         ->nullOnDelete();
+        // });
         Schema::table('standarisasi_drawings', function (Blueprint $table) {
             $table->dropForeign(['spk_marketing_id']);
             $table->renameColumn('spk_marketing_id', 'serah_terima_bahan_id');
         });
 
         Schema::table('standarisasi_drawings', function (Blueprint $table) {
-            // Tambah foreign key baru
+            // WAJIB ubah jadi nullable dulu
+            $table->unsignedBigInteger('serah_terima_bahan_id')->nullable()->change();
+
             $table->foreign('serah_terima_bahan_id')
                 ->references('id')
                 ->on('serah_terima_bahans')
-                ->onDelete('cascade');
+                ->nullOnDelete();
         });
     }
 

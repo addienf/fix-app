@@ -26,7 +26,7 @@ class CreateChamberWalkinG2 extends CreateRecord
         if ($this->record && $this->record->id) {
             SendGenericNotif::dispatch(
                 $this->record,
-                ['sales', 'super_admin'],
+                ['engineering'],
                 GenericNotification::class,
                 '/admin/engineering/walkin-chamber-g2',
                 'Data Walk-in Chamber G2 berhasil dibuat',

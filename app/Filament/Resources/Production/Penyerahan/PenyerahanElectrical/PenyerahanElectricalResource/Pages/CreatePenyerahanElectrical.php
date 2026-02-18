@@ -26,7 +26,7 @@ class CreatePenyerahanElectrical extends CreateRecord
         if ($this->record && $this->record->id) {
             SendGenericNotif::dispatch(
                 $this->record,
-                ['sales', 'super_admin'],
+                ['production', 'MR'],
                 GenericNotification::class,
                 '/admin/produksi/serah-terima-electrical',
                 'Data Penyerahan Electrical berhasil dibuat',

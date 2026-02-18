@@ -26,7 +26,11 @@ trait Petugas
 
                         self::textInput('jabatan', 'Jabatan'),
                     ])
-                    ->columns(2)
+                    ->columns([
+                        'default' => 1,
+                        'md' => 2,
+                        'lg' => 2,
+                    ])
                     ->defaultItems(1)
                     ->collapsible()
                     ->columnSpanFull()

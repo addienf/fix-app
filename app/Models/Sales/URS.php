@@ -2,6 +2,7 @@
 
 namespace App\Models\Sales;
 
+use App\Models\General\Company;
 use App\Models\General\Customer;
 use App\Models\Sales\SpesifikasiProducts\SpesifikasiProduct;
 use App\Traits\HasCacheManager;
@@ -15,13 +16,13 @@ class URS extends Model
     protected $table = 'urs';
     protected $fillable = [
         'no_urs',
-        'customer_id',
+        'company_id',
         'permintaan_khusus',
     ];
 
-    public function customer()
+    public function company()
     {
-        return $this->belongsTo(Customer::class);
+        return $this->belongsTo(Company::class);
     }
 
     public function spesifikasiProducts()

@@ -26,7 +26,7 @@ class CreateJadwalProduksi extends CreateRecord
         if ($this->record && $this->record->id) {
             SendGenericNotif::dispatch(
                 $this->record,
-                ['sales', 'super_admin'],
+                ['production', 'MR', 'warehouse'],
                 GenericNotification::class,
                 '/admin/produksi/jadwal-produksi',
                 'Data Jadwal Produksi berhasil dibuat',

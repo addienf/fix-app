@@ -27,6 +27,9 @@ class SpesifikasiProduct extends Model
     protected $fillable = [
         'urs_id',
         'is_stock',
+        'name',
+        'department',
+        'phone_number',
         'detail_specification',
         'delivery_address',
         'estimasi_pengiriman',

@@ -21,7 +21,11 @@ trait IdentitasGambarKerja
             ->relationship('identitas')
             ->schema([
 
-                Grid::make(3)
+                Grid::make([
+                    'default' => 1,
+                    'md' => 3,
+                    'lg' => 3,
+                ])
                     ->schema([
                         self::textInput('judul_gambar', 'Judul Gambar'),
 
@@ -38,7 +42,11 @@ trait IdentitasGambarKerja
                 self::textInput('revisi_ke', 'Revisi Ke')
                     ->hidden(fn(Get $get) => $get('revisi') != 1),
 
-                Grid::make(2)
+                Grid::make([
+                    'default' => 1,
+                    'md' => 2,
+                    'lg' => 2,
+                ])
                     ->schema([
                         self::textInput('nama_pembuat', 'Nama Pembuat'),
 

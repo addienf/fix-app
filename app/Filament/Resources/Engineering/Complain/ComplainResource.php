@@ -26,7 +26,7 @@ class ComplainResource extends Resource
     protected static ?string $navigationLabel = 'Complaint';
     protected static ?string $pluralLabel = 'Complaint';
     protected static ?string $modelLabel = 'Complaint';
-    protected static ?string $slug = 'engineering/complaint';
+    protected static ?string $slug = 'customer-care/complaint';
     protected static ?string $navigationIcon = 'heroicon-o-wrench-screwdriver';
 
     public static function form(Form $form): Form
@@ -115,7 +115,7 @@ class ComplainResource extends Resource
         return parent::getEloquentQuery()
             ->with([
                 // 'spkService',
-                'pelayananPelanggan',
+                // 'pelayananPelanggan',
                 'details',
                 'pic'
             ]);

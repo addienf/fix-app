@@ -58,9 +58,9 @@ class PermintaanPembelian extends Model
         static::saving(function ($model) {
             if (
                 $model->pic?->knowing_signature &&
-                $model->status_persetujuan !== 'Disetujui'
+                $model->status_persetujuan !== 'Diketahui'
             ) {
-                $model->status_persetujuan = 'Disetujui';
+                $model->status_persetujuan = 'Diketahui';
             }
         });
 

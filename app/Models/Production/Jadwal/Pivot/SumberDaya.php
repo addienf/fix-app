@@ -17,6 +17,7 @@ class SumberDaya extends Model
         'jumlah',
         'status',
         'keperluan',
+        'kategori'
     ];
 
     public function jadwalProduksi()

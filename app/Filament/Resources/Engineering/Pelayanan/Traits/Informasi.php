@@ -7,7 +7,6 @@ use App\Traits\SimpleFormResource;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
-use Ysfkaya\FilamentPhoneInput\Forms\PhoneInput;
 
 trait Informasi
 {
@@ -21,9 +20,9 @@ trait Informasi
                 Grid::make()
                     ->schema([
 
-                        self::select()
-                            ->hiddenOn('edit')
-                            ->columnSpanFull(),
+                        // self::select()
+                        //     ->hiddenOn('edit')
+                        //     ->columnSpanFull(),
 
                         self::textInput('no_form', 'Form No'),
 
@@ -36,67 +35,69 @@ trait Informasi
             ]);
     }
 
-    private static function select(): Select
-    {
-        return
-            Select::make('complain_id')
-            ->label('Nomor Complaint Form')
-            ->placeholder('Pilih Nomor Complaint Form')
-            ->reactive()
-            ->required()
-            ->searchable()
-            ->options(function () {
-                return Complain::query()
-                    ->whereDoesntHave('pelayananPelanggan')
-                    ->latest()
-                    ->limit(10)
-                    ->get()
-                    ->mapWithKeys(function ($item) {
-                        return [
-                            $item->id => ($item->form_no ?? '-') . ' - ' . ($item->name_complain ?? '-')
-                        ];
-                    });
-            })
-            ->getSearchResultsUsing(function (string $search) {
-                return Complain::query()
-                    ->whereDoesntHave('pelayananPelanggan')
-                    ->when($search, function ($query) use ($search) {
-                        $query->where('form_no', 'like', "%{$search}%")
-                            ->orWhere('name_complain', 'like', "%{$search}%");
-                    })
-                    ->limit(10)
-                    ->get()
-                    ->mapWithKeys(function ($item) {
-                        return [
-                            $item->id => ($item->form_no ?? '-') . ' - ' . ($item->name_complain ?? '-')
-                        ];
-                    })
-                    ->toArray();
-            })
-            ->afterStateUpdated(function ($state, callable $set) {
-                if (!$state) return;
+    // private static function select(): Select
+    // {
+    //     return
+    //         Select::make('complain_id')
+    //         ->label('Nomor Complaint Form')
+    //         ->placeholder('Pilih Nomor Complaint Form')
+    //         ->reactive()
+    //         ->required()
+    //         ->searchable()
+    //         ->options(function () {
+    //             return Complain::query()
+    //                 ->whereDoesntHave('pelayananPelanggan')
+    //                 ->latest()
+    //                 ->limit(10)
+    //                 ->get()
+    //                 ->mapWithKeys(function ($item) {
+    //                     return [
+    //                         $item->id => ($item->form_no ?? '-') . ' - ' . ($item->name_complain ?? '-')
+    //                     ];
+    //                 });
+    //         })
+    //         ->getSearchResultsUsing(function (string $search) {
+    //             return Complain::query()
+    //                 ->whereDoesntHave('pelayananPelanggan')
+    //                 ->when($search, function ($query) use ($search) {
+    //                     $query->where('form_no', 'like', "%{$search}%")
+    //                         ->orWhere('name_complain', 'like', "%{$search}%");
+    //                 })
+    //                 ->limit(10)
+    //                 ->get()
+    //                 ->mapWithKeys(function ($item) {
+    //                     return [
+    //                         $item->id => ($item->form_no ?? '-') . ' - ' . ($item->name_complain ?? '-')
+    //                     ];
+    //                 })
+    //                 ->toArray();
+    //         })
+    //         ->afterStateUpdated(function ($state, callable $set) {
+    //             if (!$state) return;
 
-                $complain = Complain::find($state);
+    //             $complain = Complain::find($state);
 
-                if (!$complain) return;
+    //             if (!$complain) return;
 
-                $companyName = $complain->company_name ?? '-';
-                $no_form = $complain->form_no ?? '-';
+    //             $companyName = $complain->companies->first()?->name ?? '-';
+    //             $companyAddress = $complain->companies->first()?->address ?? '-';
+    //             $no_form = $complain->form_no ?? '-';
 
-                $details = $complain->details->map(function ($detail) {
-                    return [
-                        'nama_alat'     => $detail?->unit_name ?? '-',
-                        'tipe' => $detail?->tipe_model ?? '-',
-                        'deskripsi' => $detail?->deskripsi ?? '-'
-                    ];
-                })->toArray();
+    //             $details = $complain->details->map(function ($detail) {
+    //                 return [
+    //                     'nama_alat'     => $detail?->unit_name ?? '-',
+    //                     'tipe' => $detail?->tipe_model ?? '-',
+    //                     'deskripsi' => $detail?->deskripsi ?? '-'
+    //                 ];
+    //             })->toArray();
 
-                // dd($details);
-                $set('perusahaan', $companyName);
-                $set('no_form', $no_form);
-                $set('details', $details);
-            });
-    }
+    //             // dd($details);
+    //             $set('perusahaan', $companyName);
+    //             $set('alamat', $companyAddress);
+    //             $set('no_form', $no_form);
+    //             $set('details', $details);
+    //         });
+    // }
 
     protected static function getJenisPermintaan()
     {
@@ -133,6 +134,7 @@ trait Informasi
                 self::textInput('tempat_pelaksanaan', 'Tempat Pelaksanaan'),
 
                 self::textInput('no_kontak', 'PIC/No. Kontak/Dept')
-            ]);
+            ])
+            ->columns(3);
     }
 }

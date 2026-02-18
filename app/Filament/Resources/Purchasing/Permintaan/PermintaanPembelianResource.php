@@ -33,7 +33,7 @@ class PermintaanPembelianResource extends Resource
     protected static ?string $modelLabel = 'Permintaan Pembelian';
     public static function getNavigationBadge(): ?string
     {
-        $count = PermintaanPembelian::where('status_persetujuan', '!=', 'Disetujui')->count();
+        $count = PermintaanPembelian::where('status_persetujuan', '!=', 'Diketahui')->count();
 
         return $count > 0 ? (string) $count : null;
     }
@@ -44,7 +44,7 @@ class PermintaanPembelianResource extends Resource
             ->schema([
 
                 Hidden::make('status_persetujuan')
-                    ->default('Belum Disetujui'),
+                    ->default('Belum Diketahui'),
 
                 self::noSuratSection(),
 
@@ -76,23 +76,27 @@ class PermintaanPembelianResource extends Resource
             ->columns([
                 //
                 self::textColumn('permintaanBahanWBB.no_surat', 'No Surat WBB')
-                    ->getStateUsing(
-                        fn($record) =>
-                        $record->permintaanBahanWBB->no_surat ?? "Untuk Stock"
-                    ),
+                    ->getStateUsing(function ($record) {
+
+                        if ($record->permintaanBahanWBB?->no_surat) {
+                            return $record->permintaanBahanWBB->no_surat;
+                        }
+
+                        return 'Untuk Stock - ' . $record->created_at->format('d/m/Y');
+                    }),
 
                 self::textColumn('is_stock', 'Jenis Stock')
                     ->formatStateUsing(fn($state) => $state == 0 ? 'Untuk Stock' : 'Permintaan')
                     ->color(fn($state) => $state == 0 ? 'danger' : 'success')
                     ->badge(),
 
-                self::textColumn('status_persetujuan', 'Status Persetujuan')
+                self::textColumn('status_persetujuan', 'Status')
                     ->badge()
                     ->searchable(false)
                     ->sortable(false)
                     ->color(
                         fn($state) =>
-                        $state === 'Disetujui' ? 'success' : 'danger'
+                        $state === 'Diketahui' ? 'success' : 'danger'
                     )
                     ->alignCenter(),
             ])
@@ -100,8 +104,8 @@ class PermintaanPembelianResource extends Resource
                 //
                 SelectFilter::make('status_persetujuan')
                     ->options([
-                        'Disetujui' => 'Disetujui',
-                        'Belum Disetujui' => 'Belum Disetujui',
+                        'Diketahui' => 'Diketahui',
+                        'Belum Diketahui' => 'Belum Diketahui',
                     ])
                     ->label('Filter Status'),
 
@@ -123,7 +127,7 @@ class PermintaanPembelianResource extends Resource
                         ->tooltip('Lihat Dokumen PDF')
                         ->icon('heroicon-o-document')
                         ->color('success')
-                        ->visible(fn($record) => $record->status_persetujuan === 'Disetujui')
+                        ->visible(fn($record) => $record->status_persetujuan === 'Diketahui')
                         ->url(fn($record) => route('pdf.PermintaanPembelian', ['record' => $record->id])),
                 ])
             ])

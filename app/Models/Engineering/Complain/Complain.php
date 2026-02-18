@@ -5,7 +5,7 @@ namespace App\Models\Engineering\Complain;
 use App\Models\Engineering\Complain\Pivot\ComplainDetail;
 use App\Models\Engineering\Complain\Pivot\ComplainPIC;
 use App\Models\Engineering\Pelayanan\PermintaanPelayananPelanggan;
-use App\Models\Engineering\SPK\SPKService;
+use App\Models\General\Company;
 use App\Traits\HasCacheManager;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -20,16 +20,16 @@ class Complain extends Model
         'dari',
         'kepada',
         'name_complain',
-        'company_name',
+        'company_id',
         'department',
         'phone_number',
         'receive_by',
     ];
 
-    // public function spkService()
-    // {
-    //     return $this->hasOne(SPKService::class, 'complain_id');
-    // }
+    public function companies()
+    {
+        return $this->belongsTo(Company::class, 'company_id');
+    }
 
     public function pelayananPelanggan()
     {
@@ -47,7 +47,12 @@ class Complain extends Model
         return $this->hasOne(ComplainPIC::class, 'complain_id');
     }
 
-    public static array $CACHE_KEYS = [
-        'spkService'       => 'complain_spk_service',
-    ];
+    protected static function booted()
+    {
+        static::deleting(function ($spesifikasi) {
+            if ($spesifikasi->pic) {
+                $spesifikasi->pic->delete();
+            }
+        });
+    }
 }

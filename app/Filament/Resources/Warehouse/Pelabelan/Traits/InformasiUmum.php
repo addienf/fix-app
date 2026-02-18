@@ -27,7 +27,13 @@ trait InformasiUmum
 
                 self::textInput('penanggung_jawab', 'Penanggung Jawab')
 
-            ])->columns($isEdit ? 2 : 3);
+            ])
+            // ->columns($isEdit ? 2 : 3);
+            ->columns([
+                'default' => 1,
+                'md' => $isEdit ? 2 : 3,
+                'lg' => $isEdit ? 2 : 3,
+            ]);
     }
 
     private static function getSelect()
@@ -44,8 +50,8 @@ trait InformasiUmum
             // ->options(
             //     fn() =>
             //     ProductRelease::with([
-            //         'pengecekanPerforma.penyerahanProdukJadi.pengecekanElectrical.penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.spk',
-            //         'pengecekanPerforma.penyerahanProdukJadi.pengecekanElectrical.penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.identifikasiProduks',
+            //         'pengecekanPerforma.penyerahanProdukJadi.pengecekanElectrical.penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.perencanaanProduksi.spk',
+            //         'pengecekanPerforma.penyerahanProdukJadi.pengecekanElectrical.penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.perencanaanProduksi.identifikasiProduks',
             //     ])
             //         ->where('status', 'Diketahui')
             //         ->whereDoesntHave('qcPassed')
@@ -56,7 +62,7 @@ trait InformasiUmum
 
             //             $jadwal = $item->pengecekanPerforma->penyerahanProdukJadi->pengecekanElectrical->penyerahanElectrical
             //                 ->pengecekanSS->kelengkapanMaterial->standarisasiDrawing
-            //                 ->serahTerimaWarehouse->peminjamanAlat->spkVendor->permintaanBahanProduksi
+            //                 ->serahTerimaWarehouse->permintaanBahanProduksi
             //                 ->jadwalProduksi;
 
             //             $spkNo = $jadwal->spk->no_spk ?? '-';
@@ -74,8 +80,8 @@ trait InformasiUmum
             ->options(
                 fn() =>
                 ProductRelease::with([
-                    'pengecekanPerforma.penyerahanProdukJadi.pengecekanElectrical.penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.spk',
-                    'pengecekanPerforma.penyerahanProdukJadi.pengecekanElectrical.penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.identifikasiProduks',
+                    'pengecekanPerforma.penyerahanProdukJadi.pengecekanElectrical.penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.perencanaanProduksi.spk',
+                    'pengecekanPerforma.penyerahanProdukJadi.pengecekanElectrical.penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.perencanaanProduksi.identifikasiProduks',
                 ])
                     ->where('status', 'Diketahui')
                     ->whereDoesntHave('qcPassed')
@@ -86,8 +92,7 @@ trait InformasiUmum
 
                         $jadwal = $item->pengecekanPerforma->penyerahanProdukJadi->pengecekanElectrical->penyerahanElectrical
                             ->pengecekanSS->kelengkapanMaterial->standarisasiDrawing
-                            ->serahTerimaWarehouse->peminjamanAlat->spkVendor->permintaanBahanProduksi
-                            ->jadwalProduksi;
+                            ->serahTerimaWarehouse->perencanaanProduksi;
 
                         $spkNo = $jadwal->spk->no_spk ?? '-';
 
@@ -104,20 +109,20 @@ trait InformasiUmum
             ->getSearchResultsUsing(function (string $search) {
 
                 return ProductRelease::with([
-                    'pengecekanPerforma.penyerahanProdukJadi.pengecekanElectrical.penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.spk',
-                    'pengecekanPerforma.penyerahanProdukJadi.pengecekanElectrical.penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.identifikasiProduks',
+                    'pengecekanPerforma.penyerahanProdukJadi.pengecekanElectrical.penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.perencanaanProduksi.spk',
+                    'pengecekanPerforma.penyerahanProdukJadi.pengecekanElectrical.penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.perencanaanProduksi.identifikasiProduks',
                 ])
                     ->where('status', 'Diketahui')
                     ->whereDoesntHave('qcPassed')
                     ->where(function ($q) use ($search) {
                         $q->whereHas(
-                            'pengecekanPerforma.penyerahanProdukJadi.pengecekanElectrical.penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.spk',
+                            'pengecekanPerforma.penyerahanProdukJadi.pengecekanElectrical.penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.perencanaanProduksi.spk',
                             fn($spkQ) => $spkQ->where('no_spk', 'like', "%{$search}%")
                         );
                     })
                     ->orWhere(function ($q) use ($search) {
                         $q->whereHas(
-                            'pengecekanPerforma.penyerahanProdukJadi.pengecekanElectrical.penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.identifikasiProduks',
+                            'pengecekanPerforma.penyerahanProdukJadi.pengecekanElectrical.penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.perencanaanProduksi.identifikasiProduks',
                             fn($seriQ) => $seriQ->where('no_seri', 'like', "%{$search}%")
                         );
                     })
@@ -127,8 +132,7 @@ trait InformasiUmum
 
                         $jadwal = $item->pengecekanPerforma->penyerahanProdukJadi->pengecekanElectrical->penyerahanElectrical
                             ->pengecekanSS->kelengkapanMaterial->standarisasiDrawing
-                            ->serahTerimaWarehouse->peminjamanAlat->spkVendor->permintaanBahanProduksi
-                            ->jadwalProduksi;
+                            ->serahTerimaWarehouse->perencanaanProduksi;
 
                         $spkNo = $jadwal->spk->no_spk ?? '-';
 
@@ -146,14 +150,13 @@ trait InformasiUmum
                 if (!$state) return;
 
                 $pengecekan = ProductRelease::with([
-                    'pengecekanPerforma.penyerahanProdukJadi.pengecekanElectrical.penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi.spk'
+                    'pengecekanPerforma.penyerahanProdukJadi.pengecekanElectrical.penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.perencanaanProduksi.spk'
                 ])->find($state);
 
                 $model_pengecekan =
                     $pengecekan?->pengecekanPerforma?->penyerahanProdukJadi?->pengecekanElectrical
                     ?->penyerahanElectrical?->pengecekanSS?->kelengkapanMaterial
-                    ?->standarisasiDrawing?->serahTerimaWarehouse?->peminjamanAlat
-                    ?->spkVendor?->permintaanBahanProduksi?->jadwalProduksi ?? '-';
+                    ?->standarisasiDrawing?->serahTerimaWarehouse?->perencanaanProduksi ?? '-';
 
                 $product_name = $pengecekan?->pengecekanPerforma?->penyerahanProdukJadi?->pengecekanElectrical?->penyerahanElectrical?->nama_produk ?? '-';
                 $product_tipe = $pengecekan?->pengecekanPerforma?->penyerahanProdukJadi?->pengecekanElectrical?->penyerahanElectrical?->tipe ?? '-';

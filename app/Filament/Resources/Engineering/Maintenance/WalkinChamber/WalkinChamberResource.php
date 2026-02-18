@@ -8,7 +8,9 @@ use App\Filament\Resources\Engineering\Maintenance\WalkinChamber\WalkinChamberRe
 use App\Models\Engineering\Maintenance\WalkinChamber\WalkinChamber;
 use App\Traits\HasSignature;
 use Filament\Actions\Action;
+use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\Section;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -22,17 +24,18 @@ class WalkinChamberResource extends Resource
     protected static ?string $model = WalkinChamber::class;
     protected static ?int $navigationSort = 23;
     protected static ?string $navigationGroup = 'Engineering';
-    protected static ?string $navigationLabel = 'Walk-in Chamber';
-    protected static ?string $pluralLabel = 'Walk-in Chamber';
-    protected static ?string $modelLabel = 'Walk-in Chamber';
-    protected static ?string $slug = 'engineering/walkin-chamber';
+    protected static ?string $navigationLabel = 'Walk in Test Chamber';
+    protected static ?string $pluralLabel = 'Walk in Test Chamber';
+    protected static ?string $modelLabel = 'Walk in Test Chamber';
+    protected static ?string $slug = 'engineering/walkin-test-chamber';
     protected static ?string $navigationIcon = 'heroicon-o-wrench-screwdriver';
-    public static function getNavigationBadge(): ?string
-    {
-        $count = WalkinChamber::where('status_penyetujuan', '!=', 'Disetujui')->count();
 
-        return $count > 0 ? (string) $count : null;
-    }
+    // public static function getNavigationBadge(): ?string
+    // {
+    //     $count = WalkinChamber::where('status_penyetujuan', '!=', 'Disetujui')->count();
+
+    //     return $count > 0 ? (string) $count : null;
+    // }
 
     public static function form(Form $form): Form
     {
@@ -48,23 +51,47 @@ class WalkinChamberResource extends Resource
 
                 self::getRemarksSection(),
 
-                static::signatureSection(
-                    [
-                        [
-                            'prefix' => 'checked',
-                            'role' => 'Checked By',
-                            'hideLogic' => fn($operation) => $operation === 'edit',
-                        ],
-                        [
-                            'prefix' => 'approved',
-                            'role' => 'Approved By',
-                            'hideLogic' => fn($operation, $record) =>
-                            $operation === 'create' || filled($record?->approved_signature)
-                        ],
-                    ],
-                    title: 'PIC',
-                    uploadPath: 'Engineering/Maintenance/WalkinChamber/Signature'
-                ),
+                Section::make('Customer Info')
+                    ->collapsible()
+                    ->relationship('pic')
+                    ->schema([
+                        static::signatureSection2(
+                            [
+                                [
+                                    'prefix' => 'checked',
+                                    'role' => 'Checked By',
+                                    'hideLogic' => fn($operation) => $operation === 'edit',
+                                ],
+                            ],
+                            title: 'PIC',
+                            uploadPath: 'Engineering/Maintenance/WalkinTestChamber/Signature'
+                        )
+                            ->hiddenOn('edit'),
+
+                        Section::make('PIC')
+                            ->schema([
+                                Grid::make([
+                                    'default' => 1,
+                                    'md' => 2,
+                                    'lg' => 2,
+                                ])
+                                    ->schema([
+                                        self::textInput('approved_name', 'Approved By')
+                                            ->required(false),
+
+                                        self::dateInput('approved_date', 'Tanggal')
+                                            ->required(false),
+
+                                        self::signatureInput(
+                                            "approved_signature",
+                                            '',
+                                            'Engineering/Maintenance/WalkinTestChamber/Signature'
+                                        )
+                                            ->required(false)
+                                            ->columnSpanFull(),
+                                    ])
+                            ])->hiddenOn('create')
+                    ]),
             ]);
     }
 
@@ -75,13 +102,13 @@ class WalkinChamberResource extends Resource
                 //
                 self::textColumn('tag_no', 'WTC Name/TAG No'),
 
-                self::textColumn('status_penyetujuan', 'Status')
-                    ->badge()
-                    ->color(
-                        fn($state) =>
-                        $state === 'Disetujui' ? 'success' : 'danger'
-                    )
-                    ->alignCenter(),
+                // self::textColumn('status_penyetujuan', 'Status')
+                //     ->badge()
+                //     ->color(
+                //         fn($state) =>
+                //         $state === 'Disetujui' ? 'success' : 'danger'
+                //     )
+                //     ->alignCenter(),
             ])
             ->filters([
                 //
@@ -96,11 +123,11 @@ class WalkinChamberResource extends Resource
                         ->icon('heroicon-o-trash')
                         ->tooltip('Hapus Data'),
                     Action::make('pdf_view')
-                        ->label(_('Lihat PDF'))
+                        ->label(_('Download PDF'))
                         ->icon('heroicon-o-document')
                         ->color('success')
-                        ->visible(fn($record) => $record->status_penyetujuan === 'Disetujui')
-                        ->url(fn($record) => route('pdf.walkInChamberR1', ['record' => $record->id])),
+                        // ->visible(fn($record) => $record->status_penyetujuan === 'Disetujui')
+                        ->url(fn($record) => route('pdf.walkInChamber', ['record' => $record->id])),
                 ])
             ])
             ->bulkActions([

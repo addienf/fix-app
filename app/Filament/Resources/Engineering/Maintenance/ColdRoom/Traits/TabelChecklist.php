@@ -32,11 +32,18 @@ trait TabelChecklist
             ->schema([
 
                 Repeater::make('checklist')
+                    ->extraAttributes([
+                        'class' => 'bg-gray-100 dark:bg-gray-800 rounded-lg p-4'
+                    ])
                     ->default($defaultParts)
                     ->label('')
                     ->schema([
 
-                        Grid::make(7)
+                        Grid::make([
+                            'default' => 1,
+                            'md' => 3,
+                            'lg' => 5,
+                        ])
                             ->schema([
                                 TextInput::make('mainPart')
                                     ->label('Main Part')
@@ -45,17 +52,12 @@ trait TabelChecklist
                                         'readonly' => true,
                                         'style' => 'pointer-events: none;'
                                     ])
-                                    ->columnSpan(3),
-
-                                TextInput::make('before')
-                                    ->label('Before')
-                                    ->required()
-                                    ->columnSpan(1),
-
-                                TextInput::make('after')
-                                    ->label('After')
-                                    ->required()
-                                    ->columnSpan(1),
+                                    // ->columnSpan(3),
+                                    ->columnSpan([
+                                        'default' => 1,
+                                        'md' => 1,
+                                        'lg' => 3,
+                                    ]),
 
                                 Select::make('accepted')
                                     ->label('Accepted')
@@ -65,12 +67,22 @@ trait TabelChecklist
                                         'no' => 'No',
                                         'na' => 'NA',
                                     ])
-                                    ->columnSpan(1),
+                                    // ->columnSpan(1),
+                                    ->columnSpan([
+                                        'default' => 1,
+                                        'md' => 1,
+                                        'lg' => 1,
+                                    ]),
 
                                 TextInput::make('remark')
                                     ->label('Remark')
-                                    ->required()
-                                    ->columnSpan(1),
+                                    // ->required()
+                                    // ->columnSpan(1),
+                                    ->columnSpan([
+                                        'default' => 1,
+                                        'md' => 1,
+                                        'lg' => 1,
+                                    ]),
                             ]),
 
                         Repeater::make('parts')
@@ -78,15 +90,12 @@ trait TabelChecklist
                             ->schema([
 
                                 TextInput::make('part')
-                                    ->columnSpan(3)
-                                    ->required(),
-
-                                TextInput::make('before')
-                                    ->columnSpan(1)
-                                    ->required(),
-
-                                TextInput::make('after')
-                                    ->columnSpan(1)
+                                    // ->columnSpan(3)
+                                    ->columnSpan([
+                                        'default' => 1,
+                                        'md' => 1,
+                                        'lg' => 3,
+                                    ])
                                     ->required(),
 
                                 Select::make('accepted')
@@ -95,16 +104,29 @@ trait TabelChecklist
                                         'no' => 'No',
                                         'na' => 'NA',
                                     ])
-                                    ->columnSpan(1)
+                                    // ->columnSpan(1)
+                                    ->columnSpan([
+                                        'default' => 1,
+                                        'md' => 1,
+                                        'lg' => 1,
+                                    ])
                                     ->required(),
 
                                 TextInput::make('remark')
-                                    ->columnSpan(1)
-                                    ->required(),
+                                    // ->columnSpan(1),
+                                    ->columnSpan([
+                                        'default' => 1,
+                                        'md' => 1,
+                                        'lg' => 1,
+                                    ])
+                                // ->required(),
 
                             ])
-                            ->default([])
-                            ->columns(7)
+                            ->columns([
+                                'default' => 1,
+                                'md' => 3,
+                                'lg' => 5,
+                            ])
                             ->addActionLabel('Tambah Part Checklist')
                             ->addable(true)
                             ->deletable(true)

@@ -15,15 +15,21 @@ use Wallo\FilamentSelectify\Components\ButtonGroup;
 trait InformasiUmum
 {
     use SimpleFormResource;
-    public static function getInformasiUmumSection()
+    public static function getInformasiUmumSection($form)
     {
         $lastValue = BeritaAcara::latest('no_surat')->value('no_surat');
+        $isEdit = $form->getOperation() === 'edit';
 
         return Section::make('Informasi Umum')
             ->collapsible()
             ->schema([
                 self::select(),
-                Grid::make(2)
+                // Grid::make(2)
+                Grid::make([
+                    'default' => 1,
+                    'md' => $isEdit ? 3 : 2,
+                    'lg' => $isEdit ? 3 : 2,
+                ])
                     ->schema([
                         TextInput::make('no_surat')
                             ->label('Nomor Surat')
@@ -61,10 +67,11 @@ trait InformasiUmum
         return Select::make('spk_service_id')
             ->label('Nomor SPK Service')
             ->options(function () {
-                return SPKService::whereHas('permintaanSparepart', function ($query) {
-                    $query->where('status', 'Selesai');
-                })
-                    ->whereDoesntHave('beritaAcara')
+                // return SPKService::whereHas('permintaanSparepart', function ($query) {
+                //     $query->where('status', 'Selesai');
+                // })
+                return SPKService::whereDoesntHave('beritaAcara')
+                    // ->where('jenis_spk', 'Service')
                     ->where(function ($query) {
                         $query->whereHas('walkinChamber')
                             ->orWhereHas('chamberR2')
@@ -103,28 +110,39 @@ trait InformasiUmum
             ->required()
             ->reactive()
             ->columnSpanFull()
-            ->hiddenOn(operations: 'edit')
-            ->afterStateUpdated(function ($state, callable $set) {
-                if (!$state)
-                    return;
+            ->hiddenOn(operations: 'edit');
+        // ->afterStateUpdated(function ($state, callable $set) {
+        //     if (!$state)
+        //         return;
 
-                $service = SPKService::with('petugas', 'pelayananPelanggan')->find($state);
+        //     $service = SPKService::with('petugas', 'pelayananPelanggan')->find($state);
 
-                if (!$service)
-                    return;
+        //     if (!$service)
+        //         return;
 
-                $namaPetugas = $service->petugas->pluck('nama_teknisi')->toArray();
-                $nama_teknisi = implode(', ', $namaPetugas);
-                $namaComplain = $service->pelayananPelanggan->complain->name_complain;
-                $companyName = $service->pelayananPelanggan->complain->company_name;
-                $alamat = $service->pelayananPelanggan->complain->alamat;
-                $department = $service->pelayananPelanggan->complain->department;
+        //     $namaPetugas = $service->petugas->pluck('nama_teknisi')->toArray();
+        //     $nama_teknisi = implode(', ', $namaPetugas);
+        //     $namaComplain = $service->pelayananPelanggan->complain->name_complain;
+        //     $companyName = $service->pelayananPelanggan->complain->companies->first()?->name;
+        //     $alamat = $service->pelayananPelanggan->alamat;
+        //     $department = $service->pelayananPelanggan->complain->department;
 
-                $set('detail.nama_teknisi', $nama_teknisi);
-                $set('pelanggan.nama', $namaComplain);
-                $set('pelanggan.perusahaan', $companyName);
-                $set('pelanggan.alamat', $alamat);
-                $set('pelanggan.jabatan', $department);
-            });
+        //     $detail = $service->pelayananPelanggan
+        //         ?->details
+        //         ?->first();
+
+        //     $produk = $detail?->nama_alat ?? '-';
+        //     $noSeri = $detail?->nomor_seri ?? '-';
+
+        //     $set('detail.nama_teknisi', $nama_teknisi);
+        //     $set('pelanggan.nama', $namaComplain);
+        //     $set('pelanggan.perusahaan', $companyName);
+        //     $set('pelanggan.alamat', $alamat);
+        //     $set('pelanggan.jabatan', $department);
+
+        //     $set('detail.nama_teknisi', $nama_teknisi);
+        //     $set('detail.produk', $produk);
+        //     $set('detail.serial_number', $noSeri);
+        // });
     }
 }

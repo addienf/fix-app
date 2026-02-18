@@ -2,6 +2,7 @@
 
 namespace App\Models\Warehouse\SerahTerima;
 
+use App\Models\Production\Jadwal\JadwalProduksi;
 use App\Models\Production\PermintaanBahanProduksi\PermintaanAlatDanBahan;
 use App\Models\Quality\Standarisasi\StandarisasiDrawing;
 use App\Models\Warehouse\Peminjaman\PeminjamanAlat;
@@ -15,7 +16,8 @@ class SerahTerimaBahan extends Model
     use HasFactory;
 
     protected $fillable = [
-        'peminjaman_alat_id',
+        // 'peminjaman_alat_id',
+        'perencanaan_id',
         'tanggal',
         'no_surat',
         'dari',
@@ -27,9 +29,14 @@ class SerahTerimaBahan extends Model
         'tanggal' => 'date',
     ];
 
-    public function peminjamanAlat()
+    // public function peminjamanAlat()
+    // {
+    //     return $this->belongsTo(PeminjamanAlat::class, 'peminjaman_alat_id');
+    // }
+
+    public function perencanaanProduksi()
     {
-        return $this->belongsTo(PeminjamanAlat::class, 'peminjaman_alat_id');
+        return $this->belongsTo(JadwalProduksi::class, 'perencanaan_id');
     }
 
     public function standarisasiDrawing()

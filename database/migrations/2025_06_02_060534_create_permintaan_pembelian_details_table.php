@@ -13,10 +13,10 @@ return new class extends Migration {
         Schema::create('permintaan_pembelian_details', function (Blueprint $table) {
             $table->id();
             $table->foreignId('permintaan_pembelian_id')->constrained('permintaan_pembelians')->onDelete('cascade');
-            $table->string('kode_barang');
+            $table->string('kode_barang')->nullable();
             $table->string('nama_barang');
-            $table->integer('jumlah');
-            $table->text('keterangan');
+            $table->string('jumlah');
+            $table->text('keterangan')->nullable();
             $table->timestamps();
         });
     }

@@ -26,7 +26,7 @@ class CreateDefectStatus extends CreateRecord
         if ($this->record && $this->record->id) {
             SendGenericNotif::dispatch(
                 $this->record,
-                ['sales', 'super_admin'],
+                ['quality', 'MR'],
                 GenericNotification::class,
                 '/admin/quality/defect-status',
                 'Data Defect Status berhasil dibuat',

@@ -30,6 +30,13 @@ class ProductReleaseResource extends Resource
     protected static ?string $modelLabel = 'Product Release';
     protected static ?string $slug = 'quality/product-release';
 
+    public static function getNavigationBadge(): ?string
+    {
+        $count = ProductRelease::where('status', '!=', 'Diketahui')->count();
+
+        return $count > 0 ? (string) $count : null;
+    }
+
     public static function form(Form $form): Form
     {
         return $form

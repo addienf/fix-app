@@ -17,7 +17,11 @@ trait DetailBahanBaku
             ->collapsible()
             ->schema([
 
-                Grid::make(2)
+                Grid::make([
+                    'default' => 1,
+                    'md' => 2,
+                    'lg' => 2,
+                ])
                     ->schema([
 
                         TableRepeater::make('details')
@@ -26,21 +30,25 @@ trait DetailBahanBaku
                             ->schema([
 
                                 self::textInput('bahan_baku', 'Bahan Baku')
+                                    ->required(false)
                                     ->extraAttributes([
                                         'readonly' => true,
                                         'style' => 'pointer-events: none;'
                                     ]),
                                 self::textInput('spesifikasi', 'Spesifikasi')
+                                    ->required(false)
                                     ->extraAttributes([
                                         'readonly' => true,
                                         'style' => 'pointer-events: none;'
                                     ]),
-                                self::textInput('jumlah', 'Jumlah')->numeric()
+                                self::textInput('jumlah', 'Jumlah')
+                                    ->required(false)
                                     ->extraAttributes([
                                         'readonly' => true,
                                         'style' => 'pointer-events: none;'
                                     ]),
                                 self::textareaInput('keperluan_barang', 'Keperluan Barang')
+                                    ->required(false)
                                     ->rows(1)
                                     ->extraAttributes([
                                         'readonly' => true,

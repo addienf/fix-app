@@ -18,15 +18,15 @@ class ListRissingPipettes extends ListRecords
         ];
     }
 
-    public function getTabs(): array
-    {
-        return
-            [
-                null => Tab::make('All'),
-                'Disetujui' => Tab::make()->query(fn($query) => $query->where('status_penyetujuan', 'Disetujui')),
-                'Belum Disetujui' => Tab::make()->query(fn($query) => $query->where('status_penyetujuan', 'Belum Disetujui')),
-            ];
-    }
+    // public function getTabs(): array
+    // {
+    //     return
+    //         [
+    //             null => Tab::make('All'),
+    //             'Disetujui' => Tab::make()->query(fn($query) => $query->where('status_penyetujuan', 'Disetujui')),
+    //             'Belum Disetujui' => Tab::make()->query(fn($query) => $query->where('status_penyetujuan', 'Belum Disetujui')),
+    //         ];
+    // }
 
     public function getBreadcrumb(): string
     {

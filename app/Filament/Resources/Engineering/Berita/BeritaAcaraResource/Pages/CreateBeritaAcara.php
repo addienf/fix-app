@@ -25,7 +25,7 @@ class CreateBeritaAcara extends CreateRecord
         if ($this->record && $this->record->id) {
             SendGenericNotif::dispatch(
                 $this->record,
-                ['sales', 'super_admin'],
+                ['engineering', 'customer_care'],
                 GenericNotification::class,
                 '/admin/engineering/berita-acara',
                 'Data Berita Acara berhasil dibuat',

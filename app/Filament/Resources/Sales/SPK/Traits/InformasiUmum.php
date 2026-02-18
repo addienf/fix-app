@@ -88,9 +88,9 @@ trait InformasiUmum
                 return SpesifikasiProduct::query()
                     ->select(['id', 'urs_id'])
                     ->with([
-                        'urs' => fn($q) => $q->select(['id', 'no_urs', 'customer_id'])
+                        'urs' => fn($q) => $q->select(['id', 'no_urs', 'company_id'])
                             ->with([
-                                'customer' => fn($c) => $c->select(['id', 'name'])
+                                'company' => fn($c) => $c->select(['id', 'name'])
                             ])
                     ])
                     ->whereDoesntHave('spk')
@@ -99,8 +99,8 @@ trait InformasiUmum
                     ->get()
                     ->mapWithKeys(function ($item) {
                         $noUrs = $item->urs->no_urs ?? '-';
-                        $customerName = $item->urs->customer->name ?? '-';
-                        return [$item->id => "{$noUrs} - {$customerName}"];
+                        $companyName = $item->urs->company->name ?? '-';
+                        return [$item->id => "{$noUrs} - {$companyName}"];
                     });
             })
             // ->getSearchResultsUsing(function (string $search) {
@@ -132,13 +132,13 @@ trait InformasiUmum
                 return SpesifikasiProduct::query()
                     ->select(['id', 'urs_id'])
                     ->with([
-                        'urs' => fn($q) => $q->select(['id', 'no_urs', 'customer_id'])
+                        'urs' => fn($q) => $q->select(['id', 'no_urs', 'company_id'])
                             ->with([
-                                'customer' => fn($c) => $c->select(['id', 'name'])
+                                'company' => fn($c) => $c->select(['id', 'name'])
                             ])
                     ])
                     ->whereDoesntHave('spk')
-                    ->whereHas('urs.customer', function ($q) use ($search) {
+                    ->whereHas('urs.company', function ($q) use ($search) {
                         $q->where('name', 'LIKE', "%{$search}%")
                             ->orWhere('no_urs', 'LIKE', "%{$search}%");
                     })
@@ -146,8 +146,8 @@ trait InformasiUmum
                     ->get()
                     ->mapWithKeys(function ($item) {
                         $noUrs = $item->urs->no_urs ?? '-';
-                        $customerName = $item->urs->customer->name ?? '-';
-                        return [$item->id => "{$noUrs} - {$customerName}"];
+                        $companyName = $item->urs->company->name ?? '-';
+                        return [$item->id => "{$noUrs} - {$companyName}"];
                     });
             })
             ->afterStateUpdated(function ($state, callable $set) {

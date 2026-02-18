@@ -1,234 +1,278 @@
 @extends ('pdf.layout.layout')
 @section('title', 'Permintaan Bahan Warehouse PDF')
 @section('content')
-    <div id="export-area" class="p-2 text-black bg-white">
-        <table
-            class="w-full max-w-4xl mx-auto text-sm border border-black dark:border-white dark:bg-gray-900 dark:text-white"
-            style="border-collapse: collapse;">
-            <tr>
-                <td rowspan="3"
-                    class="p-2 text-center align-middle border border-black w-28 h-28 dark:border-white dark:bg-gray-900">
-                    <img src="{{ asset('asset/logo.png') }}" alt="Logo" class="object-contain mx-auto h-30" />
-                </td>
-                <td colspan="2" class="font-bold text-center border border-black dark:border-white dark:bg-gray-900">
-                    PT. QLab Kinarya Sentosa
-                </td>
-            </tr>
-            <tr>
-                <td class="font-bold text-center border border-black dark:border-white dark:bg-gray-900"
-                    style="font-size: 20px;">
-                    Formulir Permintaan Bahan
-                </td>
-                <td rowspan="2" class="p-0 align-top border border-black dark:border-white dark:bg-gray-900">
-                    <table class="w-full text-sm dark:bg-gray-900 dark:text-white" style="border-collapse: collapse;">
-                        <tr>
-                            <td class="px-3 py-2 border-b border-black dark:border-white">No. Dokumen</td>
-                            <td class="px-3 py-2 font-semibold border-b border-black dark:border-white"> :
-                                FO-QKS-WRH-03-01</td>
-                        </tr>
-                        <tr>
-                            <td class="px-3 py-2 border-b border-black dark:border-white">Tanggal Rilis</td>
-                            <td class="px-3 py-2 font-semibold border-b border-black dark:border-white"> : 16 Juli 2025
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="px-3 py-2">Revisi</td>
-                            <td class="px-3 py-2 font-semibold"> : 01</td>
-                        </tr>
-                    </table>
-                </td>
-            </tr>
+    @php
+        $groupedByStock = $permintaan_bahan->permintaanDetails->groupBy('status_stock');
+
+        $judul_form = 'FORMULIR PERMINTAAN BAHAN';
+        $no_dokumen = 'FO-QKS-WRH-03-01';
+        $tanggal_rilis = \Carbon\Carbon::parse($permintaan_bahan->tanggal)->translatedFormat('d F Y');
+        $revisi = '01';
+
+        $signatures = [
+            [
+                'label' => 'Dibuat Oleh,',
+                'name' => $permintaan_bahan->pic->dibuatName->name ?? '-',
+                'signature' => $permintaan_bahan->pic->dibuat_signature ?? null,
+            ],
+            [
+                'label' => 'Mengetahui,',
+                'name' => $permintaan_bahan->pic->mengetahuiName->name ?? '-',
+                'signature' => $permintaan_bahan->pic->mengetahui_signature ?? null,
+            ],
+            [
+                'label' => 'Diserahkan Ke,',
+                'name' => $permintaan_bahan->pic->diserahkanName->name ?? '-',
+                'signature' => $permintaan_bahan->pic->diserahkan_signature ?? null,
+            ],
+        ];
+    @endphp
+
+    <table style="width:100%; border-collapse:collapse; table-layout:fixed;">
+        <tr>
+            <td rowspan="4" style="width:15%; text-align:center; vertical-align:middle; border:0.5px solid #000;">
+                @if ($logoBase64)
+                    <img src="{{ $logoBase64 }}" style="height:55px;">
+                @endif
+            </td>
+
+            <td colspan="4" style="text-align:center; font-weight:bold; font-size:11px; border:0.5px solid #000;">
+                PT. QLab Kinarya Sentosa
+            </td>
+        </tr>
+
+        <tr>
+            <td rowspan="3" colspan="2"
+                style="text-align:center; font-size:16px; font-weight:bold;
+                   border:0.5px solid #000; vertical-align:middle;">
+                {{ $judul_form }}
+            </td>
+
+            <td style="border:0.5px solid #000; padding-left:8px;">
+                No. Dokumen
+            </td>
+            <td style="border:0.5px solid #000; text-align:center;">
+                {{ $no_dokumen }}
+            </td>
+        </tr>
+
+        <tr>
+            <td style="border:0.5px solid #000; padding-left:8px;">
+                Tanggal Rilis
+            </td>
+            <td style="border:0.5px solid #000; text-align:center;">
+                {{ $tanggal_rilis }}
+            </td>
+        </tr>
+
+        <tr>
+            <td style="border:0.5px solid #000; padding-left:8px;">
+                Revisi
+            </td>
+            <td style="border:0.5px solid #000; text-align:center;">
+                {{ $revisi }}
+            </td>
+        </tr>
+    </table>
+
+    {{-- <table class="no-border" style="margin-top:12px;">
+        <tr>
+            <td width="25%">Nomor</td>
+            <td>: {{ $permintaan_bahan->no_surat }}</td>
+        </tr>
+        <tr>
+            <td>Tanggal</td>
+            <td>: {{ \Carbon\Carbon::parse($permintaan_bahan->tanggal)->translatedFormat('d F Y') }}</td>
+        </tr>
+        <tr>
+            <td>Dari</td>
+            <td>: {{ $permintaan_bahan->dari }}</td>
+        </tr>
+        <tr>
+            <td>Kepada</td>
+            <td>: {{ $permintaan_bahan->kepada }}</td>
+        </tr>
+    </table> --}}
+
+    <table class="no-border" width="100%">
+        <tr>
+            <td width="15%">Nomor</td>
+            <td width="35%">: {{ $permintaan_bahan->no_surat }}</td>
+            <td width="15%">Tanggal</td>
+            <td width="35%">: {{ \Carbon\Carbon::parse($permintaan_bahan->tanggal)->translatedFormat('d F Y') }}</td>
+        </tr>
+        <tr>
+            <td>Dari</td>
+            <td>: {{ $permintaan_bahan->dari }}</td>
+            <td>Kepada</td>
+            <td>: {{ $permintaan_bahan->kepada }}</td>
+        </tr>
+    </table>
+
+    <p style="margin-top:12px;">
+        Berdasarkan Permintaan Barang No
+        <b>{{ $permintaan_bahan->no_surat ?? 'Untuk Stock' }}</b>
+        dari Departemen
+        <b>{{ Str::headline($permintaan_bahan->pic->dibuatName->roles->first()?->name ?? '-') }}</b>,
+        mohon bantuan untuk memenuhi kebutuhan bahan/sparepart dengan rincian sebagai berikut:
+    </p>
+
+    <br>
+
+    @foreach ($groupedByStock as $status => $items)
+        <div class="section-title">
+            Status Stock : {{ strtoupper($status) }}
+        </div>
+
+        <table class="table-bordered">
+            <thead>
+                <tr>
+                    <th class="col-no">No</th>
+                    <th>Nama Bahan</th>
+                    <th>Spesifikasi</th>
+                    <th class="col-qty">Jumlah</th>
+                    <th>Keperluan Barang</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($items as $i => $produk)
+                    <tr>
+                        <td class="text-center">{{ $i + 1 }}</td>
+                        <td>{{ $produk->bahan_baku }}</td>
+                        <td>{{ $produk->spesifikasi }}</td>
+                        <td class="text-center">{{ $produk->jumlah }}</td>
+                        <td>{{ $produk->keperluan_barang }}</td>
+                    </tr>
+                @endforeach
+            </tbody>
         </table>
+    @endforeach
 
-        @php
-            $infoUmum = [
-                ['label' => 'Nomor :', 'value' => $permintaan_bahan->no_surat],
-                [
-                    'label' => 'Tanggal :',
-                    'value' => \Carbon\Carbon::parse($permintaan_bahan->tanggal)->translatedFormat('d F Y'),
-                ],
-                ['label' => 'Dari : ', 'value' => $permintaan_bahan->dari],
-                ['label' => 'Kepada :', 'value' => $permintaan_bahan->kepada],
-            ];
-        @endphp
+    <table class="no-border" style="margin-top:40px;">
+        <tr>
+            @foreach ($signatures as $sign)
+                <td class="text-center" width="{{ 100 / count($signatures) }}%">
+                    {{ $sign['label'] }}<br><br>
 
-        <div class="grid max-w-4xl grid-cols-1 pt-6 mx-auto mb-6 text-sm md:grid-cols-2 gap-x-6 gap-y-4">
-            @foreach ($infoUmum as $field)
-                <div class="flex flex-col items-start gap-2 md:flex-row md:gap-4 md:items-center">
-                    <label class="font-medium md:w-48">{{ $field['label'] }}</label>
-                    <input type="text"
-                        class="w-full px-2 py-1 text-black bg-white border border-gray-300 rounded dark:border-gray-600 dark:bg-gray-800 dark:text-white"
-                        value="{{ $field['value'] }}" />
-                </div>
+                    <div class="signature-box">
+                        @if (!empty($sign['signature']))
+                            <img src="{{ public_path('storage/' . $sign['signature']) }}">
+                        @endif
+                    </div>
+
+                    <br>
+                    <b>{{ $sign['name'] }}</b>
+                </td>
             @endforeach
-        </div>
-
-        <!-- PARAGRAF PERMINTAAN -->
-        <div class="max-w-4xl mx-auto mb-6 text-sm">
-            <p class="mb-2">Dengan hormat,</p>
-            <p class="flex flex-wrap items-center gap-1">
-                <span>Berdasarkan Permintaan Barang No</span>
-                <input disabled class="w-64 px-2 py-1 text-sm align-middle bg-transparent border-none h-7"
-                    value="{{ $permintaan_bahan->permintaanBahanPro->no_surat ?? 'Untuk Stock' }}" />
-                <span>Dari Departemen</span>
-                <input disabled class="w-32 px-2 py-1 text-sm align-middle bg-transparent border-none h-7"
-                    value="{{ Str::headline($permintaan_bahan->pic->dibuatName->roles->first()?->name ?? '-') }}" />
-                <span>mohon bantuan untuk memenuhi kebutuhan bahan/sparepart dengan rincian sebagai berikut:</span>
-            </p>
-        </div>
-
-        <!-- TABEL PRODUK -->
-        <div class="max-w-4xl mx-auto overflow-x-auto">
-            <table class="w-full text-sm text-left border border-gray-300 dark:border-gray-600">
-                <thead class="text-black bg-gray-100 dark:bg-gray-800 dark:text-white">
-                    <tr>
-                        <th class="px-4 py-2 border">No</th>
-                        <th class="px-4 py-2 border">Nama Bahan</th>
-                        <th class="px-4 py-2 border">Spesifikasi</th>
-                        <th class="px-4 py-2 border">Jumlah</th>
-                        <th class="px-4 py-2 border">Keperluan Barang</th>
-                    </tr>
-                </thead>
-                <tbody class="bg-white dark:bg-gray-900">
-                    @foreach ($permintaan_bahan->details as $index => $produk)
-                        <tr>
-                            <td class="px-4 py-2 border">{{ $index + 1 }}</td>
-                            <td class="px-4 py-2 border">{{ $produk['bahan_baku'] }}</td>
-                            <td class="px-4 py-2 border">{{ $produk['spesifikasi'] }}</td>
-                            <td class="px-4 py-2 border">{{ $produk['jumlah'] }}</td>
-                            <td class="px-4 py-2 border">{{ $produk['keperluan_barang'] }}</td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
-
-        @php
-            $roles = [
-                'Dibuat Oleh,' => [
-                    'name' => $permintaan_bahan->pic->dibuatName->name ?? '-',
-                    'signature' => $permintaan_bahan->pic->dibuat_signature ?? null,
-                    'date' => $permintaan_bahan->pic->dibuat_date ?? null,
-                ],
-                'Mengetahui' => [
-                    'name' => $permintaan_bahan->pic->mengetahuiName->name ?? '-',
-                    'signature' => $permintaan_bahan->pic->mengetahui_signature ?? null,
-                    'date' => $permintaan_bahan->pic->mengetahui_date ?? null,
-                ],
-                'Diserahkan Ke,' => [
-                    'name' => $permintaan_bahan->pic->diserahkanName->name ?? '-',
-                    'signature' => $permintaan_bahan->pic->diserahkan_signature ?? null,
-                    'date' => $permintaan_bahan->pic->diserahkan_date ?? null,
-                ],
-            ];
-        @endphp
-
-        <div class="max-w-4xl pt-10 mx-auto text-sm ttd">
-            <table class="w-full text-sm border-collapse">
-                <thead>
-                    <tr class="font-semibold text-center bg-gray-100">
-                        @foreach ($roles as $role => $data)
-                            <th class="border border-gray-300 border-[1px] py-2">{{ $role }}</th>
-                        @endforeach
-                    </tr>
-                </thead>
-                <tbody>
-
-                    <tr>
-                        @foreach ($roles as $data)
-                            <td class="border border-gray-300 border-[1px] px-2 py-4">
-                                <div class="flex items-center justify-center h-24">
-                                    @if ($data['signature'])
-                                        <img src="{{ asset('storage/' . $data['signature']) }}"
-                                            class="object-contain h-full" />
-                                    @else
-                                        <span class="text-sm text-gray-400">No Signature</span>
-                                    @endif
-                                </div>
-                            </td>
-                        @endforeach
-                    </tr>
-
-                    <tr>
-                        @foreach ($roles as $data)
-                            <td class="border border-gray-300 border-[1px] px-2 py-2 text-center font-medium">
-                                {{ $data['name'] }}
-                            </td>
-                        @endforeach
-                    </tr>
-
-                    <tr>
-                        @foreach ($roles as $data)
-                            <td class="border border-gray-300 border-[1px] px-2 py-2 text-center">
-                                {{ $data['date'] ? \Carbon\Carbon::parse($data['date'])->format('d M Y') : '-' }}
-                            </td>
-                        @endforeach
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-    <div class="mt-6 mb-3 text-center">
-        <button onclick="exportPDF()"
-            class="inline-flex items-center gap-2 py-3 text-sm font-semibold text-black text-white bg-blue-600 border rounded border-animated px-7 border-black-400 hover:bg-purple-600 hover:text-white">
-            <!-- Icon download SVG -->
-            <svg class="w-5 h-5 transition-colors duration-300" fill="none" stroke="currentColor" stroke-width="2"
-                viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path stroke-linecap="round" stroke-linejoin="round"
-                    d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4">
-                </path>
-            </svg>
-            Download PDF
-        </button>
-    </div>
+        </tr>
+    </table>
 @endsection
 
-<script>
-    function exportPDF() {
-        window.scrollTo(0, 0);
-
-        const element = document.getElementById("export-area");
-        const images = element.getElementsByTagName("img");
-        const totalImages = images.length;
-        let loadedImages = 0;
-
-        for (let img of images) {
-            if (img.complete) {
-                loadedImages++;
-            } else {
-                img.onload = () => {
-                    loadedImages++;
-                    if (loadedImages === totalImages) renderPDF();
-                };
-            }
-        }
-
-        if (loadedImages === totalImages) {
-            renderPDF();
-        }
-
-        function renderPDF() {
-            html2pdf().set({
-                margin: [0.2, 0.2, 0.2, 0.2],
-                filename: "permintaan-bahan-warehouse.pdf",
-                image: {
-                    type: "jpeg",
-                    quality: 1
-                },
-                html2canvas: {
-                    scale: 3,
-                    useCORS: true,
-                    letterRendering: true
-                },
-                jsPDF: {
-                    unit: "in",
-                    format: "a4",
-                    orientation: "portrait"
-                },
-                pagebreak: {
-                    mode: ["avoid", "css"]
-                }
-            }).from(element).save();
-        }
+<style>
+    /* ================= PAGE ================= */
+    @page {
+        margin: 25px 30px;
     }
-</script>
+
+    /* ================= BODY ================= */
+    body {
+        font-family: "Times-Roman", serif;
+        font-size: 11px;
+        color: #000;
+        line-height: 1.4;
+    }
+
+    /* ================= TABLE GLOBAL ================= */
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 10px;
+    }
+
+    th,
+    td {
+        border: 1px solid #000;
+        padding: 5px 6px;
+        vertical-align: middle;
+    }
+
+    th {
+        text-align: center;
+        font-weight: bold;
+    }
+
+    /* ================= HEADER SOFT GRAY ================= */
+    thead th {
+        background-color: #f2f2f2;
+    }
+
+    /* ================= NO BORDER ================= */
+    .no-border td {
+        border: none !important;
+        padding: 3px;
+    }
+
+    /* ================= ALIGN ================= */
+    .text-center {
+        text-align: center;
+    }
+
+    .text-right {
+        text-align: right;
+    }
+
+    /* ================= INFO FORM ================= */
+    .info-table td {
+        border: none;
+        padding: 2px 4px;
+    }
+
+    /* ================= SECTION ================= */
+    .section {
+        margin-bottom: 14px;
+    }
+
+    /* ================= TABLE COLUMN ================= */
+    .col-no {
+        width: 35px;
+    }
+
+    .col-qty {
+        width: 70px;
+    }
+
+    .col-stock {
+        width: 80px;
+    }
+
+    /* ================= SIGNATURE ================= */
+    .signature-table {
+        margin-top: 30px;
+    }
+
+    .signature-table td {
+        border: none;
+        text-align: center;
+        vertical-align: top;
+        padding-top: 10px;
+    }
+
+    /* box tanda tangan */
+    .signature-box {
+        width: 160px;
+        height: 70px;
+        margin: 10px auto;
+        text-align: center;
+    }
+
+    .signature-box img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+    }
+
+    /* ================= SMALL TEXT ================= */
+    .text-small {
+        font-size: 10px;
+    }
+</style>

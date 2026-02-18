@@ -2,7 +2,9 @@
 
 namespace App\Models\Production\SPK;
 
+use App\Models\Production\Jadwal\JadwalProduksi;
 use App\Models\Production\PermintaanBahanProduksi\PermintaanAlatDanBahan;
+use App\Models\Production\SPK\Pivot\SPKVendorDetail;
 use App\Models\Sales\SPKMarketings\SPKMarketing;
 use App\Models\Warehouse\Peminjaman\PeminjamanAlat;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -16,7 +18,7 @@ class SPKVendor extends Model
     protected $table = 'spk_vendors';
 
     protected $fillable = [
-        'permintaan_bahan_pro_id',
+        'perencanaan_id',
         'no_spk_vendor',
         'nama_perusahaan',
         'file_path',
@@ -27,14 +29,19 @@ class SPKVendor extends Model
         'lampiran' => 'array'
     ];
 
+    public function details()
+    {
+        return $this->hasMany(SPKVendorDetail::class, 'spk_vendor_id');
+    }
+
     public function peminjamanAlat()
     {
         return $this->hasOne(PeminjamanAlat::class, 'spk_vendor_id');
     }
 
-    public function permintaanBahanProduksi()
+    public function perencanaanProduksi()
     {
-        return $this->belongsTo(PermintaanAlatDanBahan::class, 'permintaan_bahan_pro_id');
+        return $this->belongsTo(JadwalProduksi::class, 'perencanaan_id');
     }
 
     protected static function booted(): void

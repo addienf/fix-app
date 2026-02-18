@@ -21,7 +21,11 @@ trait ChamberIdentification
             Section::make('Product Identification')
             ->collapsible()
             ->schema([
-                Grid::make(2)
+                Grid::make([
+                    'default' => 1,
+                    'md' => 2,
+                    'lg' => 2,
+                ])
                     ->schema([
                         self::pilihModel()
                             ->hiddenOn('edit'),
@@ -46,9 +50,13 @@ trait ChamberIdentification
                         'style' => 'pointer-events: none;'
                     ]),
 
-                // Hidden::make('spk_marketing_id'),
-
-            ])->columns($isEdit ? 4 : 2);
+            ])
+            // ->columns($isEdit ? 4 : 2);
+            ->columns([
+                'default' => 1,
+                'md' => $isEdit ? 4 : 2,
+                'lg' => $isEdit ? 4 : 2,
+            ]);
     }
 
     protected static function pilihModel(): Select
@@ -84,21 +92,19 @@ trait ChamberIdentification
                 return match ($tipe) {
                     'electrical' =>
                     PengecekanMaterialElectrical::with([
-                        'penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi'
+                        'penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.perencanaanProduksi'
                     ])
                         ->whereDoesntHave('defectStatus')
                         ->get()
                         ->mapWithKeys(function ($item) {
                             $spkNo =
                                 $item?->penyerahanElectrical?->pengecekanSS?->kelengkapanMaterial
-                                ?->standarisasiDrawing?->serahTerimaWarehouse?->peminjamanAlat
-                                ?->spkVendor?->permintaanBahanProduksi?->jadwalProduksi?->spk?->no_spk
-                                ?? '-';
+                                ?->standarisasiDrawing?->serahTerimaWarehouse?->perencanaanProduksi
+                                ?->spk?->no_spk ?? '-';
 
                             $seri =
                                 $item?->penyerahanElectrical?->pengecekanSS?->kelengkapanMaterial
-                                ?->standarisasiDrawing?->serahTerimaWarehouse?->peminjamanAlat
-                                ?->spkVendor?->permintaanBahanProduksi?->jadwalProduksi
+                                ?->standarisasiDrawing?->serahTerimaWarehouse?->perencanaanProduksi
                                 ?->identifikasiProduks?->pluck('no_seri')->implode(', ')
                                 ?: '-';
 
@@ -109,7 +115,7 @@ trait ChamberIdentification
 
                     'stainless_steel' =>
                     PengecekanMaterialSS::with([
-                        'kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.peminjamanAlat.spkVendor.permintaanBahanProduksi.jadwalProduksi'
+                        'kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.perencanaanProduksi'
                     ])
                         ->whereDoesntHave('defectStatus')
                         ->get()
@@ -117,14 +123,12 @@ trait ChamberIdentification
 
                             $spkNo =
                                 $item?->kelengkapanMaterial?->standarisasiDrawing?->serahTerimaWarehouse
-                                ?->peminjamanAlat?->spkVendor?->permintaanBahanProduksi
-                                ?->jadwalProduksi?->spk?->no_spk
+                                ?->perencanaanProduksi?->spk?->no_spk
                                 ?? '-';
 
                             $seri =
                                 $item?->kelengkapanMaterial?->standarisasiDrawing?->serahTerimaWarehouse
-                                ?->peminjamanAlat?->spkVendor?->permintaanBahanProduksi
-                                ?->jadwalProduksi?->identifikasiProduks?->pluck('no_seri')->implode(', ')
+                                ?->perencanaanProduksi?->identifikasiProduks?->pluck('no_seri')->implode(', ')
                                 ?: '-';
 
                             return [
@@ -152,15 +156,13 @@ trait ChamberIdentification
 
                 $seri =
                     $root?->kelengkapanMaterial?->standarisasiDrawing?->serahTerimaWarehouse
-                    ?->peminjamanAlat?->spkVendor?->permintaanBahanProduksi
-                    ?->jadwalProduksi?->identifikasiProduks?->pluck('no_seri')
+                    ?->perencanaanProduksi?->identifikasiProduks?->pluck('no_seri')
                     ->implode(', ')
                     ?: '-';
 
                 $tipeProduk =
                     $root?->kelengkapanMaterial?->standarisasiDrawing?->serahTerimaWarehouse
-                    ?->peminjamanAlat?->spkVendor?->permintaanBahanProduksi
-                    ?->jadwalProduksi?->identifikasiProduks?->first()?->tipe
+                    ?->perencanaanProduksi?->identifikasiProduks?->first()?->tipe
                     ?? '-';
 
                 $set('serial_number', $seri);

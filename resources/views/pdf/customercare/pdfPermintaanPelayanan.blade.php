@@ -7,7 +7,10 @@
         <table class="w-full max-w-4xl mx-auto text-sm border border-black" style="border-collapse: collapse;">
             <tr>
                 <td rowspan="3" class="p-2 text-center align-middle border border-black w-28 h-28">
-                    <img src="{{ asset('asset/logo.png') }}" alt="Logo" class="object-contain mx-auto h-30" />
+                    {{-- <img src="{{ asset('asset/logo.png') }}" alt="Logo" class="object-contain mx-auto h-30" /> --}}
+                    @if ($logoBase64)
+                        <img src="{{ $logoBase64 }}" style="height:55px;">
+                    @endif
                 </td>
                 <td colspan="2" class="font-bold text-center border border-black">
                     PT. QLab Kinarya Sentosa
@@ -84,7 +87,7 @@
                     @endforeach
                     <label class="flex items-center gap-4">
                         <input type="checkbox" class="w-4 h-4"> Lainnya :
-                        <span class="flex-1 border-b border-dotted border-gray-500"></span>
+                        <span class="flex-1 border-b border-gray-500 border-dotted"></span>
                     </label>
                 </div>
                 <div class="space-y-3">
@@ -100,23 +103,23 @@
         <!-- B. Identitas Alat -->
         <div class="w-full max-w-4xl pt-4 mx-auto text-sm">
             <h2 class="mb-4 text-xl font-bold">B. Identitas Alat</h2>
-            <table class="w-full text-sm border border-gray-300 border-collapse">
-                <thead class="bg-gray-100 text-gray-700">
+            <table class="w-full text-sm border border-collapse border-gray-300">
+                <thead class="text-gray-700 bg-gray-100">
                     <tr>
                         @foreach (['No', 'Nama Alat', 'Tipe', 'Nomor Serial', 'Deskripsi Pembuatan', 'QTY'] as $head)
-                            <th class="border border-gray-300 px-2 py-1 text-left">{{ $head }}</th>
+                            <th class="px-2 py-1 text-left border border-gray-300">{{ $head }}</th>
                         @endforeach
                     </tr>
                 </thead>
                 <tbody>
                     @foreach (range(1, 3) as $i)
                         <tr class="odd:bg-white even:bg-gray-50">
-                            <td class="border border-gray-300 px-2 py-1 text-center">{{ $i }}</td>
-                            <td class="border border-gray-300 px-2 py-1">Nama Alat {{ $i }}</td>
-                            <td class="border border-gray-300 px-2 py-1">Tipe {{ $i }}</td>
-                            <td class="border border-gray-300 px-2 py-1">SN00{{ $i }}</td>
-                            <td class="border border-gray-300 px-2 py-1">Deskripsi {{ $i }}</td>
-                            <td class="border border-gray-300 px-2 py-1">1</td>
+                            <td class="px-2 py-1 text-center border border-gray-300">{{ $i }}</td>
+                            <td class="px-2 py-1 border border-gray-300">Nama Alat {{ $i }}</td>
+                            <td class="px-2 py-1 border border-gray-300">Tipe {{ $i }}</td>
+                            <td class="px-2 py-1 border border-gray-300">SN00{{ $i }}</td>
+                            <td class="px-2 py-1 border border-gray-300">Deskripsi {{ $i }}</td>
+                            <td class="px-2 py-1 border border-gray-300">1</td>
                         </tr>
                     @endforeach
                 </tbody>
@@ -151,9 +154,9 @@
         <!-- TTD -->
         @php
             $roles = [
-                'Diketahui Oleh' => ['name' => 'Head of Business', 'signature' => null, 'date' => null],
-                'Diterima Oleh' => ['name' => 'Customer Care', 'signature' => null, 'date' => null],
                 'Dibuat Oleh' => ['name' => '-', 'signature' => null, 'date' => null],
+                'Diterima Oleh' => ['name' => 'Customer Care', 'signature' => null, 'date' => null],
+                'Diketahui Oleh' => ['name' => 'Head of Business', 'signature' => null, 'date' => null],
             ];
         @endphp
 
@@ -224,7 +227,7 @@
                 loadedImages++;
             } else {
                 img.onload = () => {
-                    loadedImages++;                                                                     
+                    loadedImages++;
                     if (loadedImages === totalImages) renderPDF();
                 };
             }
@@ -238,10 +241,23 @@
             html2pdf().set({
                 margin: [0.2, 0.2, 0.2, 0.2],
                 filename: "permintaan=pelayanan-pelanggan.pdf",
-                image: { type: "jpeg", quality: 1 },
-                html2canvas: { scale: 3, useCORS: true, letterRendering: true },
-                jsPDF: { unit: "in", format: "a4", orientation: "portrait" },
-                pagebreak: { mode: ["avoid", "css"] }
+                image: {
+                    type: "jpeg",
+                    quality: 1
+                },
+                html2canvas: {
+                    scale: 3,
+                    useCORS: true,
+                    letterRendering: true
+                },
+                jsPDF: {
+                    unit: "in",
+                    format: "a4",
+                    orientation: "portrait"
+                },
+                pagebreak: {
+                    mode: ["avoid", "css"]
+                }
             }).from(element).save();
         }
     }

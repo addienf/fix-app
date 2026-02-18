@@ -4,7 +4,7 @@ return [
         'mainPart' => 'Cabinet Qualification',
         'parts' => [
             'Body Chamber',
-            // 'Glass Door',
+            'Glass Door',
             // 'Stainless Steel Door',
             // 'Spec Plate',
         ]

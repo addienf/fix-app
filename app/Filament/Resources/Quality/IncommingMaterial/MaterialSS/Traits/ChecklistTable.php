@@ -61,7 +61,11 @@ trait ChecklistTable
 
 
                     ])
-                    ->columns(3)
+                    ->columns([
+                        'default' => 1,
+                        'md' => 3,
+                        'lg' => 3,
+                    ])
                     ->deletable(false)
                     ->reorderable(false)
                     ->addable(false),
@@ -88,7 +92,11 @@ trait ChecklistTable
                     ])
                     ->default([])
                     ->addActionLabel('Tambah Checklist')
-                    ->columns(3)
+                    ->columns([
+                        'default' => 1,
+                        'md' => 3,
+                        'lg' => 3,
+                    ])
 
             ]);
     }

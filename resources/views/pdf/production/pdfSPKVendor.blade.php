@@ -72,9 +72,9 @@
                 <li>
                     <strong>Jumlah & Jenis Material</strong><br>
                     Jenis Material:
-                    {{ $vendor->permintaanBahanProduksi->details->pluck('bahan_baku')->unique()->implode(' / ') }}<br>
+                    {{ $vendor->details->pluck('nama_bahan')->unique()->implode(' / ') }}<br>
                     Ketebalan:
-                    {{ $vendor->permintaanBahanProduksi->details->pluck('spesifikasi')->unique()->implode(' / ') }}<br>
+                    {{ $vendor->details->pluck('spesifikasi')->unique()->implode(' / ') }}<br>
                     Jumlah: Sesuai dokumen terlampir
                 </li>
                 <li>

@@ -2,7 +2,7 @@
 return [
     'parts' => [
         'Body Luar Atas',
-        // 'Body Luar Bawah',
+        'Body Luar Bawah',
         // 'Body Luar Kanan',
         // 'Body Luar Kiri',
         // 'Body Luar Belakang',
