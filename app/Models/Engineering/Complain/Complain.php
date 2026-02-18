@@ -20,7 +20,6 @@ class Complain extends Model
         'dari',
         'kepada',
         'name_complain',
-        // 'company_name',
         'company_id',
         'department',
         'phone_number',
@@ -46,5 +45,14 @@ class Complain extends Model
     public function pic()
     {
         return $this->hasOne(ComplainPIC::class, 'complain_id');
+    }
+
+    protected static function booted()
+    {
+        static::deleting(function ($spesifikasi) {
+            if ($spesifikasi->pic) {
+                $spesifikasi->pic->delete();
+            }
+        });
     }
 }

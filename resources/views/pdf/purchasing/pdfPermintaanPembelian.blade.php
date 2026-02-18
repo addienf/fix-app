@@ -51,7 +51,7 @@
         Berdasarkan Permintaan Barang No
         <b>
             {{ $permintaan_pembelian->permintaanBahanWBB?->no_surat ??
-                'Untuk Stock - ' . $permintaan_pembelian->created_at->timezone('Asia/Jakarta')->format('YmdHis') }}
+                'Untuk Stock - ' . $permintaan_pembelian->created_at->timezone('Asia/Jakarta')->format('d/m/Y') }}
         </b>,
         mohon bantuan untuk memenuhi kebutuhan bahan / sparepart dengan rincian sebagai berikut:
     </p>
