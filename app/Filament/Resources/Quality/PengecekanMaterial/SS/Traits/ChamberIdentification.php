@@ -64,6 +64,7 @@ trait ChamberIdentification
                     'standarisasiDrawing.serahTerimaWarehouse.perencanaanProduksi.identifikasiProduks',
                 ])
                     ->whereDoesntHave('pengecekanSS')
+                    ->where('status_penyelesaian', 'Disetujui')
                     ->latest()
                     ->limit(10)
                     ->get()

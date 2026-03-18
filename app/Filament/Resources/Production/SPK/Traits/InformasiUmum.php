@@ -41,17 +41,9 @@ trait InformasiUmum
                             ->placeholder('Pilih Nomor SPK')
                             ->hiddenOn('edit'),
 
-                        self::textInput('dari', 'Dari')
-                            ->extraAttributes([
-                                'readonly' => true,
-                                'style' => 'pointer-events: none;'
-                            ]),
+                        self::textInput('dari', 'Dari'),
 
-                        self::textInput('kepada', 'Kepada')
-                            ->extraAttributes([
-                                'readonly' => true,
-                                'style' => 'pointer-events: none;'
-                            ]),
+                        self::textInput('kepada', 'Kepada'),
                     ]),
             ]);
     }
@@ -71,6 +63,7 @@ trait InformasiUmum
                     'pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.perencanaanProduksi.identifikasiProduks',
                 ])
                     ->whereDoesntHave('spkQC')
+                    ->where('status_penyelesaian', 'Disetujui')
                     ->latest()
                     ->limit(10)
                     ->get()
@@ -224,8 +217,8 @@ trait InformasiUmum
 
                 // 5️⃣ Set ke Filament
                 $set('details', $details);
-                $set('dari', $dari);
-                $set('kepada', $kepada);
+                // $set('dari', $dari);
+                // $set('kepada', $kepada);
             });
     }
 }

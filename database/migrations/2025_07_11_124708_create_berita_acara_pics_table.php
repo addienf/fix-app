@@ -16,6 +16,10 @@ return new class extends Migration
             $table->foreignId('berita_id')->constrained('berita_acaras')->cascadeOnDelete();
             $table->string('jasa_name');
             $table->string('jasa_ttd');
+            $table->string('pelanggan_name');
+            $table->string('pelanggan_ttd');
+            $table->string('sign_token');
+            $table->timestamp('sign_at');
             $table->timestamps();
         });
     }

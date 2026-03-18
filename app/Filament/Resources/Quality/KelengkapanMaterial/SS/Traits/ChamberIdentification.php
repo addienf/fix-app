@@ -68,6 +68,7 @@ trait ChamberIdentification
                     // ->where('sumber', 'serah')
                     ->whereNotNull('serah_terima_bahan_id')
                     ->whereDoesntHave('kelengkapanMaterial')
+                    ->where('status_pemeriksaan', 'Diperiksa')
                     ->latest()
                     ->limit(10)
                     ->get()

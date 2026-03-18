@@ -105,3 +105,11 @@ Route::get('admin/storage-link', function () {
     Artisan::call('storage:link');
     return ('Storage:link berhasil');
 });
+
+// Berita Acara
+Route::get('/qlb/{token}', [EngineeringController::class, 'show'])->name('signature.page');
+Route::post('/qlb/{token}', [EngineeringController::class, 'store']);
+
+// Route::get('admin/engineering/test', function () {
+//     return view('pdf.engineering.pdfTes');
+// });

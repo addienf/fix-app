@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Engineering\Berita\BeritaAcara;
+use App\Models\Engineering\Berita\Pivot\BeritaAcaraPIC;
 use App\Models\Engineering\Maintenance\ChamberG2\ChamberG2;
 use App\Models\Engineering\Maintenance\ChamberR2\ChamberR2;
 use App\Models\Engineering\Maintenance\ChamberWalkinG2\ChamberWalkinG2;
@@ -12,9 +13,12 @@ use App\Models\Engineering\Maintenance\RissingPipette\RissingPipette;
 use App\Models\Engineering\Maintenance\WalkinChamber\WalkinChamber;
 use App\Models\Engineering\Permintaan\PermintaanSparepart;
 use App\Models\Engineering\Service\ServiceReport;
+use App\Services\SignatureUploader;
 use App\Traits\SimpleFormResource;
 use Barryvdh\DomPDF\Facade\Pdf;
 use ZipArchive;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 
 class EngineeringController extends Controller
 {
@@ -151,8 +155,6 @@ class EngineeringController extends Controller
         $noSurat = str_replace(['/', '\\'], '-', $sparepart->no_surat);
         $fileName = $noSurat . ' - ' . $tanggal . '.pdf';
 
-        // $pdf = Pdf::loadView('pdf.engineering.pdfSparepartAlatKerja', compact('sparepart'))->setPaper('a4', 'portrait');
-
         $pdf = Pdf::loadView(
             'pdf.engineering.pdfSparepartAlatKerja',
             [
@@ -162,5 +164,84 @@ class EngineeringController extends Controller
         )->setPaper('a4', 'portrait');
 
         return $pdf->stream($fileName);
+    }
+
+    public function show($token)
+    {
+        $pic = BeritaAcaraPIC::where('sign_token', $token)->firstOrFail();
+        $logoBase64 = $this->getBase64Logo();
+
+        if (!$pic) {
+            return response()->view('pdf.engineering.pdfExpiredLink', compact('logoBase64'), 403);
+        }
+
+        if ($pic->pelanggan_ttd) {
+            return response()->view('pdf.engineering.pdfExpiredLink', compact('logoBase64'), 403);
+        }
+
+        if ($pic->sign_token_expires_at && now()->gt($pic->sign_token_expires_at)) {
+            return response()->view('pdf.engineering.pdfExpiredLink', compact('logoBase64'), 403);
+        }
+
+        return view('pdf.engineering.pdfSignatureLink', compact('pic', 'logoBase64'));
+    }
+
+    public function store(Request $request, $token)
+    {
+        $request->validate([
+            'pelanggan_name' => 'required|string|max:255',
+            'pelanggan_ttd' => 'required',
+        ]);
+
+        $pic = BeritaAcaraPIC::where('sign_token', $token)->firstOrFail();
+        $logoBase64 = $this->getBase64Logo();
+
+        if ($pic->pelanggan_ttd) {
+            return response()->view('pdf.engineering.pdfExpiredLink', compact('logoBase64'), 403);
+        }
+
+        if ($pic->sign_token_expires_at && now()->gt($pic->sign_token_expires_at)) {
+            return response()->view('pdf.engineering.pdfExpiredLink', compact('logoBase64'), 403);
+        }
+
+        $path = SignatureUploader::handle(
+            $request->pelanggan_ttd,
+            'pelanggan_',
+            'Engineering/Berita/Pelanggan'
+        );
+
+        $ip = request()->header('X-Forwarded-For');
+
+        if ($ip) {
+            $ip = explode(',', $ip)[0];
+        } else {
+            $ip = request()->getClientIp();
+        }
+
+        if ($ip === '127.0.0.1') {
+            $ip = '127.0.0.1 (Local)';
+        }
+
+        $pic->update([
+            'pelanggan_name' => $request->pelanggan_name,
+            'pelanggan_ttd' => $path,
+            'signed_at' => now(),
+            'signed_ip' => $ip,
+
+            // 🔥 penting
+            'sign_token' => null,
+            'sign_token_expires_at' => null,
+        ]);
+
+        return view('pdf.engineering.pdfSignatureLinkSuccess', compact('logoBase64'));
+    }
+
+    protected function detectDevice($userAgent)
+    {
+        if (preg_match('/mobile|android|iphone/i', $userAgent)) {
+            return 'Mobile';
+        }
+
+        return 'Desktop';
     }
 }

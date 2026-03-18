@@ -134,6 +134,7 @@ trait ChamberIdentification
                     'pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.perencanaanProduksi.identifikasiProduks',
                 ])
                     ->whereDoesntHave('pengecekanElectrical')
+                    ->where('status_penyelesaian', 'Disetujui')
                     ->whereHas(
                         'pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.perencanaanProduksi.spk',
                         fn($q) => $q->where('no_spk', 'like', "%{$search}%")

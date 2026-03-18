@@ -9,14 +9,23 @@ use App\Filament\Resources\Engineering\Berita\Traits\InformasiUmum;
 use App\Models\Engineering\Berita\BeritaAcara;
 use App\Traits\HasSignature;
 use Filament\Actions\Action;
+use Filament\Forms\Components\Actions;
+use Filament\Forms\Components\Actions\Action as ButtonAction;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Section;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
+use Filament\Forms\Get;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Support\Str;
+use Wallo\FilamentSelectify\Components\ButtonGroup;
 
 class BeritaAcaraResource extends Resource
 {
@@ -43,6 +52,7 @@ class BeritaAcaraResource extends Resource
 
                 Section::make('PIC')
                     ->collapsible()
+                    ->hiddenOn('edit')
                     ->relationship('pic')
                     ->schema([
 
@@ -50,18 +60,82 @@ class BeritaAcaraResource extends Resource
                             ->default(fn() => auth()->id()),
 
                         self::textInput('jasa_name_placeholder', 'Nama Penyedia Jasa')
-                            ->default(fn() => auth()->user()?->name)
-                            ->extraAttributes([
-                                'readonly' => true,
-                                'style' => 'pointer-events: none;'
-                            ]),
-
-                        // TextInput::make('jasa_name')
-                        //     ->required()
-                        //     ->label('Nama Penyedia Jasa')
-                        //     ->default(fn() => auth()->user()?->name),
+                            ->default(fn() => auth()->user()?->name),
 
                         self::signatureInput('jasa_ttd', ''),
+                    ]),
+
+                Section::make('Pelanggan')
+                    ->collapsible()
+                    ->relationship('pic')
+                    ->hidden(function ($get, $operation) {
+                        return $operation === 'create'
+                            || filled($get('pic.pelanggan_ttd'));
+                    })
+                    ->mutateRelationshipDataBeforeSaveUsing(function (array $data) {
+
+                        if (!empty($data['pelanggan_ttd_draw'])) {
+                            $data['pelanggan_ttd'] = $data['pelanggan_ttd_draw'];
+                        }
+
+                        if (!empty($data['pelanggan_ttd_upload'])) {
+                            $data['pelanggan_ttd'] = $data['pelanggan_ttd_upload'];
+                        }
+
+                        unset($data['pelanggan_ttd_draw']);
+                        unset($data['pelanggan_ttd_upload']);
+
+                        return $data;
+                    })
+                    ->schema([
+
+                        Grid::make(2)
+                            ->schema([
+                                self::textInput('pelanggan_name', 'Nama Pelanggan')
+                                    ->required(),
+
+                                self::getIsStock(),
+                            ]),
+
+                        self::signatureInput('pelanggan_ttd_draw', '', 'Engineering/Berita/Penyedia')
+                            ->visible(fn($get) => $get('ttd_method') === 'draw'),
+
+                        FileUpload::make('pelanggan_ttd_upload')
+                            ->label('Upload Scan Tanda Tangan')
+                            ->image()
+                            ->directory('Engineering/Berita/Pelanggan')
+                            ->visible(fn($get) => $get('ttd_method') === 'upload'),
+                    ]),
+
+                Section::make('Link Tanda Tangan')
+                    ->hidden(function ($get, $operation) {
+                        return $operation === 'create'
+                            || filled($get('pic.pelanggan_ttd'));
+                    })
+                    ->schema([
+                        Grid::make(2)
+                            ->schema([
+                                Actions::make([
+                                    ButtonAction::make('generate_link')
+                                        ->label('Generate Link')
+                                        ->icon('heroicon-o-link')
+                                        ->action(function ($record) {
+                                            $record->pic->update([
+                                                'sign_token' => Str::random(8),
+                                                'sign_token_expires_at' => now()->addMinutes(60),
+                                            ]);
+                                        }),
+                                ]),
+
+                                Placeholder::make('sign_link')
+                                    ->label(false)
+                                    ->content(
+                                        fn($record) =>
+                                        $record->pic?->sign_token
+                                            ? url('/qlb/' . $record->pic->sign_token)
+                                            : 'Belum ada link dibuat'
+                                    ),
+                            ])
                     ])
             ]);
     }
@@ -120,5 +194,25 @@ class BeritaAcaraResource extends Resource
             'create' => Pages\CreateBeritaAcara::route('/create'),
             'edit' => Pages\EditBeritaAcara::route('/{record}/edit'),
         ];
+    }
+
+    private static function getIsStock()
+    {
+        return
+            ButtonGroup::make('ttd_method')
+            ->label('Metode Tanda Tangan')
+            ->options([
+                'draw' => 'Tanda tangan langsung',
+                'upload' => 'Upload scan tanda tangan',
+            ])
+            ->default('draw')
+            ->live()
+            ->dehydrated(false)
+            // ->hidden(fn($record) => filled($record?->pelanggan_ttd))
+            ->required()
+            // ->columnSpanFull()
+            ->onColor('primary')
+            ->offColor('gray')
+            ->gridDirection('row');
     }
 }

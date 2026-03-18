@@ -18,6 +18,12 @@ class BeritaAcaraPIC extends Model
         'berita_id',
         'jasa_name',
         'jasa_ttd',
+        'pelanggan_name',
+        'pelanggan_ttd',
+        'sign_token',
+        'sign_token_expires_at',
+        'signed_at',
+        'signed_ip',
     ];
 
     public function beritaAcara()

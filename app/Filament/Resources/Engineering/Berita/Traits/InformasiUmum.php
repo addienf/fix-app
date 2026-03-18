@@ -72,16 +72,16 @@ trait InformasiUmum
                 // })
                 return SPKService::whereDoesntHave('beritaAcara')
                     // ->where('jenis_spk', 'Service')
-                    ->where(function ($query) {
-                        $query->whereHas('walkinChamber')
-                            ->orWhereHas('chamberR2')
-                            ->orWhereHas('refrigerator')
-                            ->orWhereHas('coldRoom')
-                            ->orWhereHas('rissing')
-                            ->orWhereHas('walkinG2')
-                            ->orWhereHas('chamberG2')
-                            ->orWhereHas('service');
-                    })
+                    // ->where(function ($query) {
+                    //     $query->whereHas('walkinChamber')
+                    //         ->orWhereHas('chamberR2')
+                    //         ->orWhereHas('refrigerator')
+                    //         ->orWhereHas('coldRoom')
+                    //         ->orWhereHas('rissing')
+                    //         ->orWhereHas('walkinG2')
+                    //         ->orWhereHas('chamberG2')
+                    //         ->orWhereHas('service');
+                    // })
                     ->limit(10)
                     ->pluck('no_spk_service', 'id');
             })
@@ -90,16 +90,16 @@ trait InformasiUmum
                     $query->where('status', 'Selesai');
                 })
                     ->whereDoesntHave('beritaAcara')
-                    ->where(function ($query) {
-                        $query->whereHas('walkinChamber')
-                            ->orWhereHas('chamberR2')
-                            ->orWhereHas('refrigerator')
-                            ->orWhereHas('coldRoom')
-                            ->orWhereHas('rissing')
-                            ->orWhereHas('walkinG2')
-                            ->orWhereHas('chamberG2')
-                            ->orWhereHas('service');
-                    })
+                    // ->where(function ($query) {
+                    //     $query->whereHas('walkinChamber')
+                    //         ->orWhereHas('chamberR2')
+                    //         ->orWhereHas('refrigerator')
+                    //         ->orWhereHas('coldRoom')
+                    //         ->orWhereHas('rissing')
+                    //         ->orWhereHas('walkinG2')
+                    //         ->orWhereHas('chamberG2')
+                    //         ->orWhereHas('service');
+                    // })
                     ->where('no_spk_service', 'like', "%{$search}%")
                     ->limit(10)
                     ->pluck('no_spk_service', 'id');

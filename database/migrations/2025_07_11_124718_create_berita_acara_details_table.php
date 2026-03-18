@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('berita_id')->constrained('berita_acaras')->cascadeOnDelete();
             $table->string('jenis_pekerjaan');
+            $table->string('jenis_pekerjaan_lainnya');
             $table->string('produk');
             $table->string('serial_number');
             $table->text('desc_pekerjaan');

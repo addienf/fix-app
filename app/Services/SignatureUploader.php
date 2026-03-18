@@ -4,28 +4,66 @@ namespace App\Services;
 
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
 class SignatureUploader
 {
-    public static function handle(?string $base64, string $prefix, string $path): ?string
+    public static function handle($input, string $prefix, string $path): ?string
     {
-        if (!$base64 || !str_starts_with($base64, 'data:image')) {
+        // if (!$base64 || !str_starts_with($base64, 'data:image')) {
+        //     return null;
+        // }
+
+        // $base64 = preg_replace('/^data:image\/(png|jpeg|jpg);base64,/', '', $base64);
+        // $base64 = str_replace(' ', '+', $base64);
+        // $imageData = base64_decode($base64, true);
+
+        // if ($imageData === false) {
+        //     return null;
+        // }
+
+        // $fileName = $prefix . Str::random(10) . '.jpg';
+        // $fullPath = $path . '/' . $fileName;
+
+        // Storage::disk('public')->put($fullPath, $imageData);
+
+        // return $fullPath;
+        if (!$input) {
             return null;
         }
 
-        $base64 = preg_replace('/^data:image\/(png|jpeg|jpg);base64,/', '', $base64);
-        $base64 = str_replace(' ', '+', $base64);
-        $imageData = base64_decode($base64, true);
+        // 1️⃣ Jika dari signature pad (base64)
+        if (is_string($input) && str_starts_with($input, 'data:image')) {
 
-        if ($imageData === false) {
-            return null;
+            $base64 = preg_replace('/^data:image\/(png|jpeg|jpg);base64,/', '', $input);
+            $base64 = str_replace(' ', '+', $base64);
+            $imageData = base64_decode($base64, true);
+
+            if ($imageData === false) {
+                return null;
+            }
+
+            $fileName = $prefix . Str::random(10) . '.jpg';
+            $fullPath = $path . '/' . $fileName;
+
+            Storage::disk('public')->put($fullPath, $imageData);
+
+            return $fullPath;
         }
 
-        $fileName = $prefix . Str::random(10) . '.jpg';
-        $fullPath = $path . '/' . $fileName;
+        // 2️⃣ Jika dari upload file
+        if ($input instanceof TemporaryUploadedFile) {
 
-        Storage::disk('public')->put($fullPath, $imageData);
+            $fileName = $prefix . Str::random(10) . '.' . $input->getClientOriginalExtension();
 
-        return $fullPath;
+            return $input->storeAs($path, $fileName, 'public');
+        }
+
+        // 3️⃣ Jika sudah berupa path (kadang Filament kirim string)
+        if (is_string($input) && Storage::disk('public')->exists($input)) {
+            return $input;
+        }
+
+        return null;
     }
 }

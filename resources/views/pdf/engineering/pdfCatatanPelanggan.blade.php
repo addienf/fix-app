@@ -136,7 +136,7 @@
 
         <div>
             <span style="display:inline-block; width:140px; font-weight:bold;">Company Name</span>
-            : {{ optional($complaint->companies->first())->name }}
+            : {{ optional($complaint->companies)->name }}
         </div>
 
         <div>

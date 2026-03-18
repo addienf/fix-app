@@ -2,19 +2,11 @@
 
 namespace App\Filament\Resources\Engineering\Berita\Traits;
 
-use App\Models\Engineering\Berita\BeritaAcara;
-use App\Models\Engineering\Complain\Complain;
-use App\Models\Engineering\SPK\SPKService;
 use App\Traits\SimpleFormResource;
-use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Split;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
-use Illuminate\Support\Str;
-use Wallo\FilamentSelectify\Components\ButtonGroup;
 
 trait DetailPekerjaan
 {
@@ -28,12 +20,28 @@ trait DetailPekerjaan
 
                 Select::make('jenis_pekerjaan')
                     ->required()
+                    ->reactive()
                     ->label('Jenis Pekerjaan')
                     ->placeholder('Pilih Jenis Pekerjaan')
                     ->options([
                         'service' => 'Service',
-                        'maintenance' => 'Maintenance'
+                        'maintenance' => 'Maintenance',
+                        'lainnya' => 'Lainnya',
                     ]),
+
+                // Select::make('jenis_pekerjaan')
+                //     ->label('Jenis Pekerjaan')
+                //     // ->multiple()
+                //     ->reactive()
+                //     ->options([
+                //         'service' => 'Service',
+                //         'maintenance' => 'Maintenance',
+                //         'lainnya' => 'Lainnya',
+                //     ]),
+
+                self::textInput('jenis_pekerjaan_lainnya', 'Jenis Pekerjaan Lainnya')
+                    ->visible(fn($get) => in_array('lainnya', (array) $get('jenis_pekerjaan')))
+                    ->required(fn($get) => in_array('lainnya', (array) $get('jenis_pekerjaan'))),
 
                 TextInput::make('produk')
                     ->required()
@@ -43,8 +51,22 @@ trait DetailPekerjaan
                     ->required()
                     ->label('Serial Number'),
 
+                // Select::make('status_barang')
+                //     ->label('Status Barang')
+                //     ->columnSpanFull(fn($get) => in_array('lainnya', (array) $get('jenis_pekerjaan')))
+                //     ->options([
+                //         'yes' => 'Installed',
+                //         'wait' => 'Delivered',
+                //         'na' => 'N/A',
+                //     ])
+                //     ->required(),
+
                 Select::make('status_barang')
                     ->label('Status Barang')
+                    ->columnSpan(
+                        fn($get) =>
+                        in_array('lainnya', (array) $get('jenis_pekerjaan')) ? 'full' : 1
+                    )
                     ->options([
                         'yes' => 'Installed',
                         'wait' => 'Delivered',

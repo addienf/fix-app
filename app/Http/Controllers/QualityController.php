@@ -17,8 +17,6 @@ class QualityController extends Controller
 
         $no_spk = optional(
             $standarisasi->serahTerimaWarehouse
-                ?->peminjamanAlat
-                ?->spkVendor
                 ?->permintaanBahanProduksi
                 ?->jadwalProduksi
                 ?->spk
@@ -68,8 +66,6 @@ class QualityController extends Controller
         $no_spk = optional(
             $kelengkapan?->standarisasiDrawing
                 ?->serahTerimaWarehouse
-                ?->peminjamanAlat
-                ?->spkVendor
                 ?->perencanaanProduksi
                 ?->spk
         )->no_spk ?? '-';
@@ -85,8 +81,6 @@ class QualityController extends Controller
             $pengecekanSS?->kelengkapanMaterial
                 ?->standarisasiDrawing
                 ?->serahTerimaWarehouse
-                ?->peminjamanAlat
-                ?->spkVendor
                 ?->perencanaanProduksi
                 ?->spk
         )->no_spk ?? '-';

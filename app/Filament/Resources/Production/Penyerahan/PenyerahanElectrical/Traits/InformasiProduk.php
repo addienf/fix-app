@@ -86,6 +86,7 @@ trait InformasiProduk
                     'kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.perencanaanProduksi.identifikasiProduks',
                 ])
                     ->whereDoesntHave('penyerahan')
+                    ->where('status_penyelesaian', 'Disetujui')
                     ->latest()
                     ->limit(10)
                     ->get()

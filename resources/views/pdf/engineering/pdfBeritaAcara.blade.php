@@ -7,7 +7,6 @@
     <table style="width:100%; border-collapse:collapse; table-layout:fixed;">
         <tr>
             <td rowspan="4" style="width:15%; text-align:center; vertical-align:middle; border:0.5px solid #000;">
-                {{-- <img src="{{ public_path('asset/logo.png') }}" style="height:55px;"> --}}
                 @if ($logoBase64)
                     <img src="{{ $logoBase64 }}" style="height:55px;">
                 @endif
@@ -73,6 +72,16 @@
                 <td>: {{ \Carbon\Carbon::parse($berita->tanggal)->translatedFormat('d F Y') }}</td>
             </tr>
             <tr>
+                <td class="label">Status Barang </td>
+                <td>
+                    :
+                    [{{ $berita->status_po === 'yes' ? '✔' : ' ' }}] Received
+                    &nbsp;
+                    [{{ $berita->status_po === 'wait' ? '✔' : ' ' }}] Not Received
+                    &nbsp;
+                </td>
+            </tr>
+            <tr>
                 <td class="label">Nomor PO</td>
                 <td>: {{ $berita->nomor_po }}</td>
             </tr>
@@ -136,15 +145,20 @@
 
     @php
         $jenis = strtolower($berita->detail->jenis_pekerjaan);
+
+        if ($jenis === 'service') {
+            $text = 'Service/<span style="text-decoration: line-through;">Maintenance</span>';
+        } elseif ($jenis === 'maintenance') {
+            $text = '<span style="text-decoration: line-through;">Service</span>/Maintenance';
+        } elseif ($jenis === 'lainnya') {
+            $text = $berita->detail->jenis_pekerjaan_lainnya;
+        } else {
+            $text = 'Service/Maintenance';
+        }
     @endphp
 
     <p class="paragraph">
-        Dengan ini menyatakan bahwa pekerjaan
-        {!! $jenis === 'service'
-            ? 'Service/<del>Maintenance</del>'
-            : ($jenis === 'maintenance'
-                ? '<del>Service</del>/Maintenance'
-                : 'Service/Maintenance') !!}
+        Dengan ini menyatakan bahwa pekerjaan {!! $text !!}
         telah diselesaikan dengan rincian sebagai berikut
         <i>(*coret yang tidak perlu)</i>:
     </p>
@@ -180,9 +194,17 @@
                     </div>
                 </td>
                 <td>
-                    ( Pihak 2 Pelanggan )<br><br><br><br><br><br>
+                    ( Pihak 2 Pelanggan )
+
+                    @if (!empty($berita->pic?->pelanggan_ttd))
+                        <div style="height:20px;"></div>
+                        <img src="{{ public_path('storage/' . $berita->pic->pelanggan_ttd) }}">
+                    @else
+                        <div style="height:80px;"></div>
+                    @endif
+
                     <div class="signature-name">
-                        ( <span style="display:inline-block; width:75px;"></span> )
+                        ( {{ $berita->pic?->pelanggan_name ?: '....................' }} )
                     </div>
                 </td>
             </tr>

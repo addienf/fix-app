@@ -23,7 +23,7 @@ trait HasSignature
     {
         return Section::make($title)
             ->collapsible()
-            ->reactive()
+            // ->reactive()
             ->relationship('pic')
             ->schema([
                 Grid::make(count($signatures))

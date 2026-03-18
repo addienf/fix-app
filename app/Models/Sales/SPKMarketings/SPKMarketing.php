@@ -49,7 +49,7 @@ class SPKMarketing extends Model
 
     public function jadwalProduksi()
     {
-        return $this->belongsTo(JadwalProduksi::class, 'spk_marketing_id');
+        return $this->hasOne(JadwalProduksi::class, 'spk_marketing_id');
     }
 
     public function pic()

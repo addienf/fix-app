@@ -76,9 +76,7 @@
 
                 $details = is_string($rawDetails) ? json_decode($rawDetails, true) : $rawDetails;
 
-                $jadwal =
-                    $kelengkapan->standarisasiDrawing->serahTerimaWarehouse->peminjamanAlat->spkVendor
-                        ->perencanaanProduksi;
+                $jadwal = $kelengkapan->standarisasiDrawing->serahTerimaWarehouse->perencanaanProduksi;
 
                 $spkOrder = $jadwal->spk->no_order ?? '-';
 

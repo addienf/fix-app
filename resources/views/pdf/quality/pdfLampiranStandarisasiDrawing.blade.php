@@ -54,7 +54,7 @@
             }
         @endphp
 
-        <div class="max-w-4xl py-6 mx-auto">
+        {{-- <div class="max-w-4xl py-6 mx-auto">
             <h1 class="mb-4 text-2xl font-bold">Lampiran Gambar</h1>
 
             <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -65,6 +65,35 @@
                     </div>
                 @empty
                     <p class="col-span-2 text-gray-500">Tidak ada lampiran tersedia.</p>
+                @endforelse
+            </div>
+        </div> --}}
+
+        <div class="max-w-4xl py-6 mx-auto">
+            <h1 class="mb-4 text-2xl font-bold">Lampiran Gambar</h1>
+
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                @forelse ($lampiran as $gambar)
+                    @php
+                        $ext = pathinfo($gambar, PATHINFO_EXTENSION);
+                    @endphp
+
+                    <div class="border border-gray-300 rounded shadow p-2 flex items-center justify-center h-[300px]">
+                        @if (in_array(strtolower($ext), ['jpg', 'jpeg', 'png', 'webp']))
+                            <img src="{{ asset('storage/' . $gambar) }}" class="object-contain max-w-full max-h-full" />
+                        @elseif (strtolower($ext) === 'pdf')
+                            <iframe src="{{ asset('storage/' . $gambar) }}" class="w-full h-full"></iframe>
+                        @else
+                            <a href="{{ asset('storage/' . $gambar) }}" target="_blank" class="text-blue-600 underline">
+                                Download File
+                            </a>
+                        @endif
+                    </div>
+
+                @empty
+                    <p class="col-span-2 text-gray-500">
+                        Tidak ada lampiran tersedia.
+                    </p>
                 @endforelse
             </div>
         </div>
