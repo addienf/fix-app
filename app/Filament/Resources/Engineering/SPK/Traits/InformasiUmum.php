@@ -43,6 +43,7 @@ trait InformasiUmum
                     ])
                     ->required()
                     ->reactive()
+                    ->hiddenOn('edit')
                     ->afterStateUpdated(function (Set $set, Get $get) {
 
                         if (!$get('section')) return;
