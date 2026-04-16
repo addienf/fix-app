@@ -29,13 +29,14 @@ trait InformasiUmum
                 ])
                     ->schema([
 
-                        self::autoNumberField2('no_spk', 'Nomor SPK', [
-                            'prefix' => 'QKS',
-                            'section' => 'PRO',
-                            'type' => 'SPK',
-                            'table' => 'spk_qualities',
-                        ])
-                            ->hiddenOn('edit'),
+                        self::textInput('no_spk', 'No SPK Quality'),
+                        // self::autoNumberField2('no_spk', 'Nomor SPK', [
+                        //     'prefix' => 'QKS',
+                        //     'section' => 'PRO',
+                        //     'type' => 'SPK',
+                        //     'table' => 'spk_qualities',
+                        // ])
+                        //     ->hiddenOn('edit'),
 
                         self::selectMaterialID()
                             ->placeholder('Pilih Nomor SPK')
@@ -54,7 +55,7 @@ trait InformasiUmum
             Select::make('penyerahan_electrical_id')
             ->label('No SPK / Nomor Seri')
             ->placeholder('Pilih No SPK / Nomor Seri')
-            ->required()
+            ->required(false)
             ->searchable()
             ->reactive()
             ->options(function () {

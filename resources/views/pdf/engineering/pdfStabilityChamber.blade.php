@@ -163,7 +163,7 @@
         <tbody>
             <tr>
                 <td class="font-bold">Name</td>
-                <td>{{ $stabilityChamber->pic?->checkedBy?->name ?? '-' }}</td>
+                <td>{{ $stabilityChamber->pic?->checked_name ?? '-' }}</td>
                 <td>{{ optional($stabilityChamber->pic)->approved_name }}</td>
             </tr>
             <tr>

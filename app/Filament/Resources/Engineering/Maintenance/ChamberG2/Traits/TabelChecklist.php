@@ -84,10 +84,6 @@ trait TabelChecklist
 
                                 Textarea::make('part')
                                     ->rows(1)
-                                    // ->columnSpan(
-                                    //     fn(callable $get) =>
-                                    //     $get('type') === 'info' ? 7 : 3
-                                    // )
                                     ->columnSpan([
                                         'default' => 1,
                                         'md' => 2,
@@ -102,11 +98,10 @@ trait TabelChecklist
                                             ]
                                             : []
                                     )
-                                    ->required(),
+                                    ->required(false),
 
                                 Textarea::make('before')
                                     ->rows(1)
-                                    // ->columnSpan(1)
                                     ->columnSpan([
                                         'default' => 1,
                                         'md' => 1,
@@ -120,7 +115,6 @@ trait TabelChecklist
 
                                 Textarea::make('after')
                                     ->rows(1)
-                                    // ->columnSpan(1)
                                     ->columnSpan([
                                         'default' => 1,
                                         'md' => 1,
@@ -138,7 +132,6 @@ trait TabelChecklist
                                         'no' => 'No',
                                         'na' => 'NA',
                                     ])
-                                    // ->columnSpan(fn($get) => $get('show_value') ? 1 : 2)
                                     ->columnSpan([
                                         'default' => 1,
                                         'md' => 1,
@@ -149,7 +142,6 @@ trait TabelChecklist
 
 
                                 TextInput::make('remark')
-                                    // ->columnSpan(fn($get) => $get('show_value') ? 1 : 2)
                                     ->columnSpan([
                                         'default' => 1,
                                         'md' => 1,
@@ -160,7 +152,6 @@ trait TabelChecklist
                             ->addable(false)
                             ->deletable(false)
                             ->reorderable(false)
-                            // ->columns(7),
                             ->columns([
                                 'default' => 1,
                                 'md' => 2,
@@ -176,7 +167,6 @@ trait TabelChecklist
                                     ->required(false),
 
                                 self::textInput('before', 'Before')
-                                    // ->columnSpan(1)
                                     ->columnSpan([
                                         'default' => 1,
                                         'md' => 1,
@@ -186,7 +176,6 @@ trait TabelChecklist
 
 
                                 self::textInput('after', 'After')
-                                    // ->columnSpan(1)
                                     ->columnSpan([
                                         'default' => 1,
                                         'md' => 1,
@@ -200,7 +189,6 @@ trait TabelChecklist
                                         'no' => 'No',
                                         'na' => 'NA',
                                     ])
-                                    // ->columnSpan(1)
                                     ->columnSpan([
                                         'default' => 1,
                                         'md' => 1,
@@ -210,7 +198,6 @@ trait TabelChecklist
 
 
                                 self::textInput('remark', 'Remark')
-                                    // ->columnSpan(1)
                                     ->columnSpan([
                                         'default' => 1,
                                         'md' => 1,
@@ -219,7 +206,6 @@ trait TabelChecklist
                                     ->required(false),
                             ])
                             ->addActionLabel('Tambah Checklist')
-                            // ->columns(7)
                             ->columns([
                                 'default' => 1,
                                 'md' => 2,

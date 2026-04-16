@@ -64,24 +64,13 @@ trait InformasiUmum
 
     private static function select()
     {
-        return Select::make('spk_service_id')
+        return
+            Select::make('spk_service_id')
             ->label('Nomor SPK Service')
             ->options(function () {
-                // return SPKService::whereHas('permintaanSparepart', function ($query) {
-                //     $query->where('status', 'Selesai');
-                // })
-                return SPKService::whereDoesntHave('beritaAcara')
-                    // ->where('jenis_spk', 'Service')
-                    // ->where(function ($query) {
-                    //     $query->whereHas('walkinChamber')
-                    //         ->orWhereHas('chamberR2')
-                    //         ->orWhereHas('refrigerator')
-                    //         ->orWhereHas('coldRoom')
-                    //         ->orWhereHas('rissing')
-                    //         ->orWhereHas('walkinG2')
-                    //         ->orWhereHas('chamberG2')
-                    //         ->orWhereHas('service');
-                    // })
+                return
+                    SPKService::where('status', 'Selesai')
+                    ->where('lama_pelaksanaan', '>', 0)
                     ->limit(10)
                     ->pluck('no_spk_service', 'id');
             })
@@ -89,17 +78,7 @@ trait InformasiUmum
                 return SPKService::whereHas('permintaanSparepart', function ($query) {
                     $query->where('status', 'Selesai');
                 })
-                    ->whereDoesntHave('beritaAcara')
-                    // ->where(function ($query) {
-                    //     $query->whereHas('walkinChamber')
-                    //         ->orWhereHas('chamberR2')
-                    //         ->orWhereHas('refrigerator')
-                    //         ->orWhereHas('coldRoom')
-                    //         ->orWhereHas('rissing')
-                    //         ->orWhereHas('walkinG2')
-                    //         ->orWhereHas('chamberG2')
-                    //         ->orWhereHas('service');
-                    // })
+                    ->where('lama_pelaksanaan', '>', 0)
                     ->where('no_spk_service', 'like', "%{$search}%")
                     ->limit(10)
                     ->pluck('no_spk_service', 'id');
@@ -111,38 +90,5 @@ trait InformasiUmum
             ->reactive()
             ->columnSpanFull()
             ->hiddenOn(operations: 'edit');
-        // ->afterStateUpdated(function ($state, callable $set) {
-        //     if (!$state)
-        //         return;
-
-        //     $service = SPKService::with('petugas', 'pelayananPelanggan')->find($state);
-
-        //     if (!$service)
-        //         return;
-
-        //     $namaPetugas = $service->petugas->pluck('nama_teknisi')->toArray();
-        //     $nama_teknisi = implode(', ', $namaPetugas);
-        //     $namaComplain = $service->pelayananPelanggan->complain->name_complain;
-        //     $companyName = $service->pelayananPelanggan->complain->companies->first()?->name;
-        //     $alamat = $service->pelayananPelanggan->alamat;
-        //     $department = $service->pelayananPelanggan->complain->department;
-
-        //     $detail = $service->pelayananPelanggan
-        //         ?->details
-        //         ?->first();
-
-        //     $produk = $detail?->nama_alat ?? '-';
-        //     $noSeri = $detail?->nomor_seri ?? '-';
-
-        //     $set('detail.nama_teknisi', $nama_teknisi);
-        //     $set('pelanggan.nama', $namaComplain);
-        //     $set('pelanggan.perusahaan', $companyName);
-        //     $set('pelanggan.alamat', $alamat);
-        //     $set('pelanggan.jabatan', $department);
-
-        //     $set('detail.nama_teknisi', $nama_teknisi);
-        //     $set('detail.produk', $produk);
-        //     $set('detail.serial_number', $noSeri);
-        // });
     }
 }

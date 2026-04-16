@@ -18,8 +18,10 @@ return new class extends Migration
             $table->string('jasa_ttd');
             $table->string('pelanggan_name');
             $table->string('pelanggan_ttd');
-            $table->string('sign_token');
-            $table->timestamp('sign_at');
+            $table->string('sign_token')->nullable();
+            $table->timestamp('sign_token_expires_at')->nullable();
+            $table->timestamp('sign_at')->nullable();
+            $table->string('signed_ip')->nullable();
             $table->timestamps();
         });
     }

@@ -55,7 +55,22 @@ trait HasAutoNumber
             ->default(function () use ($table, $name, $prefix, $section, $type) {
                 if (! $table) return null;
 
-                $month = now()->format('m');
+                $romanMonths = [
+                    1 => 'I',
+                    2 => 'II',
+                    3 => 'III',
+                    4 => 'IV',
+                    5 => 'V',
+                    6 => 'VI',
+                    7 => 'VII',
+                    8 => 'VIII',
+                    9 => 'IX',
+                    10 => 'X',
+                    11 => 'XI',
+                    12 => 'XII',
+                ];
+
+                $month = $romanMonths[now()->month];
                 $year = now()->format('y');
 
                 $last = DB::table($table)
@@ -156,64 +171,13 @@ trait HasAutoNumber
     {
         $prefix = $config['prefix'] ?? 'QKS';
         $type = $config['type'] ?? 'DOC';
-        $table = $config['table'] ?? null;
-        $sectionField = $config['section_field'] ?? 'section';
 
         return TextInput::make($name)
             ->label($label)
             ->hint("Format: XXX/{$prefix}/[SECTION]/{$type}/MM/YY")
-            // ->reactive()
-            // ->afterStateHydrated(function (Set $set, Get $get) use ($table, $name, $prefix, $type, $sectionField) {
-            //     if (!$get($sectionField)) return;
-
-            //     $set($name, self::generateAutoNumber(
-            //         table: $table,
-            //         column: $name,
-            //         prefix: $prefix,
-            //         section: $get($sectionField),
-            //         type: $type
-            //     ));
-            // })
-            // ->afterStateUpdated(function (Set $set, Get $get) use ($table, $name, $prefix, $type, $sectionField) {
-
-            //     if (!empty($state)) return;
-
-            //     if (!$get('section')) return;
-
-            //     $set($name, self::generateAutoNumber(
-            //         table: $table,
-            //         column: $name,
-            //         prefix: $prefix,
-            //         section: $get($sectionField),
-            //         type: $type
-            //     ));
-            // })
             ->unique(ignorable: fn($record) => $record)
             ->required();
     }
-
-    // protected static function generateAutoNumber($table, $column, $prefix, $section, $type)
-    // {
-    //     if (!$table || !$section) return null;
-
-    //     $month = now()->format('m');
-    //     $year = now()->format('y');
-
-    //     $last = DB::table($table)
-    //         ->where($column, 'like', "%/{$prefix}/%/{$type}/{$month}/{$year}")
-    //         ->orderByDesc('id')
-    //         ->value($column);
-
-    //     if ($last && preg_match('/^(\d{3})/', $last, $m)) {
-    //         $num = intval($m[1]) + 1;
-    //     } else {
-    //         $num = 1;
-    //     }
-
-    //     $num = str_pad($num, 3, '0', STR_PAD_LEFT);
-
-    //     return "{$num}/{$prefix}/{$section}/{$type}/{$month}/{$year}";
-    // }
 
     protected static function generateAutoNumber($table, $column, $prefix, $section, $type)
     {
@@ -238,6 +202,38 @@ trait HasAutoNumber
         $num = str_pad($num, 3, '0', STR_PAD_LEFT);
 
         return "{$num}/{$prefix}/{$section}/{$type}/{$romanMonth}/{$year}";
+    }
+
+    protected static function generateAutoNumber3($table, $column, $prefix, $section, $type)
+    {
+        if (!$table) return null;
+
+        $month = now()->month;
+        $year = now()->format('y');
+        $romanMonth = self::monthToRoman($month);
+
+        $pattern = "%/{$prefix}/{$section}/{$type}/{$romanMonth}/{$year}";
+
+        $last = DB::table($table)
+            ->where($column, 'like', $pattern)
+            ->orderByDesc($column)
+            ->value($column);
+
+        $nextNumber = 1;
+
+        if ($last && preg_match('/^(\d{3})/', $last, $matches)) {
+            $nextNumber = ((int) $matches[1]) + 1;
+        }
+
+        return sprintf(
+            '%03d/%s/%s/%s/%s/%s',
+            $nextNumber,
+            $prefix,
+            $section,
+            $type,
+            $romanMonth,
+            $year
+        );
     }
 
     protected static function monthToRoman($month)

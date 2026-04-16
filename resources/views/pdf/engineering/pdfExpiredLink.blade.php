@@ -121,7 +121,7 @@
 
             if (timeLeft <= 0) {
                 clearInterval(timer);
-                // window.close();
+                window.close();
             }
 
         }, 1000);

@@ -188,9 +188,14 @@
             <tr>
                 <td>
                     ( Pihak 1 Penyedia Jasa )<br><br>
-                    <img src="{{ public_path('storage/' . $berita->pic->jasa_ttd) }}">
+                    @if (!empty($berita->pic?->jasa_ttd))
+                        <div style="height:20px;"></div>
+                        <img src="{{ public_path('storage/' . $berita->pic->jasa_ttd) }}">
+                    @else
+                        <div style="height:80px;"></div>
+                    @endif
                     <div class="signature-name">
-                        ( {{ $berita->penyediaJasa->nama }} )
+                        ( {{ $berita->pic?->jasa_name ?: '....................' }} )
                     </div>
                 </td>
                 <td>

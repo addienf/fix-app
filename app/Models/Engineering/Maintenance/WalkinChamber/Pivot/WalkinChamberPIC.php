@@ -4,13 +4,14 @@ namespace App\Models\Engineering\Maintenance\WalkinChamber\Pivot;
 
 use App\Models\Engineering\Maintenance\WalkinChamber\WalkinChamber;
 use App\Models\User;
+use App\Traits\HasSignature;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 
 class WalkinChamberPIC extends Model
 {
-    use HasFactory;
+    use HasFactory, HasSignature;
 
     protected $table = 'walkin_chamber_pics';
 
@@ -22,7 +23,21 @@ class WalkinChamberPIC extends Model
         'approved_name',
         'approved_signature',
         'approved_date',
+        'sign_token',
+        'sign_token_expires_at',
+        'signed_at',
+        'signed_ip',
     ];
+
+    public function signatureConfig(): array
+    {
+        return [
+            'name_field' => 'approved_name',
+            'signature_field' => 'approved_signature',
+            'date_field' => 'approved_date',
+            'upload_path' => 'Engineering/Maintenance/WalkinTestChamber/Signature',
+        ];
+    }
 
     public function walkinChamber()
     {

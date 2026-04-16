@@ -76,17 +76,28 @@
 
                 $details = is_string($rawDetails) ? json_decode($rawDetails, true) : $rawDetails;
 
-                $jadwal = $kelengkapan->standarisasiDrawing->serahTerimaWarehouse->perencanaanProduksi;
+                // $jadwal = $kelengkapan->standarisasiDrawing->serahTerimaWarehouse->perencanaanProduksi;
 
-                $spkOrder = $jadwal->spk->no_order ?? '-';
+                // $spkOrder = $jadwal->spk->no_order ?? '-';
 
-                $orderNumber = $spkOrder ?? '-';
+                // $orderNumber = $spkOrder ?? '-';
+
+                // $fields = collect($details)
+                //     ->map(function ($item) use ($orderNumber) {
+                //         return [
+                //             'item' => $item['part'] ?? '',
+                //             'spec' => $orderNumber,
+                //             'result' => ucfirst($item['result'] ?? ''),
+                //             'remark' => ucfirst($item['select'] ?? ''),
+                //         ];
+                //     })
+                //     ->toArray();
 
                 $fields = collect($details)
-                    ->map(function ($item) use ($orderNumber) {
+                    ->map(function ($item) {
                         return [
                             'item' => $item['part'] ?? '',
-                            'spec' => $orderNumber,
+                            'spec' => ' ',
                             'result' => ucfirst($item['result'] ?? ''),
                             'remark' => ucfirst($item['select'] ?? ''),
                         ];

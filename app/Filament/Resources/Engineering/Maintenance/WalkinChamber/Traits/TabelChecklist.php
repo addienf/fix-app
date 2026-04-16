@@ -23,7 +23,6 @@ trait TabelChecklist
                     'mainPart' => $group['mainPart'],
                     'parts' => collect($group['parts'])->map(function ($part) {
 
-                        // INFO
                         if (is_array($part) && isset($part['info'])) {
                             return [
                                 'part' => $part['info'],
@@ -32,7 +31,6 @@ trait TabelChecklist
                             ];
                         }
 
-                        // CHECK dengan override show_value
                         if (is_array($part)) {
                             return [
                                 'part' => $part['text'],
@@ -41,7 +39,6 @@ trait TabelChecklist
                             ];
                         }
 
-                        // CHECK default (string)
                         return [
                             'part' => $part,
                             'type' => 'check',
@@ -86,10 +83,6 @@ trait TabelChecklist
 
                                 Textarea::make('part')
                                     ->rows(1)
-                                    // ->columnSpan(
-                                    //     fn(callable $get) =>
-                                    //     $get('type') === 'info' ? 7 : 3
-                                    // )
                                     ->columnSpan([
                                         'default' => 1,
                                         'md' => 2,
@@ -106,33 +99,47 @@ trait TabelChecklist
                                     )
                                     ->required(),
 
-                                Textarea::make('before')
-                                    ->rows(1)
-                                    // ->columnSpan(1)
-                                    ->columnSpan([
+                                Grid::make(
+                                    [
+                                        'default' => 2,
+                                        'md' => 2,
+                                        'lg' => 2,
+                                    ]
+                                )
+                                    ->schema([
+                                        Textarea::make('before')
+                                            ->rows(1)
+                                            ->columnSpan([
+                                                'default' => 1,
+                                                'md' => 1,
+                                                'lg' => 1,
+                                            ]),
+                                        // ->hidden(
+                                        //     fn($get) =>
+                                        //     $get('type') === 'info' || !$get('show_value')
+                                        // ),
+
+
+                                        Textarea::make('after')
+                                            ->rows(1)
+                                            ->columnSpan([
+                                                'default' => 1,
+                                                'md' => 1,
+                                                'lg' => 1,
+                                            ])
+                                        // ->hidden(
+                                        //     fn($get) =>
+                                        //     $get('type') === 'info' || !$get('show_value')
+                                        // ),
+                                    ])->columnSpan([
                                         'default' => 1,
-                                        'md' => 1,
-                                        'lg' => 1,
+                                        'md' => 2,
+                                        'lg' => 2,
                                     ])
                                     ->hidden(
                                         fn($get) =>
                                         $get('type') === 'info' || !$get('show_value')
                                     ),
-
-
-                                Textarea::make('after')
-                                    ->rows(1)
-                                    // ->columnSpan(1)
-                                    ->columnSpan([
-                                        'default' => 1,
-                                        'md' => 1,
-                                        'lg' => 1,
-                                    ])
-                                    ->hidden(
-                                        fn($get) =>
-                                        $get('type') === 'info' || !$get('show_value')
-                                    ),
-
 
                                 Select::make('accepted')
                                     ->options([
@@ -140,7 +147,6 @@ trait TabelChecklist
                                         'no' => 'No',
                                         'na' => 'NA',
                                     ])
-                                    // ->columnSpan(fn($get) => $get('show_value') ? 1 : 2)
                                     ->columnSpan([
                                         'default' => 1,
                                         'md' => 1,
@@ -151,7 +157,6 @@ trait TabelChecklist
 
 
                                 TextInput::make('remark')
-                                    // ->columnSpan(fn($get) => $get('show_value') ? 1 : 2)
                                     ->columnSpan([
                                         'default' => 1,
                                         'md' => 1,
@@ -162,7 +167,6 @@ trait TabelChecklist
                             ->addable(false)
                             ->deletable(false)
                             ->reorderable(false)
-                            // ->columns(7),
                             ->columns([
                                 'default' => 1,
                                 'md' => 2,
@@ -173,28 +177,85 @@ trait TabelChecklist
                             ->default([])
                             ->schema([
 
-                                self::textInput('part', 'Part')
-                                    ->columnSpan(3)
-                                    ->required(false),
+                                // self::textInput('part', 'Part')
+                                //     ->columnSpan(3)
+                                //     ->required(false),
 
-                                self::textInput('before', 'Before')
-                                    // ->columnSpan(1)
+                                // self::textInput('before', 'Before')
+                                //     ->columnSpan([
+                                //         'default' => 1,
+                                //         'md' => 1,
+                                //         'lg' => 1,
+                                //     ])
+                                //     ->required(false),
+
+
+                                // self::textInput('after', 'After')
+                                //     ->columnSpan([
+                                //         'default' => 1,
+                                //         'md' => 1,
+                                //         'lg' => 1,
+                                //     ])
+                                //     ->required(false),
+
+                                // Select::make('accepted')
+                                //     ->options([
+                                //         'yes' => 'Yes',
+                                //         'no' => 'No',
+                                //         'na' => 'NA',
+                                //     ])
+                                //     ->columnSpan([
+                                //         'default' => 1,
+                                //         'md' => 1,
+                                //         'lg' => 1,
+                                //     ])
+                                //     ->required(false),
+
+
+                                // self::textInput('remark', 'Remark')
+                                //     ->columnSpan([
+                                //         'default' => 1,
+                                //         'md' => 1,
+                                //         'lg' => 1,
+                                //     ])
+                                //     ->required(false),
+
+                                Textarea::make('part')
+                                    ->rows(1)
                                     ->columnSpan([
                                         'default' => 1,
-                                        'md' => 1,
-                                        'lg' => 1,
-                                    ])
-                                    ->required(false),
+                                        'md' => 2,
+                                        'lg' => 3,
+                                    ]),
 
+                                Grid::make(
+                                    [
+                                        'default' => 2,
+                                        'md' => 2,
+                                        'lg' => 2,
+                                    ]
+                                )
+                                    ->schema([
+                                        Textarea::make('before')
+                                            ->rows(1)
+                                            ->columnSpan([
+                                                'default' => 1,
+                                                'md' => 1,
+                                                'lg' => 1,
+                                            ]),
 
-                                self::textInput('after', 'After')
-                                    // ->columnSpan(1)
-                                    ->columnSpan([
+                                        Textarea::make('after')
+                                            ->rows(1)
+                                            ->columnSpan([
+                                                'default' => 1,
+                                                'md' => 1,
+                                                'lg' => 1,
+                                            ])
+                                    ])->columnSpan([
                                         'default' => 1,
-                                        'md' => 1,
-                                        'lg' => 1,
-                                    ])
-                                    ->required(false),
+                                        'md' => 2,
+                                        'lg' => 2,
+                                    ]),
 
                                 Select::make('accepted')
                                     ->options([
@@ -202,32 +263,26 @@ trait TabelChecklist
                                         'no' => 'No',
                                         'na' => 'NA',
                                     ])
-                                    // ->columnSpan(1)
                                     ->columnSpan([
                                         'default' => 1,
                                         'md' => 1,
                                         'lg' => 1,
-                                    ])
-                                    ->required(false),
+                                    ]),
 
-
-                                self::textInput('remark', 'Remark')
-                                    // ->columnSpan(1)
+                                TextInput::make('remark')
                                     ->columnSpan([
                                         'default' => 1,
                                         'md' => 1,
                                         'lg' => 1,
-                                    ])
-                                    ->required(false),
+                                    ]),
                             ])
                             ->addActionLabel('Tambah Checklist')
-                            // ->columns(7)
+                            ->reorderable(false)
                             ->columns([
                                 'default' => 1,
                                 'md' => 2,
                                 'lg' => 7,
-                            ])
-                            ->reorderable(false),
+                            ]),
                     ])
                     ->addable(false)
                     ->deletable(false)

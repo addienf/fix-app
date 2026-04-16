@@ -182,36 +182,40 @@
         <h1>Tanda Tangan Digital</h1>
         <div class="subtitle">Masukkan nama dan tanda tangan Anda</div>
 
-        <form method="POST" action="{{ url('/qlb/' . $pic->sign_token) }}" id="form-signature">
+        <form method="POST" action="{{ route('signature.store', ['type' => $type, 'token' => $record->sign_token]) }}"
+            id="form-signature">
+
             @csrf
+
             <div class="form-group">
                 <label for="nama">Nama Lengkap</label>
-                <input name="pelanggan_name" type="text" id="nama" placeholder="Masukan Nama Anda" required />
+                <input name="{{ $config['name_field'] }}" type="text" id="nama" placeholder="Masukan Nama Anda"
+                    required />
             </div>
 
             <div class="form-group">
-
                 <label>Tanda Tangan</label>
 
                 <div class="signature-area" id="pad">
-
                     <canvas id="canvas"></canvas>
 
-                    <input type="hidden" name="pelanggan_ttd" id="signature">
-
+                    <input type="hidden" name="{{ $config['signature_field'] }}" id="signature">
                 </div>
 
                 <div class="controls">
-                    <button type="button" class="btn btn-clear" id="clear">Hapus</button>
+                    <button type="button" class="btn btn-clear" id="clear">
+                        Hapus
+                    </button>
                 </div>
-
             </div>
 
             <button type="submit" class="btn btn-submit" id="submit">
                 Kirim Tanda Tangan
             </button>
 
-            <div class="message" id="msg">Data akses Anda akan dicatat untuk keamanan.</div>
+            <div class="message" id="msg">
+                Data akses Anda akan dicatat untuk keamanan.
+            </div>
         </form>
 
     </div>

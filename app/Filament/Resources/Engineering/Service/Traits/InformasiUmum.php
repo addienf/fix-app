@@ -12,6 +12,7 @@ use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Str;
 
 trait InformasiUmum
 {
@@ -92,16 +93,23 @@ trait InformasiUmum
                     'lg' => $isEdit ? 1 : 2,
                 ])
                     ->schema([
+                        // TextInput::make('form_no')
+                        //     ->label('Nomor Form')
+                        //     ->placeholder($lastValue2 ? "Data Terakhir : {$lastValue2}" : 'Data Belum Tersedia')
+                        //     ->hiddenOn('edit')
+                        //     ->unique(ignoreRecord: true)
+                        //     ->required(),
                         TextInput::make('form_no')
                             ->label('Nomor Form')
                             ->placeholder($lastValue2 ? "Data Terakhir : {$lastValue2}" : 'Data Belum Tersedia')
+                            ->default(fn() => strtoupper(Str::random(8)))
                             ->hiddenOn('edit')
                             ->unique(ignoreRecord: true)
-                            ->required(),
-                        // ->extraAttributes([
-                        //     'readonly' => true,
-                        //     'style' => 'pointer-events: none;'
-                        // ]),
+                            ->required()
+                            ->extraAttributes([
+                                'readonly' => true,
+                                'style' => 'pointer-events: none;'
+                            ]),
 
                         self::dateInput('tanggal', 'Tanggal'),
                     ])

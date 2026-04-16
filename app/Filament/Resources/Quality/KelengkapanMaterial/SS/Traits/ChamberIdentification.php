@@ -19,24 +19,26 @@ trait ChamberIdentification
             ->schema([
                 //
 
-                self::getSelectedSPK()
-                    ->hiddenOn('edit'),
+                // self::getSelectedSPK()
+                //     ->hiddenOn('edit'),
 
-                self::textInput('tipe', 'Type/Model')
-                    ->extraAttributes([
-                        'readonly' => true,
-                        'style' => 'pointer-events: none;'
-                    ]),
+                self::textInput('no_spk_qc', 'No SPK QC'),
+
+                self::textInput('tipe', 'Type/Model'),
+                // ->extraAttributes([
+                //     'readonly' => true,
+                //     'style' => 'pointer-events: none;'
+                // ]),
 
                 self::textInput('ref_document', 'Ref Document'),
 
                 self::textInput('no_order_temp', 'No Order')
                     ->columnSpanFull()
-                    ->hiddenOn('edit')
-                    ->extraAttributes([
-                        'readonly' => true,
-                        'style' => 'pointer-events: none;'
-                    ]),
+                    ->hiddenOn('edit'),
+                // ->extraAttributes([
+                //     'readonly' => true,
+                //     'style' => 'pointer-events: none;'
+                // ]),
 
             ])
             // ->columns($isEdit ? 2 : 3);
@@ -66,7 +68,7 @@ trait ChamberIdentification
                         'serahTerimaWarehouse.perencanaanProduksi.identifikasiProduks',
                     ])
                     // ->where('sumber', 'serah')
-                    ->whereNotNull('serah_terima_bahan_id')
+                    // ->whereNotNull('serah_terima_bahan_id')
                     ->whereDoesntHave('kelengkapanMaterial')
                     ->where('status_pemeriksaan', 'Diperiksa')
                     ->latest()

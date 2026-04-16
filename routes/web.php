@@ -113,3 +113,8 @@ Route::post('/qlb/{token}', [EngineeringController::class, 'store']);
 // Route::get('admin/engineering/test', function () {
 //     return view('pdf.engineering.pdfTes');
 // });
+
+Route::get('/qlb/{type}/{token}', [EngineeringController::class, 'show2'])
+    ->name('signature.show');
+Route::post('/qlb/{type}/{token}', [EngineeringController::class, 'store2'])
+    ->name('signature.store');

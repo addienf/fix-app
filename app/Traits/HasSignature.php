@@ -8,6 +8,8 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Section;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Saade\FilamentAutograph\Forms\Components\SignaturePad;
 
 trait HasSignature
@@ -98,7 +100,6 @@ trait HasSignature
                                             $component->state(auth()->id());
                                         }),
 
-                                    // Grid::make(2)
                                     Grid::make([
                                         'default' => 1,
                                         'md' => 2,
@@ -151,5 +152,67 @@ trait HasSignature
                     $set($fieldName, $path);
                 }
             });
+    }
+
+    public static function findValidToken(string $token)
+    {
+        $record = static::where('sign_token', $token)->firstOrFail();
+
+        $config = $record->signatureConfig();
+        $signatureField = $config['signature_field'];
+
+        // jika sudah pernah sign
+        if ($record->$signatureField) {
+            return null;
+        }
+
+        // jika token expired
+        if (
+            $record->sign_token_expires_at &&
+            now()->gt($record->sign_token_expires_at)
+        ) {
+            return null;
+        }
+
+        return $record;
+    }
+
+    /**
+     * Simpan signature
+     */
+    public function saveSignature(Request $request): void
+    {
+        $config = $this->signatureConfig();
+
+        DB::transaction(function () use ($request, $config) {
+            $path = SignatureUploader::handle(
+                $request->input($config['signature_field']),
+                'signature_',
+                $config['upload_path']
+            );
+
+            $ip = request()->header('X-Forwarded-For');
+
+            if ($ip) {
+                $ip = explode(',', $ip)[0];
+            } else {
+                $ip = request()->getClientIp();
+            }
+
+            if ($ip === '127.0.0.1') {
+                $ip = '127.0.0.1 (Local)';
+            }
+
+            $this->update([
+                $config['name_field'] => $request->input($config['name_field']),
+                $config['signature_field'] => $path,
+                $config['date_field'] => now(),
+                'signed_ip' => $ip,
+
+                // single use token
+                'sign_token' => null,
+                'sign_token_expires_at' => null,
+            ]);
+        });
     }
 }

@@ -18,6 +18,7 @@ class KelengkapanMaterialSS extends Model
 
     protected $fillable = [
         'standarisasi_drawing_id',
+        'no_spk_qc',
         'tipe',
         'ref_document',
         'note',

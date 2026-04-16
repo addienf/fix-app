@@ -3,7 +3,6 @@
 @section('content')
     <div id="export-area" class="p-2 text-black bg-white">
         <div>
-            <!-- HEADER DOKUMEN -->
             <table class="w-full max-w-4xl mx-auto text-sm border border-black " style="border-collapse: collapse;">
                 <tr>
                     <td rowspan="3" class="p-2 text-center align-middle border border-black w-28 h-28">
@@ -38,7 +37,6 @@
                 </tr>
             </table>
 
-            <!-- FORM -->
             @php
                 $fields = [
                     ['label' => 'Nama', 'value' => $spesifikasi->name],
@@ -70,7 +68,6 @@
                     @foreach ($chunk as $detail)
                         <div class="p-4 space-y-5 bg-white border border-gray-400 rounded-md shadow-sm">
 
-                            {{-- NAMA ITEM --}}
                             <div class="grid items-center grid-cols-4 gap-2">
                                 <label class="col-span-1 font-medium">Nama Item :</label>
                                 <input type="text" disabled
@@ -78,7 +75,6 @@
                                     value="{{ $detail->product->name }}" />
                             </div>
 
-                            {{-- QUANTITY --}}
                             <div class="grid items-center grid-cols-4 gap-2">
                                 <label class="col-span-1 font-medium">Quantity :</label>
                                 <input type="text" disabled
@@ -86,9 +82,7 @@
                                     value="{{ $detail->quantity }}" />
                             </div>
 
-                            {{-- KHUSUS PRODUK QLAB --}}
                             @if ($detail->product->category?->id === 1)
-                                {{-- Spesifikasi utama Qlab --}}
                                 @foreach ($detail->specification ?? [] as $spec)
                                     <div class="grid items-center grid-cols-4 gap-2">
                                         <label class="col-span-1 font-medium">{{ $spec['name'] }} :</label>
@@ -106,10 +100,9 @@
                                     <label class="mb-1 font-medium">Detail Specification :</label>
                                     <input type="text" disabled
                                         class="w-full px-2 py-1 text-black bg-white border border-gray-300 rounded cursor-not-allowed"
-                                        value="{{ $spesifikasi->detail_specification ?? '-' }}" />
+                                        value="{!! nl2br(e($spesifikasi->detail_specification ?? '-')) !!}" />
                                 </div>
                             @else
-                                {{-- Untuk produk lain (misalnya Mecmesin, Ohaus, dll) --}}
                                 @foreach ($detail->specification_mecmesin ?? [] as $spec)
                                     <div class="grid grid-cols-2 gap-2">
                                         <div class="flex items-center">

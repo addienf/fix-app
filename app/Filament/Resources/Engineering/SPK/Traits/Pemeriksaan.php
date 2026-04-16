@@ -4,11 +4,8 @@ namespace App\Filament\Resources\Engineering\SPK\Traits;
 
 use App\Traits\SimpleFormResource;
 use Filament\Forms\Components\Section;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Icetalker\FilamentTableRepeater\Forms\Components\TableRepeater;
-use Wallo\FilamentSelectify\Components\ButtonGroup;
 
 trait Pemeriksaan
 {
@@ -53,7 +50,8 @@ trait Pemeriksaan
                         'md' => 2,
                         'lg' => 2,
                     ])
-                    ->addable(false)
+                    // ->addable(false)
+                    ->addActionLabel('Tambah Item')
                     ->reorderable(false)
                     ->deletable(false)
             ])

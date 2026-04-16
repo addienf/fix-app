@@ -107,14 +107,14 @@ class PermintaanPelayananPelangganResource extends Resource
 
                 self::textColumn('tanggal', 'Tanggal')->date('d F Y'),
 
-                self::textColumn('status', 'Status')
-                    ->badge()
-                    ->color(fn($state) => [
-                        'Belum Diterima' => 'danger',
-                        'Diterima' => 'warning',
-                        'Diketahui' => 'success',
-                    ][$state] ?? 'gray')
-                    ->alignCenter(),
+                // self::textColumn('status', 'Status')
+                //     ->badge()
+                //     ->color(fn($state) => [
+                //         'Belum Diketahui' => 'danger',
+                //         'Diterima' => 'warning',
+                //         'Diketahui' => 'success',
+                //     ][$state] ?? 'gray')
+                //     ->alignCenter(),
             ])
             ->filters([
                 //

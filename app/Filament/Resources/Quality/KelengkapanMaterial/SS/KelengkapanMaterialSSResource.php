@@ -84,19 +84,31 @@ class KelengkapanMaterialSSResource extends Resource
             ->columns([
                 //
 
-                self::textColumn('standarisasiDrawing.serahTerimaWarehouse.perencanaanProduksi.spk.no_spk', 'No SPK Marketing'),
+                // self::textColumn('standarisasiDrawing.serahTerimaWarehouse.perencanaanProduksi.spk.no_spk', 'No SPK Marketing'),
 
-                self::textColumn('no_seri', 'No Seri')
-                    ->getStateUsing(function ($record) {
-                        return $record
-                            ?->standarisasiDrawing
-                            ?->serahTerimaWarehouse
-                            ?->perencanaanProduksi
-                            ?->identifikasiProduks
-                            ?->pluck('no_seri')
-                            ->filter()
-                            ->implode(', ') ?? '-';
-                    }),
+                // self::textColumn('standarisasiDrawing.spk.no_spk', 'No SPK Marketing'),
+
+                // self::textColumn('no_spk_marketing', 'No SPK Marketing')
+                //     ->getStateUsing(function ($record) {
+                //         return $record->standarisasiDrawing?->serahTerimaWarehouse?->perencanaanProduksi?->spk?->no_spk
+                //             ?? $record->standarisasiDrawing?->spk?->no_spk
+                //             ?? $record->no_spk_qc
+                //             ?? '-';
+                //     }),
+
+                self::textColumn('no_spk_qc', 'No SPK Quality'),
+
+                // self::textColumn('no_seri', 'No Seri')
+                //     ->getStateUsing(function ($record) {
+                //         return $record
+                //             ?->standarisasiDrawing
+                //             ?->serahTerimaWarehouse
+                //             ?->perencanaanProduksi
+                //             ?->identifikasiProduks
+                //             ?->pluck('no_seri')
+                //             ->filter()
+                //             ->implode(', ') ?? '-';
+                //     }),
 
                 self::textColumn('tipe', 'Type/Model'),
 

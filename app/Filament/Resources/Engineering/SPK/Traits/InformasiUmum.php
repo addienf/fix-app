@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Engineering\SPK\Traits;
 
 use App\Models\Engineering\Complain\Complain;
+use App\Models\General\Company;
 use App\Traits\HasAutoNumber;
 use App\Traits\SimpleFormResource;
 use Filament\Forms\Components\Section;
@@ -22,19 +23,6 @@ trait InformasiUmum
             ->schema([
                 self::getBTNDrop()
                     ->hiddenOn('edit'),
-
-                // TextInput::make('no_spk_service')
-                //     ->label('Nomor SPK Service')
-                //     ->placeholder(function () {
-
-                //         $last = DB::table('spk_services')
-                //             ->whereNotNull('no_spk_service')
-                //             ->orderByDesc('id')
-                //             ->value('no_spk_service');
-
-                //         return $last ?? 'Belum ada data';
-                //     })
-                //     ->hiddenOn('edit'),
 
                 Select::make('section')
                     ->options([
@@ -66,18 +54,20 @@ trait InformasiUmum
                     ->columnSpanFull()
                     ->hiddenOn('edit'),
 
-                // self::autoNumberField4('no_spk_service', 'Nomor SPK Service', [
-                //     'prefix' => 'QKS',
-                //     'section' => 'ENG',
-                //     'type' => 'SPK',
-                //     'table' => 'spk_services',
-                // ])
-                //     ->hiddenOn('edit'),
+                Select::make('perusahaan')
+                    ->label('Perusahaan')
+                    ->options(Company::pluck('name', 'name'))
+                    ->searchable()
+                    ->reactive()
+                    ->afterStateUpdated(function ($state, Set $set) {
+                        $company = Company::where('name', $state)->first();
 
-                self::textInput('perusahaan', 'Nama Perusahaan'),
+                        if ($company) {
+                            $set('alamat', $company->address);
+                        }
+                    }),
 
                 self::textInput('alamat', 'Alamat'),
-
             ])
             ->columns([
                 'default' => 1,
@@ -85,49 +75,6 @@ trait InformasiUmum
                 'lg' => 2,
             ]);
     }
-
-    // protected static function select(): Select
-    // {
-    //     return
-    //         Select::make('pelayanan_id')
-    //         ->label('Nomor Complaint Form')
-    //         ->placeholder('Pilih Nomor Complaint Form')
-    //         ->reactive()
-    //         ->required()
-    //         ->options(function () {
-    //             return PermintaanPelayananPelanggan::whereDoesntHave('spkService')
-    //                 ->get()
-    //                 ->mapWithKeys(function ($item) {
-    //                     $noForm = $item->no_form ?? '-';
-    //                     $customerName = $item->complain->name_complain ?? '-';
-    //                     return [$item->id => "{$noForm} - {$customerName}"];
-    //                 });
-    //         })
-    //         ->afterStateUpdated(function ($state, callable $set) {
-    //             if (!$state) return;
-
-    //             $pelayanan = PermintaanPelayananPelanggan::find($state);
-    //             if (!$pelayanan) return;
-
-    //             $companyName = $pelayanan?->perusahaan ?? '-';
-    //             $alamat = $pelayanan?->alamat ?? '-';
-    //             $tempat = $pelayanan?->tempat_pelaksanaan ?? '-';
-
-    //             $details = $pelayanan->details->map(function ($detail) {
-    //                 return [
-    //                     'nama_alat'   => $detail?->nama_alat ?? '-',
-    //                     'tipe'        => $detail?->tipe ?? '-',
-    //                     'nomor_seri'  => $detail?->nomor_seri ?? '-',
-    //                     'quantity'    => $detail?->quantity ?? '-'
-    //                 ];
-    //             })->toArray();
-
-    //             $set('perusahaan', $companyName);
-    //             $set('alamat', $alamat);
-    //             $set('tempat_pelaksanaan', $tempat);
-    //             $set('details', $details);
-    //         });
-    // }
 
     private static function getBTN()
     {

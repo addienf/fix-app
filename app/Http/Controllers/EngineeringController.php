@@ -14,6 +14,7 @@ use App\Models\Engineering\Maintenance\WalkinChamber\WalkinChamber;
 use App\Models\Engineering\Permintaan\PermintaanSparepart;
 use App\Models\Engineering\Service\ServiceReport;
 use App\Services\SignatureUploader;
+use App\Traits\HasSignature;
 use App\Traits\SimpleFormResource;
 use Barryvdh\DomPDF\Facade\Pdf;
 use ZipArchive;
@@ -23,7 +24,7 @@ use Illuminate\Support\Facades\Http;
 class EngineeringController extends Controller
 {
     //
-    use SimpleFormResource;
+    use SimpleFormResource, HasSignature;
 
     private function getBase64Logo()
     {
@@ -236,12 +237,49 @@ class EngineeringController extends Controller
         return view('pdf.engineering.pdfSignatureLinkSuccess', compact('logoBase64'));
     }
 
-    protected function detectDevice($userAgent)
+    protected function resolveModel(string $type)
     {
-        if (preg_match('/mobile|android|iphone/i', $userAgent)) {
-            return 'Mobile';
+        $model = config("signature_models.$type");
+
+        abort_if(!$model, 404);
+
+        return $model;
+    }
+
+    public function show2($type, $token)
+    {
+        $model = $this->resolveModel($type);
+        $logoBase64 = $this->getBase64Logo();
+        $record = $model::findValidToken($token);
+
+        if (!$record) {
+            return response()->view('pdf.engineering.pdfExpiredLink', [], 403);
         }
 
-        return 'Desktop';
+        $config = $record->signatureConfig();
+
+        return view('pdf.engineering.pdfSignatureLink', compact('record', 'type', 'logoBase64', 'config'));
+    }
+
+    public function store2(Request $request, $type, $token)
+    {
+        $model = $this->resolveModel($type);
+        $logoBase64 = $this->getBase64Logo();
+        $record = $model::findValidToken($token);
+
+        if (!$record) {
+            return response()->view('pdf.engineering.pdfExpiredLink', [], 403);
+        }
+
+        $config = $record->signatureConfig();
+
+        $request->validate([
+            $config['name_field'] => 'required|string|max:255',
+            $config['signature_field'] => 'required',
+        ]);
+
+        $record->saveSignature($request);
+
+        return view('pdf.engineering.pdfSignatureLinkSuccess', compact('logoBase64'));
     }
 }

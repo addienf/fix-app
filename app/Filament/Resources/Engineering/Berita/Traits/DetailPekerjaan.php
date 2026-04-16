@@ -13,7 +13,8 @@ trait DetailPekerjaan
     use SimpleFormResource;
     public static function getDetailPekerjaanSection()
     {
-        return Section::make('Detail Pekerjaan')
+        return
+            Section::make('Detail Pekerjaan')
             ->relationship('detail')
             ->collapsible()
             ->schema([
@@ -29,16 +30,6 @@ trait DetailPekerjaan
                         'lainnya' => 'Lainnya',
                     ]),
 
-                // Select::make('jenis_pekerjaan')
-                //     ->label('Jenis Pekerjaan')
-                //     // ->multiple()
-                //     ->reactive()
-                //     ->options([
-                //         'service' => 'Service',
-                //         'maintenance' => 'Maintenance',
-                //         'lainnya' => 'Lainnya',
-                //     ]),
-
                 self::textInput('jenis_pekerjaan_lainnya', 'Jenis Pekerjaan Lainnya')
                     ->visible(fn($get) => in_array('lainnya', (array) $get('jenis_pekerjaan')))
                     ->required(fn($get) => in_array('lainnya', (array) $get('jenis_pekerjaan'))),
@@ -50,16 +41,6 @@ trait DetailPekerjaan
                 TextInput::make('serial_number')
                     ->required()
                     ->label('Serial Number'),
-
-                // Select::make('status_barang')
-                //     ->label('Status Barang')
-                //     ->columnSpanFull(fn($get) => in_array('lainnya', (array) $get('jenis_pekerjaan')))
-                //     ->options([
-                //         'yes' => 'Installed',
-                //         'wait' => 'Delivered',
-                //         'na' => 'N/A',
-                //     ])
-                //     ->required(),
 
                 Select::make('status_barang')
                     ->label('Status Barang')

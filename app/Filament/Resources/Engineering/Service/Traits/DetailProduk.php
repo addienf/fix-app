@@ -8,6 +8,7 @@ use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Wallo\FilamentSelectify\Components\ButtonGroup;
@@ -34,14 +35,22 @@ trait DetailProduk
                                     ->label('Remark')
                                     ->required(),
 
-                                ButtonGroup::make('service_status')
-                                    ->required()
-                                    ->label('Service Status')
-                                    ->gridDirection('row')
+                                Select::make('service_status')
                                     ->options([
-                                        1 => 'Yes',
-                                        0 => 'No',
-                                    ]),
+                                        'Finish' => 'Finish',
+                                        'Analize' => 'Analize',
+                                        'Other' => 'Other',
+                                    ])
+                                    ->required(),
+
+                                // ButtonGroup::make('service_status')
+                                //     ->required()
+                                //     ->label('Service Status')
+                                //     ->gridDirection('row')
+                                //     ->options([
+                                //         1 => 'Yes',
+                                //         0 => 'No',
+                                //     ]),
 
                                 Textarea::make('taken_item')
                                     ->label('Taken Item')

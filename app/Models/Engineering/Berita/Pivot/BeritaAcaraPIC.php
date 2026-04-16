@@ -4,13 +4,14 @@ namespace App\Models\Engineering\Berita\Pivot;
 
 use App\Models\Engineering\Berita\BeritaAcara;
 use App\Models\User;
+use App\Traits\HasSignature;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 
 class BeritaAcaraPIC extends Model
 {
-    use HasFactory;
+    use HasFactory, HasSignature;
 
     protected $table = 'berita_acara_pics';
 
@@ -25,6 +26,16 @@ class BeritaAcaraPIC extends Model
         'signed_at',
         'signed_ip',
     ];
+
+    public function signatureConfig(): array
+    {
+        return [
+            'name_field' => 'pelanggan_name',
+            'signature_field' => 'pelanggan_ttd',
+            'date_field' => '',
+            'upload_path' => 'Engineering/Berita/Pelanggan',
+        ];
+    }
 
     public function beritaAcara()
     {

@@ -7,6 +7,7 @@ use App\Filament\Resources\Engineering\Berita\Traits\DetailPekerjaan;
 use App\Filament\Resources\Engineering\Berita\Traits\InformasiBio;
 use App\Filament\Resources\Engineering\Berita\Traits\InformasiUmum;
 use App\Models\Engineering\Berita\BeritaAcara;
+use App\Models\Engineering\SPK\SPKService;
 use App\Traits\HasSignature;
 use Filament\Actions\Action;
 use Filament\Forms\Components\Actions;
@@ -52,15 +53,14 @@ class BeritaAcaraResource extends Resource
 
                 Section::make('PIC')
                     ->collapsible()
-                    ->hiddenOn('edit')
+                    ->hidden(function ($get) {
+                        return filled($get('pic.pelanggan_ttd'));
+                    })
                     ->relationship('pic')
                     ->schema([
 
-                        Hidden::make('jasa_name')
-                            ->default(fn() => auth()->id()),
-
-                        self::textInput('jasa_name_placeholder', 'Nama Penyedia Jasa')
-                            ->default(fn() => auth()->user()?->name),
+                        self::textInput('jasa_name', 'Nama Penyedia Jasa')
+                            ->required(false),
 
                         self::signatureInput('jasa_ttd', ''),
                     ]),
@@ -122,19 +122,30 @@ class BeritaAcaraResource extends Resource
                                         ->action(function ($record) {
                                             $record->pic->update([
                                                 'sign_token' => Str::random(8),
-                                                'sign_token_expires_at' => now()->addMinutes(60),
+                                                'sign_token_expires_at' => now()->addDays(3),
                                             ]);
                                         }),
                                 ]),
 
+                                // Placeholder::make('sign_link')
+                                //     ->label(false)
+                                //     ->content(
+                                //         fn($record) =>
+                                //         $record->pic?->sign_token
+                                //             ? url('/qlb/' . $record->pic->sign_token)
+                                //             : 'Belum ada link dibuat'
+                                //     ),
+
                                 Placeholder::make('sign_link')
                                     ->label(false)
-                                    ->content(
-                                        fn($record) =>
-                                        $record->pic?->sign_token
-                                            ? url('/qlb/' . $record->pic->sign_token)
-                                            : 'Belum ada link dibuat'
-                                    ),
+                                    ->content(function ($record) {
+                                        return $record->pic?->sign_token
+                                            ? route('signature.show', [
+                                                'type' => 'berita-acara',
+                                                'token' => $record->pic->sign_token,
+                                            ])
+                                            : 'Belum ada link dibuat';
+                                    }),
                             ])
                     ])
             ]);
@@ -164,6 +175,13 @@ class BeritaAcaraResource extends Resource
                         ->tooltip('Edit Data Spesifikasi')
                         ->color('info'),
                     Tables\Actions\DeleteAction::make()
+                        ->after(function ($record) {
+                            $spk = SPKService::find($record->spk_service_id);
+
+                            if ($spk) {
+                                $spk->increment('lama_pelaksanaan');
+                            }
+                        })
                         ->icon('heroicon-o-trash')
                         ->tooltip('Hapus Data'),
                     Action::make('pdf_view')

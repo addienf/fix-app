@@ -20,6 +20,7 @@ class IncommingMaterial extends Model
         'dokumen_pendukung',
         'file_upload',
         'status_penerimaan_pic',
+        'is_synced_sheet'
     ];
 
     protected $casts = [
