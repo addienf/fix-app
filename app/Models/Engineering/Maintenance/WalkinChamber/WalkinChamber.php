@@ -17,6 +17,7 @@ class WalkinChamber extends Model
         'spk_service_id',
         'tag_no',
         'remarks',
+        'project',
         'status_penyetujuan',
     ];
 

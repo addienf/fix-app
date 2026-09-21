@@ -181,9 +181,10 @@
             <thead class="bg-gray-100">
                 <tr>
                     <th rowspan="2" class="w-10 px-3 py-2 text-center border border-black">No</th>
-                    <th rowspan="2" class="px-3 py-2 text-left border border-black">Incompatible Part</th>
+                    <th rowspan="2" class="px-3 py-2 text-center border border-black">Incompatible Part</th>
                     <th colspan="2" class="px-3 py-2 text-center border border-black">Repaired</th>
-                    <th rowspan="2" class="px-3 py-2 text-left border border-black">Attachment No.</th>
+                    <th rowspan="2" class="px-3 py-2 text-center border border-black">Attachment No.</th>
+                    <th rowspan="2" class="px-3 py-2 text-center border border-black">Remark</th>
                 </tr>
                 <tr>
                     <th class="px-3 py-2 text-center border border-black">Yes</th>
@@ -208,6 +209,9 @@
                         <td class="px-3 py-2 border border-black">
                             {{ $statusLabel($group['mainPart_status'] ?? '-') }}
                         </td>
+                        <td class="px-3 py-2 border border-black">
+                            {{ $group['remarks'] ?? '-' }}
+                        </td>
                     </tr>
                     @foreach ($group['parts'] ?? [] as $part)
                         <tr>
@@ -222,6 +226,7 @@
                             <td class="px-3 py-2 border border-black">
                                 {{ $statusLabel($part['status'] ?? '-') }}
                             </td>
+                            <td class="px-3 py-2 border border-black">{{ $part['remarks'] ?? '-' }}</td>
                         </tr>
                     @endforeach
                 @endforeach

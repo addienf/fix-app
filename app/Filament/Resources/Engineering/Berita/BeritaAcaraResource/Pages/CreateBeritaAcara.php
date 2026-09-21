@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Engineering\Berita\BeritaAcaraResource\Pages;
 
 use App\Filament\Resources\Engineering\Berita\BeritaAcaraResource;
 use App\Jobs\SendGenericNotif;
+use App\Models\Engineering\SPK\SPKService;
 use App\Notifications\GenericNotification;
 use Filament\Actions;
 use Filament\Resources\Pages\CreateRecord;
@@ -23,6 +24,13 @@ class CreateBeritaAcara extends CreateRecord
     protected function afterCreate(): void
     {
         if ($this->record && $this->record->id) {
+
+            $spk = SPKService::find($this->record->spk_service_id);
+
+            if ($spk && $spk->lama_pelaksanaan > 0) {
+                $spk->decrement('lama_pelaksanaan');
+            }
+
             SendGenericNotif::dispatch(
                 $this->record,
                 ['engineering', 'customer_care'],

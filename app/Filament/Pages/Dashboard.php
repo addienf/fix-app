@@ -19,7 +19,7 @@ class Dashboard extends BaseDashboard
 
     public function filtersForm(Form $form): Form
     {
-        Carbon::setLocale('id'); // Set locale ke Bahasa Indonesia
+        Carbon::setLocale('id');
 
         $months = collect(range(1, 12))
             ->mapWithKeys(fn($m) => [

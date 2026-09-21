@@ -1,272 +1,261 @@
 @extends ('pdf.layout.layout')
 @section('title', 'Kelengkapan Material Stainless Steel PDF')
 @section('content')
-    <div id="export-area" class="p-2 text-black bg-white">
-        <table
-            class="w-full max-w-4xl mx-auto text-sm border border-black dark:border-white dark:bg-gray-900 dark:text-white"
-            style="border-collapse: collapse;">
+    <table>
+        <tr>
+            <td rowspan="4" class="text-center" style="width:80px;">
+                @if ($logoBase64)
+                    <img src="{{ $logoBase64 }}" style="height:55px;">
+                @endif
+            </td>
+
+            <td colspan="4" class="text-center" style="font-weight:bold;">
+                PT. QLab Kinarya Sentosa
+            </td>
+        </tr>
+
+        <tr>
+            <td rowspan="3" colspan="2" class="judul">
+                {!! nl2br("Formulir Cutting & Bending\nFor Production Checklist") !!}
+            </td>
+
+            <td>No. Dokumen</td>
+            <td>FO-QKS-QA-01-03</td>
+        </tr>
+
+        <tr>
+            <td>Tanggal Rilis</td>
+            <td>22 Mei 2025</td>
+        </tr>
+
+        <tr>
+            <td>Revisi</td>
+            <td>01</td>
+        </tr>
+    </table>
+
+    <br>
+
+    <table class="no-border">
+        <tr>
+            <td style="width:180px;">No SPK Produksi</td>
+            <td>: {{ $kelengkapan->spkQC->spkMarketing->no_spk }}</td>
+        </tr>
+    </table>
+
+    <br>
+
+    <table class="no-border">
+        <tr>
+            <td style="width:180px;"><b>Chamber Identification</b></td>
+        </tr>
+    </table>
+
+    <table class="no-border">
+        <tr>
+            <td style="width:180px;">Type Model</td>
+            <td>: {{ $kelengkapan->tipe }}</td>
+        </tr>
+        <tr>
+            <td>Ref Document</td>
+            <td>: {{ $kelengkapan->ref_document }}</td>
+        </tr>
+    </table>
+
+    <br>
+
+    @php
+        $rawDetails = $kelengkapan->detail->details ?? [];
+
+        $details = is_string($rawDetails) ? json_decode($rawDetails, true) : $rawDetails;
+
+        $fields = collect($details)
+            ->map(function ($item) {
+                return [
+                    'item' => $item['part'] ?? '',
+                    'spec' => '-',
+                    'result' => $item['result'] ?? null,
+                    'remark' => $item['select'] ?? '',
+                ];
+            })
+            ->toArray();
+
+        $remarkLabels = [
+            'ok' => 'OK',
+            'h' => 'Hold',
+            'r' => 'Repaired',
+        ];
+    @endphp
+
+    <table class="table-main">
+        <thead>
             <tr>
-                <td rowspan="3"
-                    class="p-2 text-center align-middle border border-black w-28 h-28 dark:border-white dark:bg-gray-900">
-                    <img src="{{ asset('asset/logo.png') }}" alt="Logo" class="object-contain mx-auto h-30" />
-                </td>
-                <td colspan="2" class="font-bold text-center border border-black dark:border-white dark:bg-gray-900">
-                    PT. QLab Kinarya Sentosa
-                </td>
+                <th rowspan="2" style="width:5%;">No</th>
+                <th rowspan="2">Part</th>
+                <th rowspan="2">Order Number</th>
+                <th colspan="2">Result</th>
+                <th rowspan="2">Remark</th>
             </tr>
             <tr>
-                <td class="font-bold text-center border border-black dark:border-white dark:bg-gray-900"
-                    style="font-size: 20px;">
-                    Formulir Cutting & Bending <br> For Production Checklist
-                </td>
-                <td rowspan="2" class="p-0 align-top border border-black dark:border-white dark:bg-gray-900">
-                    <table class="w-full text-sm dark:bg-gray-900 dark:text-white" style="border-collapse: collapse;">
-                        <tr>
-                            <td class="px-3 py-2 border-b border-black dark:border-white">No. Dokumen</td>
-                            <td class="px-3 py-2 font-semibold border-b border-black dark:border-white"> :
-                                FO-QKS-QA-01-03</td>
-                        </tr>
-                        <tr>
-                            <td class="px-3 py-2 border-b border-black dark:border-white">Tanggal Rilis</td>
-                            <td class="px-3 py-2 font-semibold border-b border-black dark:border-white"> : 22 Mei 2025
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="px-3 py-2">Revisi</td>
-                            <td class="px-3 py-2 font-semibold"> : 01</td>
-                        </tr>
-                    </table>
-                </td>
+                <th style="width:10%;">Pass</th>
+                <th style="width:10%;">Fail</th>
             </tr>
-        </table>
-        <div class="grid w-full max-w-4xl grid-cols-1 pt-4 mx-auto gap-y-4">
-            @php
-                $fields1 = [['label' => 'No SPK Produksi :', 'value' => $no_spk]];
-            @endphp
+        </thead>
 
-            @foreach ($fields1 as $field)
-                <div class="flex items-center gap-2 mb-2">
-                    <label class="w-48 font-medium">{{ $field['label'] }}</label>
-                    <input type="text" readonly value="{{ $field['value'] }}"
-                        class="w-full px-3 py-2 text-black bg-white border border-gray-300 rounded-md cursor-not-allowed" />
-                </div>
+        <tbody>
+            @foreach ($fields as $i => $field)
+                <tr>
+                    <td class="text-center">{{ $i + 1 }}</td>
+                    <td>{{ $field['item'] }}</td>
+                    <td class="text-center">{{ $field['spec'] }}</td>
+                    <td class="text-center">
+                        {{ $field['result'] == '1' ? '✔' : '' }}
+                    </td>
+
+                    <td class="text-center">
+                        {{ $field['result'] == '0' ? '✖' : '' }}
+                    </td>
+
+                    <td class="text-center">
+                        {{ $remarkLabels[strtolower($field['remark'])] ?? ucfirst($field['remark']) }}
+                    </td>
+                </tr>
             @endforeach
+        </tbody>
+    </table>
 
-            <h2 class="col-span-1 text-xl font-bold text-start">
-                Chamber Identification
-            </h2>
+    <table class="no-border">
+        <tr>
+            <td style="font-size:10px; font-weight: bold;">
+                Remarks : OK = Ok &nbsp;&nbsp;&nbsp; H = Hold &nbsp;&nbsp;&nbsp; R = Repaired
+            </td>
+        </tr>
+    </table>
 
-            @php
-                $fields2 = [
-                    ['label' => 'Type Model :', 'value' => $kelengkapan->tipe],
-                    ['label' => 'Ref Document :', 'value' => $kelengkapan->ref_document],
-                ];
-            @endphp
+    <br>
 
-            @foreach ($fields2 as $field)
-                <div class="flex items-center gap-2">
-                    <label class="w-48 font-medium">{{ $field['label'] }}</label>
-                    <input type="text" readonly value="{{ $field['value'] }}"
-                        class="w-full px-3 py-2 text-black bg-white border border-gray-300 rounded-md cursor-not-allowed" />
-                </div>
-            @endforeach
+    <div style="margin-top: 2px; margin-bottom: 16px;">
+        <label style="display: block; margin-bottom: 4px; font-weight: bold;">Note</label>
 
-            @php
-                $rawDetails = $kelengkapan->detail->details ?? [];
-
-                $details = is_string($rawDetails) ? json_decode($rawDetails, true) : $rawDetails;
-
-                $jadwal =
-                    $kelengkapan->standarisasiDrawing->serahTerimaWarehouse->peminjamanAlat->spkVendor
-                        ->perencanaanProduksi;
-
-                $spkOrder = $jadwal->spk->no_order ?? '-';
-
-                $orderNumber = $spkOrder ?? '-';
-
-                $fields = collect($details)
-                    ->map(function ($item) use ($orderNumber) {
-                        return [
-                            'item' => $item['part'] ?? '',
-                            'spec' => $orderNumber,
-                            'result' => ucfirst($item['result'] ?? ''),
-                            'remark' => ucfirst($item['select'] ?? ''),
-                        ];
-                    })
-                    ->toArray();
-
-                $remarkLabels = [
-                    'ok' => 'OK',
-                    'h' => 'Hold',
-                    'r' => 'Repaired',
-                ];
-            @endphp
-
-            <table class="w-full text-sm border border-collapse border-black">
-                <thead class="bg-gray-100">
-                    <tr>
-                        <th class="w-10 px-3 py-2 text-center border border-black" rowspan="2">No</th>
-                        <th class="px-3 py-2 text-left border border-black" rowspan="2">Part</th>
-                        <th class="px-3 py-2 text-left border border-black" rowspan="2">Order Number</th>
-                        <th class="px-3 py-2 text-center border border-black" colspan="2">Result</th>
-                        <th class="px-3 py-2 text-left border border-black" rowspan="2">Remark</th>
-                    </tr>
-                    <tr>
-                        <th class="px-3 py-2 text-center border border-black">Pass</th>
-                        <th class="px-3 py-2 text-center border border-black">Fail</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($fields as $index => $field)
-                        <tr>
-                            <td class="px-3 py-2 text-center border border-black">{{ $index + 1 }}</td>
-                            <td class="px-3 py-2 border border-black">{{ $field['item'] }}</td>
-                            <td class="px-3 py-2 border border-black">{{ $field['spec'] }}</td>
-                            <td class="px-3 py-2 text-center border border-black">
-                                {{ $field['result'] === '1' ? '✔' : '' }}
-                            </td>
-                            <td class="px-3 py-2 text-center border border-black">
-                                {{ $field['result'] === '0' ? '✘' : '' }}
-                            </td>
-                            <td class="px-3 py-2 border border-black">
-                                {{ $remarkLabels[strtolower($field['remark'])] ?? $field['remark'] }}</td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
-            <div class="pt-6 mt-4 mb-4">
-                <label class="block mb-1 font-semibold">Note</label>
-                <div class="w-full p-2 border border-black rounded cursor-not-allowed resize-none" readonly>
-                    {{ $kelengkapan->note }}</div>
-            </div>
+        <div style="width: 100%; padding: 8px; border: 1px solid black; border-radius: 4px;">
+            {{ $kelengkapan->note }}
         </div>
-
-        @php
-            $roles = [
-                'Inspected By' => [
-                    'name' => $kelengkapan->pic->inspectedName->name ?? '-',
-                    'signature' => $kelengkapan->pic->inspected_signature ?? null,
-                    'date' => $kelengkapan->pic->inspected_date ?? null,
-                ],
-                'Accepted By' => [
-                    'name' => $kelengkapan->pic->acceptedName->name ?? '-',
-                    'signature' => $kelengkapan->pic->accepted_signature ?? null,
-                    'date' => $kelengkapan->pic->accepted_date ?? null,
-                ],
-                'Approved By' => [
-                    'name' => $kelengkapan->pic->approvedName->name ?? '-',
-                    'signature' => $kelengkapan->pic->approved_signature ?? null,
-                    'date' => $kelengkapan->pic->approved_date ?? null,
-                ],
-            ];
-        @endphp
-
-        <!-- SIGNATURE SECTION -->
-        <table class="w-full max-w-4xl mx-auto text-sm border border-black" style="border-collapse: collapse;">
-            <thead>
-                <tr class="font-semibold text-center bg-gray-100">
-                    <th class="w-32 border border-black"></th>
-                    @foreach ($roles as $role => $data)
-                        <th class="py-2 border border-black">{{ $role }}</th>
-                    @endforeach
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td class="px-2 py-2 font-medium border border-black">Name</td>
-                    @foreach ($roles as $data)
-                        <td class="px-2 py-2 border border-black">{{ $data['name'] }}</td>
-                    @endforeach
-                </tr>
-                <tr>
-                    <td class="px-2 py-2 font-medium border border-black">Signature</td>
-                    @foreach ($roles as $data)
-                        <td class="px-2 py-2 border border-black">
-                            <div class="flex items-center justify-center h-24">
-                                @if ($data['signature'])
-                                    <img src="{{ asset('storage/' . $data['signature']) }}"
-                                        class="object-contain h-full" />
-                                @else
-                                    <span class="text-sm text-gray-400">No Signature</span>
-                                @endif
-                            </div>
-                        </td>
-                    @endforeach
-                </tr>
-                <tr>
-                    <td class="px-2 py-2 font-medium border border-black">Date</td>
-                    @foreach ($roles as $data)
-                        <td class="px-2 py-2 border border-black">
-                            {{ $data['date'] ? \Carbon\Carbon::parse($data['date'])->format('d M Y') : '-' }}
-                        </td>
-                    @endforeach
-                </tr>
-            </tbody>
-        </table>
-
-
     </div>
-    <div class="mt-6 mb-3 text-center">
-        <button onclick="exportPDF()"
-            class="inline-flex items-center gap-2 py-3 text-sm font-semibold text-black text-white bg-blue-600 border rounded border-animated px-7 border-black-400 hover:bg-purple-600 hover:text-white">
-            <!-- Icon download SVG -->
-            <svg class="w-5 h-5 transition-colors duration-300" fill="none" stroke="currentColor" stroke-width="2"
-                viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path stroke-linecap="round" stroke-linejoin="round"
-                    d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4">
-                </path>
-            </svg>
-            Download PDF
-        </button>
-    </div>
+
+    <br><br>
+
+    @php
+        $roles = [
+            'Inspected By' => [
+                'name' => $kelengkapan->pic->inspectedName->name ?? '-',
+                'signature' => $kelengkapan->pic->inspected_signature ?? null,
+                'date' => $kelengkapan->pic->inspected_date ?? null,
+            ],
+            'Accepted By' => [
+                'name' => $kelengkapan->pic->acceptedName->name ?? '-',
+                'signature' => $kelengkapan->pic->accepted_signature ?? null,
+                'date' => $kelengkapan->pic->accepted_date ?? null,
+            ],
+            'Approved By' => [
+                'name' => $kelengkapan->pic->approvedName->name ?? '-',
+                'signature' => $kelengkapan->pic->approved_signature ?? null,
+                'date' => $kelengkapan->pic->approved_date ?? null,
+            ],
+        ];
+    @endphp
+
+    <table class="" style="text-align:center;">
+        <tr>
+            <td>Inspected By</td>
+            <td>Accepted By</td>
+            <td>Approved By</td>
+        </tr>
+
+        <tr>
+            @foreach ($roles as $data)
+                <td style="height:70px;">
+                    <div class="signature-box">
+                        @if ($data['signature'])
+                            <img src="{{ public_path('storage/' . $data['signature']) }}">
+                        @endif
+                    </div>
+                </td>
+            @endforeach
+        </tr>
+
+        <tr>
+            @foreach ($roles as $data)
+                <td><b>{{ $data['name'] }}</b></td>
+            @endforeach
+        </tr>
+
+        <tr>
+            @foreach ($roles as $data)
+                <td>
+                    {{ $data['date'] ? \Carbon\Carbon::parse($data['date'])->format('d F Y') : '-' }}
+                </td>
+            @endforeach
+        </tr>
+    </table>
+
 @endsection
 
-<script>
-    function exportPDF() {
-        window.scrollTo(0, 0);
-
-        const element = document.getElementById("export-area");
-        const images = element.getElementsByTagName("img");
-        const totalImages = images.length;
-        let loadedImages = 0;
-
-        for (let img of images) {
-            if (img.complete) {
-                loadedImages++;
-            } else {
-                img.onload = () => {
-                    loadedImages++;
-                    if (loadedImages === totalImages) renderPDF();
-                };
-            }
-        }
-
-        if (loadedImages === totalImages) {
-            renderPDF();
-        }
-
-        function renderPDF() {
-            html2pdf().set({
-                margin: [0.2, 0.2, 0.2, 0.2],
-                filename: "kelengkapan-material-stainless-steel.pdf",
-                image: {
-                    type: "jpeg",
-                    quality: 1
-                },
-                html2canvas: {
-                    scale: 3,
-                    useCORS: true,
-                    letterRendering: true
-                },
-                jsPDF: {
-                    unit: "in",
-                    format: "a4",
-                    orientation: "portrait"
-                },
-                pagebreak: {
-                    mode: ["avoid", "css"]
-                }
-            }).from(element).save();
-        }
+<style>
+    body {
+        font-family: DejaVu Sans, sans-serif;
+        font-size: 11px;
     }
-</script>
+
+    table {
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    th,
+    td {
+        border: 1px solid #000;
+        padding: 4px;
+    }
+
+    .no-border td {
+        border: none !important;
+    }
+
+    .text-center {
+        text-align: center;
+    }
+
+    .judul {
+        font-size: 14px;
+        font-weight: bold;
+        text-align: center;
+    }
+
+    .table-main td {
+        height: 25px;
+    }
+
+    .checkbox {
+        width: 12px;
+        height: 12px;
+        border: 1px solid black;
+        margin: auto;
+        text-align: center;
+        line-height: 12px;
+        font-size: 10px;
+    }
+
+    .signature-box {
+        height: 70px;
+        position: relative;
+    }
+
+    .signature-box img {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 120%;
+        max-height: 70px;
+    }
+</style>

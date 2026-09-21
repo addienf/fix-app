@@ -2,12 +2,14 @@
 
 namespace App\Filament\Resources\Engineering\Service\Traits;
 
+use App\Models\General\Company;
 use App\Traits\HasAutoNumber;
 use App\Traits\SimpleFormResource;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Ysfkaya\FilamentPhoneInput\Forms\PhoneInput;
+use Filament\Forms\Set;
 
 trait DataComplain
 {
@@ -17,7 +19,6 @@ trait DataComplain
         return Section::make('Data Complain')
             ->collapsible()
             ->schema([
-                // Grid::make(2)
                 Grid::make([
                     'default' => 1,
                     'md' => 2,
@@ -28,18 +29,26 @@ trait DataComplain
                             ->required()
                             ->label('Who Complaint'),
 
-                        TextInput::make('company_name')
-                            ->required()
-                            ->label('Company Name'),
+                        Select::make('company_name')
+                            ->label('Company Name')
+                            ->options(Company::pluck('name', 'name'))
+                            ->searchable()
+                            ->reactive()
+                            ->afterStateUpdated(function ($state, Set $set) {
+                                $company = Company::where('name', $state)->first();
+
+                                if ($company) {
+                                    $set('address', $company->address);
+                                }
+                            }),
 
                         TextInput::make('address')
                             ->required()
                             ->label('Address'),
 
-                        PhoneInput::make('phone_number')
-                            // ->defaultCountry('US')
-                            ->label('Phone Number')
-                            ->required(),
+                        TextInput::make('phone_number')
+                            ->required()
+                            ->label('Phone Number'),
                     ])
             ]);
     }

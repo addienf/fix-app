@@ -3,8 +3,10 @@
 namespace App\Filament\Resources\Engineering\SPK\Traits;
 
 use App\Traits\SimpleFormResource;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
+use Illuminate\Support\Carbon;
 
 trait DeskripsiPekerjaan
 {
@@ -44,7 +46,33 @@ trait DeskripsiPekerjaan
             Section::make('C. Pelaksanaan')
             ->collapsible()
             ->schema([
-                self::dateInput('tanggal_pelaksanaan', 'Tanggal Pelaksana'),
+                self::dateInput('tanggal_pelaksanaan', 'Tanggal Pelaksana')
+                    ->afterStateUpdated(function ($state, callable $get, callable $set) {
+                        $mulai = $state;
+                        $selesai = $get('tanggal_selesai');
+
+                        if ($mulai && $selesai) {
+                            $lama = Carbon::parse($mulai)
+                                ->diffInDays(Carbon::parse($selesai)) + 1;
+
+                            $set('lama_pelaksanaan', $lama);
+                        }
+                    }),
+
+                self::dateInput('tanggal_selesai', 'Tanggal Selesai')
+                    ->afterStateUpdated(function ($state, callable $get, callable $set) {
+                        $mulai = $get('tanggal_pelaksanaan');
+                        $selesai = $state;
+
+                        if ($mulai && $selesai) {
+                            $lama = Carbon::parse($mulai)
+                                ->diffInDays(Carbon::parse($selesai)) + 1;
+
+                            $set('lama_pelaksanaan', $lama);
+                        }
+                    }),
+
+                Hidden::make('lama_pelaksanaan'),
 
                 self::textInput('tempat_pelaksanaan', 'Tempat Pelaksanaan'),
 
@@ -52,8 +80,8 @@ trait DeskripsiPekerjaan
             ])
             ->columns([
                 'default' => 1,
-                'md' => 2,
-                'lg' => 2,
+                'md' => 3,
+                'lg' => 3,
             ]);
     }
 }

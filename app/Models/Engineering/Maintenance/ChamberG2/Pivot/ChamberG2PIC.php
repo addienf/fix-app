@@ -4,15 +4,26 @@ namespace App\Models\Engineering\Maintenance\ChamberG2\Pivot;
 
 use App\Models\Engineering\Maintenance\ChamberG2\ChamberG2;
 use App\Models\User;
+use App\Traits\HasSignature;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 
 class ChamberG2PIC extends Model
 {
-    use HasFactory;
+    use HasFactory, HasSignature;
 
     protected $table = 'chamber_g2_pics';
+
+    // protected $fillable = [
+    //     'g2_id',
+    //     'checked_name',
+    //     'checked_signature',
+    //     'checked_date',
+    //     'approved_name',
+    //     'approved_signature',
+    //     'approved_date',
+    // ];
 
     protected $fillable = [
         'g2_id',
@@ -22,7 +33,21 @@ class ChamberG2PIC extends Model
         'approved_name',
         'approved_signature',
         'approved_date',
+        'sign_token',
+        'sign_token_expires_at',
+        'signed_at',
+        'signed_ip',
     ];
+
+    public function signatureConfig(): array
+    {
+        return [
+            'name_field' => 'approved_name',
+            'signature_field' => 'approved_signature',
+            'date_field' => 'approved_date',
+            'upload_path' => 'Engineering/Maintenance/ChamberG2/Signature',
+        ];
+    }
 
     public function chamberG2()
     {

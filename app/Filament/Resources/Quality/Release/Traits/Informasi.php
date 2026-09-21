@@ -53,84 +53,38 @@ trait Informasi
             ->preload()
             ->reactive()
             ->required()
-            // ->options(
-            //     fn() =>
-            //     PengecekanPerforma::with([
-            //         'penyerahanProdukJadi.pengecekanElectrical.penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.perencanaanProduksi.spk',
-            //         'penyerahanProdukJadi.pengecekanElectrical.penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.perencanaanProduksi.identifikasiProduks',
-            //     ])
-            //         ->latest()
-            //         ->limit(20)
-            //         ->get()
-            //         ->mapWithKeys(function ($item) {
-
-            //             $jadwal = $item->penyerahanProdukJadi->pengecekanElectrical->penyerahanElectrical
-            //                 ->pengecekanSS->kelengkapanMaterial->standarisasiDrawing
-            //                 ->serahTerimaWarehouse->permintaanBahanProduksi
-            //                 ->jadwalProduksi;
-
-            //             $spkNo = $jadwal->spk->no_spk ?? '-';
-
-            //             $seri = $jadwal->identifikasiProduks
-            //                 ->pluck('no_seri')
-            //                 ->filter()
-            //                 ->implode(', ') ?: '-';
-
-            //             return [
-            //                 $item->id => "{$spkNo} - {$seri}",
-            //             ];
-            //         })
-            // )
             ->options(
-                fn() =>
                 PengecekanPerforma::with([
-                    'penyerahanProdukJadi.pengecekanElectrical.penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.perencanaanProduksi.spk',
-                    'penyerahanProdukJadi.pengecekanElectrical.penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.perencanaanProduksi.identifikasiProduks',
+                    'spkQC:id,spk_marketing_id',
+                    'spkQC.spkMarketing:id,no_spk'
                 ])
                     ->latest()
                     ->limit(10)
                     ->get()
                     ->mapWithKeys(fn($item) => [
-                        $item->id => ($jadwal = $item->penyerahanProdukJadi->pengecekanElectrical->penyerahanElectrical
-                            ->pengecekanSS->kelengkapanMaterial->standarisasiDrawing
-                            ->serahTerimaWarehouse->perencanaanProduksi)
-                            ? (($jadwal->spk->no_spk ?? '-') . ' - ' . (
-                                $jadwal->identifikasiProduks->pluck('no_seri')->filter()->implode(', ') ?: '-'
-                            ))
-                            : '-'
+                        $item->id => $item->spkQC?->spkMarketing?->no_spk
                     ])
             )
             ->getSearchResultsUsing(function (string $search) {
                 return PengecekanPerforma::with([
-                    'penyerahanProdukJadi.pengecekanElectrical.penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.perencanaanProduksi.spk',
-                    'penyerahanProdukJadi.pengecekanElectrical.penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.perencanaanProduksi.identifikasiProduks',
+                    'spkQC:id,spk_marketing_id',
+                    'spkQC.spkMarketing:id,no_spk'
                 ])
-                    ->whereHas('penyerahanProdukJadi.pengecekanElectrical.penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.perencanaanProduksi.spk', function ($q) use ($search) {
+                    ->whereHas('spkQC.spkMarketing', function ($q) use ($search) {
                         $q->where('no_spk', 'like', "%{$search}%");
-                    })
-                    ->orWhereHas('penyerahanProdukJadi.pengecekanElectrical.penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.perencanaanProduksi.identifikasiProduks', function ($q) use ($search) {
-                        $q->where('no_seri', 'like', "%{$search}%");
                     })
                     ->limit(10)
                     ->get()
                     ->mapWithKeys(fn($item) => [
-                        $item->id => ($jadwal = $item->penyerahanProdukJadi->pengecekanElectrical->penyerahanElectrical
-                            ->pengecekanSS->kelengkapanMaterial->standarisasiDrawing
-                            ->serahTerimaWarehouse->perencanaanProduksi)
-                            ? (($jadwal->spk->no_spk ?? '-') . ' - ' . (
-                                $jadwal->identifikasiProduks->pluck('no_seri')->filter()->implode(', ') ?: '-'
-                            ))
-                            : '-'
+                        $item->id => $item->spkQC?->spkMarketing?->no_spk
                     ]);
             })
             ->afterStateUpdated(function ($state, callable $set) {
                 if (!$state) return;
 
-                $pengecekan = PengecekanPerforma::with([
-                    'penyerahanProdukJadi.pengecekanElectrical.penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.perencanaanProduksi.spk'
-                ])->find($state);
+                $pengecekan = PengecekanPerforma::with('spkQC.spkMarketing')->find($state);
 
-                $product_name = $pengecekan?->penyerahanProdukJadi?->pengecekanElectrical?->penyerahanElectrical?->nama_produk ?? '-';
+                $product_name = $pengecekan?->spkQC?->spkMarketing?->spesifikasiProduct?->details?->first()?->product?->name ?? '-';
 
                 $set('product', $product_name);
             });

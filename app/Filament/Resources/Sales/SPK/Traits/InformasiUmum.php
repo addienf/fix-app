@@ -93,6 +93,7 @@ trait InformasiUmum
                                 'company' => fn($c) => $c->select(['id', 'name'])
                             ])
                     ])
+                    ->where('status', 'Diketahui MR')
                     ->whereDoesntHave('spk')
                     ->orderBy('id', 'desc')
                     ->limit(10)
@@ -137,6 +138,7 @@ trait InformasiUmum
                                 'company' => fn($c) => $c->select(['id', 'name'])
                             ])
                     ])
+                    ->where('status', 'Diketahui MR')
                     ->whereDoesntHave('spk')
                     ->whereHas('urs.company', function ($q) use ($search) {
                         $q->where('name', 'LIKE', "%{$search}%")

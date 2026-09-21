@@ -47,18 +47,17 @@ class IncommingMaterialSS extends Model
     protected static function booted()
     {
         static::saving(function ($model) {
-            if (
-                $model->pic?->checked_signature &&
-                $model->status_penyelesaian !== 'Diterima'
-            ) {
-                $model->status_penyelesaian = 'Diterima';
+            if (filled($model->pic?->approved_signature)) {
+                $model->updateQuietly([
+                    'status_penyelesaian' => 'Disetujui'
+                ]);
+                return;
             }
 
-            if (
-                $model->pic?->approved_signature &&
-                $model->status_penyelesaian !== 'Disetujui'
-            ) {
-                $model->status_penyelesaian = 'Disetujui';
+            if (filled($model->pic?->accepted_signature)) {
+                $model->updateQuietly([
+                    'status_penyelesaian' => 'Diterima'
+                ]);
             }
         });
 

@@ -7,7 +7,6 @@ use App\Filament\Resources\Engineering\Maintenance\ColdRoom\Traits\Informasi;
 use App\Filament\Resources\Engineering\Maintenance\ColdRoom\Traits\TabelChecklist;
 use App\Models\Engineering\Maintenance\ColdRoom\ColdRoom;
 use App\Traits\HasSignature;
-use Filament\Actions\Action;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Section;
@@ -17,6 +16,14 @@ use Filament\Tables;
 use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\FileUpload;
+use Filament\Actions\Action;
+use Filament\Forms\Components\Actions;
+use Filament\Forms\Components\Actions\Action as ButtonAction;
+use Filament\Forms\Components\Placeholder;
+use Illuminate\Support\Str;
+use Wallo\FilamentSelectify\Components\ButtonGroup;
 
 class ColdRoomResource extends Resource
 {
@@ -29,13 +36,6 @@ class ColdRoomResource extends Resource
     protected static ?string $modelLabel = 'Cold Room';
     protected static ?string $slug = 'engineering/cold-room';
     protected static ?string $navigationIcon = 'heroicon-o-wrench-screwdriver';
-
-    // public static function getNavigationBadge(): ?string
-    // {
-    //     $count = ColdRoom::where('status_penyetujuan', '!=', 'Disetujui')->count();
-
-    //     return $count > 0 ? (string) $count : null;
-    // }
 
     public static function form(Form $form): Form
     {
@@ -51,40 +51,23 @@ class ColdRoomResource extends Resource
 
                 self::getRemarksSection(),
 
-                // static::signatureSection(
-                //     [
-                //         [
-                //             'prefix' => 'checked',
-                //             'role' => 'Checked By',
-                //             'hideLogic' => fn($operation) => $operation === 'edit',
-                //         ],
-                //         [
-                //             'prefix' => 'approved',
-                //             'role' => 'Approved By',
-                //             'hideLogic' => fn($operation, $record) =>
-                //             $operation === 'create' || filled($record?->approved_signature)
-                //         ],
-                //     ],
-                //     title: 'PIC',
-                //     uploadPath: 'Engineering/Maintenance/ColdRoom/Signature'
-                // ),
-
                 Section::make('Customer Info')
                     ->collapsible()
                     ->relationship('pic')
                     ->schema([
-                        static::signatureSection2(
-                            [
-                                [
-                                    'prefix' => 'checked',
-                                    'role' => 'Checked By',
-                                    'hideLogic' => fn($operation) => $operation === 'edit',
-                                ],
-                            ],
-                            title: 'PIC',
-                            uploadPath: 'Engineering/Maintenance/ColdRoom/Signature'
-                        )
-                            ->hiddenOn('edit'),
+
+                        // static::signatureSection2(
+                        //     [
+                        //         [
+                        //             'prefix' => 'checked',
+                        //             'role' => 'Checked By',
+                        //             'hideLogic' => fn($operation) => $operation === 'edit',
+                        //         ],
+                        //     ],
+                        //     title: 'PIC',
+                        //     uploadPath: 'Engineering/Maintenance/ColdRoom/Signature'
+                        // )
+                        //     ->hiddenOn('edit'),
 
                         Section::make('PIC')
                             ->schema([
@@ -94,22 +77,102 @@ class ColdRoomResource extends Resource
                                     'lg' => 2,
                                 ])
                                     ->schema([
-                                        self::textInput('approved_name', 'Approved By')
-                                            ->required(false),
+                                        self::textInput('checked_name', 'Checked By')
+                                            ->required(),
 
-                                        self::dateInput('approved_date', 'Tanggal')
-                                            ->required(false),
+                                        self::dateInput('checked_date', 'Tanggal')
+                                            ->required(),
 
                                         self::signatureInput(
-                                            "approved_signature",
+                                            "checked_signature",
                                             '',
                                             'Engineering/Maintenance/ColdRoom/Signature'
                                         )
-                                            ->required(false)
+                                            ->required()
                                             ->columnSpanFull(),
                                     ])
-                            ])->hiddenOn('create')
+                            ])
+                    ])->hiddenOn('edit'),
+
+                Section::make('Pelanggan')
+                    ->collapsible()
+                    ->relationship('pic')
+                    ->hidden(function ($get, $operation) {
+                        return $operation === 'create'
+                            || filled($get('pic.approved_signature'));
+                    })
+                    ->mutateRelationshipDataBeforeSaveUsing(function (array $data) {
+
+                        if (!empty($data['approved_signature_draw'])) {
+                            $data['approved_signature'] = $data['approved_signature_draw'];
+                        }
+
+                        if (!empty($data['approved_signature_upload'])) {
+                            $data['approved_signature'] = $data['approved_signature_upload'];
+                        }
+
+                        unset($data['approved_signature_draw']);
+                        unset($data['approved_signature_upload']);
+
+                        return $data;
+                    })
+                    ->schema([
+
+                        Grid::make(2)
+                            ->schema([
+                                self::getIsStock(),
+
+                                self::textInput('approved_name', 'Nama Pelanggan')
+                                    ->required(),
+
+                                DatePicker::make("approved_date")
+                                    ->label('Tanggal')
+                                    ->default(now())
+                                    ->required(),
+                            ]),
+
+                        self::signatureInput('approved_signature_draw', '', 'Engineering/Maintenance/ColdRoom/Signature')
+                            ->visible(fn($get) => $get('ttd_method') === 'draw'),
+
+                        FileUpload::make('approved_signature_upload')
+                            ->label('Upload Scan Tanda Tangan')
+                            ->image()
+                            ->directory('Engineering/Maintenance/ColdRoom/Signature')
+                            ->visible(fn($get) => $get('ttd_method') === 'upload'),
                     ]),
+
+                Section::make('Link Tanda Tangan')
+                    ->hidden(function ($get, $operation) {
+                        return $operation === 'create'
+                            || filled($get('pic.pelanggan_ttd'));
+                    })
+                    ->schema([
+                        Grid::make(2)
+                            ->schema([
+                                Actions::make([
+                                    ButtonAction::make('generate_link')
+                                        ->label('Generate Link')
+                                        ->icon('heroicon-o-link')
+                                        ->action(function ($record) {
+                                            $record->pic->update([
+                                                'sign_token' => Str::random(8),
+                                                'sign_token_expires_at' => now()->addDays(3),
+                                            ]);
+                                        }),
+                                ]),
+
+                                Placeholder::make('sign_link')
+                                    ->label(false)
+                                    ->content(function ($record) {
+                                        return $record->pic?->sign_token
+                                            ? route('signature.show', [
+                                                'type' => 'cold-room',
+                                                'token' => $record->pic->sign_token,
+                                            ])
+                                            : 'Belum ada link dibuat';
+                                    }),
+                            ])
+                    ])
             ]);
     }
 
@@ -118,16 +181,9 @@ class ColdRoomResource extends Resource
         return $table
             ->columns([
                 //
-
+                self::textColumn('spkService.no_spk_service', 'No SPK Service'),
+                self::textColumn('spkService.perusahaan', 'Nama Perusahaan'),
                 self::textColumn('tag_no', 'Unit Name/TAG No'),
-
-                // self::textColumn('status_penyetujuan', 'Status')
-                //     ->badge()
-                //     ->color(
-                //         fn($state) =>
-                //         $state === 'Disetujui' ? 'success' : 'danger'
-                //     )
-                //     ->alignCenter(),
             ])
             ->filters([
                 //
@@ -145,7 +201,6 @@ class ColdRoomResource extends Resource
                         ->label(_('Lihat PDF'))
                         ->icon('heroicon-o-document')
                         ->color('success')
-                        // ->visible(fn($record) => $record->status_penyetujuan === 'Disetujui')
                         ->url(fn($record) => route('pdf.MaintenanceColdRoom', ['record' => $record->id])),
                 ])
             ])
@@ -180,5 +235,24 @@ class ColdRoomResource extends Resource
                 'detail',
                 'pic'
             ]);
+    }
+
+    private static function getIsStock()
+    {
+        return
+            ButtonGroup::make('ttd_method')
+            ->label('Metode Tanda Tangan')
+            ->options([
+                'draw' => 'Tanda tangan langsung',
+                'upload' => 'Upload scan tanda tangan',
+            ])
+            ->default('draw')
+            ->live()
+            ->dehydrated(false)
+            ->required()
+            ->columnSpanFull()
+            ->onColor('primary')
+            ->offColor('gray')
+            ->gridDirection('row');
     }
 }

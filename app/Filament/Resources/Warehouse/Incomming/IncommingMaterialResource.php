@@ -81,21 +81,7 @@ class IncommingMaterialResource extends Resource
                 //     ->label('No Surat Permintaan Bahan'),
 
                 TextColumn::make('no_surat')
-                    ->label('No Surat Permintaan Bahan')
-                    ->getStateUsing(function ($record) {
-
-                        $noSurat = $record->permintaanPembelian?->permintaanBahanWBB?->no_surat;
-
-                        if ($noSurat) {
-                            return $noSurat;
-                        }
-
-                        $createdAt = $record->permintaanPembelian?->created_at
-                            ? $record->permintaanPembelian->created_at->format('YmdHis')
-                            : now()->format('YmdHis');
-
-                        return "Untuk Stock Pembelian - {$createdAt}";
-                    }),
+                    ->label('No Surat'),
 
                 self::textColumn('tanggal', 'Tanggal Penerimaan')
                     ->formatStateUsing(fn($state) => \Carbon\Carbon::parse($state)->format('d F Y')),
@@ -158,7 +144,6 @@ class IncommingMaterialResource extends Resource
     {
         return parent::getEloquentQuery()
             ->with([
-                'permintaanPembelian',
                 'details',
                 'pic'
             ]);

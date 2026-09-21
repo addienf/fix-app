@@ -8,6 +8,8 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Section;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Saade\FilamentAutograph\Forms\Components\SignaturePad;
 
 trait HasSignature
@@ -19,11 +21,11 @@ trait HasSignature
      * @param  string  $title        Judul section
      * @param  string|null $uploadPath Lokasi upload tanda tangan (optional)
      */
-    public static function signatureSection(array $signatures, string $title = 'PIC', ?string $uploadPath = null): Section
+    public static function signatureSection(array $signatures, string $title = 'PIC', ?string $uploadPath = null, bool $required = true): Section
     {
-        return Section::make($title)
+        return
+            Section::make($title)
             ->collapsible()
-            ->reactive()
             ->relationship('pic')
             ->schema([
                 Grid::make(count($signatures))
@@ -33,16 +35,16 @@ trait HasSignature
                             $role = $item['role'];
                             $hideLogic = $item['hideLogic'] ?? null;
 
-                            return Grid::make(1)
+                            return
+                                Grid::make(1)
                                 ->schema([
                                     Hidden::make("{$prefix}_name")
                                         ->default(fn() => auth()->id())
-                                        ->dehydrated(true)
                                         ->afterStateHydrated(function ($component) {
                                             $component->state(auth()->id());
-                                        }),
+                                        })
+                                        ->dehydrated(fn($get) => filled($get("{$prefix}_signature"))),
 
-                                    // Grid::make(2)
                                     Grid::make([
                                         'default' => 1,
                                         'md' => 2,
@@ -53,6 +55,8 @@ trait HasSignature
                                                 ->label($role)
                                                 ->default(fn() => auth()->user()?->name)
                                                 ->placeholder(fn() => auth()->user()?->name)
+                                                ->dehydrated(false)
+                                                ->required(false)
                                                 ->extraAttributes([
                                                     'readonly' => true,
                                                     'style' => 'pointer-events: none;',
@@ -61,13 +65,13 @@ trait HasSignature
                                             DatePicker::make("{$prefix}_date")
                                                 ->label('Tanggal')
                                                 ->default(now())
-                                                ->required(),
+                                                ->requiredWith("{$prefix}_signature")
+                                                ->dehydrated(fn($get) => filled($get("{$prefix}_signature")))
                                         ]),
 
-                                    // 👇 kirim $uploadPath ke helper
-                                    self::signatureInput("{$prefix}_signature", '', $uploadPath),
-
-
+                                    self::signatureInput("{$prefix}_signature", '', $uploadPath)
+                                        ->required(false)
+                                        ->dehydrated(fn($state) => filled($state)),
                                 ])
                                 ->hidden($hideLogic ?? fn() => false);
                         })->toArray()
@@ -98,7 +102,6 @@ trait HasSignature
                                             $component->state(auth()->id());
                                         }),
 
-                                    // Grid::make(2)
                                     Grid::make([
                                         'default' => 1,
                                         'md' => 2,
@@ -151,5 +154,67 @@ trait HasSignature
                     $set($fieldName, $path);
                 }
             });
+    }
+
+    public static function findValidToken(string $token)
+    {
+        $record = static::where('sign_token', $token)->firstOrFail();
+
+        $config = $record->signatureConfig();
+        $signatureField = $config['signature_field'];
+
+        // jika sudah pernah sign
+        if ($record->$signatureField) {
+            return null;
+        }
+
+        // jika token expired
+        if (
+            $record->sign_token_expires_at &&
+            now()->gt($record->sign_token_expires_at)
+        ) {
+            return null;
+        }
+
+        return $record;
+    }
+
+    /**
+     * Simpan signature
+     */
+    public function saveSignature(Request $request): void
+    {
+        $config = $this->signatureConfig();
+
+        DB::transaction(function () use ($request, $config) {
+            $path = SignatureUploader::handle(
+                $request->input($config['signature_field']),
+                'signature_',
+                $config['upload_path']
+            );
+
+            $ip = request()->header('X-Forwarded-For');
+
+            if ($ip) {
+                $ip = explode(',', $ip)[0];
+            } else {
+                $ip = request()->getClientIp();
+            }
+
+            if ($ip === '127.0.0.1') {
+                $ip = '127.0.0.1 (Local)';
+            }
+
+            $this->update([
+                $config['name_field'] => $request->input($config['name_field']),
+                $config['signature_field'] => $path,
+                $config['date_field'] => now(),
+                'signed_ip' => $ip,
+
+                // single use token
+                'sign_token' => null,
+                'sign_token_expires_at' => null,
+            ]);
+        });
     }
 }

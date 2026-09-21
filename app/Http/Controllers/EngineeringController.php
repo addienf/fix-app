@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Engineering\Berita\BeritaAcara;
+use App\Models\Engineering\Berita\Pivot\BeritaAcaraPIC;
 use App\Models\Engineering\Maintenance\ChamberG2\ChamberG2;
 use App\Models\Engineering\Maintenance\ChamberR2\ChamberR2;
 use App\Models\Engineering\Maintenance\ChamberWalkinG2\ChamberWalkinG2;
@@ -12,14 +13,18 @@ use App\Models\Engineering\Maintenance\RissingPipette\RissingPipette;
 use App\Models\Engineering\Maintenance\WalkinChamber\WalkinChamber;
 use App\Models\Engineering\Permintaan\PermintaanSparepart;
 use App\Models\Engineering\Service\ServiceReport;
+use App\Services\SignatureUploader;
+use App\Traits\HasSignature;
 use App\Traits\SimpleFormResource;
 use Barryvdh\DomPDF\Facade\Pdf;
 use ZipArchive;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 
 class EngineeringController extends Controller
 {
     //
-    use SimpleFormResource;
+    use SimpleFormResource, HasSignature;
 
     private function getBase64Logo()
     {
@@ -118,6 +123,7 @@ class EngineeringController extends Controller
         }
 
         $zip->close();
+        @unlink($pdfPath);
 
         return response()->download($zipPath)->deleteFileAfterSend(true);
     }
@@ -151,8 +157,6 @@ class EngineeringController extends Controller
         $noSurat = str_replace(['/', '\\'], '-', $sparepart->no_surat);
         $fileName = $noSurat . ' - ' . $tanggal . '.pdf';
 
-        // $pdf = Pdf::loadView('pdf.engineering.pdfSparepartAlatKerja', compact('sparepart'))->setPaper('a4', 'portrait');
-
         $pdf = Pdf::loadView(
             'pdf.engineering.pdfSparepartAlatKerja',
             [
@@ -162,5 +166,53 @@ class EngineeringController extends Controller
         )->setPaper('a4', 'portrait');
 
         return $pdf->stream($fileName);
+    }
+
+    protected function resolveModel(string $type)
+    {
+        $model = config("signature_models.$type");
+
+        abort_if(!$model, 404);
+
+        return $model;
+    }
+
+    public function show2($type, $token)
+    {
+        $pic = BeritaAcaraPIC::with('beritaAcara')->where('sign_token', $token)->firstOrFail();
+        $model = $this->resolveModel($type);
+        $logoBase64 = $this->getBase64Logo();
+        $record = $model::findValidToken($token);
+
+        if (!$record) {
+            return response()->view('pdf.engineering.pdfExpiredLink', [], 403);
+        }
+
+        $config = $record->signatureConfig();
+
+        return view('pdf.engineering.pdfSignatureLink', compact('record', 'type', 'logoBase64', 'config', 'pic'));
+    }
+
+    public function store2(Request $request, $type, $token)
+    {
+        $model = $this->resolveModel($type);
+        $logoBase64 = $this->getBase64Logo();
+        $record = $model::findValidToken($token);
+
+        if (!$record) {
+            return response()->view('pdf.engineering.pdfExpiredLink', [], 403);
+        }
+
+        $config = $record->signatureConfig();
+
+        $request->validate([
+            $config['name_field'] => 'required|string|max:255',
+            $config['jabatan'] => 'required|string|max:255',
+            $config['signature_field'] => 'required',
+        ]);
+
+        $record->saveSignature($request);
+
+        return view('pdf.engineering.pdfSignatureLinkSuccess', compact('logoBase64'));
     }
 }

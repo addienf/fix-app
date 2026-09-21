@@ -36,6 +36,8 @@ class SPKService extends Model
         'deskripsi_pekerjaan',
         'deskripsi_pekerjaan_lainnya',
         'tanggal_pelaksanaan',
+        'tanggal_selesai',
+        'lama_pelaksanaan',
         'tempat_pelaksanaan',
         'status',
     ];

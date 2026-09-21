@@ -46,7 +46,7 @@ trait InformasiUmum
                 self::autoNumberField2('no_surat', 'Nomor Surat', [
                     'prefix' => 'QKS',
                     'section' => 'ENG',
-                    'type' => 'PERMINTAAN',
+                    'type' => 'PSAK',
                     'table' => 'permintaan_spareparts',
                 ])
                     ->hiddenOn('edit'),

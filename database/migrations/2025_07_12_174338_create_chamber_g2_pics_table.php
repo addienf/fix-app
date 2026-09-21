@@ -20,6 +20,10 @@ return new class extends Migration
             $table->string('approved_name')->nullable();
             $table->string('approved_signature')->nullable();
             $table->date('approved_date')->nullable();
+            $table->string('sign_token')->nullable();
+            $table->timestamp('sign_token_expires_at')->nullable();
+            $table->timestamp('sign_at')->nullable();
+            $table->string('signed_ip')->nullable();
             $table->timestamps();
         });
     }

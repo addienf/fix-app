@@ -100,7 +100,7 @@
         <div class="section-title">Service Category</div>
         @foreach (['installation', 'maintenance', 'repair', 'consultation'] as $cat)
             <div class="checkbox">
-                [{{ in_array($cat, $serviceReport->service_category) ? '✔' : ' ' }}]
+                [{{ in_array($cat, $serviceReport->service_category) ? 'X' : ' ' }}]
                 {{ ucfirst($cat) }}
             </div>
         @endforeach
@@ -120,8 +120,8 @@
                 @foreach ($serviceReport->details as $detail)
                     <tr>
                         <td>{{ $detail->remark }}</td>
-                        <td>{{ $detail->service_status }}</td>
                         <td>{{ $detail->taken_item }}</td>
+                        <td>{{ $detail->service_status }}</td>
                     </tr>
                 @endforeach
             </tbody>
@@ -135,7 +135,7 @@
                     <div class="section-title">Action</div>
                     @foreach (['cleaning', 'installation', 'repairing', 'maintenance', 'replacing', 'other'] as $action)
                         <div>
-                            [{{ in_array($action, $serviceReport->actions ?? []) ? '✔' : ' ' }}]
+                            [{{ in_array($action, $serviceReport->actions ?? []) ? 'X' : ' ' }}]
                             {{ ucwords($action) }}
                         </div>
                     @endforeach
@@ -145,7 +145,7 @@
                     <div class="section-title">Service Field</div>
                     @foreach ($serviceReport->service_fields ?? [] as $field)
                         <div>
-                            [✔] {{ ucwords(str_replace('_', ' ', $field)) }}
+                            [X] {{ ucwords(str_replace('_', ' ', $field)) }}
                         </div>
                     @endforeach
                 </td>

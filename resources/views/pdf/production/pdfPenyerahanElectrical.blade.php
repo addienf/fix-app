@@ -141,18 +141,22 @@
                     </label>
                 </div>
             </div>
-            <div class="">
-                <label class="block mb-1 font-semibold">Jelaskan</label>
-                <div
-                    class="w-full min-h-[75px] px-3 py-2 text-sm leading-relaxed text-left border rounded-md text-black border-black">
-                    {{ $deskripsi_kondisi }}
-                </div>
-            </div>
+            @isset($deskripsi_kondisi)
+                @if ($deskripsi_kondisi !== '')
+                    <div class="">
+                        <label class="block mb-1 font-semibold">Jelaskan</label>
+                        <div
+                            class="w-full min-h-[75px] px-3 py-2 text-sm leading-relaxed text-left border rounded-md text-black border-black">
+                            {{ $deskripsi_kondisi }}
+                        </div>
+                    </div>
+                @endif
+            @endisset
 
             <h2 class="col-span-1 text-xl font-bold text-start">
                 B. Pengecekan Sebelum Serah Terima
             </h2>
-            <div class="mb-1">
+            <div class="mb-2">
                 <label class="block font-medium">1. Kondisi Fisik Produk</label>
                 <div class="flex flex-col gap-1 pl-4">
                     <label class="inline-flex items-center gap-2">
@@ -172,13 +176,15 @@
                     </label>
                 </div>
             </div>
-            <div class="">
-                <label class="block mb-1 font-semibold">Jelaskan</label>
-                <div
-                    class="w-full min-h-[75px] px-3 py-2 text-sm leading-relaxed text-left border rounded-md text-black border-black">
-                    {{ $serahElectrical->sebelumSerahTerima->detail_kondisi_fisik }}
+            @if (!empty($serahElectrical->sebelumSerahTerima?->detail_kondisi_fisik))
+                <div class="">
+                    <label class="block mb-1 font-semibold">Jelaskan</label>
+                    <div
+                        class="w-full min-h-[75px] px-3 py-2 text-sm leading-relaxed text-left border rounded-md text-black border-black">
+                        {{ $serahElectrical->sebelumSerahTerima?->detail_kondisi_fisik }}
+                    </div>
                 </div>
-            </div>
+            @endif
 
             <div class="mb-1">
                 <label class="block mb-2 font-medium">2. Kelengkapan Komponen</label>
@@ -201,13 +207,15 @@
                 </div>
             </div>
 
-            <div class="pt-4">
-                <label class="block mb-1 font-semibold">Sebutkan</label>
-                <div
-                    class="w-full min-h-[75px] px-3 py-2 text-sm leading-relaxed text-left border rounded-md text-black border-black">
-                    {{ $serahElectrical->sebelumSerahTerima->detail_kelengkapan_komponen }}
+            @if (!empty($serahElectrical->sebelumSerahTerima?->detail_kelengkapan_komponen))
+                <div class="pt-4">
+                    <label class="block mb-1 font-semibold">Sebutkan</label>
+                    <div
+                        class="w-full min-h-[75px] px-3 py-2 text-sm leading-relaxed text-left border rounded-md text-black border-black">
+                        {{ $serahElectrical->sebelumSerahTerima->detail_kelengkapan_komponen }}
+                    </div>
                 </div>
-            </div>
+            @endif
 
             <div class="pt-4 mb-1">
                 <label class="block mb-2 font-medium">3. Dokumen Pendukung</label>
@@ -253,25 +261,32 @@
                             class="w-4 h-4 border border-gray-400 checked:bg-blue-600 checked:border-blue-600">
                         <span>Diterima dengan catatan</span>
                     </label>
-                    <div class="">
-                        <label class="block mb-1 font-semibold">Jelaskan</label>
-                        <div
-                            class="w-full min-h-[75px] px-3 py-2 text-sm leading-relaxed text-left border rounded-md text-black border-black">
-                            {{ $penjelasan_status }}
+
+                    @if (!empty($penjelasan_status))
+                        <div class="">
+                            <label class="block mb-1 font-semibold">Jelaskan</label>
+                            <div
+                                class="w-full min-h-[75px] px-3 py-2 text-sm leading-relaxed text-left border rounded-md text-black border-black">
+                                {{ $penjelasan_status }}
+                            </div>
                         </div>
-                    </div>
+                    @endif
+
                     <label class="inline-flex items-center gap-2">
                         <input type="checkbox" {{ $status_penerimaan === 'ditolak' ? 'checked' : '' }} disabled
                             class="w-4 h-4 border border-gray-400 checked:bg-blue-600 checked:border-blue-600">
                         <span>Ditolak dan dikembalikan</span>
                     </label>
-                    <div class="">
-                        <label class="block mb-1 font-semibold">Jelaskan</label>
-                        <div
-                            class="w-full min-h-[75px] px-3 py-2 text-sm leading-relaxed text-left border rounded-md text-black border-black">
-                            {{ $alasan_status }}
+
+                    @if (!empty($alasan_status))
+                        <div class="">
+                            <label class="block mb-1 font-semibold">Jelaskan</label>
+                            <div
+                                class="w-full min-h-[75px] px-3 py-2 text-sm leading-relaxed text-left border rounded-md text-black border-black">
+                                {{ $alasan_status }}
+                            </div>
                         </div>
-                    </div>
+                    @endif
                 </div>
             </div>
             <h2 class="col-span-1 text-xl font-bold text-start">D. Tanda Tangan</h2>

@@ -2,7 +2,7 @@
 
 namespace App\Models\Quality\Pengecekan;
 
-use App\Models\Production\Penyerahan\PenyerahanProdukJadi;
+use App\Models\Production\SPK\SPKQuality;
 use App\Models\Quality\Ketidaksesuaian\Ketidaksesuaian;
 use App\Models\Quality\Pengecekan\Pivot\PengecekanPerformaDetail;
 use App\Models\Quality\Pengecekan\Pivot\PengecekanPerformaPIC;
@@ -16,7 +16,7 @@ class PengecekanPerforma extends Model
     use HasFactory;
 
     protected $fillable = [
-        'produk_jadi_id',
+        'spk_qualities_id',
         'tipe',
         'volume',
         'serial_number',
@@ -24,9 +24,9 @@ class PengecekanPerforma extends Model
         'status_penyelesaian',
     ];
 
-    public function penyerahanProdukJadi()
+    public function spkQC()
     {
-        return $this->belongsTo(PenyerahanProdukJadi::class, 'produk_jadi_id');
+        return $this->belongsTo(SPKQuality::class, 'spk_qualities_id');
     }
 
     public function pic()

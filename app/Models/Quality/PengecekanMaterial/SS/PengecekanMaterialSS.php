@@ -3,9 +3,8 @@
 namespace App\Models\Quality\PengecekanMaterial\SS;
 
 use App\Models\Production\Penyerahan\PenyerahanElectrical\PenyerahanElectrical;
+use App\Models\Production\SPK\SPKQuality;
 use App\Models\Quality\Defect\DefectStatus;
-use App\Models\Quality\KelengkapanMaterial\SS\KelengkapanMaterialSS;
-use App\Models\Sales\SPKMarketings\SPKMarketing;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -16,7 +15,7 @@ class PengecekanMaterialSS extends Model
     protected $table = 'pengecekan_material_ss';
 
     protected $fillable = [
-        'kelengkapan_material_id',
+        'spk_qualities_id',
         'tipe',
         'ref_document',
         'note',
@@ -29,9 +28,9 @@ class PengecekanMaterialSS extends Model
             ->where('tipe_sumber', 'stainless_steel');
     }
 
-    public function kelengkapanMaterial()
+    public function spkQC()
     {
-        return $this->belongsTo(KelengkapanMaterialSS::class, 'kelengkapan_material_id');
+        return $this->belongsTo(SPKQuality::class, 'spk_qualities_id');
     }
 
     public function pic()

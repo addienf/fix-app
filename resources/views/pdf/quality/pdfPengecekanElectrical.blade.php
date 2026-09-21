@@ -38,7 +38,7 @@
         {{-- SPK PRODUKSI --}}
         <div class="grid w-full max-w-4xl grid-cols-1 pt-4 mx-auto mb-2 text-sm gap-y-4">
             @php
-                $fields = [['label' => 'No SPK Produksi :', 'value' => $electrical->penyerahanElectrical->no_spk]];
+                $fields = [['label' => 'No SPK Produksi :', 'value' => $electrical->spkQC->spkMarketing->no_spk]];
             @endphp
             @foreach ($fields as $field)
                 <div class="flex items-center">
@@ -73,15 +73,14 @@
         @php
             $rawDetails = $electrical->detail->details ?? [];
             $details = is_string($rawDetails) ? json_decode($rawDetails, true) : $rawDetails;
-            function statusLabel($code)
-            {
+            $funcLabel = function ($code) {
                 return match (strtolower($code)) {
                     'ok' => 'OK',
                     'h' => 'Hold',
                     'r' => 'Repaired',
                     default => ucfirst($code ?? '-'),
                 };
-            }
+            };
         @endphp
 
         <table class="w-full max-w-4xl mx-auto mb-3 text-sm border border-black">
@@ -113,7 +112,7 @@
                             {{ ($group['mainPart_result'] ?? '0') == '0' ? '✘' : '' }}
                         </td>
                         <td class="px-3 py-2 font-semibold bg-gray-200 border border-black">
-                            {{ statusLabel($group['mainPart_status'] ?? '-') }}
+                            {{ $funcLabel($group['mainPart_status'] ?? '-') }}
                         </td>
                     </tr>
                     @foreach ($group['parts'] as $part)
@@ -124,7 +123,9 @@
                                 {{ ($part['result'] ?? '0') == '1' ? '✔' : '' }}</td>
                             <td class="px-3 py-2 text-center border border-black">
                                 {{ ($part['result'] ?? '0') == '0' ? '✘' : '' }}</td>
-                            <td class="px-3 py-2 border border-black">{{ statusLabel($part['status'] ?? '-') }}</td>
+                            <td class="px-3 py-2 border border-black">
+                                {{ $funcLabel($part['status'] ?? '-') }}
+                            </td>
                         </tr>
                     @endforeach
                 @endforeach

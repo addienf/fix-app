@@ -4,13 +4,14 @@ namespace App\Models\Engineering\Maintenance\ChamberR2\Pivot;
 
 use App\Models\Engineering\Maintenance\ChamberR2\ChamberR2;
 use App\Models\User;
+use App\Traits\HasSignature;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 
 class ChamberR2PIC extends Model
 {
-    use HasFactory;
+    use HasFactory, HasSignature;
 
     protected $table = 'chamber_r2_pics';
 
@@ -22,7 +23,21 @@ class ChamberR2PIC extends Model
         'approved_name',
         'approved_signature',
         'approved_date',
+        'sign_token',
+        'sign_token_expires_at',
+        'signed_at',
+        'signed_ip',
     ];
+
+    public function signatureConfig(): array
+    {
+        return [
+            'name_field' => 'approved_name',
+            'signature_field' => 'approved_signature',
+            'date_field' => 'approved_date',
+            'upload_path' => 'Engineering/Maintenance/StabilityChamber/Signature',
+        ];
+    }
 
     public function chamberR2()
     {

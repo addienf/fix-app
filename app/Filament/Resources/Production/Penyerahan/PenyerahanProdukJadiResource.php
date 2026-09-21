@@ -38,7 +38,6 @@ class PenyerahanProdukJadiResource extends Resource
 
     public static function form(Form $form): Form
     {
-        // $isEdit = $form->getOperation() === 'edit';
 
         return $form
             ->schema([
@@ -84,14 +83,7 @@ class PenyerahanProdukJadiResource extends Resource
             ->columns([
                 //
 
-                self::textColumn('pengecekanElectrical.penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.perencanaanProduksi.spk.no_spk', 'No SPK Marketing'),
-
-                self::textColumn('no_seri', 'No Seri')
-                    ->getStateUsing(function ($record) {
-                        return $record?->pengecekanElectrical?->penyerahanElectrical?->pengecekanSS
-                            ?->kelengkapanMaterial?->standarisasiDrawing?->serahTerimaWarehouse?->perencanaanProduksi
-                            ?->identifikasiProduks?->pluck('no_seri')->filter()->implode(', ') ?? '-';
-                    }),
+                self::textColumn('spkQC.spkMarketing.no_spk', 'Nomor SPK Marketing'),
 
                 self::textColumn('penanggug_jawab', 'Penanggung Jawab'),
 
@@ -152,8 +144,9 @@ class PenyerahanProdukJadiResource extends Resource
     {
         return parent::getEloquentQuery()
             ->with([
-                'pengecekanElectrical.penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.perencanaanProduksi.spk',
-                'pengecekanElectrical.penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.perencanaanProduksi.identifikasiProduks',
+                'spkQC',
+                'details',
+                'pic'
             ]);
     }
 }

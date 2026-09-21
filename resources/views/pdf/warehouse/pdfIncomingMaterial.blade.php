@@ -60,7 +60,7 @@
                     $createdAt = $incomingMaterial->permintaanPembelian?->created_at?->format('YmdHis');
                 @endphp
 
-                {{ $noSurat ?: "Untuk Stock Pembelian - {$createdAt}" }}
+                {{ $incomingMaterial->no_surat }}
             </td>
         </tr>
         <tr>

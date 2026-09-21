@@ -18,6 +18,7 @@ class ChamberG2 extends Model
         'spk_service_id',
         'tag_no',
         'remarks',
+        'project',
         'status_penyetujuan',
     ];
 

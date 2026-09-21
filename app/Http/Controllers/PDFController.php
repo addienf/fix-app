@@ -43,44 +43,13 @@ class PDFController extends Controller
         return view('pdf.quality.pdfIncomingMaterialNonSS', compact('incomingNonSS'));
     }
 
-    // public function pdfPenyerahanElectrical($id)
-    // {
-    //     $serahElectrical = PenyerahanElectrical::with(['pengecekanSS', 'sebelumSerahTerima', 'pic', 'penerimaElectrical', 'pic.submitName', 'pic.receiveName', 'pic.knowingName'])->findOrFail($id);
-
-    //     return view('pdf.production.pdfPenyerahanElectrical', compact('serahElectrical'));
-    // }
-
-    // public function downloadPenyerahanElectrical($id)
-    // {
-    //     $spesifikasi = PenyerahanElectrical::with(['sebelumSerahTerima'])->findOrFail($id);
-
-    //     $filePath = $spesifikasi->sebelumSerahTerima->file_pendukung;
-
-    //     $fullPath = storage_path('app/public/' . $filePath);
-
-    //     return response()->download($fullPath);
-    // }
-
-    // public function pdfSPKQuality($id)
-    // {
-    //     $spk_qc = SPKQuality::with(['penyerahanElectrical', 'details', 'pic', 'pic.createName', 'pic.receiveName'])->findOrFail($id);
-
-    //     return view('pdf.production.pdfSPKQuality', compact('spk_qc'));
-    // }
 
     public function pdfPengecekanElectrical($id)
     {
-        $electrical = PengecekanMaterialElectrical::with(['penyerahanElectrical', 'pic', 'detail', 'pic.inspectedName', 'pic.acceptedName', 'pic.approvedName'])->findOrFail($id);
+        $electrical = PengecekanMaterialElectrical::with(['spkQC', 'pic', 'detail', 'pic.inspectedName', 'pic.acceptedName', 'pic.approvedName'])->findOrFail($id);
 
         return view('pdf.quality.pdfPengecekanElectrical', compact('electrical'));
     }
-
-    // public function pdfPenyerahanProdukJadi($id)
-    // {
-    //     $produkJadi = PenyerahanProdukJadi::with(['details', 'pic', 'pic.submitName', 'pic.receiveName'])->findOrFail($id);
-
-    //     return view('pdf.production.pdfPenyerahanProdukJadi', compact('produkJadi'));
-    // }
 
     public function pdfPengecekanPerforma($id)
     {
@@ -88,13 +57,6 @@ class PDFController extends Controller
 
         return view('pdf.quality.pdfPengecekanPerforma', compact('performa'));
     }
-
-    // public function pdfPelabelanQCPassed($id)
-    // {
-    //     $pelabelan = QCPassed::with(['pic', 'details', 'pic.createdName', 'pic.approvedName', 'productRelease'])->findOrFail($id);
-
-    //     return view('pdf.warehouse.pdfPelabelanQCPassed', compact('pelabelan'));
-    // }
 
     public function pdfDefectStatus($id)
     {

@@ -37,6 +37,21 @@ class CreateSPKService extends CreateRecord
         }
     }
 
+    // protected function mutateFormDataBeforeCreate(array $data): array
+    // {
+    //     if (empty($data['no_spk_service'])) {
+    //         $data['no_spk_service'] = self::generateAutoNumber(
+    //             table: 'spk_services',
+    //             column: 'no_spk_service',
+    //             prefix: 'QKS',
+    //             section: $data['section'],
+    //             type: 'SPK'
+    //         );
+    //     }
+
+    //     return $data;
+    // }
+
     public function getTitle(): string
     {
         return 'Tambah Data SPK Pelayanan Pelanggan';

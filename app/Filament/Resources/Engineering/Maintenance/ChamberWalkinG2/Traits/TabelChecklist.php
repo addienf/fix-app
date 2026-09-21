@@ -33,7 +33,6 @@ trait TabelChecklist
                             ];
                         }
 
-                        // CHECK dengan override show_value
                         if (is_array($part)) {
                             return [
                                 'part' => $part['text'],
@@ -42,7 +41,6 @@ trait TabelChecklist
                             ];
                         }
 
-                        // CHECK default (string)
                         return [
                             'part' => $part,
                             'type' => 'check',

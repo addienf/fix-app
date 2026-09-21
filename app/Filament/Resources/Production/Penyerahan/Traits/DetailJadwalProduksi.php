@@ -22,35 +22,15 @@ trait DetailJadwalProduksi
                     ->label('')
                     ->schema([
 
-                        self::textInput('nama_produk', 'Nama Produk')
-                            ->extraAttributes([
-                                'readonly' => true,
-                                'style' => 'pointer-events: none;'
-                            ]),
+                        self::textInput('nama_produk', 'Nama Produk'),
 
-                        self::textInput('tipe', 'Tipe/Model')
-                            ->extraAttributes([
-                                'readonly' => true,
-                                'style' => 'pointer-events: none;'
-                            ]),
+                        self::textInput('tipe', 'Tipe/Model'),
 
-                        self::textInput('volume', 'Volume')
-                            ->extraAttributes([
-                                'readonly' => true,
-                                'style' => 'pointer-events: none;'
-                            ]),
+                        self::textInput('volume', 'Volume'),
 
-                        self::textInput('jumlah', 'Jumlah')
-                            ->extraAttributes([
-                                'readonly' => true,
-                                'style' => 'pointer-events: none;'
-                            ]),
+                        self::textInput('jumlah', 'Jumlah'),
 
-                        self::textInput('no_spk', 'No SPK')
-                            ->extraAttributes([
-                                'readonly' => true,
-                                'style' => 'pointer-events: none;'
-                            ]),
+                        self::textInput('no_spk', 'No SPK'),
 
                     ])
                     ->deletable(false)
