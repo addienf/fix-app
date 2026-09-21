@@ -123,6 +123,7 @@ class EngineeringController extends Controller
         }
 
         $zip->close();
+        @unlink($pdfPath);
 
         return response()->download($zipPath)->deleteFileAfterSend(true);
     }
@@ -167,76 +168,6 @@ class EngineeringController extends Controller
         return $pdf->stream($fileName);
     }
 
-    public function show($token)
-    {
-        $pic = BeritaAcaraPIC::where('sign_token', $token)->firstOrFail();
-        $logoBase64 = $this->getBase64Logo();
-
-        if (!$pic) {
-            return response()->view('pdf.engineering.pdfExpiredLink', compact('logoBase64'), 403);
-        }
-
-        if ($pic->pelanggan_ttd) {
-            return response()->view('pdf.engineering.pdfExpiredLink', compact('logoBase64'), 403);
-        }
-
-        if ($pic->sign_token_expires_at && now()->gt($pic->sign_token_expires_at)) {
-            return response()->view('pdf.engineering.pdfExpiredLink', compact('logoBase64'), 403);
-        }
-
-        return view('pdf.engineering.pdfSignatureLink', compact('pic', 'logoBase64'));
-    }
-
-    public function store(Request $request, $token)
-    {
-        $request->validate([
-            'pelanggan_name' => 'required|string|max:255',
-            'pelanggan_ttd' => 'required',
-        ]);
-
-        $pic = BeritaAcaraPIC::where('sign_token', $token)->firstOrFail();
-        $logoBase64 = $this->getBase64Logo();
-
-        if ($pic->pelanggan_ttd) {
-            return response()->view('pdf.engineering.pdfExpiredLink', compact('logoBase64'), 403);
-        }
-
-        if ($pic->sign_token_expires_at && now()->gt($pic->sign_token_expires_at)) {
-            return response()->view('pdf.engineering.pdfExpiredLink', compact('logoBase64'), 403);
-        }
-
-        $path = SignatureUploader::handle(
-            $request->pelanggan_ttd,
-            'pelanggan_',
-            'Engineering/Berita/Pelanggan'
-        );
-
-        $ip = request()->header('X-Forwarded-For');
-
-        if ($ip) {
-            $ip = explode(',', $ip)[0];
-        } else {
-            $ip = request()->getClientIp();
-        }
-
-        if ($ip === '127.0.0.1') {
-            $ip = '127.0.0.1 (Local)';
-        }
-
-        $pic->update([
-            'pelanggan_name' => $request->pelanggan_name,
-            'pelanggan_ttd' => $path,
-            'signed_at' => now(),
-            'signed_ip' => $ip,
-
-            // 🔥 penting
-            'sign_token' => null,
-            'sign_token_expires_at' => null,
-        ]);
-
-        return view('pdf.engineering.pdfSignatureLinkSuccess', compact('logoBase64'));
-    }
-
     protected function resolveModel(string $type)
     {
         $model = config("signature_models.$type");
@@ -248,6 +179,7 @@ class EngineeringController extends Controller
 
     public function show2($type, $token)
     {
+        $pic = BeritaAcaraPIC::with('beritaAcara')->where('sign_token', $token)->firstOrFail();
         $model = $this->resolveModel($type);
         $logoBase64 = $this->getBase64Logo();
         $record = $model::findValidToken($token);
@@ -258,7 +190,7 @@ class EngineeringController extends Controller
 
         $config = $record->signatureConfig();
 
-        return view('pdf.engineering.pdfSignatureLink', compact('record', 'type', 'logoBase64', 'config'));
+        return view('pdf.engineering.pdfSignatureLink', compact('record', 'type', 'logoBase64', 'config', 'pic'));
     }
 
     public function store2(Request $request, $type, $token)
@@ -275,6 +207,7 @@ class EngineeringController extends Controller
 
         $request->validate([
             $config['name_field'] => 'required|string|max:255',
+            $config['jabatan'] => 'required|string|max:255',
             $config['signature_field'] => 'required',
         ]);
 

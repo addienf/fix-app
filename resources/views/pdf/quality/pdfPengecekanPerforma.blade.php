@@ -44,7 +44,7 @@
                 $fields = [
                     [
                         'label' => 'No SPK Produksi :',
-                        'value' => $performa->penyerahanProdukJadi->details->pluck('no_spk')->implode(', '),
+                        'value' => $performa->spkQC->spkMarketing->no_spk,
                     ],
                 ];
             @endphp

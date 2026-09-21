@@ -23,6 +23,7 @@ class DefectStatus extends Model
         'tipe',
         'volume',
         'serial_number',
+        'remark',
         'file_upload',
         'note',
         'status_penyelesaian',

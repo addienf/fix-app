@@ -39,9 +39,6 @@ class DefectStatusResource extends Resource
 
     public static function form(Form $form): Form
     {
-        // $isCreate = $form->getOperation() === 'create';
-        // $isEdit = $form->getOperation() === 'edit';
-
         return $form
             ->schema([
                 //
@@ -138,7 +135,6 @@ class DefectStatusResource extends Resource
                         ->label(_('Lihat PDF'))
                         ->icon('heroicon-o-document')
                         ->color('success')
-                        // ->url(fn($record) => route('pdf.defectStatus')),
                         ->url(fn($record) => route('pdf.defectStatus', ['record' => $record->id])),
                 ])
             ])

@@ -24,56 +24,21 @@ trait InformasiMaterial
                 TableRepeater::make('details')
                     ->relationship('details')
                     ->schema([
+                        self::textInput('nama_material', 'Nama Material'),
 
-                        // Grid::make(6)
-                        //     ->schema([
+                        self::textInput('batch_no', 'Batch No'),
 
-                        //         self::textInput('nama_material', 'Nama Material')
-                        //             ->extraAttributes([
-                        //                 'readonly' => true,
-                        //                 'style' => 'pointer-events: none;'
-                        //             ]),
+                        self::textInput('jumlah', 'Jumlah Diterima'),
 
-                        //         self::textInput('batch_no', 'Batch No')
-                        //             ->extraAttributes([
-                        //                 'readonly' => true,
-                        //                 'style' => 'pointer-events: none;'
-                        //             ]),
+                        self::textInput('satuan', 'Satuan'),
 
-                        //         self::textInput('jumlah', 'Jumlah Diterima')
-                        //             ->numeric(),
+                        self::textInput('kondisi_material', 'Kondisi Material'),
 
-                        //         self::textInput('satuan', 'Satuan'),
-
-                        //         self::textInput('kondisi_material', 'Kondisi Material'),
-
-                        //         self::selectStatusLabel(),
-                        //     ]),
-                        self::textInput('nama_material', 'Nama Material')
-                            ->extraAttributes([
-                                'readonly' => true,
-                                'style' => 'pointer-events: none;'
-                            ]),
-
-                        self::textInput('batch_no', 'Batch No')
-                            ->required(false),
-
-                        self::textInput('jumlah', 'Jumlah Diterima')
-                            ->required(false),
-
-                        self::textInput('satuan', 'Satuan')
-                            ->required(false),
-
-                        self::textInput('kondisi_material', 'Kondisi Material')
-                            ->required(false),
-
-                        self::selectStatusLabel()
-                            ->required(false),
-
+                        self::selectStatusLabel(),
                     ])
-                    ->deletable(false)
+                    ->deletable(true)
                     ->reorderable(false)
-                    ->addable(false),
+                    ->addActionLabel('Tambah Data'),
 
             ]);
     }

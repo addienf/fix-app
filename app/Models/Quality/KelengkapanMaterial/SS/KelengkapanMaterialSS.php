@@ -2,11 +2,10 @@
 
 namespace App\Models\Quality\KelengkapanMaterial\SS;
 
+use App\Models\Production\SPK\SPKQuality;
 use App\Models\Quality\KelengkapanMaterial\SS\Pivot\KelengkapanMaterialSSDetail;
 use App\Models\Quality\KelengkapanMaterial\SS\Pivot\KelengkapanMaterialSSPIC;
 use App\Models\Quality\PengecekanMaterial\SS\PengecekanMaterialSS;
-use App\Models\Quality\Standarisasi\StandarisasiDrawing;
-use App\Models\Sales\SPKMarketings\SPKMarketing;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -17,17 +16,16 @@ class KelengkapanMaterialSS extends Model
     protected $table = 'kelengkapan_material_ss';
 
     protected $fillable = [
-        'standarisasi_drawing_id',
-        'no_spk_qc',
+        'spk_qualities_id',
         'tipe',
         'ref_document',
         'note',
         'status_penyelesaian',
     ];
 
-    public function standarisasiDrawing()
+    public function spkQC()
     {
-        return $this->belongsTo(StandarisasiDrawing::class, 'standarisasi_drawing_id');
+        return $this->belongsTo(SPKQuality::class, 'spk_qualities_id');
     }
 
     public function pengecekanSS()

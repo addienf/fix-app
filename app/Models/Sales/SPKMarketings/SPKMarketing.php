@@ -3,6 +3,7 @@
 namespace App\Models\Sales\SPKMarketings;
 
 use App\Models\Production\Jadwal\JadwalProduksi;
+use App\Models\Production\SPK\SPKQuality;
 use App\Models\Quality\Standarisasi\StandarisasiDrawing;
 use App\Models\Sales\SpesifikasiProducts\SpesifikasiProduct;
 use App\Models\Sales\SPKMarketings\Pivot\SPKMarketingPIC;
@@ -60,6 +61,11 @@ class SPKMarketing extends Model
     public function standarisasiDrawing()
     {
         return $this->hasOne(StandarisasiDrawing::class, 'spk_marketing_id');
+    }
+
+    public function spkQC()
+    {
+        return $this->hasOne(SPKQuality::class, 'spk_marketing_id');
     }
 
     protected static function booted()

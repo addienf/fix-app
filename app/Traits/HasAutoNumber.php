@@ -90,11 +90,7 @@ trait HasAutoNumber
                 return "{$num}/{$prefix}/{$section}/{$type}/{$month}/{$year}";
             })
             ->unique(ignorable: fn($record) => $record)
-            ->required()
-            ->extraAttributes([
-                'readonly' => true,
-                'style' => 'pointer-events: none;',
-            ]);
+            ->required();
     }
 
     public static function generateNoSurat($isStock, string $table, string $column): string
@@ -254,5 +250,63 @@ trait HasAutoNumber
         ];
 
         return $map[(int)$month];
+    }
+
+    public static function newAutoNumber(string $name, string $label, array $config): TextInput
+    {
+        $prefix = $config['prefix'] ?? 'QKS';
+        $section = $config['section'] ?? 'GEN';
+        $type = $config['type'] ?? 'DOC';
+        $table = $config['table'] ?? null;
+
+        return TextInput::make($name)
+            ->label($label)
+            ->hint("Format: XXX/{$prefix}/{$section}/{$type}/MM/YY")
+            ->default(function () use ($table, $name, $prefix, $section, $type) {
+                if (! $table) return null;
+
+                $romanMonths = [
+                    1 => 'I',
+                    2 => 'II',
+                    3 => 'III',
+                    4 => 'IV',
+                    5 => 'V',
+                    6 => 'VI',
+                    7 => 'VII',
+                    8 => 'VIII',
+                    9 => 'IX',
+                    10 => 'X',
+                    11 => 'XI',
+                    12 => 'XII',
+                ];
+
+                $month = $romanMonths[now()->month];
+                $year = now()->format('y');
+
+                // Buat akhiran (suffix) untuk bulan dan tahun saat ini
+                $currentSuffix = "/{$month}/{$year}";
+
+                $last = DB::table($table)
+                    ->select($name)
+                    ->whereNotNull($name)
+                    // Filter pencarian khusus untuk nomor dengan bulan dan tahun saat ini
+                    ->where($name, 'LIKE', "%{$currentSuffix}")
+                    ->orderByDesc('id')
+                    ->first();
+
+                // Karena sudah difilter bulan/tahun, jika $last ketemu pasti dari bulan ini
+                if ($last && preg_match('/^(\d{3})/', $last->$name, $m)) {
+                    $num = intval($m[1]) + 1;
+                } else {
+                    // Jika tidak ketemu data di bulan/tahun ini, reset ke 1
+                    $num = 1;
+                }
+
+                $num = str_pad($num, 3, '0', STR_PAD_LEFT);
+
+                return "{$num}/{$prefix}/{$section}/{$type}/{$month}/{$year}";
+            })
+            ->unique(ignorable: fn($record) => $record)
+            ->required();
     }
 }

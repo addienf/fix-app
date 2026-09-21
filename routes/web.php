@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\CustomerCareController;
 use App\Http\Controllers\EngineeringController;
+use App\Http\Controllers\MRController;
 use App\Http\Controllers\PDFController;
 use App\Http\Controllers\ProductionController;
 use App\Http\Controllers\PurchaseController;
@@ -54,6 +55,10 @@ Route::get('/warehouse/peminjaman-alat/{record}/pdf-peminjaman-alat', [Warehouse
 
 // Purchasing
 Route::get('/purchasing/permintaan-pembelian/{record}/pdf-permintaan-pembelian', [PurchaseController::class, 'pdfPermintaanPembelian'])->name('pdf.PermintaanPembelian');
+Route::get('/purchasing/penerimaan-barang/{record}/pdf-penerimaan-barang', [PurchaseController::class, 'pdfPenerimaanBarang'])->name('pdf.PenerimaanBarang');
+
+// MR
+Route::get('/mr/perubahan-informasi/{record}/pdf-perubahan-informasi', [MRController::class, 'pdfPerubahanInformasi'])->name('pdf.PerubahanInformasi');
 
 // Quality
 Route::get('/quality/incoming-material-ss/{record}/pdf-incoming-material-ss', [PDFController::class, 'pdfIncomingMaterialSS'])->name('pdf.incomingMaterialSS');
@@ -87,13 +92,6 @@ Route::get('/engineering/berita-acara/{record}/pdf', [EngineeringController::cla
 Route::get('/engineering/service-report/{record}/pdf', [EngineeringController::class, 'pdfServiceReport'])->name('pdf.serviceReport');
 Route::get('/engineering/sparepart-alat-kerja/{record}/pdf', [EngineeringController::class, 'pdfSparepartAlatKerja'])->name('pdf.sparepartAlatKerja');
 
-// Route::get('/customercare/pdfPermintaanPelayanan', function () {
-//     return view('pdf.customercare.pdfPermintaanPelayanan');
-// });
-
-// Route::get('/customercare/pdfSuratPerintahKerja', function () {
-//     return view('pdf.customercare.pdfSuratPerintahKerja');
-// });
 
 // Route::get('admin/storage-link', function () {
 //     $targetFolder = storage_path('app/public');
@@ -107,8 +105,8 @@ Route::get('admin/storage-link', function () {
 });
 
 // Berita Acara
-Route::get('/qlb/{token}', [EngineeringController::class, 'show'])->name('signature.page');
-Route::post('/qlb/{token}', [EngineeringController::class, 'store']);
+// Route::get('/qlb/{token}', [EngineeringController::class, 'show'])->name('signature.page');
+// Route::post('/qlb/{token}', [EngineeringController::class, 'store']);
 
 // Route::get('admin/engineering/test', function () {
 //     return view('pdf.engineering.pdfTes');

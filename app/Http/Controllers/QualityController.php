@@ -5,12 +5,26 @@ namespace App\Http\Controllers;
 use App\Models\Quality\KelengkapanMaterial\SS\KelengkapanMaterialSS;
 use App\Models\Quality\PengecekanMaterial\SS\PengecekanMaterialSS;
 use App\Models\Quality\Standarisasi\StandarisasiDrawing;
-use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
 use ZipArchive;
 
 class QualityController extends Controller
 {
     //
+    private function getBase64Logo()
+    {
+        $logoPath = public_path('asset/logo.png');
+
+        if (!file_exists($logoPath)) {
+            return null;
+        }
+
+        $type = pathinfo($logoPath, PATHINFO_EXTENSION);
+
+        return 'data:image/' . $type . ';base64,' .
+            base64_encode(file_get_contents($logoPath));
+    }
+
     public function pdfStandarisasiDrawing($id)
     {
         $standarisasi = StandarisasiDrawing::with(['serahTerimaWarehouse', 'identitas', 'detail', 'pemeriksaan', 'pic', 'pic.createName', 'pic.checkName'])->findOrFail($id);
@@ -61,29 +75,21 @@ class QualityController extends Controller
 
     public function pdfKelengkapanMaterialSS($id)
     {
-        $kelengkapan = KelengkapanMaterialSS::with(['standarisasiDrawing', 'pic', 'detail', 'pic.inspectedName', 'pic.acceptedName', 'pic.approvedName'])->findOrFail($id);
+        $kelengkapan = KelengkapanMaterialSS::with(['spkQC', 'pic', 'detail', 'pic.inspectedName', 'pic.acceptedName', 'pic.approvedName'])->findOrFail($id);
 
-        $no_spk = optional(
-            $kelengkapan?->standarisasiDrawing
-                ?->serahTerimaWarehouse
-                ?->perencanaanProduksi
-                ?->spk
-        )->no_spk ?? '-';
+        $logoBase64 = $this->getBase64Logo();
 
-        return view('pdf.quality.pdfKelengkapanMaterialSS', compact('kelengkapan', 'no_spk'));
+        $pdf = Pdf::loadView('pdf.quality.pdfKelengkapanMaterialSS', compact('kelengkapan', 'logoBase64'))
+            ->setPaper('a4', 'portrait');
+
+        return $pdf->stream('kelengkapan-material.pdf');
     }
 
     public function pdfPengecekanMaterialSS($id)
     {
-        $pengecekanSS = PengecekanMaterialSS::with(['kelengkapanMaterial', 'pic', 'detail', 'penyerahan', 'pic.inspectedName', 'pic.acceptedName', 'pic.approvedName'])->findOrFail($id);
+        $pengecekanSS = PengecekanMaterialSS::with(['spkQC', 'pic', 'detail', 'penyerahan', 'pic.inspectedName', 'pic.acceptedName', 'pic.approvedName'])->findOrFail($id);
 
-        $no_spk = optional(
-            $pengecekanSS?->kelengkapanMaterial
-                ?->standarisasiDrawing
-                ?->serahTerimaWarehouse
-                ?->perencanaanProduksi
-                ?->spk
-        )->no_spk ?? '-';
+        $no_spk = $pengecekanSS?->spkQC?->spkMarketing?->no_spk ?? '-';
 
         return view('pdf.quality.pdfPengecekanMaterialSS', compact('pengecekanSS', 'no_spk'));
     }

@@ -13,7 +13,7 @@ class IncommingMaterial extends Model
     use HasFactory;
 
     protected $fillable = [
-        'permintaan_pembelian_id',
+        'no_surat',
         'tanggal',
         'kondisi_material',
         'status_penerimaan',
@@ -26,11 +26,6 @@ class IncommingMaterial extends Model
     protected $casts = [
         'tanggal' => 'date'
     ];
-
-    public function permintaanPembelian()
-    {
-        return $this->belongsTo(PermintaanPembelian::class, 'permintaan_pembelian_id');
-    }
 
     public function details()
     {

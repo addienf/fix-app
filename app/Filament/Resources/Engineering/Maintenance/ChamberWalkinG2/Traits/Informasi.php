@@ -11,6 +11,7 @@ use App\Models\Engineering\Maintenance\Refrigerator\Refrigerator;
 use App\Models\Engineering\Maintenance\RissingPipette\RissingPipette;
 use App\Models\Engineering\SPK\SPKService\Pivot\PemeriksaanPersetujuan;
 use App\Traits\HasAutoNumber;
+use App\Traits\HasModelFilter;
 use App\Traits\SimpleFormResource;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Section;
@@ -21,7 +22,7 @@ use Wallo\FilamentSelectify\Components\ButtonGroup;
 
 trait Informasi
 {
-    use SimpleFormResource, HasAutoNumber;
+    use SimpleFormResource, HasAutoNumber, HasModelFilter;
     public static function getInformasiSection($form)
     {
         $lastValue = ChamberWalkinG2::latest('tag_no')->value('tag_no');
@@ -30,74 +31,38 @@ trait Informasi
         return Section::make('Informasi')
             ->label('')
             ->schema([
-                // self::textInput('tag_no', 'WTC Name/TAG No')
-                //     ->hint('Format: TAG No.')
-                //     ->placeholder($lastValue ? "Data Terakhir : {$lastValue}" : 'Data Belum Tersedia')
-                //     ->unique(ignoreRecord: true),
-
-                // Select::make('spk_service_id')
-                //     ->label('Nomor SPK Service')
-                //     ->options(function () {
-                //         return SPKService::query()
-                //             ->where('jenis_spk', 'Maintenance')
-                //             ->where('status', 'Selesai')
-                //             ->whereDoesntHave('walkinChamber')
-                //             ->whereDoesntHave(relation: 'chamberR2')
-                //             ->whereDoesntHave(relation: 'refrigerator')
-                //             ->whereDoesntHave(relation: 'coldRoom')
-                //             ->whereDoesntHave(relation: 'rissing')
-                //             ->whereDoesntHave(relation: 'walkinG2')
-                //             ->whereDoesntHave(relation: 'chamberG2')
-                //             ->limit(10)
-                //             ->pluck('no_spk_service', 'id');
-                //     })
-                //     ->getSearchResultsUsing(function (string $search) {
-                //         return SPKService::query()
-                //             ->where('status', 'Selesai')
-                //             ->whereDoesntHave('walkinChamber')
-                //             ->whereDoesntHave(relation: 'chamberR2')
-                //             ->whereDoesntHave(relation: 'refrigerator')
-                //             ->whereDoesntHave(relation: 'coldRoom')
-                //             ->whereDoesntHave(relation: 'rissing')
-                //             ->whereDoesntHave(relation: 'walkinG2')
-                //             ->whereDoesntHave(relation: 'chamberG2')
-                //             ->where('no_spk_service', 'like', "%{$search}%")
-                //             ->limit(10)
-                //             ->pluck('no_spk_service', 'id');
-                //     })
-                //     ->native(false)
-                //     ->searchable()
-                //     ->preload()
-                //     ->required()
-                //     ->hiddenOn(operations: 'edit'),
-
                 Select::make('spk_selection')
                     ->label('Nomor SPK Service')
                     ->options(function () {
-                        $usedTagNos = collect()
-                            ->merge(WalkinChamber::pluck('tag_no'))
-                            ->merge(ChamberR2::pluck('tag_no'))
-                            ->merge(Refrigerator::pluck('tag_no'))
-                            ->merge(ColdRoom::pluck('tag_no'))
-                            ->merge(RissingPipette::pluck('tag_no'))
-                            ->merge(ChamberWalkinG2::pluck('tag_no'))
-                            ->merge(ChamberG2::pluck('tag_no'))
-                            ->filter()
-                            ->unique()
-                            ->toArray();
+
+                        $usedKeys = self::getUsedSpkTagKeys();
 
                         return PemeriksaanPersetujuan::query()
                             ->whereHas('spkService', function ($query) {
                                 $query->where('jenis_spk', 'Maintenance')
                                     ->where('status', 'Selesai');
                             })
-                            ->whereNotIn('nomor_seri', $usedTagNos)
                             ->with('spkService')
-                            ->limit(20)
                             ->get()
+
+                            ->reject(function ($detail) use ($usedKeys) {
+
+                                $key =
+                                    $detail->spkService?->no_spk_service .
+                                    '|' .
+                                    $detail->nomor_seri;
+
+                                return $usedKeys->contains($key);
+                            })
+
+                            ->take(20)
+
                             ->mapWithKeys(function ($detail) {
                                 return [
-                                    $detail->id => $detail->spkService->no_spk_service . ' - ' . $detail->nomor_seri
+                                    $detail->id =>
+                                    $detail->spkService->no_spk_service .
+                                        ' - ' .
+                                        $detail->nomor_seri
                                 ];
                             });
                     })

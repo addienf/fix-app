@@ -105,7 +105,7 @@
                                 </td>
 
                                 <td class="px-4 py-2 border border-gray-300 dark:border-gray-600">
-                                    {{ $item->jenis_transaksi }}
+                                    {{ ucfirst($item->jenis_transaksi) }}
                                 </td>
 
                                 <td class="px-4 py-2 border border-gray-300 dark:border-gray-600">

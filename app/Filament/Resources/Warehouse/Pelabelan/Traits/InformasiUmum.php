@@ -28,7 +28,6 @@ trait InformasiUmum
                 self::textInput('penanggung_jawab', 'Penanggung Jawab')
 
             ])
-            // ->columns($isEdit ? 2 : 3);
             ->columns([
                 'default' => 1,
                 'md' => $isEdit ? 2 : 3,
@@ -47,130 +46,56 @@ trait InformasiUmum
             ->preload()
             ->reactive()
             ->required()
-            // ->options(
-            //     fn() =>
-            //     ProductRelease::with([
-            //         'pengecekanPerforma.penyerahanProdukJadi.pengecekanElectrical.penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.perencanaanProduksi.spk',
-            //         'pengecekanPerforma.penyerahanProdukJadi.pengecekanElectrical.penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.perencanaanProduksi.identifikasiProduks',
-            //     ])
-            //         ->where('status', 'Diketahui')
-            //         ->whereDoesntHave('qcPassed')
-            //         ->latest()
-            //         ->limit(20)
-            //         ->get()
-            //         ->mapWithKeys(function ($item) {
-
-            //             $jadwal = $item->pengecekanPerforma->penyerahanProdukJadi->pengecekanElectrical->penyerahanElectrical
-            //                 ->pengecekanSS->kelengkapanMaterial->standarisasiDrawing
-            //                 ->serahTerimaWarehouse->permintaanBahanProduksi
-            //                 ->jadwalProduksi;
-
-            //             $spkNo = $jadwal->spk->no_spk ?? '-';
-
-            //             $seri = $jadwal->identifikasiProduks
-            //                 ->pluck('no_seri')
-            //                 ->filter()
-            //                 ->implode(', ') ?: '-';
-
-            //             return [
-            //                 $item->id => "{$spkNo} - {$seri}",
-            //             ];
-            //         })
-            // )
             ->options(
-                fn() =>
-                ProductRelease::with([
-                    'pengecekanPerforma.penyerahanProdukJadi.pengecekanElectrical.penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.perencanaanProduksi.spk',
-                    'pengecekanPerforma.penyerahanProdukJadi.pengecekanElectrical.penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.perencanaanProduksi.identifikasiProduks',
-                ])
+                ProductRelease::with('pengecekanPerforma.spkQC.spkMarketing')
                     ->where('status', 'Diketahui')
                     ->whereDoesntHave('qcPassed')
                     ->latest()
                     ->limit(10)
                     ->get()
-                    ->mapWithKeys(function ($item) {
-
-                        $jadwal = $item->pengecekanPerforma->penyerahanProdukJadi->pengecekanElectrical->penyerahanElectrical
-                            ->pengecekanSS->kelengkapanMaterial->standarisasiDrawing
-                            ->serahTerimaWarehouse->perencanaanProduksi;
-
-                        $spkNo = $jadwal->spk->no_spk ?? '-';
-
-                        $seri = $jadwal->identifikasiProduks
-                            ->pluck('no_seri')
-                            ->filter()
-                            ->implode(', ') ?: '-';
-
-                        return [
-                            $item->id => "{$spkNo} - {$seri}",
-                        ];
-                    })
+                    ->mapWithKeys(fn($item) => [
+                        $item->id => $item->pengecekanPerforma?->spkQC?->spkMarketing?->no_spk
+                    ])
             )
             ->getSearchResultsUsing(function (string $search) {
 
-                return ProductRelease::with([
-                    'pengecekanPerforma.penyerahanProdukJadi.pengecekanElectrical.penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.perencanaanProduksi.spk',
-                    'pengecekanPerforma.penyerahanProdukJadi.pengecekanElectrical.penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.perencanaanProduksi.identifikasiProduks',
-                ])
+                return
+                    ProductRelease::with('pengecekanPerforma.spkQC.spkMarketing')
                     ->where('status', 'Diketahui')
                     ->whereDoesntHave('qcPassed')
                     ->where(function ($q) use ($search) {
                         $q->whereHas(
-                            'pengecekanPerforma.penyerahanProdukJadi.pengecekanElectrical.penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.perencanaanProduksi.spk',
+                            'pengecekanPerforma.spkQC.spkMarketing',
                             fn($spkQ) => $spkQ->where('no_spk', 'like', "%{$search}%")
-                        );
-                    })
-                    ->orWhere(function ($q) use ($search) {
-                        $q->whereHas(
-                            'pengecekanPerforma.penyerahanProdukJadi.pengecekanElectrical.penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.perencanaanProduksi.identifikasiProduks',
-                            fn($seriQ) => $seriQ->where('no_seri', 'like', "%{$search}%")
                         );
                     })
                     ->limit(10)
                     ->get()
-                    ->mapWithKeys(function ($item) {
-
-                        $jadwal = $item->pengecekanPerforma->penyerahanProdukJadi->pengecekanElectrical->penyerahanElectrical
-                            ->pengecekanSS->kelengkapanMaterial->standarisasiDrawing
-                            ->serahTerimaWarehouse->perencanaanProduksi;
-
-                        $spkNo = $jadwal->spk->no_spk ?? '-';
-
-                        $seri = $jadwal->identifikasiProduks
-                            ->pluck('no_seri')
-                            ->filter()
-                            ->implode(', ') ?: '-';
-
-                        return [
-                            $item->id => "{$spkNo} - {$seri}",
-                        ];
-                    });
+                    ->mapWithKeys(fn($item) => [
+                        $item->id => $item->pengecekanPerforma?->spkQC?->spkMarketing?->no_spk
+                    ]);
             })
             ->afterStateUpdated(function ($state, callable $set) {
                 if (!$state) return;
 
-                $pengecekan = ProductRelease::with([
-                    'pengecekanPerforma.penyerahanProdukJadi.pengecekanElectrical.penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.perencanaanProduksi.spk'
-                ])->find($state);
+                $release = ProductRelease::with('pengecekanPerforma.spkQC.spkMarketing')->find($state);
 
-                $model_pengecekan =
-                    $pengecekan?->pengecekanPerforma?->penyerahanProdukJadi?->pengecekanElectrical
-                    ?->penyerahanElectrical?->pengecekanSS?->kelengkapanMaterial
-                    ?->standarisasiDrawing?->serahTerimaWarehouse?->perencanaanProduksi ?? '-';
+                $spec = $release?->pengecekanPerforma?->spkQC?->spkMarketing?->spesifikasiProduct;
 
-                $product_name = $pengecekan?->pengecekanPerforma?->penyerahanProdukJadi?->pengecekanElectrical?->penyerahanElectrical?->nama_produk ?? '-';
-                $product_tipe = $pengecekan?->pengecekanPerforma?->penyerahanProdukJadi?->pengecekanElectrical?->penyerahanElectrical?->tipe ?? '-';
-                $product_jumlah = $pengecekan?->pengecekanPerforma?->penyerahanProdukJadi?->pengecekanElectrical?->penyerahanElectrical?->jumlah ?? '-';
-                $no_seri = $model_pengecekan?->identifikasiProduks?->first()?->no_seri ?? '-';
+                $product_name = $spec?->details?->first()?->product?->name ?? '-';
+
+                $product_jumlah = $spec?->details?->first()?->quantity ?? '-';
+
 
                 $set('details', [
                     [
                         'nama_produk'   => $product_name ?? '-',
-                        'tipe'          => $product_tipe ?? '-',
-                        'serial_number' => $no_seri ?? '-',
+                        'tipe'          => '',
+                        'serial_number' => '',
                         'jumlah'        => $product_jumlah ?? '-',
                     ]
                 ]);
-            });
+            })
+        ;
     }
 }

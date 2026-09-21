@@ -21,11 +21,11 @@ trait HasSignature
      * @param  string  $title        Judul section
      * @param  string|null $uploadPath Lokasi upload tanda tangan (optional)
      */
-    public static function signatureSection(array $signatures, string $title = 'PIC', ?string $uploadPath = null): Section
+    public static function signatureSection(array $signatures, string $title = 'PIC', ?string $uploadPath = null, bool $required = true): Section
     {
-        return Section::make($title)
+        return
+            Section::make($title)
             ->collapsible()
-            // ->reactive()
             ->relationship('pic')
             ->schema([
                 Grid::make(count($signatures))
@@ -35,16 +35,16 @@ trait HasSignature
                             $role = $item['role'];
                             $hideLogic = $item['hideLogic'] ?? null;
 
-                            return Grid::make(1)
+                            return
+                                Grid::make(1)
                                 ->schema([
                                     Hidden::make("{$prefix}_name")
                                         ->default(fn() => auth()->id())
-                                        ->dehydrated(true)
                                         ->afterStateHydrated(function ($component) {
                                             $component->state(auth()->id());
-                                        }),
+                                        })
+                                        ->dehydrated(fn($get) => filled($get("{$prefix}_signature"))),
 
-                                    // Grid::make(2)
                                     Grid::make([
                                         'default' => 1,
                                         'md' => 2,
@@ -55,6 +55,8 @@ trait HasSignature
                                                 ->label($role)
                                                 ->default(fn() => auth()->user()?->name)
                                                 ->placeholder(fn() => auth()->user()?->name)
+                                                ->dehydrated(false)
+                                                ->required(false)
                                                 ->extraAttributes([
                                                     'readonly' => true,
                                                     'style' => 'pointer-events: none;',
@@ -63,13 +65,13 @@ trait HasSignature
                                             DatePicker::make("{$prefix}_date")
                                                 ->label('Tanggal')
                                                 ->default(now())
-                                                ->required(),
+                                                ->requiredWith("{$prefix}_signature")
+                                                ->dehydrated(fn($get) => filled($get("{$prefix}_signature")))
                                         ]),
 
-                                    // 👇 kirim $uploadPath ke helper
-                                    self::signatureInput("{$prefix}_signature", '', $uploadPath),
-
-
+                                    self::signatureInput("{$prefix}_signature", '', $uploadPath)
+                                        ->required(false)
+                                        ->dehydrated(fn($state) => filled($state)),
                                 ])
                                 ->hidden($hideLogic ?? fn() => false);
                         })->toArray()

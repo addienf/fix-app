@@ -13,7 +13,6 @@ trait InformasiProduk
     use SimpleFormResource, HasAutoNumber;
     protected static function getInformasiProdukSection()
     {
-        // $isEdit = $form->getOperation() === 'edit';
 
         return
             Section::make('Informasi Produk')
@@ -23,41 +22,15 @@ trait InformasiProduk
                     ->hiddenOn('edit')
                     ->columnSpanFull(),
 
-                self::textInput('nama_produk', 'Nama Produk')
-                    ->extraAttributes([
-                        'readonly' => true,
-                        'style' => 'pointer-events: none;'
-                    ]),
+                self::textInput('nama_produk', 'Nama Produk'),
 
-                self::textInput('tipe', 'Tipe/Model')
-                    ->extraAttributes([
-                        'readonly' => true,
-                        'style' => 'pointer-events: none;'
-                    ]),
+                self::textInput('tipe', 'Tipe/Model'),
 
-                self::textInput('no_spk', 'No SPK MKT')
-                    ->extraAttributes([
-                        'readonly' => true,
-                        'style' => 'pointer-events: none;'
-                    ]),
+                self::textInput('no_spk', 'No SPK MKT'),
 
-                self::textInput('tanggal_selesai', 'Tanggal Produksi Selesai')
-                    ->formatStateUsing(function ($state) {
-                        return $state
-                            ? \Carbon\Carbon::parse($state)->format('d M Y')
-                            : '-';
-                    })
-                    ->extraAttributes([
-                        'readonly' => true,
-                        'style' => 'pointer-events: none;'
-                    ])
-                    ->required(),
+                self::dateInput('tanggal_selesai', 'Tanggal Produksi Selesai'),
 
-                self::textInput('jumlah', 'Jumlah Unit')
-                    ->extraAttributes([
-                        'readonly' => true,
-                        'style' => 'pointer-events: none;'
-                    ]),
+                self::textInput('jumlah', 'Jumlah Unit'),
 
                 self::selectKondisi(),
 
@@ -81,10 +54,8 @@ trait InformasiProduk
             ->searchable()
             ->reactive()
             ->options(function () {
-                return PengecekanMaterialSS::with([
-                    'kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.perencanaanProduksi.spk',
-                    'kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.perencanaanProduksi.identifikasiProduks',
-                ])
+                return
+                    PengecekanMaterialSS::with('spkQC.spkMarketing.spesifikasiProduct')
                     ->whereDoesntHave('penyerahan')
                     ->where('status_penyelesaian', 'Disetujui')
                     ->latest()
@@ -92,112 +63,44 @@ trait InformasiProduk
                     ->get()
                     ->mapWithKeys(function ($std) {
 
-                        $jadwal = $std->kelengkapanMaterial
-                            ->standarisasiDrawing
-                            ->serahTerimaWarehouse
-                            ->perencanaanProduksi;
-
-                        $spkNo = $jadwal->spk->no_spk ?? '-';
-
-                        $seri = $jadwal->identifikasiProduks
-                            ->pluck('no_seri')
-                            ->filter()
-                            ->implode(', ') ?: '-';
+                        $spkNo = $std->spkQC->spkMarketing->no_spk ?? '-';
 
                         return [
-                            $std->id => "{$spkNo} - {$seri}",
+                            $std->id => "{$spkNo}",
                         ];
                     });
             })
-
-            // search
             ->getSearchResultsUsing(function ($search) {
-                return PengecekanMaterialSS::with([
-                    'kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.perencanaanProduksi.spk',
-                    'kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.perencanaanProduksi.identifikasiProduks',
-                ])
+                return
+                    PengecekanMaterialSS::with('spkQC.spkMarketing.spesifikasiProduct')
                     ->whereDoesntHave('penyerahan')
                     ->whereHas(
-                        'kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.perencanaanProduksi.spk',
+                        'spkQC.spkMarketing.spesifikasiProduct',
                         fn($q) => $q->where('no_spk', 'like', "%{$search}%")
                     )
                     ->limit(10)
                     ->get()
                     ->mapWithKeys(function ($std) {
 
-                        $jadwal = $std->kelengkapanMaterial
-                            ->standarisasiDrawing
-                            ->serahTerimaWarehouse
-                            ->perencanaanProduksi;
-
-                        $spkNo = $jadwal->spk->no_spk ?? '-';
-
-                        $seri = $jadwal->identifikasiProduks
-                            ->pluck('no_seri')
-                            ->filter()
-                            ->implode(', ') ?: '-';
+                        $spkNo = $std->spkQC->spkMarketing->no_spk ?? '-';
 
                         return [
-                            $std->id => "{$spkNo} - {$seri}",
+                            $std->id => "{$spkNo}",
                         ];
                     });
             })
-            // ->getOptionLabelUsing(function ($value) {
-
-            //     $std = PengecekanMaterialSS::with([
-            //         'kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.perencanaanProduksi.spk',
-            //         'kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.perencanaanProduksi.identifikasiProduks',
-            //     ])->find($value);
-
-            //     if (!$std) return '-';
-
-            //     $jadwal = $std->kelengkapanMaterial
-            //         ->standarisasiDrawing
-            //         ->serahTerimaWarehouse
-            //         ->peminjamanAlat
-            //         ->spkVendor
-            //         ->permintaanBahanProduksi
-            //         ->jadwalProduksi;
-
-            //     $spkNo = $jadwal->spk->no_spk ?? '-';
-
-            //     $seri = $jadwal->identifikasiProduks
-            //         ->pluck('no_seri')
-            //         ->filter()
-            //         ->implode(', ') ?: '-';
-
-            //     return "{$spkNo} - {$seri}";
-            // })
             ->afterStateUpdated(function ($state, callable $set) {
 
                 if (!$state) return;
 
-                $pengecekan = PengecekanMaterialSS::with([
-                    'kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.perencanaanProduksi' => function ($q) {
-                        $q->with([
-                            'spk:id,no_spk,spesifikasi_product_id',
-                            'identifikasiProduks:id,jadwal_produksi_id,tipe,jumlah',
-                            'timelines:id,jadwal_produksi_id,tanggal_selesai'
-                        ]);
-                    }
-                ])->find($state);
+                $pengecekan = PengecekanMaterialSS::with('spkQC.spkMarketing.spesifikasiProduct')->find($state);
 
-                $jadwal = $pengecekan
-                    ->kelengkapanMaterial
-                    ->standarisasiDrawing
-                    ->serahTerimaWarehouse
-                    ->perencanaanProduksi;
-
-                $namaProduk = $jadwal->spk?->spesifikasiProduct?->details->first()?->product?->name ?? '-';
-                $spkNo = $jadwal->spk?->no_spk ?? '-';
-                $tipe = $jadwal->identifikasiProduks->implode('tipe', ', ') ?: '-';
-                $jumlah = $jadwal->identifikasiProduks->implode('jumlah', ', ') ?: '-';
-                $selesai = optional($jadwal->timelines->first()?->tanggal_selesai)->format('d F Y') ?? '-';
+                $namaProduk = $pengecekan?->spkQC?->spkMarketing?->spesifikasiProduct?->details?->first()?->product->name ?? '-';
+                $spkNo = $pengecekan?->spkQC?->spkMarketing?->no_spk ?? '-';
+                $jumlah = $pengecekan?->spkQC?->spkMarketing?->spesifikasiProduct?->details?->first()?->quantity ?? '-';
 
                 $set('nama_produk', $namaProduk);
                 $set('jumlah', $jumlah);
-                $set('tanggal_selesai', $selesai);
-                $set('tipe', $tipe);
                 $set('no_spk', $spkNo);
             });
     }

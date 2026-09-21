@@ -14,7 +14,6 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Actions\ActionGroup;
-use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -84,31 +83,7 @@ class KelengkapanMaterialSSResource extends Resource
             ->columns([
                 //
 
-                // self::textColumn('standarisasiDrawing.serahTerimaWarehouse.perencanaanProduksi.spk.no_spk', 'No SPK Marketing'),
-
-                // self::textColumn('standarisasiDrawing.spk.no_spk', 'No SPK Marketing'),
-
-                // self::textColumn('no_spk_marketing', 'No SPK Marketing')
-                //     ->getStateUsing(function ($record) {
-                //         return $record->standarisasiDrawing?->serahTerimaWarehouse?->perencanaanProduksi?->spk?->no_spk
-                //             ?? $record->standarisasiDrawing?->spk?->no_spk
-                //             ?? $record->no_spk_qc
-                //             ?? '-';
-                //     }),
-
-                self::textColumn('no_spk_qc', 'No SPK Quality'),
-
-                // self::textColumn('no_seri', 'No Seri')
-                //     ->getStateUsing(function ($record) {
-                //         return $record
-                //             ?->standarisasiDrawing
-                //             ?->serahTerimaWarehouse
-                //             ?->perencanaanProduksi
-                //             ?->identifikasiProduks
-                //             ?->pluck('no_seri')
-                //             ->filter()
-                //             ->implode(', ') ?? '-';
-                //     }),
+                self::textColumn('spkQC.no_spk', 'No SPK Quality'),
 
                 self::textColumn('tipe', 'Type/Model'),
 
@@ -171,8 +146,7 @@ class KelengkapanMaterialSSResource extends Resource
     {
         return parent::getEloquentQuery()
             ->with([
-                'standarisasiDrawing.serahTerimaWarehouse.perencanaanProduksi.spk',
-                'standarisasiDrawing.serahTerimaWarehouse.perencanaanProduksi.identifikasiProduks',
+                'spkQC',
                 'detail',
                 'pic'
             ]);

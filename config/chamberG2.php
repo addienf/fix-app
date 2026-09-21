@@ -43,8 +43,8 @@ return [
     // [
     //     'mainPart' => 'Controlling System',
     //     'parts' => [
-    //         'Check analogue output temperature function (Standard:      )',
-    //         'Check analogue output humidity function (Standard:      )',
+    //         'Check analogue output temperature function (Standard: 4 - 20 mA)',
+    //         'Check analogue output humidity function (Standard: 4 - 20 mA)',
     //         ['text' => 'Check the analogue output temperature function', 'show' => false],
     //         ['text' => 'Check the analogue output humidity function', 'show' => false],
     //     ],

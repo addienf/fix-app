@@ -18,12 +18,14 @@ use App\Models\Engineering\Service\ServiceReport;
 use App\Models\Engineering\SPK\SPKService;
 use App\Models\General\Company;
 use App\Models\General\Customer;
+use App\Models\MR\Perubahan\PerubahanInformasi;
 use App\Models\Production\Jadwal\JadwalProduksi;
 use App\Models\Production\Penyerahan\PenyerahanElectrical\PenyerahanElectrical;
 use App\Models\Production\Penyerahan\PenyerahanProdukJadi;
 use App\Models\Production\PermintaanBahanProduksi\PermintaanAlatDanBahan;
 use App\Models\Production\SPK\SPKQuality;
 use App\Models\Production\SPK\SPKVendor;
+use App\Models\Purchasing\Penerimaan\PenerimaanBarang;
 use App\Models\Purchasing\Permintaan\PermintaanPembelian;
 use App\Models\Quality\Defect\DefectStatus;
 use App\Models\Quality\IncommingMaterial\MaterialNonSS\IncommingMaterialNonSS;
@@ -58,12 +60,14 @@ use App\Policies\Engineering\Service\ServiceReportPolicy;
 use App\Policies\Engineering\SPK\SPKServicePolicy;
 use App\Policies\General\CompanyPolicy;
 use App\Policies\General\CustomerPolicy;
+use App\Policies\MR\Perubahan\PerubahanInformasiPolicy;
 use App\Policies\Production\Jadwal\JadwalProduksiPolicy;
 use App\Policies\Production\Penyerahan\PenyerahanElectrical\PenyerahanElectricalPolicy;
 use App\Policies\Production\Penyerahan\PenyerahanProdukJadiPolicy;
 use App\Policies\Production\PermintaanBahanProduksi\PermintaanAlatDanBahanPolicy;
 use App\Policies\Production\SPK\SPKQualityPolicy;
 use App\Policies\Production\SPK\SPKVendorPolicy;
+use App\Policies\Purchasing\Penerimaan\PenerimaanBarangPolicy;
 use App\Policies\Purchasing\Permintaan\PermintaanPembelianPolicy;
 use App\Policies\Quality\Defect\DefectStatusPolicy;
 use App\Policies\Quality\IncommingMaterial\MaterialNonSS\IncommingMaterialNonSSPolicy;
@@ -115,6 +119,10 @@ class AuthServiceProvider extends ServiceProvider
 
         //Purchasing
         PermintaanPembelian::class => PermintaanPembelianPolicy::class,
+        PenerimaanBarang::class => PenerimaanBarangPolicy::class,
+
+        //MR
+        PerubahanInformasi::class => PerubahanInformasiPolicy::class,
 
         //Warehouse
         IncommingMaterial::class => IncommingMaterialPolicy::class,
@@ -147,7 +155,6 @@ class AuthServiceProvider extends ServiceProvider
         Refrigerator::class => RefrigeratorPolicy::class,
         RissingPipette::class => RissingPipettePolicy::class,
         WalkinChamber::class => WalkinChamberPolicy::class,
-        ServiceReport::class => ServiceReportPolicy::class,
         Complain::class => ComplainPolicy::class,
         PermintaanPelayananPelanggan::class => PermintaanPelayananPelangganPolicy::class,
     ];

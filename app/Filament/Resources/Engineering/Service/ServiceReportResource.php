@@ -34,13 +34,6 @@ class ServiceReportResource extends Resource
     protected static ?string $slug = 'engineering/service-report';
     protected static ?string $navigationIcon = 'heroicon-o-wrench-screwdriver';
 
-    // public static function getNavigationBadge(): ?string
-    // {
-    //     $count = ServiceReport::where('status_penyetujuan', '!=', 'Disetujui')->count();
-
-    //     return $count > 0 ? (string) $count : null;
-    // }
-
     public static function form(Form $form): Form
     {
 
@@ -63,24 +56,6 @@ class ServiceReportResource extends Resource
 
                 self::getDetailProdukSection(),
 
-                // static::signatureSection(
-                //     [
-                //         [
-                //             'prefix' => 'checked',
-                //             'role' => 'Service By',
-                //             'hideLogic' => fn($operation) => $operation === 'edit',
-                //         ],
-                //         // [
-                //         //     'prefix' => 'approved',
-                //         //     'role' => 'Approved By',
-                //         //     'hideLogic' => fn($operation, $record) =>
-                //         //     $operation === 'create' || filled($record?->approved_signature)
-                //         // ],
-                //     ],
-                //     title: 'PIC',
-                //     uploadPath: 'Engineering/ServiceReport/Signature'
-                // ),
-
                 Section::make('Customer Info')
                     ->collapsible()
                     ->relationship('pic')
@@ -90,13 +65,19 @@ class ServiceReportResource extends Resource
                                 [
                                     'prefix' => 'checked',
                                     'role' => 'Checked By',
-                                    'hideLogic' => fn($operation) => $operation === 'edit',
+                                    'hideLogic' => fn($operation, $record) =>
+                                    $operation === 'edit' &&
+                                        !empty($record?->checked_signature),
                                 ],
                             ],
                             title: 'PIC',
                             uploadPath: 'Engineering/Maintenance/StabilityChamber/Signature'
                         )
-                            ->hiddenOn('edit'),
+                            ->hidden(
+                                fn($record, $operation) =>
+                                $operation === 'edit' &&
+                                    !empty($record?->checked_signature)
+                            ),
 
                         Section::make('PIC')
                             ->schema([

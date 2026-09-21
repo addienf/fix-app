@@ -108,45 +108,68 @@ class BeritaAcaraResource extends Resource
                     ]),
 
                 Section::make('Link Tanda Tangan')
-                    ->hidden(function ($get, $operation) {
-                        return $operation === 'create'
-                            || filled($get('pic.pelanggan_ttd'));
-                    })
+                    ->hidden(
+                        fn($get, $operation) =>
+                        $operation === 'create' || filled($get('pic.pelanggan_ttd'))
+                    )
                     ->schema([
-                        Grid::make(2)
+                        Grid::make(1)
                             ->schema([
-                                Actions::make([
-                                    ButtonAction::make('generate_link')
-                                        ->label('Generate Link')
-                                        ->icon('heroicon-o-link')
-                                        ->action(function ($record) {
-                                            $record->pic->update([
-                                                'sign_token' => Str::random(8),
-                                                'sign_token_expires_at' => now()->addDays(3),
-                                            ]);
-                                        }),
-                                ]),
 
-                                // Placeholder::make('sign_link')
-                                //     ->label(false)
-                                //     ->content(
-                                //         fn($record) =>
-                                //         $record->pic?->sign_token
-                                //             ? url('/qlb/' . $record->pic->sign_token)
-                                //             : 'Belum ada link dibuat'
-                                //     ),
-
-                                Placeholder::make('sign_link')
-                                    ->label(false)
-                                    ->content(function ($record) {
-                                        return $record->pic?->sign_token
+                                TextInput::make('signature_link')
+                                    ->label('')
+                                    ->readOnly()
+                                    ->dehydrated(false)
+                                    ->formatStateUsing(
+                                        fn($record) =>
+                                        $record?->pic?->sign_token
                                             ? route('signature.show', [
                                                 'type' => 'berita-acara',
                                                 'token' => $record->pic->sign_token,
                                             ])
-                                            : 'Belum ada link dibuat';
-                                    }),
-                            ])
+                                            : null
+                                    )
+                                    ->placeholder('Belum ada link dibuat')
+                                    ->suffixActions([
+                                        ButtonAction::make('generate')
+                                            ->icon('heroicon-o-link')
+                                            ->tooltip('Generate Link')
+                                            ->action(function ($record, $set) {
+                                                $record->pic->update([
+                                                    'sign_token' => Str::random(8),
+                                                    'sign_token_expires_at' => now()->addDays(3),
+                                                ]);
+
+                                                $set(
+                                                    'signature_link',
+                                                    route('signature.show', [
+                                                        'type' => 'berita-acara',
+                                                        'token' => $record->pic->fresh()->sign_token,
+                                                    ])
+                                                );
+                                            }),
+
+                                        ButtonAction::make('open')
+                                            ->icon('heroicon-o-arrow-top-right-on-square')
+                                            ->tooltip('Buka Link')
+                                            ->hidden(fn($record) => blank($record->pic?->sign_token))
+                                            ->alpineClickHandler(function ($record) {
+                                                $url = route('signature.show', [
+                                                    'type' => 'berita-acara',
+                                                    'token' => $record->pic->sign_token,
+                                                ]);
+
+                                                return "window.open('$url', '_blank')";
+                                            }),
+
+                                        ButtonAction::make('copy')
+                                            ->icon('heroicon-o-clipboard')
+                                            ->hidden(fn($record) => blank($record->pic?->sign_token))
+                                            ->alpineClickHandler(
+                                                fn($state) => "window.navigator.clipboard.writeText('$state'); \$tooltip('Copied to clipboard', { timeout: 1500 });"
+                                            )
+                                    ]),
+                            ]),
                     ])
             ]);
     }
@@ -154,10 +177,13 @@ class BeritaAcaraResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->defaultSort('created_at', 'desc')
             ->columns([
                 //
                 TextColumn::make('spkService.no_spk_service')
                     ->label('No SPK Service'),
+
+                self::textColumn('spkService.perusahaan', 'Nama Company'),
 
                 TextColumn::make('no_surat')
                     ->label('No Surat'),
