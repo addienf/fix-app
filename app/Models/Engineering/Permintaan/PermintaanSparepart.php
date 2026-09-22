@@ -5,6 +5,7 @@ namespace App\Models\Engineering\Permintaan;
 use App\Models\Engineering\Permintaan\Pivot\PermintaanSparepartDetail;
 use App\Models\Engineering\Permintaan\Pivot\PermintaanSparepartPIC;
 use App\Models\Engineering\SPK\SPKService;
+use App\Models\Warehouse\SerahTerima\SerahTerimaBahan;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -20,6 +21,11 @@ class PermintaanSparepart extends Model
         'kepada',
         'status_penyerahan'
     ];
+
+    public function serahTerima()
+    {
+        return $this->hasOne(SerahTerimaBahan::class, 'permintaan_sparepart_id');
+    }
 
     public function spkService()
     {

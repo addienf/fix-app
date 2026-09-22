@@ -26,15 +26,13 @@ class CreateSerahTerimaBahan extends CreateRecord
         if ($this->record && $this->record->id) {
             SendGenericNotif::dispatch(
                 $this->record,
-                // ['warehouse', 'production', 'engineering'],
                 ['warehouse', 'production'],
                 GenericNotification::class,
-                '/admin/warehouse/serah-terima-bahan',
+                // '/admin/warehouse/serah-terima-bahan',
+                SerahTerimaBahanResource::getUrl('index'),
                 'Data Serah Terima Bahan berhasil dibuat',
                 'Ada data Serah Terima Bahan yang harus ditanda tangani.'
             );
-        } else {
-            Log::error('Record belum lengkap.');
         }
     }
 

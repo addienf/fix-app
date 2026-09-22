@@ -2,10 +2,8 @@
 
 namespace App\Models\Warehouse\SerahTerima;
 
-use App\Models\Production\Jadwal\JadwalProduksi;
-use App\Models\Production\PermintaanBahanProduksi\PermintaanAlatDanBahan;
+use App\Models\Engineering\Permintaan\PermintaanSparepart;
 use App\Models\Quality\Standarisasi\StandarisasiDrawing;
-use App\Models\Warehouse\Peminjaman\PeminjamanAlat;
 use App\Models\Warehouse\SerahTerima\Pivot\SerahTerimaBahanDetail;
 use App\Models\Warehouse\SerahTerima\Pivot\SerahTerimaBahanPIC;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -16,8 +14,7 @@ class SerahTerimaBahan extends Model
     use HasFactory;
 
     protected $fillable = [
-        // 'peminjaman_alat_id',
-        'perencanaan_id',
+        'permintaan_sparepart_id',
         'tanggal',
         'no_surat',
         'dari',
@@ -29,14 +26,13 @@ class SerahTerimaBahan extends Model
         'tanggal' => 'date',
     ];
 
-    // public function peminjamanAlat()
-    // {
-    //     return $this->belongsTo(PeminjamanAlat::class, 'peminjaman_alat_id');
-    // }
+    protected $attributes = [
+        'status_penerimaan' => 'Belum Diterima',
+    ];
 
-    public function perencanaanProduksi()
+    public function permintaanSparepart()
     {
-        return $this->belongsTo(JadwalProduksi::class, 'perencanaan_id');
+        return $this->belongsTo(PermintaanSparepart::class, 'permintaan_sparepart_id');
     }
 
     public function standarisasiDrawing()

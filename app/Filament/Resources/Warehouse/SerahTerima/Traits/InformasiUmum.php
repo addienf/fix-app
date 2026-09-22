@@ -2,18 +2,20 @@
 
 namespace App\Filament\Resources\Warehouse\SerahTerima\Traits;
 
-use App\Models\Production\Jadwal\JadwalProduksi;
-use App\Models\Warehouse\Peminjaman\PeminjamanAlat;
+use App\Models\Engineering\Permintaan\PermintaanSparepart;
 use App\Traits\HasAutoNumber;
 use App\Traits\SimpleFormResource;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Set;
+use Illuminate\Database\Eloquent\Builder;
+use Filament\Forms\Form;
 
 trait InformasiUmum
 {
     use SimpleFormResource, HasAutoNumber;
-    protected static function informasiUmumSection($form): Section
+    protected static function informasiUmumSection(Form $form): Section
     {
         $isEdit = $form->getOperation() === 'edit';
 
@@ -21,193 +23,109 @@ trait InformasiUmum
             ->collapsible()
             ->schema([
 
-                // Grid::make($isEdit ? 3 : 2)
                 Grid::make([
                     'default' => 1,
                     'md' => $isEdit ? 3 : 2,
                     'lg' => $isEdit ? 3 : 2,
                 ])
                     ->schema([
-                        self::select()
+                        static::select()
                             ->columnSpanFull()
                             ->hiddenOn('edit'),
 
-                        self::autoNumberField2('no_surat', 'No Surat', [
+                        static::autoNumberField2('no_surat', 'No Surat', [
                             'prefix' => 'QKS',
                             'section' => 'WBB',
                             'type' => 'SERAHTERIMA',
                             'table' => 'serah_terima_bahans',
                         ])->hiddenOn('edit'),
 
-                        self::dateInput('tanggal', 'Tanggal')
+                        static::dateInput('tanggal', 'Tanggal')
                             ->required(),
 
-                        self::textInput('dari', 'Dari')
+                        static::textInput('dari', 'Dari')
                             ->placeholder('Warehouse'),
 
-                        self::textInput('kepada', 'Kepada'),
+                        static::textInput('kepada', 'Kepada'),
                     ])
             ]);
     }
 
-    // private static function select(): Select
-    // {
-    //     return
-    //         Select::make('peminjaman_alat_id')
-    //         ->label('Nomor SPK / No Seri Produk')
-    //         ->placeholder('Pilih Nomor SPK / No Seri Produk')
-    //         ->searchable()
-    //         ->native(false)
-    //         ->preload()
-    //         ->required()
-    //         ->reactive()
-    //         ->options(function () {
-    //             return PeminjamanAlat::with([
-    //                 'spkVendor.perencanaanProduksi.spk',
-    //                 'spkVendor.perencanaanProduksi.identifikasiProduks'
-    //             ])
-    //                 ->whereDoesntHave('serahTerimaBahan')
-    //                 ->latest()
-    //                 ->get()
-    //                 ->mapWithKeys(function ($pinjam) {
-
-    //                     $jadwal = $pinjam->spkVendor->perencanaanProduksi;
-
-    //                     $spkNo = $jadwal->spk->no_spk ?? '-';
-    //                     $noSeri = $jadwal->identifikasiProduks
-    //                         ->pluck('no_seri')
-    //                         ->filter()
-    //                         ->implode(', ') ?: '-';
-
-    //                     return [
-    //                         $pinjam->id => "{$spkNo} - {$noSeri}",
-    //                     ];
-    //                 });
-    //         })
-    //         ->getSearchResultsUsing(function ($query) {
-
-    //             return PeminjamanAlat::with([
-    //                 'spkVendor.perencanaanProduksi.spk',
-    //                 'spkVendor.perencanaanProduksi.identifikasiProduks'
-    //             ])
-    //                 ->whereDoesntHave('serahTerimaBahan')
-    //                 ->whereHas('spkVendor.perencanaanProduksi.spk', function ($q) use ($query) {
-    //                     $q->where('no_spk', 'like', "%{$query}%");
-    //                 })
-    //                 ->latest()
-    //                 ->limit(10)
-    //                 ->get()
-    //                 ->mapWithKeys(function ($pinjam) {
-
-    //                     $jadwal = $pinjam->spkVendor->perencanaanProduksi;
-
-    //                     $spkNo = $jadwal->spk->no_spk ?? '-';
-    //                     $noSeri = $jadwal->identifikasiProduks
-    //                         ->pluck('no_seri')
-    //                         ->filter()
-    //                         ->implode(', ') ?: '-';
-
-    //                     return [
-    //                         $pinjam->id => "{$spkNo} - {$noSeri}",
-    //                     ];
-    //                 });
-    //         })
-    //         ->afterStateUpdated(function ($state, callable $set) {
-    //             if (!$state) return;
-
-    //             $pinjam = PeminjamanAlat::with('spkVendor.perencanaanProduksi.sumbers')->find($state);
-    //             if (!$pinjam) return;
-
-    //             $details = $pinjam->spkVendor->perencanaanProduksi->sumbers
-    //                 ->map(fn($d) => [
-    //                     'bahan_baku' => $d->bahan_baku ?? '',
-    //                     'spesifikasi' => $d->spesifikasi ?? '',
-    //                     'jumlah' => $d->jumlah ?? 0,
-    //                     'keperluan_barang' => $d->keperluan_barang ?? '',
-    //                 ])
-    //                 ->toArray();
-
-    //             $set('details', $details);
-    //         });
-    // }
-    private static function select(): Select
+    protected static function select(): Select
     {
         return
-            Select::make('perencanaan_id')
-            ->label('Nomor SPK / No Seri Produk')
-            ->placeholder('Pilih Nomor SPK / No Seri Produk')
+            Select::make('permintaan_sparepart_id')
+            ->label('Nomor Permintaan Spareparts')
+            ->placeholder('Pilih Nomor Permintaan Spareparts')
             ->searchable()
-            ->native(false)
-            ->preload()
             ->required()
-            ->reactive()
-            ->options(function () {
-                return JadwalProduksi::with([
-                    'spk',
-                    'identifikasiProduks'
-                ])
-                    ->whereDoesntHave('serahTerimaBahan')
-                    ->latest()
-                    ->get()
-                    ->mapWithKeys(function ($pinjam) {
-
-                        // $jadwal = $pinjam->spkVendor->perencanaanProduksi;
-
-                        $spkNo = $pinjam->spk->no_spk ?? '-';
-                        $noSeri = $pinjam->identifikasiProduks
-                            ->pluck('no_seri')
-                            ->filter()
-                            ->implode(', ') ?: '-';
-
-                        return [
-                            $pinjam->id => "{$spkNo} - {$noSeri}",
-                        ];
-                    });
-            })
-            ->getSearchResultsUsing(function ($query) {
-
-                return JadwalProduksi::with([
-                    'spk',
-                    'identifikasiProduks'
-                ])
-                    ->whereDoesntHave('serahTerimaBahan')
-                    ->whereHas('spk', function ($q) use ($query) {
-                        $q->where('no_spk', 'like', "%{$query}%");
-                    })
-                    ->latest()
+            ->live()
+            ->options(
+                fn() => static::permintaanQuery()
                     ->limit(10)
                     ->get()
-                    ->mapWithKeys(function ($pinjam) {
-
-                        // $jadwal = $pinjam->spkVendor->perencanaanProduksi;
-
-                        $spkNo = $pinjam->spk->no_spk ?? '-';
-                        $noSeri = $pinjam->identifikasiProduks
-                            ->pluck('no_seri')
-                            ->filter()
-                            ->implode(', ') ?: '-';
-
-                        return [
-                            $pinjam->id => "{$spkNo} - {$noSeri}",
-                        ];
-                    });
+                    ->mapWithKeys(fn($s) => static::permintaanOption($s))
+            )
+            ->getSearchResultsUsing(
+                fn(string $search) => static::permintaanQuery()
+                    ->where(
+                        fn($q) => $q
+                            ->where('no_surat', 'like', "%{$search}%")
+                            ->orWhereHas(
+                                'spkService',
+                                fn($sq) =>
+                                $sq->where('perusahaan', 'like', "%{$search}%")
+                            )
+                    )
+                    ->limit(10)
+                    ->get()
+                    ->mapWithKeys(fn($s) => static::permintaanOption($s))
+            )
+            ->getOptionLabelUsing(function ($value) {
+                $s = PermintaanSparepart::with('spkService')->find($value);
+                return $s ? static::permintaanLabel($s) : $value;
             })
-            ->afterStateUpdated(function ($state, callable $set) {
-                if (!$state) return;
-
-                $pinjam = JadwalProduksi::with('sumbers')->find($state);
-                if (!$pinjam) return;
-
-                $details = $pinjam->sumbers
-                    ->map(fn($d) => [
-                        'bahan_baku' => $d->bahan_baku ?? '',
-                        'spesifikasi' => $d->spesifikasi ?? '',
-                        'jumlah' => $d->jumlah ?? 0,
-                        'keperluan_barang' => $d->keperluan_barang ?? '',
-                    ])
-                    ->toArray();
-
-                $set('details', $details);
+            ->afterStateUpdated(function ($state, Set $set) {
+                if (! $state) {
+                    $set('details', []);
+                    return;
+                }
+                $record = PermintaanSparepart::with('details')->find($state);
+                $set(
+                    'details',
+                    $record
+                        ? $record->details->map(fn($d) => [
+                            'bahan_baku'       => $d->bahan_baku ?? '',
+                            'spesifikasi'      => $d->spesifikasi ?? '',
+                            'jumlah'           => $d->jumlah ?? 0,
+                            'keperluan_barang' => $d->keperluan_barang ?? '',
+                        ])->values()->toArray()
+                        : []
+                );
             });
+    }
+
+    protected static function permintaanQuery(): Builder
+    {
+        return
+            PermintaanSparepart::with('spkService')
+            ->whereDoesntHave('serahTerima')
+            ->where('status_penyerahan', 'Diserahkan')
+            ->latest();
+    }
+
+    protected static function permintaanLabel(PermintaanSparepart $sparepart): string
+    {
+        return sprintf(
+            '%s - %s - %s',
+            $sparepart->no_surat ?? '-',
+            $sparepart->tanggal ?? '-',
+            $sparepart->spkService?->perusahaan ?? '-'
+        );
+    }
+
+    protected static function permintaanOption(PermintaanSparepart $sparepart): array
+    {
+        return [$sparepart->id => static::permintaanLabel($sparepart)];
     }
 }

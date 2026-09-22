@@ -41,24 +41,6 @@
     <br>
 
     {{-- ================= INFORMASI UMUM ================= --}}
-    {{-- <table class="no-border">
-        <tr>
-            <td width="25%">Nomor</td>
-            <td width="75%">: {{ $serah_terima->no_surat }}</td>
-        </tr>
-        <tr>
-            <td>Tanggal</td>
-            <td>: {{ \Carbon\Carbon::parse($serah_terima->tanggal)->translatedFormat('d F Y') }}</td>
-        </tr>
-        <tr>
-            <td>Dari</td>
-            <td>: {{ $serah_terima->dari }}</td>
-        </tr>
-        <tr>
-            <td>Kepada</td>
-            <td>: {{ $serah_terima->kepada }}</td>
-        </tr>
-    </table> --}}
     <table class="no-border" width="100%">
         <tr>
             <td width="15%">Nomor</td>
@@ -77,7 +59,7 @@
     <p>
         Dengan hormat,<br>
         Berdasarkan Permintaan Barang No
-        <b>{{ $serah_terima->perencanaanProduksi->no_surat }}</b>
+        <b>{{ $serah_terima->permintaanSparepart->no_surat }}</b>
         dari Departemen
         <b>{{ Str::headline($serah_terima->pic?->submitName?->roles?->first()?->name ?? '') }}</b>,
         berikut material/bahan/barang yang telah diserahkan:
@@ -99,10 +81,10 @@
             @foreach ($serah_terima->details as $i => $item)
                 <tr>
                     <td class="text-center">{{ $i + 1 }}</td>
-                    <td>{{ $item['bahan_baku'] }}</td>
-                    <td>{{ $item['spesifikasi'] }}</td>
-                    <td class="text-center">{{ $item['jumlah'] }}</td>
-                    <td>{{ $item['keperluan_barang'] }}</td>
+                    <td>{{ $item->bahan_baku }}</td>
+                    <td>{{ $item->spesifikasi }}</td>
+                    <td class="text-center">{{ $item->jumlah ?? '-' }}</td>
+                    <td>{{ $item->keperluan_barang }}</td>
                 </tr>
             @endforeach
         </tbody>
@@ -115,26 +97,26 @@
                 Diserahkan Oleh,<br><br>
 
                 <div class="signature-box">
-                    @if (!empty($serah_terima->pic->submit_signature))
-                        <img src="{{ public_path('storage/' . $serah_terima->pic->submit_signature) }}">
+                    @if (!empty($serah_terima->pic?->submit_signature))
+                        <img src="{{ public_path('storage/' . $serah_terima->pic?->submit_signature) }}">
                     @endif
                 </div>
 
                 <br>
-                <b>{{ $serah_terima->pic->submitName->name }}</b>
+                <b>{{ $serah_terima->pic?->submitName?->name }}</b>
             </td>
 
             <td width="50%" class="text-center">
                 Diterima Oleh,<br><br>
 
                 <div class="signature-box">
-                    @if (!empty($serah_terima->pic->receive_signature))
-                        <img src="{{ public_path('storage/' . $serah_terima->pic->receive_signature) }}">
+                    @if (!empty($serah_terima->pic?->receive_signature))
+                        <img src="{{ public_path('storage/' . $serah_terima->pic?->receive_signature) }}">
                     @endif
                 </div>
 
                 <br>
-                <b>{{ $serah_terima->pic->receiveName->name }}</b>
+                <b>{{ $serah_terima->pic?->receiveName?->name }}</b>
             </td>
         </tr>
     </table>

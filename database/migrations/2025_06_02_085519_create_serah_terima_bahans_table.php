@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('serah_terima_bahans', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('permintaan_bahan_pro_id')->constrained('permintaan_alat_dan_bahans')->onDelete('cascade');
+            $table->foreignId('permintaan_sparepart_id')->constrained('permintaan_spareparts')->onDelete('cascade');
             $table->date('tanggal');
             $table->string('no_surat');
             $table->string('dari');
