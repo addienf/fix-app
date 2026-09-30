@@ -19,7 +19,8 @@ class SerahTerimaBahan extends Model
         'no_surat',
         'dari',
         'kepada',
-        'status_penerimaan'
+        'status_penerimaan',
+        'jenis_serahterima'
     ];
 
     protected $casts = [

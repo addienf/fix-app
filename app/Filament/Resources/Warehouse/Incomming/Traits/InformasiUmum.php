@@ -20,15 +20,21 @@ trait InformasiUmum
 
                 Grid::make(2)
                     ->schema([
-                        self::autoNumberField2('no_surat', 'No.', [
+                        // self::autoNumberField2('no_surat', 'No.', [
+                        //     'prefix' => 'QKS',
+                        //     'section' => 'WBB',
+                        //     'type' => 'PM',
+                        //     'table' => 'incomming_materials',
+                        // ])
+                        //     ->hiddenOn('edit'),
+                        static::newAutoNmberField('no_surat', 'No.', [
                             'prefix' => 'QKS',
                             'section' => 'WBB',
                             'type' => 'PM',
                             'table' => 'incomming_materials',
-                        ])
-                            ->hiddenOn('edit'),
+                        ]),
 
-                        self::dateInput('tanggal', 'Tanggal Penerimaan')
+                        static::dateInput('tanggal', 'Tanggal Penerimaan')
                             ->required(),
                     ])
 

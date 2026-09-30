@@ -59,9 +59,9 @@
     <p>
         Dengan hormat,<br>
         Berdasarkan Permintaan Barang No
-        <b>{{ $serah_terima->permintaanSparepart->no_surat }}</b>
+        <b>{{ $serah_terima->permintaanSparepart->no_surat ?? 'Produksi' }}</b>
         dari Departemen
-        <b>{{ Str::headline($serah_terima->pic?->submitName?->roles?->first()?->name ?? '') }}</b>,
+        <b>{{ Str::headline($serah_terima->pic?->submitName?->roles?->first()?->name ?? 'Produksi') }}</b>,
         berikut material/bahan/barang yang telah diserahkan:
     </p>
 

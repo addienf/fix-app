@@ -11,6 +11,8 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Set;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Forms\Form;
+use Filament\Forms\Get;
+use Wallo\FilamentSelectify\Components\ButtonGroup;
 
 trait InformasiUmum
 {
@@ -29,14 +31,16 @@ trait InformasiUmum
                     'lg' => $isEdit ? 3 : 2,
                 ])
                     ->schema([
-                        static::select()
-                            ->columnSpanFull()
-                            ->hiddenOn('edit'),
+                        static::getJenisSerahTerima()->label('Jenis Serah Terima'),
 
-                        static::autoNumberField2('no_surat', 'No Surat', [
+                        static::select()
+                            ->hiddenOn('edit')
+                            ->hidden(fn(Get $get) => $get('jenis_serahterima') !== 'Engineer'),
+
+                        static::newAutoNmberField('no_surat', 'No.', [
                             'prefix' => 'QKS',
                             'section' => 'WBB',
-                            'type' => 'SERAHTERIMA',
+                            'type' => 'STBS',
                             'table' => 'serah_terima_bahans',
                         ])->hiddenOn('edit'),
 
@@ -44,7 +48,7 @@ trait InformasiUmum
                             ->required(),
 
                         static::textInput('dari', 'Dari')
-                            ->placeholder('Warehouse'),
+                            ->default('Warehouse'),
 
                         static::textInput('kepada', 'Kepada'),
                     ])
@@ -58,7 +62,8 @@ trait InformasiUmum
             ->label('Nomor Permintaan Spareparts')
             ->placeholder('Pilih Nomor Permintaan Spareparts')
             ->searchable()
-            ->required()
+            ->columnSpanFull()
+            ->required(fn(Get $get) => $get('jenis_serahterima') === 'Engineer')
             ->live()
             ->options(
                 fn() => static::permintaanQuery()
@@ -85,22 +90,24 @@ trait InformasiUmum
                 $s = PermintaanSparepart::with('spkService')->find($value);
                 return $s ? static::permintaanLabel($s) : $value;
             })
-            ->afterStateUpdated(function ($state, Set $set) {
+            ->afterStateUpdated(function ($state, Set $set, Get $get) {
+                $currentDetails = $get('details') ?? [];
+
                 if (! $state) {
-                    $set('details', []);
+                    $set('details', static::getEmptyDetails($currentDetails));
                     return;
                 }
                 $record = PermintaanSparepart::with('details')->find($state);
                 $set(
                     'details',
-                    $record
+                    $record && $record->details->isNotEmpty()
                         ? $record->details->map(fn($d) => [
                             'bahan_baku'       => $d->bahan_baku ?? '',
                             'spesifikasi'      => $d->spesifikasi ?? '',
                             'jumlah'           => $d->jumlah ?? 0,
                             'keperluan_barang' => $d->keperluan_barang ?? '',
                         ])->values()->toArray()
-                        : []
+                        : static::getEmptyDetails($currentDetails)
                 );
             });
     }
@@ -127,5 +134,47 @@ trait InformasiUmum
     protected static function permintaanOption(PermintaanSparepart $sparepart): array
     {
         return [$sparepart->id => static::permintaanLabel($sparepart)];
+    }
+
+    protected static function getJenisSerahTerima()
+    {
+        return
+            ButtonGroup::make('jenis_serahterima')
+            ->options([
+                'Produksi' => 'Produksi',
+                'Engineer' => 'Engineer',
+            ])
+            ->live()
+            ->columnSpanFull()
+            ->onColor('primary')
+            ->offColor('gray')
+            ->gridDirection('row')
+            ->disabledOn('edit')
+            ->afterStateUpdated(function ($state, Get $get, Set $set) {
+                if ($state !== 'Engineer') {
+                    $set('permintaan_sparepart_id', null);
+                }
+
+                $currentDetails = $get('details') ?? [];
+                $set('details', static::getEmptyDetails($currentDetails));
+            });
+    }
+
+    protected static function getEmptyDetails(array $currentDetails = []): array
+    {
+        if (empty($currentDetails)) {
+            return [[
+                'bahan_baku'       => '',
+                'spesifikasi'      => '',
+                'jumlah'           => null,
+                'keperluan_barang' => '',
+            ]];
+        }
+        return array_map(fn($row) => [
+            'bahan_baku'       => '',
+            'spesifikasi'      => '',
+            'jumlah'           => null,
+            'keperluan_barang' => '',
+        ], $currentDetails);
     }
 }

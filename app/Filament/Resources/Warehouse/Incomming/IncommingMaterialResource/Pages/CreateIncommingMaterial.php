@@ -3,12 +3,11 @@
 namespace App\Filament\Resources\Warehouse\Incomming\IncommingMaterialResource\Pages;
 
 use App\Filament\Resources\Warehouse\Incomming\IncommingMaterialResource;
-use Filament\Actions;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Support\Facades\Log;
 use App\Jobs\SendGenericNotif;
 use App\Notifications\GenericNotification;
-
+use App\Services\DocumentNumber;
 
 class CreateIncommingMaterial extends CreateRecord
 {
@@ -21,6 +20,12 @@ class CreateIncommingMaterial extends CreateRecord
         return $this->getResource()::getUrl('index');
     }
 
+    protected function mutateFormDataBeforeCreate(array $data): array
+    {
+        $data['no_surat'] = DocumentNumber::next('incomming_materials', 'no_surat', 'PM', 'QKS', 'WBB');
+        return $data;
+    }
+
     protected function afterCreate(): void
     {
         if ($this->record && $this->record->id) {
@@ -28,7 +33,8 @@ class CreateIncommingMaterial extends CreateRecord
                 $this->record,
                 ['warehouse'],
                 GenericNotification::class,
-                '/admin/warehouse/incoming-material',
+                // '/admin/warehouse/incoming-material',
+                IncommingMaterialResource::getUrl('index'),
                 'Data Incoming Material berhasil dibuat',
                 'Ada data Incoming Material yang harus di tanda tangani.'
             );

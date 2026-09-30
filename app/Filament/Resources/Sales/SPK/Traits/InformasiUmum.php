@@ -4,6 +4,8 @@ namespace App\Filament\Resources\Sales\SPK\Traits;
 
 use App\Models\Sales\SpesifikasiProducts\SpesifikasiProduct;
 use App\Models\Sales\SPKMarketings\SPKMarketing;
+use App\Traits\HasAutoNumber;
+use App\Traits\SimpleFormResource;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Section;
@@ -12,6 +14,8 @@ use Illuminate\Support\Facades\Cache;
 
 trait InformasiUmum
 {
+    use HasAutoNumber, SimpleFormResource;
+
     protected static function informasiUmumSection(): Section
     {
         $lastValue = SPKMarketing::latest('no_spk')->value('no_spk');
@@ -28,7 +32,16 @@ trait InformasiUmum
                             ->required()
                             ->displayFormat('M d Y'),
 
-                        self::autoNumberField2('no_spk', 'Nomor SPK', [
+                        // self::autoNumberField2('no_spk', 'Nomor SPK', [
+                        //     'prefix' => 'QKS',
+                        //     'section' => 'MKT',
+                        //     'type' => 'SPK',
+                        //     'table' => 'spk_marketings',
+                        // ])
+                        //     ->hiddenOn('edit')
+                        //     ->placeholder($lastValue ? "Data Terakhir : {$lastValue}" : 'Data Belum Tersedia'),
+
+                        static::newAutoNmberField('no_spk', 'Nomor SPK', [
                             'prefix' => 'QKS',
                             'section' => 'MKT',
                             'type' => 'SPK',
