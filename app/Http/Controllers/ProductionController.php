@@ -15,6 +15,20 @@ use ZipArchive;
 class ProductionController extends Controller
 {
     //
+    private function getBase64Logo()
+    {
+        $logoPath = public_path('asset/logo.png');
+
+        if (!file_exists($logoPath)) {
+            return null;
+        }
+
+        $type = pathinfo($logoPath, PATHINFO_EXTENSION);
+
+        return 'data:image/' . $type . ';base64,' .
+            base64_encode(file_get_contents($logoPath));
+    }
+
     public function pdfJadwalProduksi($id)
     {
         $jadwalProduksi = JadwalProduksi::with([
@@ -45,10 +59,6 @@ class ProductionController extends Controller
             'jadwal' => $jadwalProduksi,
             'logoBase64' => $logoBase64,
         ])->setPaper('a4', 'portrait');
-
-        // $pdf = Pdf::loadView('pdf.production.pdfJadwalProduksi', [
-        //     'jadwal' => $jadwalProduksi
-        // ])->setPaper('a4', 'portrait');
 
         $pdfName = $baseName . '.pdf';
         $pdfTempPath = storage_path('app/temp/' . $pdfName);
@@ -132,9 +142,13 @@ class ProductionController extends Controller
 
     public function pdfSPKQuality($id)
     {
-        $spk_qc = SPKQuality::with(['penyerahanElectrical', 'details', 'pic', 'pic.createName', 'pic.receiveName'])->findOrFail($id);
+        $spk_qc = SPKQuality::with(['spkMarketing', 'details', 'pic', 'pic.createName', 'pic.receiveName'])->findOrFail($id);
+        $logoBase64 = $this->getBase64Logo();
 
-        return view('pdf.production.pdfSPKQuality', compact('spk_qc'));
+        $pdf = Pdf::loadView('pdf.production.pdfSPKQuality', compact('spk_qc', 'logoBase64'))
+            ->setPaper('a4', 'portrait');
+
+        return $pdf->stream('spk-quality.pdf');
     }
 
     public function pdfPenyerahanElectrical($id)

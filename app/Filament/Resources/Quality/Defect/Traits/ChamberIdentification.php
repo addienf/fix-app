@@ -34,24 +34,15 @@ trait ChamberIdentification
                             ->hiddenOn('edit'),
                     ]),
 
-                self::textInput('tipe', 'Type/Model')
-                    ->extraAttributes([
-                        'readonly' => true,
-                        'style' => 'pointer-events: none;'
-                    ]),
+                self::textInput('tipe', 'Type/Model'),
 
                 self::textInput('no_surat', 'No Form'),
 
                 self::textInput('volume', 'Volume'),
 
-                self::textInput('serial_number', 'S/N')
-                    ->extraAttributes([
-                        'readonly' => true,
-                        'style' => 'pointer-events: none;'
-                    ]),
+                self::textInput('serial_number', 'S/N'),
 
             ])
-            // ->columns($isEdit ? 4 : 2);
             ->columns([
                 'default' => 1,
                 'md' => $isEdit ? 4 : 2,
@@ -70,14 +61,12 @@ trait ChamberIdentification
             ])
             ->reactive()
             ->required()
-            ->afterStateUpdated(function ($state, callable $set) {
-                // RESET ketika tipe berubah
+            ->afterStateUpdated(function (callable $set) {
                 $set('sumber_id', null);
                 $set('serial_number', null);
                 $set('tipe', null);
                 $set('details', []);
             });
-        // ->disabledOn('edit');
     }
 
     protected static function pilihId(): Select
@@ -91,48 +80,30 @@ trait ChamberIdentification
 
                 return match ($tipe) {
                     'electrical' =>
-                    PengecekanMaterialElectrical::with([
-                        'penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.perencanaanProduksi'
-                    ])
+                    PengecekanMaterialElectrical::with('spkQC')
                         ->whereDoesntHave('defectStatus')
                         ->get()
                         ->mapWithKeys(function ($item) {
-                            $spkNo =
-                                $item?->penyerahanElectrical?->pengecekanSS?->kelengkapanMaterial
-                                ?->standarisasiDrawing?->serahTerimaWarehouse?->perencanaanProduksi
-                                ?->spk?->no_spk ?? '-';
 
-                            $seri =
-                                $item?->penyerahanElectrical?->pengecekanSS?->kelengkapanMaterial
-                                ?->standarisasiDrawing?->serahTerimaWarehouse?->perencanaanProduksi
-                                ?->identifikasiProduks?->pluck('no_seri')->implode(', ')
-                                ?: '-';
+                            $spkNo =
+                                $item?->spkQC?->spkMarketing?->no_spk ?? '-';
 
                             return [
-                                $item->id => "{$spkNo} - {$seri}"
+                                $item->id => "{$spkNo}"
                             ];
                         }),
 
                     'stainless_steel' =>
-                    PengecekanMaterialSS::with([
-                        'kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.perencanaanProduksi'
-                    ])
+                    PengecekanMaterialSS::with('spkQC')
                         ->whereDoesntHave('defectStatus')
                         ->get()
                         ->mapWithKeys(function ($item) {
 
                             $spkNo =
-                                $item?->kelengkapanMaterial?->standarisasiDrawing?->serahTerimaWarehouse
-                                ?->perencanaanProduksi?->spk?->no_spk
-                                ?? '-';
-
-                            $seri =
-                                $item?->kelengkapanMaterial?->standarisasiDrawing?->serahTerimaWarehouse
-                                ?->perencanaanProduksi?->identifikasiProduks?->pluck('no_seri')->implode(', ')
-                                ?: '-';
+                                $item?->spkQC?->spkMarketing?->no_spk ?? '-';
 
                             return [
-                                $item->id => "{$spkNo} - {$seri}"
+                                $item->id => "{$spkNo}"
                             ];
                         }),
 
@@ -149,24 +120,6 @@ trait ChamberIdentification
                 };
 
                 if (!$model) return;
-
-                $root = $tipe === 'electrical'
-                    ? $model?->penyerahanElectrical?->pengecekanSS
-                    : $model;
-
-                $seri =
-                    $root?->kelengkapanMaterial?->standarisasiDrawing?->serahTerimaWarehouse
-                    ?->perencanaanProduksi?->identifikasiProduks?->pluck('no_seri')
-                    ->implode(', ')
-                    ?: '-';
-
-                $tipeProduk =
-                    $root?->kelengkapanMaterial?->standarisasiDrawing?->serahTerimaWarehouse
-                    ?->perencanaanProduksi?->identifikasiProduks?->first()?->tipe
-                    ?? '-';
-
-                $set('serial_number', $seri);
-                $set('tipe', $tipeProduk);
 
                 $ditolak = collect($model->detail->details)
                     ->map(function ($item) {
@@ -223,6 +176,8 @@ trait ChamberIdentification
                     'Hanya file PDF yang diperbolehkan. Maksimal ukuran 10 MB.',
                     types: ['application/pdf'],
                     maxSize: 10240,
+                    required: false,
+                    optimize: true
                 ),
             ]);
     }

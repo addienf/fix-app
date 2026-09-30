@@ -1,17 +1,16 @@
 @extends('pdf.layout.engineering')
 @section('title', 'Regular Maintenance Checklist - Qlab Stability Chamber G2 PDF')
 @section('pdf-header')
-    <table style="width:100%; border-collapse:collapse; margin-bottom:12px;">
+    <table style="width:100%; border-collapse:collapse; margin-bottom:1px;">
         <tr>
             <td rowspan="2" style="width:110px; text-align:center; vertical-align:middle;">
-                {{-- <img src="{{ public_path('asset/logo.png') }}" style="height:55px;"> --}}
                 @if ($logoBase64)
                     <img src="{{ $logoBase64 }}" style="height:55px;">
                 @endif
             </td>
 
             <td style="padding:4px 8px; vertical-align:top;">
-                <strong>Project :</strong>
+                <strong>Project : {{ $G2->project }}</strong>
             </td>
 
             <td rowspan="2" style="width:110px; text-align:center; vertical-align:top; font-size:10px; line-height:1.4;">
@@ -23,7 +22,7 @@
 
         <tr>
             <td style="padding:4px 8px; vertical-align:top;">
-                Client
+                <strong>Client : {{ $G2->spkService->perusahaan }}</strong>
             </td>
         </tr>
     </table>
@@ -36,11 +35,11 @@
         $rowNumber = 1;
     @endphp
 
-    <h2 style="text-align:center; font-weight:bold; margin-bottom:12px;">
+    <h2 style="text-align:center; font-weight:bold; margin-bottom:1px;">
         REGULAR MAINTENANCE CHECK LIST - QLAB STABILITY CHAMBER G2
     </h2>
 
-    <p style="text-align:center; font-weight:bold; margin-bottom:16px;">
+    <p style="text-align:center; font-weight:bold; margin-bottom:1px;">
         CTC Name / Tag No : {{ $G2->tag_no }}
     </p>
 
@@ -85,7 +84,7 @@
                         {{ $rowNumber++ }}
                     </td>
                     <td colspan="7">
-                        {{ $group['mainPart'] ?? '-' }}
+                        {{ $group['mainPart'] ?? '' }}
                     </td>
                 </tr>
 
@@ -101,12 +100,16 @@
                         <tr>
                             <td class="center"></td>
                             <td>{{ $part['part'] }}</td>
-                            <td class="center">{{ $part['before'] ?? '-' }}</td>
-                            <td class="center">{{ $part['after'] ?? '-' }}</td>
+                            <td class="center">
+                                {!! nl2br(e($part['before'] ?? '')) !!}
+                            </td>
+                            <td class="center">
+                                {!! nl2br(e($part['after'] ?? '')) !!}
+                            </td>
                             <td class="center">{{ $part['accepted'] === 'yes' ? '✔' : '' }}</td>
                             <td class="center">{{ $part['accepted'] === 'no' ? '✔' : '' }}</td>
                             <td class="center">{{ $part['accepted'] === 'na' ? '✔' : '' }}</td>
-                            <td>{{ $part['remark'] ?? '-' }}</td>
+                            <td>{{ $part['remark'] ?? '' }}</td>
                         </tr>
                     @endif
                 @endforeach
@@ -125,13 +128,13 @@
                     @foreach ($extras as $extra)
                         <tr style="background-color:#fafafa;">
                             <td class="center">&nbsp;</td>
-                            <td>{{ $extra['part'] ?? '-' }}</td>
-                            <td class="center">{{ $extra['before'] ?? '-' }}</td>
-                            <td class="center">{{ $extra['after'] ?? '-' }}</td>
+                            <td>{{ $extra['part'] ?? '' }}</td>
+                            <td class="center">{{ $extra['before'] ?? '' }}</td>
+                            <td class="center">{{ $extra['after'] ?? '' }}</td>
                             <td class="center">{{ ($extra['accepted'] ?? '') === 'yes' ? '✔' : '' }}</td>
                             <td class="center">{{ ($extra['accepted'] ?? '') === 'no' ? '✔' : '' }}</td>
                             <td class="center">{{ ($extra['accepted'] ?? '') === 'na' ? '✔' : '' }}</td>
-                            <td>{{ $extra['remark'] ?? '-' }}</td>
+                            <td>{{ $extra['remark'] ?? '' }}</td>
                         </tr>
                     @endforeach
                 @endif
@@ -163,7 +166,10 @@
         <tbody>
             <tr>
                 <td class="font-bold">Name</td>
-                <td>{{ $G2->pic?->checkedBy?->name ?? '-' }}</td>
+                {{-- <td>{{ $G2->pic?->checked_name ?? '-' }}</td> --}}
+                <td>
+                    {{ $G2->pic?->checkedBy?->name ?? $G2->pic?->checked_name }}
+                </td>
                 <td>
                     {{ optional($G2->pic)->approved_name }}
                 </td>
@@ -174,7 +180,9 @@
                 </td>
                 <td class="sign-cell">
                     <div class="sign-box">
-                        <img src="{{ public_path('storage/' . $G2->pic->checked_signature) }}">
+                        @if ($G2->pic?->checked_signature)
+                            <img src="{{ public_path('storage/' . $G2->pic->checked_signature) }}">
+                        @endif
                     </div>
                 </td>
                 <td class="sign-cell">
@@ -187,7 +195,11 @@
             </tr>
             <tr>
                 <td class="font-bold">Date</td>
-                <td>{{ \Carbon\Carbon::parse($G2->pic->checked_date)->translatedFormat('d F Y') }}</td>
+                <td>
+                    @if ($G2->pic?->checked_date)
+                        {{ \Carbon\Carbon::parse($G2->pic->checked_date)->translatedFormat('d F Y') }}
+                    @endif
+                </td>
                 <td>
                     @if ($G2->pic?->approved_date)
                         {{ \Carbon\Carbon::parse($G2->pic->approved_date)->translatedFormat('d F Y') }}

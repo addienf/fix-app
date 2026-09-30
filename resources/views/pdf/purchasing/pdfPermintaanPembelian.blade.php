@@ -1,7 +1,6 @@
 @extends ('pdf.layout.layout')
 @section('title', 'Permintaan Pembelian PDF')
 @section('content')
-    {{-- ================= HEADER (TEMPLATE BAKU) ================= --}}
     @php
         $judul = 'PERMINTAAN PEMBELIAN';
         $no_dokumen = 'FO-QKS-PUR-01-01';
@@ -12,7 +11,6 @@
     <table style="width:100%; border-collapse:collapse; table-layout:fixed;">
         <tr>
             <td rowspan="4" style="width:15%; text-align:center; vertical-align:middle; border:0.5px solid #000;">
-                {{-- <img src="{{ public_path('asset/logo.png') }}" style="height:55px;"> --}}
                 <img src="{{ $logoBase64 }}" style="height:55px;">
             </td>
 

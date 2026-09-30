@@ -7,8 +7,8 @@ return [
         'parts' => [
             ['text' => 'Check & clean the cooling system', 'show' => false],
             ['info' => 'Measure the current of cooling system (compressor)'],
-            'Pressure analyzer (......Psi - ......Psi)*',
-            'Normal (......A to ......A)*',
+            'Pressure analyzer (110 Psi - 150 Psi)*',
+            'Normal (11 A to 14 A)*',
             ['text' => 'Clean the condenser', 'show' => false],
             ['text' => 'Clean the evaporator', 'show' => false],
         ],
@@ -64,16 +64,16 @@ return [
     //     ],
     // ],
 
-    // [
-    //     'mainPart' => 'Controlling System',
-    //     'parts' => [
-    //         'Check analogue output temperature function (Standard:      )',
-    //         'Check analogue output humidity function (Standard:      )',
-    //         ['text' => 'Check splitter (Standard:      )', 'show' => false],
-    //         ['text' => 'Check MCB', 'show' => false],
-    //         ['text' => 'Check contactor', 'show' => false],
-    //     ],
-    // ],
+    [
+        'mainPart' => 'Controlling System',
+        'parts' => [
+            'Check analogue output temperature function (Standard: 4 - 20 mA)',
+            'Check analogue output humidity function (Standard: 4 - 20 mA)',
+            ['text' => 'Check splitter (Standard:      )', 'show' => false],
+            ['text' => 'Check MCB', 'show' => false],
+            ['text' => 'Check contactor', 'show' => false],
+        ],
+    ],
 
     // [
     //     'mainPart' => 'Logging System',

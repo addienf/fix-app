@@ -80,20 +80,8 @@ class PengecekanElectricalResource extends Resource
         return $table
             ->columns([
                 //
-                // TextColumn::make('penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.permintaanBahanProduksi.jadwalProduksi.spk.no_spk')
-                //     ->label('No SPK Marketing'),
 
-                // TextColumn::make('penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.permintaanBahanProduksi.jadwalProduksi.identifikasiProduks.no_seri')
-                //     ->label('No Seri'),
-
-                self::textColumn('penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.perencanaanProduksi.spk.no_spk', 'No SPK Marketing'),
-
-                self::textColumn('no_seri', 'No Seri')
-                    ->getStateUsing(function ($record) {
-                        return $record?->penyerahanElectrical?->pengecekanSS
-                            ?->kelengkapanMaterial?->standarisasiDrawing?->serahTerimaWarehouse?->perencanaanProduksi
-                            ?->identifikasiProduks?->pluck('no_seri')->filter()->implode(', ') ?? '-';
-                    }),
+                self::textColumn('spkQC.spkMarketing.no_spk', 'No SPK Marketing'),
 
                 self::textColumn('tipe', 'Type/Model'),
 
@@ -156,8 +144,9 @@ class PengecekanElectricalResource extends Resource
     {
         return parent::getEloquentQuery()
             ->with([
-                'penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.perencanaanProduksi.spk',
-                'penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.perencanaanProduksi.identifikasiProduks',
+                'spkQC',
+                'detail',
+                'pic'
             ]);
     }
 }

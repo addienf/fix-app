@@ -77,9 +77,9 @@ class QCPassedResource extends Resource
             ->columns([
                 //
 
-                self::textColumn('productRelease.pengecekanPerforma.penyerahanProdukJadi.details.no_spk', 'Nomor SPK'),
+                self::textColumn('productRelease.pengecekanPerforma.spkQC.spkMarketing.no_spk', 'Nomor SPK'),
 
-                self::textColumn('productRelease.pengecekanPerforma.serial_number', 'Serial Number'),
+                self::textColumn('details.serial_number', 'Serial Number'),
 
                 self::textColumn('penanggung_jawab', 'Penanggung Jawab'),
 
@@ -141,7 +141,7 @@ class QCPassedResource extends Resource
     {
         return parent::getEloquentQuery()
             ->with([
-                'productRelease.pengecekanPerforma.penyerahanProdukJadi.details'
+                'productRelease.pengecekanPerforma.spkQC.spkMarketing'
             ]);
     }
 }

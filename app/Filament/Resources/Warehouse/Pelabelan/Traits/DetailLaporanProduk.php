@@ -21,32 +21,15 @@ trait DetailLaporanProduk
                     ->label('')
                     ->relationship('details')
                     ->schema([
-                        // Grid untuk 6 kolom
-                        self::textInput('nama_produk', 'Nama Produk')
-                            ->extraAttributes([
-                                'readonly' => true,
-                                'style' => 'pointer-events: none;'
-                            ]),
+                        self::textInput('nama_produk', 'Nama Produk'),
 
-                        self::textInput('tipe', 'Tipe/Model')
-                            ->extraAttributes([
-                                'readonly' => true,
-                                'style' => 'pointer-events: none;'
-                            ]),
+                        self::textInput('tipe', 'Tipe/Model'),
 
-                        self::textInput('serial_number', 'S/N')
-                            ->extraAttributes([
-                                'readonly' => true,
-                                'style' => 'pointer-events: none;'
-                            ]),
+                        self::textInput('serial_number', 'S/N'),
 
-                        self::selectJenis(), // Asumsi ini dropdown
+                        self::selectJenis(),
 
-                        self::textInput('jumlah', 'Jumlah')
-                            ->extraAttributes([
-                                'readonly' => true,
-                                'style' => 'pointer-events: none;'
-                            ]),
+                        self::textInput('jumlah', 'Jumlah'),
 
                         self::textInput('keterangan', 'Keterangan'),
                     ])

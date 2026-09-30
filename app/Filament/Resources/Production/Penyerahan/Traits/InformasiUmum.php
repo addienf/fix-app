@@ -2,8 +2,8 @@
 
 namespace App\Filament\Resources\Production\Penyerahan\Traits;
 
-use App\Models\Production\Penyerahan\PenyerahanElectrical\PenyerahanElectrical;
-use App\Models\Quality\PengecekanMaterial\Electrical\PengecekanMaterialElectrical;
+use App\Models\Production\Jadwal\JadwalProduksi;
+use App\Models\Production\SPK\SPKQuality;
 use App\Traits\HasAutoNumber;
 use App\Traits\SimpleFormResource;
 use Filament\Forms\Components\Grid;
@@ -22,7 +22,6 @@ trait InformasiUmum
             ->collapsible()
             ->schema([
 
-                // Grid::make($isEdit ? 3 : 2)
                 Grid::make([
                     'default' => 1,
                     'md' => $isEdit ? 3 : 2,
@@ -74,123 +73,72 @@ trait InformasiUmum
     private static function getSelect(): Select
     {
         return
-            Select::make('pengecekan_electrical_id')
-            ->label('No SPK / Nomor Seri')
-            ->placeholder('Pilih No SPK / Nomor Seri')
+            Select::make('spk_qualities_id')
+            ->label('No SPK QC/ Nomor Seri')
+            ->placeholder('Pilih No SPK QC/ Nomor Seri')
             ->required()
             ->searchable()
             ->reactive()
             ->options(function () {
-                return PengecekanMaterialElectrical::with([
-                    'penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.perencanaanProduksi.spk',
-                    'penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.perencanaanProduksi.identifikasiProduks',
-                ])
+                return SPKQuality::with(['spkMarketing' => function ($query) {
+                    $query->with('jadwalProduksi');
+                }])
                     ->whereDoesntHave('penyerahanProdukJadi')
+                    ->where('status_penerimaan', 'Diterima')
                     ->latest()
                     ->limit(10)
                     ->get()
-                    ->mapWithKeys(function ($std) {
+                    ->flatMap(function ($item) {
 
-                        $jadwal = $std->penyerahanElectrical
-                            ->pengecekanSS
-                            ->kelengkapanMaterial
-                            ->standarisasiDrawing
-                            ->serahTerimaWarehouse
-                            ->perencanaanProduksi;
+                        $jadwalList = JadwalProduksi::where('spk_marketing_id', $item->spk_marketing_id)->get();
 
-                        $spkNo = $jadwal->spk->no_spk ?? '-';
-
-                        $seri = $jadwal->identifikasiProduks
-                            ->pluck('no_seri')
-                            ->filter()
-                            ->implode(', ') ?: '-';
-
-                        return [
-                            $std->id => "{$spkNo} - {$seri}",
-                        ];
-                    });
+                        return $jadwalList->map(fn($jadwal) => [
+                            'id' => $item->id,
+                            'label' => "{$item->spkMarketing->no_spk} - {$jadwal->no_surat}",
+                        ]);
+                    })
+                    ->unique('label')
+                    ->mapWithKeys(fn($row) => [
+                        $row['id'] => $row['label']
+                    ]);
             })
             ->getSearchResultsUsing(function ($search) {
-                return PengecekanMaterialElectrical::with([
-                    'penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.perencanaanProduksi.spk',
-                    'penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.perencanaanProduksi.identifikasiProduks',
-                ])
+                return SPKQuality::with('spkMarketing.jadwalProduksi')
                     ->whereDoesntHave('penyerahanProdukJadi')
+                    ->where('status_penerimaan', 'Diterima')
                     ->whereHas(
-                        'penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.perencanaanProduksi.spk',
-                        fn($q) => $q->where('no_spk', 'like', "%{$search}%")
+                        'spkMarketing.jadwalProduksi',
+                        fn($q) => $q->where('no_surat', 'like', "%{$search}%")
                     )
                     ->limit(10)
                     ->get()
-                    ->mapWithKeys(function ($std) {
-
-                        $jadwal = $std->penyerahanElectrical
-                            ->pengecekanSS
-                            ->kelengkapanMaterial
-                            ->standarisasiDrawing
-                            ->serahTerimaWarehouse
-                            ->perencanaanProduksi;
-
-                        $spkNo = $jadwal->spk->no_spk ?? '-';
-
-                        $seri = $jadwal->identifikasiProduks
-                            ->pluck('no_seri')
-                            ->filter()
-                            ->implode(', ') ?: '-';
-
+                    ->mapWithKeys(function ($item) {
                         return [
-                            $std->id => "{$spkNo} - {$seri}",
+                            $item->id => $item->spkMarketing?->jadwalProduksi?->no_surat
                         ];
                     });
             })
-            // ->getOptionLabelUsing(function ($value) {
-            //     $std = PengecekanMaterialElectrical::with([
-            //         'penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.perencanaanProduksi.spk',
-            //         'penyerahanElectrical.pengecekanSS.kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.perencanaanProduksi.identifikasiProduks',
-            //     ])->find($value);
-
-            //     if (!$std) return '-';
-
-            //     $jadwal = $std->penyerahanElectrical
-            //         ->pengecekanSS
-            //         ->kelengkapanMaterial
-            //         ->standarisasiDrawing
-            //         ->serahTerimaWarehouse
-            //         ->peminjamanAlat
-            //         ->spkVendor
-            //         ->permintaanBahanProduksi
-            //         ->jadwalProduksi;
-
-            //     $spkNo = $jadwal->spk->no_spk ?? '-';
-
-            //     $seri = $jadwal->identifikasiProduks
-            //         ->pluck('no_seri')
-            //         ->filter()
-            //         ->implode(', ') ?: '-';
-
-            //     return "{$spkNo} - {$seri}";
-            // })
             ->afterStateUpdated(function ($state, callable $set) {
 
                 if (!$state) return;
 
-                $pengecekan =
-                    PengecekanMaterialElectrical::with('penyerahanElectrical')->find($state);
+                $spk =
+                    SPKQuality::with('spkMarketing.spesifikasiProduct')->find($state);
 
-                if (!$pengecekan || !$pengecekan->penyerahanElectrical) {
+                if (!$spk) {
                     $set('details', []);
                     return;
                 }
 
-                $detail = $pengecekan->penyerahanElectrical;
+                $nama_produk = $spk?->spkMarketing?->spesifikasiProduct?->details?->first()?->product?->name;
+                $jumlah = $spk?->spkMarketing?->spesifikasiProduct?->details?->first()?->quantity;
+                $no_spk = $spk?->spkMarketing?->no_spk;
 
                 $set('details', [
                     [
-                        'nama_produk' => $detail->nama_produk ?? '-',
-                        'jumlah'      => $detail->jumlah ?? '-',
-                        'no_spk'      => $detail->no_spk ?? '-',
-                        'tipe'        => $detail->tipe ?? '-',
-                        'volume'      => $pengecekan->volume ?? '-',
+                        'nama_produk' => $nama_produk ?? '-',
+                        'jumlah'      => $jumlah ?? '-',
+                        'no_spk'      => $no_spk ?? '-',
                     ]
                 ]);
             });

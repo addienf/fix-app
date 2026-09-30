@@ -4,15 +4,26 @@ namespace App\Models\Engineering\Maintenance\RissingPipette\Pivot;
 
 use App\Models\Engineering\Maintenance\RissingPipette\RissingPipette;
 use App\Models\User;
+use App\Traits\HasSignature;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 
 class RissingPipettePIC extends Model
 {
-    use HasFactory;
+    use HasFactory, HasSignature;
 
     protected $table = 'rissing_pipette_pics';
+
+    // protected $fillable = [
+    //     'rissing_id',
+    //     'checked_name',
+    //     'checked_signature',
+    //     'checked_date',
+    //     'approved_name',
+    //     'approved_signature',
+    //     'approved_date',
+    // ];
 
     protected $fillable = [
         'rissing_id',
@@ -22,7 +33,21 @@ class RissingPipettePIC extends Model
         'approved_name',
         'approved_signature',
         'approved_date',
+        'sign_token',
+        'sign_token_expires_at',
+        'signed_at',
+        'signed_ip',
     ];
+
+    public function signatureConfig(): array
+    {
+        return [
+            'name_field' => 'approved_name',
+            'signature_field' => 'approved_signature',
+            'date_field' => 'approved_date',
+            'upload_path' => 'Engineering/Maintenance/RissingPipette/Signature',
+        ];
+    }
 
     public function rissing()
     {

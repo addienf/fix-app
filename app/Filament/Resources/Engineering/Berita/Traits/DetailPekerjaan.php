@@ -2,38 +2,37 @@
 
 namespace App\Filament\Resources\Engineering\Berita\Traits;
 
-use App\Models\Engineering\Berita\BeritaAcara;
-use App\Models\Engineering\Complain\Complain;
-use App\Models\Engineering\SPK\SPKService;
 use App\Traits\SimpleFormResource;
-use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Split;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
-use Illuminate\Support\Str;
-use Wallo\FilamentSelectify\Components\ButtonGroup;
 
 trait DetailPekerjaan
 {
     use SimpleFormResource;
     public static function getDetailPekerjaanSection()
     {
-        return Section::make('Detail Pekerjaan')
+        return
+            Section::make('Detail Pekerjaan')
             ->relationship('detail')
             ->collapsible()
             ->schema([
 
                 Select::make('jenis_pekerjaan')
                     ->required()
+                    ->reactive()
                     ->label('Jenis Pekerjaan')
                     ->placeholder('Pilih Jenis Pekerjaan')
                     ->options([
                         'service' => 'Service',
-                        'maintenance' => 'Maintenance'
+                        'maintenance' => 'Maintenance',
+                        'lainnya' => 'Lainnya',
                     ]),
+
+                self::textInput('jenis_pekerjaan_lainnya', 'Jenis Pekerjaan Lainnya')
+                    ->visible(fn($get) => in_array('lainnya', (array) $get('jenis_pekerjaan')))
+                    ->required(fn($get) => in_array('lainnya', (array) $get('jenis_pekerjaan'))),
 
                 TextInput::make('produk')
                     ->required()
@@ -45,6 +44,10 @@ trait DetailPekerjaan
 
                 Select::make('status_barang')
                     ->label('Status Barang')
+                    ->columnSpan(
+                        fn($get) =>
+                        in_array('lainnya', (array) $get('jenis_pekerjaan')) ? 'full' : 1
+                    )
                     ->options([
                         'yes' => 'Installed',
                         'wait' => 'Delivered',

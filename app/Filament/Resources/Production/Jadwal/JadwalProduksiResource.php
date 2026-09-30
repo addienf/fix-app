@@ -86,6 +86,8 @@ class JadwalProduksiResource extends Resource
                 //
                 self::textColumn('spk.no_spk', 'No SPK'),
 
+                self::textColumn('no_surat', 'No Surat Produksi'),
+
                 self::textColumn('pic_name', 'Nama PIC'),
 
                 self::textColumn('identifikasiProduks.no_seri', 'Nomor Seri'),

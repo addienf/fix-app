@@ -1,3 +1,4 @@
 *
 !public/
+!storage/app/google-service-account.json
 !.gitignore

@@ -75,25 +75,6 @@
         </tr>
     </table>
 
-    {{-- <table class="no-border" style="margin-top:12px;">
-        <tr>
-            <td width="25%">Nomor</td>
-            <td>: {{ $permintaan_bahan->no_surat }}</td>
-        </tr>
-        <tr>
-            <td>Tanggal</td>
-            <td>: {{ \Carbon\Carbon::parse($permintaan_bahan->tanggal)->translatedFormat('d F Y') }}</td>
-        </tr>
-        <tr>
-            <td>Dari</td>
-            <td>: {{ $permintaan_bahan->dari }}</td>
-        </tr>
-        <tr>
-            <td>Kepada</td>
-            <td>: {{ $permintaan_bahan->kepada }}</td>
-        </tr>
-    </table> --}}
-
     <table class="no-border" width="100%">
         <tr>
             <td width="15%">Nomor</td>
@@ -259,16 +240,22 @@
 
     /* box tanda tangan */
     .signature-box {
-        width: 160px;
-        height: 70px;
+        width: 220px;
+        height: 90px;
         margin: 10px auto;
+        overflow: hidden;
+        position: relative;
         text-align: center;
     }
 
     .signature-box img {
-        width: 100%;
-        height: 100%;
-        object-fit: contain;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 180%;
+        height: auto;
+        max-height: 90px;
+        transform: translate(-50%, -50%);
     }
 
     /* ================= SMALL TEXT ================= */

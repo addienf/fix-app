@@ -8,13 +8,19 @@ use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Support\Facades\Log;
 use App\Jobs\SendGenericNotif;
 use App\Notifications\GenericNotification;
-
-
+use App\Services\DocumentNumber;
 
 class CreateSerahTerimaBahan extends CreateRecord
 {
     protected static string $resource = SerahTerimaBahanResource::class;
+
     protected static bool $canCreateAnother = false;
+
+    protected function mutateFormDataBeforeCreate(array $data): array
+    {
+        $data['no_surat'] = DocumentNumber::next('serah_terima_bahans', 'no_surat', 'STBS', 'QKS', 'WBB');
+        return $data;
+    }
 
     protected function getRedirectUrl(): string
     {
@@ -26,15 +32,12 @@ class CreateSerahTerimaBahan extends CreateRecord
         if ($this->record && $this->record->id) {
             SendGenericNotif::dispatch(
                 $this->record,
-                // ['warehouse', 'production', 'engineering'],
                 ['warehouse', 'production'],
                 GenericNotification::class,
-                '/admin/warehouse/serah-terima-bahan',
+                SerahTerimaBahanResource::getUrl('index'),
                 'Data Serah Terima Bahan berhasil dibuat',
                 'Ada data Serah Terima Bahan yang harus ditanda tangani.'
             );
-        } else {
-            Log::error('Record belum lengkap.');
         }
     }
 

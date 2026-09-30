@@ -2,7 +2,7 @@
 
 namespace App\Filament\Resources\Quality\PengecekanMaterial\SS\Traits;
 
-use App\Models\Quality\KelengkapanMaterial\SS\KelengkapanMaterialSS;
+use App\Models\Production\SPK\SPKQuality;
 use App\Traits\SimpleFormResource;
 use Filament\Forms\Components\Card;
 use Filament\Forms\Components\Grid;
@@ -22,7 +22,6 @@ trait ChamberIdentification
             ->collapsible()
             ->schema([
 
-                // Grid::make($isEdit ? 2 : 3)
                 Grid::make([
                     'default' => 1,
                     'md' => $isEdit ? 2 : 3,
@@ -33,11 +32,7 @@ trait ChamberIdentification
                         self::getSelect()
                             ->hiddenOn('edit'),
 
-                        self::textInput('tipe', 'Type/Model')
-                            ->extraAttributes([
-                                'readonly' => true,
-                                'style' => 'pointer-events: none;'
-                            ]),
+                        self::textInput('tipe', 'Type/Model'),
 
                         self::textInput('ref_document', 'Ref Document'),
 
@@ -49,99 +44,28 @@ trait ChamberIdentification
     private static function getSelect()
     {
         return
-            Select::make('kelengkapan_material_id')
-            ->label('Nomor SPK / No Seri')
-            ->placeholder('Pilih Nomor SPK / No Seri')
+            Select::make('spk_qualities_id')
+            ->label('Nomor SPK QC / No Seri')
+            ->placeholder('Pilih Nomor SPK QC / No Seri')
             ->searchable()
-            ->native(false)
             ->preload()
-            ->reactive()
             ->required()
             ->options(function () {
-
-                return KelengkapanMaterialSS::with([
-                    'standarisasiDrawing.serahTerimaWarehouse.perencanaanProduksi.spk',
-                    'standarisasiDrawing.serahTerimaWarehouse.perencanaanProduksi.identifikasiProduks',
-                ])
-                    ->whereDoesntHave('pengecekanSS')
+                return
+                    SPKQuality::whereDoesntHave('pengecekanSS')
+                    ->where('status_penerimaan', 'Diterima')
                     ->latest()
                     ->limit(10)
-                    ->get()
-                    ->mapWithKeys(function ($std) {
-
-                        $jadwal = $std->standarisasiDrawing->serahTerimaWarehouse->perencanaanProduksi;
-
-                        $spkNo = $jadwal->spk->no_spk ?? '-';
-
-                        $seri = $jadwal->identifikasiProduks
-                            ->pluck('no_seri')
-                            ->filter()
-                            ->implode(', ') ?: '-';
-
-                        return [
-                            $std->id => "{$spkNo} - {$seri}",
-                        ];
-                    });
+                    ->pluck('no_spk', 'id');
             })
-
-            // 🔹 Saat user mengetik search (limit 10)
             ->getSearchResultsUsing(function ($search) {
-
-                return KelengkapanMaterialSS::with([
-                    'standarisasiDrawing.serahTerimaWarehouse.perencanaanProduksi.spk',
-                    'standarisasiDrawing.serahTerimaWarehouse.perencanaanProduksi.identifikasiProduks',
-                ])
-                    ->whereDoesntHave('pengecekanSS')
-                    ->whereHas(
-                        'standarisasiDrawing.serahTerimaWarehouse.perencanaanProduksi.spk',
-                        fn($q) => $q->where('no_spk', 'like', "%{$search}%")
-                    )
+                return
+                    SPKQuality::whereDoesntHave('pengecekanSS')
+                    ->where('status_penerimaan', 'Diterima')
+                    ->where('no_spk', 'like', "%{$search}%")
+                    ->latest()
                     ->limit(10)
-                    ->get()
-                    ->mapWithKeys(function ($std) {
-
-                        $jadwal = $std->standarisasiDrawing->serahTerimaWarehouse->perencanaanProduksi;
-
-                        $spkNo = $jadwal->spk->no_spk ?? '-';
-
-                        $seri = $jadwal->identifikasiProduks
-                            ->pluck('no_seri')
-                            ->filter()
-                            ->implode(', ') ?: '-';
-
-                        return [
-                            $std->id => "{$spkNo} - {$seri}",
-                        ];
-                    });
-            })
-            ->afterStateUpdated(function ($state, callable $set) {
-                if (!$state) return;
-
-                $kelengkapan = KelengkapanMaterialSS::with([
-                    'standarisasiDrawing.serahTerimaWarehouse.perencanaanProduksi.spk'
-                ])->find($state);
-
-                $no_order =
-                    $kelengkapan
-                    ?->standarisasiDrawing
-                    ?->serahTerimaWarehouse
-                    ?->perencanaanProduksi
-                    ?->spk
-                    ?->no_order
-                    ?? '-';
-
-                $tipe =
-                    $kelengkapan
-                    ?->standarisasiDrawing
-                    ?->serahTerimaWarehouse
-                    ?->perencanaanProduksi
-                    ?->identifikasiProduks
-                    ?->first()
-                    ?->tipe
-                    ?? '-';
-
-                $set('no_order_temp', $no_order);
-                $set('tipe', $tipe);
+                    ->pluck('no_spk', 'id');
             });
     }
 

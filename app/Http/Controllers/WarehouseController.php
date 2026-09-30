@@ -50,7 +50,7 @@ class WarehouseController extends Controller
 
     public function pdfIncomingMaterial($id)
     {
-        $incomingMaterial = IncommingMaterial::with(['permintaanPembelian', 'details', 'pic', 'pic.submitedName', 'pic.receivedName'])->findOrFail($id);
+        $incomingMaterial = IncommingMaterial::with(['details', 'pic', 'pic.submitedName', 'pic.receivedName'])->findOrFail($id);
 
         $tanggal = \Carbon\Carbon::parse($incomingMaterial->tanggal)->format('d-m-Y');
         $fileName = 'FO-QKS-WRH-01-01' . ' - ' . $tanggal . '.pdf';

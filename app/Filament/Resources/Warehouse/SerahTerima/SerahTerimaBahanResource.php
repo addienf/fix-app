@@ -7,7 +7,6 @@ use App\Filament\Resources\Warehouse\SerahTerima\Traits\DetailBahanBaku;
 use App\Filament\Resources\Warehouse\SerahTerima\Traits\InformasiUmum;
 use App\Models\Warehouse\SerahTerima\SerahTerimaBahan;
 use App\Traits\HasSignature;
-use Filament\Forms\Components\Hidden;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -21,7 +20,7 @@ class SerahTerimaBahanResource extends Resource
 {
     use InformasiUmum, DetailBahanBaku, HasSignature;
     protected static ?string $model = SerahTerimaBahan::class;
-    protected static ?string $navigationIcon = 'heroicon-o-cog-6-tooth';
+    protected static ?string $navigationIcon = 'heroicon-o-document-check';
     protected static ?int $navigationSort = 7;
     protected static ?string $navigationGroup = 'Warehouse';
     protected static ?string $navigationLabel = 'Serah Terima Bahan';
@@ -31,8 +30,11 @@ class SerahTerimaBahanResource extends Resource
 
     public static function getNavigationBadge(): ?string
     {
-        $count = SerahTerimaBahan::where('status_penerimaan', '!=', 'Diterima')->count();
-
+        $count = cache()->remember(
+            key: 'nav_badge_serah_terima_bahan',
+            ttl: now()->addSeconds(30),
+            callback: fn() => SerahTerimaBahan::where('status_penerimaan', '!=', 'Diterima')->count()
+        );
         return $count > 0 ? (string) $count : null;
     }
 
@@ -42,13 +44,8 @@ class SerahTerimaBahanResource extends Resource
         return $form
             ->schema([
                 //
-                Hidden::make('status_penerimaan')
-                    ->default('Belum Diterima'),
-
-                self::informasiUmumSection($form),
-
-                self::detailBahanSection(),
-
+                static::informasiUmumSection($form),
+                static::detailBahanSection(),
                 static::signatureSection(
                     [
                         [
@@ -74,24 +71,16 @@ class SerahTerimaBahanResource extends Resource
         return $table
             ->columns([
                 //
-                // self::textColumn('permintaanBahanPro.no_surat', 'No Surat Production'),
-                TextColumn::make('perencanaanProduksi.spk.no_spk')
-                    ->label('No SPK Marketing'),
-
-                TextColumn::make('perencanaanProduksi.identifikasiProduks.no_seri')
-                    ->label('No Seri'),
-
                 self::textColumn('no_surat', 'Nomor Surat Serah Terima Bahan'),
-
                 self::textColumn('tanggal', 'Tanggal Dibuat')->date('d F Y'),
-
                 TextColumn::make('status_penerimaan')
                     ->label('Status Penerimaan')
                     ->badge()
-                    ->color(
-                        fn($state) =>
-                        $state === 'Diterima' ? 'success' : 'danger'
-                    )
+                    ->color(fn($state) => match ($state) {
+                        'Diterima'      => 'success',
+                        'Sedang Diproses' => 'warning',
+                        default         => 'danger',
+                    })
                     ->alignCenter(),
             ])
             ->filters([
@@ -101,17 +90,18 @@ class SerahTerimaBahanResource extends Resource
                 ActionGroup::make([
                     Tables\Actions\EditAction::make()
                         ->icon('heroicon-o-pencil-square')
-                        ->tooltip('Edit Data Spesifikasi')
+                        ->tooltip('Edit Serah Terima Barang')
                         ->color('info'),
                     Tables\Actions\DeleteAction::make()
                         ->icon('heroicon-o-trash')
                         ->tooltip('Hapus Data'),
                     Action::make('pdf_view')
-                        ->label(_('View PDF'))
+                        ->label(__('View PDF'))
                         ->icon('heroicon-o-document')
                         ->color('success')
                         ->visible(fn($record) => $record->status_penerimaan === 'Diterima')
-                        ->url(fn($record) => route('pdf.serahTerima', ['record' => $record->id])),
+                        ->url(fn($record) => route('pdf.serahTerima', ['record' => $record->id]))
+                        ->openUrlInNewTab(),
                 ])
             ])
             ->bulkActions([
@@ -119,13 +109,6 @@ class SerahTerimaBahanResource extends Resource
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
-    }
-
-    public static function getRelations(): array
-    {
-        return [
-            //
-        ];
     }
 
     public static function getPages(): array
@@ -140,12 +123,6 @@ class SerahTerimaBahanResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
-        return parent::getEloquentQuery()
-            ->with([
-                'perencanaanProduksi.spk',
-                'perencanaanProduksi.identifikasiProduks',
-                'details',
-                'pic',
-            ]);
+        return parent::getEloquentQuery();
     }
 }

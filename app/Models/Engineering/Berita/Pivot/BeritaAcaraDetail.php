@@ -13,6 +13,7 @@ class BeritaAcaraDetail extends Model
     protected $fillable = [
         'berita_id',
         'jenis_pekerjaan',
+        'jenis_pekerjaan_lainnya',
         'produk',
         'serial_number',
         'desc_pekerjaan',

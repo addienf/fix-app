@@ -3,16 +3,19 @@
 namespace App\Filament\Resources\Engineering\Maintenance\ChamberG2\Traits;
 
 use App\Models\Engineering\Maintenance\ChamberG2\ChamberG2;
-use App\Models\Engineering\SPK\SPKService;
+use App\Models\Engineering\SPK\SPKService\Pivot\PemeriksaanPersetujuan;
 use App\Traits\HasAutoNumber;
+use App\Traits\HasModelFilter;
 use App\Traits\SimpleFormResource;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
-use Illuminate\Support\Facades\Cache;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Set;
 
 trait Informasi
 {
-    use SimpleFormResource, HasAutoNumber;
+    use SimpleFormResource, HasAutoNumber, HasModelFilter;
     public static function getInformasiSection($form)
     {
         $lastValue = ChamberG2::latest('tag_no')->value('tag_no');
@@ -21,60 +24,74 @@ trait Informasi
         return Section::make('Informasi')
             ->label('')
             ->schema([
-                self::textInput('tag_no', 'CTC Name/TAG No')
-                    ->hint('Format: TAG No.')
-                    ->placeholder($lastValue ? "Data Terakhir : {$lastValue}" : 'Data Belum Tersedia')
-                    // ->hiddenOn('edit')
-                    ->unique(ignoreRecord: true),
-
-                Select::make('spk_service_id')
+                Select::make('spk_selection')
                     ->label('Nomor SPK Service')
-                    // ->options(function () {
-                    //     return Cache::rememberForever(SPKService::$CACHE_KEYS['chamberG2'], function () {
-                    //         return SPKService::where('status_penyelesaian', 'Selesai')
-                    //             ->whereDoesntHave('chamberG2')
-                    //             ->get()
-                    //             ->pluck('no_spk_service', 'id');
-                    //     });
-                    // })
                     ->options(function () {
-                        return SPKService::query()
-                            ->where('jenis_spk', 'Maintenance')
-                            ->where('status', 'Selesai')
-                            ->whereDoesntHave('walkinChamber')
-                            ->whereDoesntHave(relation: 'chamberR2')
-                            ->whereDoesntHave(relation: 'refrigerator')
-                            ->whereDoesntHave(relation: 'coldRoom')
-                            ->whereDoesntHave(relation: 'rissing')
-                            ->whereDoesntHave(relation: 'walkinG2')
-                            ->whereDoesntHave(relation: 'chamberG2')
-                            ->limit(10)
-                            ->pluck('no_spk_service', 'id');
+
+                        $usedKeys = self::getUsedSpkTagKeys();
+
+                        return PemeriksaanPersetujuan::query()
+                            ->whereHas('spkService', function ($query) {
+                                $query->where('jenis_spk', 'Maintenance')
+                                    ->where('status', 'Selesai');
+                            })
+                            ->with('spkService')
+                            ->get()
+
+                            ->reject(function ($detail) use ($usedKeys) {
+
+                                $key =
+                                    $detail->spkService?->no_spk_service .
+                                    '|' .
+                                    $detail->nomor_seri;
+
+                                return $usedKeys->contains($key);
+                            })
+
+                            ->take(20)
+
+                            ->mapWithKeys(function ($detail) {
+                                return [
+                                    $detail->id =>
+                                    $detail->spkService->no_spk_service .
+                                        ' - ' .
+                                        $detail->nomor_seri
+                                ];
+                            });
                     })
-                    ->getSearchResultsUsing(function (string $search) {
-                        return SPKService::query()
-                            ->where('status', 'Selesai')
-                            ->whereDoesntHave('walkinChamber')
-                            ->whereDoesntHave(relation: 'chamberR2')
-                            ->whereDoesntHave(relation: 'refrigerator')
-                            ->whereDoesntHave(relation: 'coldRoom')
-                            ->whereDoesntHave(relation: 'rissing')
-                            ->whereDoesntHave(relation: 'walkinG2')
-                            ->whereDoesntHave(relation: 'chamberG2')
-                            ->where('no_spk_service', 'like', "%{$search}%")
-                            ->limit(10)
-                            ->pluck('no_spk_service', 'id');
-                    })
-                    ->native(false)
                     ->searchable()
                     ->preload()
+                    ->native(false)
                     ->required()
-                    ->hiddenOn(operations: 'edit'),
+                    ->live()
+                    ->afterStateUpdated(function ($state, Set $set) {
+                        if (!$state) return;
+
+                        $detail = PemeriksaanPersetujuan::find($state);
+
+                        if (!$detail) return;
+
+                        $set('spk_service_id', $detail->spk_service_id);
+                        $set('tag_no', $detail->nomor_seri);
+                    })
+                    ->columnSpanFull()
+                    ->hiddenOn('edit'),
+
+                Hidden::make('spk_service_id')
+                    ->required(),
+
+                TextInput::make('tag_no')
+                    ->label('Tag Number')
+                    ->readOnly()
+                    ->required(false),
+
+                self::textInput('project', 'Nama Project'),
+
             ])
             ->columns([
                 'default' => 1,
                 'md' => 2,
-                'lg' => $isEdit ? 1 : 2,
+                'lg' => $isEdit ? 2 : 2,
             ]);
     }
 
@@ -83,7 +100,8 @@ trait Informasi
         return Section::make('Remarks')
             ->label('')
             ->schema([
-                self::textareaInput('remarks', 'Remarks'),
+                self::textareaInput('remarks', 'Remarks')
+                    ->required(false),
             ]);
     }
 }

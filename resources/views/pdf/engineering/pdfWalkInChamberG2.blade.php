@@ -13,7 +13,7 @@
 
             <!-- PROJECT -->
             <td style="padding:4px 8px; vertical-align:top;">
-                <strong>Project :</strong>
+                <strong>Project : {{ $walkinG2->project }}</strong>
             </td>
 
             <!-- DOC INFO -->
@@ -27,7 +27,7 @@
         <tr>
             <!-- CLIENT -->
             <td style="padding:4px 8px; vertical-align:top;">
-                Client
+                <strong>Client : {{ $walkinG2->spkService->perusahaan }}</strong>
             </td>
         </tr>
     </table>
@@ -105,8 +105,12 @@
                         <tr>
                             <td class="center"></td>
                             <td>{{ $part['part'] }}</td>
-                            <td class="center">{{ $part['before'] ?? '-' }}</td>
-                            <td class="center">{{ $part['after'] ?? '-' }}</td>
+                            <td class="center">
+                                {!! nl2br(e($part['before'] ?? '-')) !!}
+                            </td>
+                            <td class="center">
+                                {!! nl2br(e($part['after'] ?? '-')) !!}
+                            </td>
                             <td class="center">{{ $part['accepted'] === 'yes' ? '✔' : '' }}</td>
                             <td class="center">{{ $part['accepted'] === 'no' ? '✔' : '' }}</td>
                             <td class="center">{{ $part['accepted'] === 'na' ? '✔' : '' }}</td>
@@ -130,8 +134,12 @@
                         <tr style="background-color:#fafafa;">
                             <td class="center">&nbsp;</td>
                             <td>{{ $extra['part'] ?? '-' }}</td>
-                            <td class="center">{{ $extra['before'] ?? '-' }}</td>
-                            <td class="center">{{ $extra['after'] ?? '-' }}</td>
+                            <td class="center">
+                                {!! nl2br(e($extra['before'] ?? '-')) !!}
+                            </td>
+                            <td class="center">
+                                {!! nl2br(e($extra['after'] ?? '-')) !!}
+                            </td>
                             <td class="center">{{ ($extra['accepted'] ?? '') === 'yes' ? '✔' : '' }}</td>
                             <td class="center">{{ ($extra['accepted'] ?? '') === 'no' ? '✔' : '' }}</td>
                             <td class="center">{{ ($extra['accepted'] ?? '') === 'na' ? '✔' : '' }}</td>
@@ -167,7 +175,7 @@
         <tbody>
             <tr>
                 <td class="font-bold">Name</td>
-                <td>{{ $walkinG2->pic?->checkedBy?->name ?? '-' }}</td>
+                <td>{{ $walkinG2->pic?->checked_name ?? '-' }}</td>
                 <td>{{ optional(value: $walkinG2->pic)->approved_name }}</td>
             </tr>
             <tr>

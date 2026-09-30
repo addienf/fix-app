@@ -3,17 +3,13 @@
 namespace App\Filament\Resources\Warehouse\SerahTerima\SerahTerimaBahanResource\Pages;
 
 use App\Filament\Resources\Warehouse\SerahTerima\SerahTerimaBahanResource;
-use App\Jobs\SendGenericNotif;
-use App\Jobs\Warehouse\SendSerahTerimaBahanNotif;
-use App\Notifications\GenericNotification;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
-use Illuminate\Support\Facades\Log;
 
 class EditSerahTerimaBahan extends EditRecord
 {
     protected static string $resource = SerahTerimaBahanResource::class;
-    protected static bool $canCreateAnother = false;
+    // protected static bool $canCreateAnother = false;
 
     protected function getRedirectUrl(): string
     {
@@ -23,7 +19,20 @@ class EditSerahTerimaBahan extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make(),
+            Actions\DeleteAction::make()
+                ->modalHeading('Hapus Serah Terima Bahan')
+                ->modalDescription(
+                    'Data ini beserta semua detail bahan dan tanda tangan akan dihapus permanen. Tindakan ini tidak dapat dibatalkan.'
+                ),
         ];
+    }
+
+    public function getTitle(): string
+    {
+        return 'Edit Data Serah Terima Bahan';
+    }
+    public function getBreadcrumb(): string
+    {
+        return 'Edit';
     }
 }

@@ -2,15 +2,11 @@
 
 namespace App\Filament\Resources\Warehouse\Incomming\Traits;
 
-use App\Models\Purchasing\Permintaan\PermintaanPembelian;
 use App\Traits\HasAutoNumber;
 use App\Traits\SimpleFormResource;
-use Filament\Forms\Components\Grid;
-use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Icetalker\FilamentTableRepeater\Forms\Components\TableRepeater;
-use Illuminate\Support\Facades\Cache;
 
 trait InformasiMaterial
 {
@@ -24,56 +20,20 @@ trait InformasiMaterial
                 TableRepeater::make('details')
                     ->relationship('details')
                     ->schema([
+                        static::textInput('nama_material', 'Nama Material'),
 
-                        // Grid::make(6)
-                        //     ->schema([
+                        static::textInput('batch_no', 'Batch No'),
 
-                        //         self::textInput('nama_material', 'Nama Material')
-                        //             ->extraAttributes([
-                        //                 'readonly' => true,
-                        //                 'style' => 'pointer-events: none;'
-                        //             ]),
+                        static::textInput('jumlah', 'Jumlah Diterima'),
 
-                        //         self::textInput('batch_no', 'Batch No')
-                        //             ->extraAttributes([
-                        //                 'readonly' => true,
-                        //                 'style' => 'pointer-events: none;'
-                        //             ]),
+                        static::textInput('satuan', 'Satuan'),
 
-                        //         self::textInput('jumlah', 'Jumlah Diterima')
-                        //             ->numeric(),
+                        static::textInput('kondisi_material', 'Kondisi Material'),
 
-                        //         self::textInput('satuan', 'Satuan'),
-
-                        //         self::textInput('kondisi_material', 'Kondisi Material'),
-
-                        //         self::selectStatusLabel(),
-                        //     ]),
-                        self::textInput('nama_material', 'Nama Material')
-                            ->extraAttributes([
-                                'readonly' => true,
-                                'style' => 'pointer-events: none;'
-                            ]),
-
-                        self::textInput('batch_no', 'Batch No')
-                            ->required(false),
-
-                        self::textInput('jumlah', 'Jumlah Diterima')
-                            ->required(false),
-
-                        self::textInput('satuan', 'Satuan')
-                            ->required(false),
-
-                        self::textInput('kondisi_material', 'Kondisi Material')
-                            ->required(false),
-
-                        self::selectStatusLabel()
-                            ->required(false),
-
+                        static::selectStatusLabel(),
                     ])
-                    ->deletable(false)
                     ->reorderable(false)
-                    ->addable(false),
+                    ->addActionLabel('Tambah Data'),
 
             ]);
     }
@@ -84,7 +44,6 @@ trait InformasiMaterial
             Select::make('status_qc')
             ->label('Status Label QC')
             ->required()
-            ->reactive()
             ->placeholder('Pilih Status Label QC')
             ->options([
                 1 => 'Ada',

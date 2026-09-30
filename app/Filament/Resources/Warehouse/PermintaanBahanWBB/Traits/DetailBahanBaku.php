@@ -36,6 +36,7 @@ trait DetailBahanBaku
 
                                 Select::make(name: 'status_stock')
                                     ->label('Stock')
+                                    ->required()
                                     ->options([
                                         'Tersedia' => 'Tersedia',
                                         'Tidak Tersedia' => 'Tidak Tersedia',

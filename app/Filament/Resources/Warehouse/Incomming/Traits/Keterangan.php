@@ -16,7 +16,8 @@ trait Keterangan
     use SimpleFormResource, HasAutoNumber;
     protected static function keteranganSection(): Section
     {
-        return Section::make('Keterangan')
+        return
+            Section::make('Keterangan')
             ->collapsible()
             ->schema([
 
@@ -38,55 +39,43 @@ trait Keterangan
 
                 FileUpload::make('file_upload')
                     ->label('Upload Dokumen')
-                    ->directory('Sales/Spesifikasi/Files')
+                    ->directory('Warehouse/IncommingMaterial/Files')
                     ->acceptedFileTypes(['application/pdf'])
                     ->maxSize(10240)
                     ->required()
                     ->columnSpanFull()
                     ->helperText('Hanya file PDF yang diperbolehkan. Maksimal ukuran 10 MB.')
-                    ->visible(fn($get) => $get('dokumen_pendukung') === '1'),
+                    ->visible(fn($get) => (int) $get('dokumen_pendukung') === 1),
             ]);
     }
 
     protected static function selectPemeriksaanMaterial(): Select
     {
-        return
-            Select::make('kondisi_material')
-            ->label('Pemeriksaan Material')
-            ->required()
-            ->reactive()
-            ->placeholder('Pilih Hasil Pemeriksaan Material')
-            ->options([
-                1 => 'Ya',
-                0 => 'Tidak',
-            ]);
+        return static::yesNoSelect('kondisi_material', 'Pemeriksaan Material');
     }
 
     protected static function selectStatusPenerimaan(): Select
     {
-        return
-            Select::make('status_penerimaan')
-            ->label('Status Penerimaan')
-            ->required()
-            ->reactive()
-            ->placeholder('Pilih Status Penerimaan')
-            ->options([
-                1 => 'Diterima',
-                0 => 'Ditolak dan dikembalikan',
-            ]);
+        return static::yesNoSelect('status_penerimaan', 'Status Penerimaan', [
+            1 => 'Diterima',
+            0 => 'Ditolak dan dikembalikan',
+        ]);
     }
 
     protected static function selectDokumenPendukung(): Select
     {
-        return
-            Select::make('dokumen_pendukung')
-            ->label('Dokumen Pendukung')
-            ->required()
-            ->reactive()
-            ->placeholder('Tambahkan Dokumen Pendukung')
-            ->options([
-                1 => 'Ya',
-                0 => 'Tidak',
-            ]);
+        return static::yesNoSelect('dokumen_pendukung', 'Dokumen Pendukung')->live();
+    }
+
+    protected static function yesNoSelect(
+        string $name,
+        string $label,
+        array $options = [1 => 'Ya', 0 => 'Tidak'],
+    ): Select {
+        return Select::make($name)
+            ->label($label)
+            ->placeholder("Pilih {$label}")
+            ->options($options)
+            ->required();
     }
 }

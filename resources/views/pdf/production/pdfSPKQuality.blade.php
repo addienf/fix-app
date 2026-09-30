@@ -1,177 +1,211 @@
 @extends ('pdf.layout.layout')
 @section('title', 'SPK Quality PDF')
 @section('content')
-    <div id="export-area" class="p-2 text-black bg-white">
-        <table
-            class="w-full max-w-4xl mx-auto text-sm border border-black dark:border-white dark:bg-gray-900 dark:text-white"
-            style="border-collapse: collapse;">
-            <tr>
-                <td rowspan="3"
-                    class="p-2 text-center align-middle border border-black w-28 h-28 dark:border-white dark:bg-gray-900">
-                    <img src="{{ asset('asset/logo.png') }}" alt="Logo" class="object-contain mx-auto h-30" />
-                </td>
-                <td colspan="2" class="font-bold text-center border border-black dark:border-white dark:bg-gray-900">
-                    PT. QLab Kinarya Sentosa
-                </td>
-            </tr>
-            <tr>
-                <td class="font-bold text-center border border-black dark:border-white dark:bg-gray-900"
-                    style="font-size: 20px;">
-                    Surat Perintah Kerja QC
-                </td>
-                <td rowspan="2" class="p-0 align-top border border-black dark:border-white dark:bg-gray-900">
-                    <table class="w-full text-sm dark:bg-gray-900 dark:text-white" style="border-collapse: collapse;">
-                        <tr>
-                            <td class="px-3 py-2 border-b border-black dark:border-white">No. Dokumen</td>
-                            <td class="px-3 py-2 font-semibold border-b border-black dark:border-white"> :
-                                FO-QKS-PRO-01-05</td>
-                        </tr>
-                        <tr>
-                            <td class="px-3 py-2 border-b border-black dark:border-white">Tanggal Rilis</td>
-                            <td class="px-3 py-2 font-semibold border-b border-black dark:border-white"> : 12 Maret 2025
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="px-3 py-2">Revisi</td>
-                            <td class="px-3 py-2 font-semibold"> : 00</td>
-                        </tr>
-                    </table>
-                </td>
-            </tr>
-        </table>
+    <table>
+        <tr>
+            <td rowspan="4" class="text-center" style="width:80px;">
+                @if ($logoBase64)
+                    <img src="{{ $logoBase64 }}" style="height:55px;">
+                @endif
+            </td>
 
-        @php
-            $fields = [
-                ['label' => 'No SPK  :', 'value' => $spk_qc->no_spk],
-                ['label' => 'No SPK MKT :', 'value' => $spk_qc->penyerahanElectrical->no_spk],
-                ['label' => 'Dari :', 'value' => $spk_qc->dari],
-                ['label' => 'Kepada :', 'value' => $spk_qc->kepada],
-            ];
-        @endphp
+            <td colspan="4" class="header-title">
+                PT. QLab Kinarya Sentosa
+            </td>
+        </tr>
 
-        <div class="grid w-full max-w-4xl grid-cols-2 pt-4 mx-auto text-sm gap-x-6 gap-y-4">
-            @foreach ($fields as $field)
-                <div class="flex items-center">
-                    <label class="w-32 font-medium">{{ $field['label'] }}</label>
-                    <input type="text" readonly value="{{ $field['value'] }}"
-                        class="flex-1 px-3 py-2 text-black bg-white border border-gray-300 rounded-md cursor-not-allowed" />
-                </div>
+        <tr>
+            <td rowspan="3" colspan="2" class="judul">
+                Surat Perintah Kerja QC
+            </td>
+
+            <td class="label">No. Dokumen</td>
+            <td>FO-QKS-PRO-01-05</td>
+        </tr>
+
+        <tr>
+            <td>Tanggal Rilis</td>
+            <td>12 Maret 2025</td>
+        </tr>
+
+        <tr>
+            <td>Revisi</td>
+            <td>00</td>
+        </tr>
+    </table>
+
+    <br>
+
+    {{-- ================= INFO ================= --}}
+    <table class="no-border" style="width:100%; border-collapse:none !important; font-size:11px;">
+        <tr>
+            <td style="width:15%; padding:3px 6px;">No. SPK</td>
+            <td style="width:2%; text-align:center;">:</td>
+            <td style="width:33%; padding:3px 6px;">{{ $spk_qc->no_spk }}</td>
+
+            <td style="width:15%; padding:3px 6px;">No. SPK MKT</td>
+            <td style="width:2%; text-align:center;">:</td>
+            <td style="width:33%; padding:3px 6px;">{{ $spk_qc->spkmarketing->no_spk }}</td>
+        </tr>
+
+        <tr>
+            <td style="padding:3px 6px;">Dari</td>
+            <td style="text-align:center;">:</td>
+            <td style="padding:3px 6px;">{{ $spk_qc->dari }}</td>
+
+            <td style="padding:3px 6px;">Kepada</td>
+            <td style="text-align:center;">:</td>
+            <td style="padding:3px 6px;">{{ $spk_qc->kepada }}</td>
+        </tr>
+    </table>
+
+    <br>
+
+    {{-- ================= TABLE ================= --}}
+    <table class="table-main">
+        <thead>
+            <tr>
+                <th style="width:5%;">No.</th>
+                <th style="width:35%;">Nama Produk yang Dipesan</th>
+                <th style="width:15%;">Jumlah Pesanan</th>
+                <th style="width:15%;">URS No.</th>
+                <th style="width:30%;">Rencana Pengiriman</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach ($spk_qc->details as $i => $item)
+                <tr>
+                    <td class="text-center">{{ $i + 1 }}</td>
+                    <td>{{ $item->nama_produk }}</td>
+                    <td class="text-center">{{ $item->jumlah }}</td>
+                    <td>{{ $item->no_urs }}</td>
+                    <td>{{ \Carbon\Carbon::parse($item->tanggal)->translatedFormat('d F Y') }}</td>
+                </tr>
             @endforeach
-        </div>
-        <div class="w-full max-w-4xl mx-auto mt-6 overflow-x-auto text-sm">
-            <table class="w-full text-sm text-left border border-gray-300 dark:border-gray-600">
-                <thead class="text-black bg-gray-100 dark:bg-gray-800 dark:text-white">
-                    <tr>
-                        <th class="px-4 py-2 border border-gray-300 dark:border-gray-600">Nomor</th>
-                        <th class="px-4 py-2 border border-gray-300 dark:border-gray-600">Nama Produk</th>
-                        <th class="px-4 py-2 border border-gray-300 dark:border-gray-600">Nomor Seri</th>
-                        <th class="px-4 py-2 border border-gray-300 dark:border-gray-600">Jumlah Pesanan</th>
-                        <th class="px-4 py-2 border border-gray-300 dark:border-gray-600">No URS</th>
-                        <th class="px-4 py-2 border border-gray-300 dark:border-gray-600">Rencana Pengiriman</th>
-                    </tr>
-                </thead>
-                <tbody class="text-black bg-white dark:bg-gray-900 dark:text-white">
-                    @foreach ($spk_qc->details as $item)
-                        <tr>
-                            <td class="px-4 py-2 border border-gray-300 dark:border-gray-600">{{ $loop->iteration }}
-                            </td>
-                            <td class="px-4 py-2 border border-gray-300 dark:border-gray-600">
-                                {{ $item->nama_produk }}</td>
-                            <td class="px-4 py-2 border border-gray-300 dark:border-gray-600">{{ $item->nomor_seri }}</td>
-                            <td class="px-4 py-2 border border-gray-300 dark:border-gray-600">{{ $item->jumlah }}</td>
-                            <td class="px-4 py-2 border border-gray-300 dark:border-gray-600">
-                                {{ $item->no_urs }}</td>
-                            <td class="px-4 py-2 border border-gray-300 dark:border-gray-600">
-                                {{ \Carbon\Carbon::parse($item->tanggal)->translatedFormat('d F Y') }}
-                            </td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
 
-        <div class="max-w-4xl mx-auto mt-10 text-sm">
-            <div class="flex items-start justify-between gap-4">
-                <!-- Kiri -->
-                <div class="flex flex-col items-center">
-                    <p class="mb-2 dark:text-white">Yang Membuat</p>
-                    <img src="{{ asset('storage/' . $spk_qc->pic->create_signature) }}" alt="Product Signature"
-                        class="h-20 w-80" />
-                    <p class="mt-1 font-semibold dark:text-white">{{ $spk_qc->pic->createName->name }}</p>
-                    <p class="mt-1 font-semibold dark:text-white">Produksi</p>
+            {{-- ROW KOSONG --}}
+            @for ($i = count($spk_qc->details); $i < 6; $i++)
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            @endfor
+        </tbody>
+    </table>
+
+    {{-- ================= SIGNATURE ================= --}}
+    <table class="no-border signature">
+        <tr>
+            <td>
+                Yang Membuat,<br><br>
+
+                <div class="signature-box">
+                    @if (!empty($spk_qc->pic->create_signature))
+                        <img src="{{ public_path('storage/' . $spk_qc->pic->create_signature) }}">
+                    @endif
                 </div>
-                <!-- Kanan -->
-                <div class="flex flex-col items-center">
-                    <p class="mb-2 dark:text-white">Yang Menerima</p>
-                    <img src="{{ asset('storage/' . $spk_qc->pic->receive_signature) }}" alt="Product Signature"
-                        class="h-20 w-80" />
-                    <p class="mt-1 font-semibold dark:text-white">{{ $spk_qc->pic->receiveName->name }}</p>
-                    <p class="mt-1 font-semibold dark:text-white">QC</p>
+
+                <b>{{ $spk_qc->pic->createName->name ?? '-' }}</b><br>
+                ( Produksi )
+            </td>
+
+            <td>
+                Yang Menerima,<br><br>
+
+                <div class="signature-box">
+                    @if (!empty($spk_qc->pic->receive_signature))
+                        <img src="{{ public_path('storage/' . $spk_qc->pic->receive_signature) }}">
+                    @endif
                 </div>
-            </div>
-        </div>
-    </div>
-    <div class="mt-6 mb-3 text-center">
-        <button onclick="exportPDF()"
-            class="inline-flex items-center gap-2 py-3 text-sm font-semibold text-black text-white bg-blue-600 border rounded border-animated px-7 border-black-400 hover:bg-purple-600 hover:text-white">
-            <!-- Icon download SVG -->
-            <svg class="w-5 h-5 transition-colors duration-300" fill="none" stroke="currentColor" stroke-width="2"
-                viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path stroke-linecap="round" stroke-linejoin="round"
-                    d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4">
-                </path>
-            </svg>
-            Download PDF
-        </button>
-    </div>
+
+                <b>{{ $spk_qc->pic->receiveName->name ?? '-' }}</b><br>
+                ( QC )
+            </td>
+        </tr>
+    </table>
+
 @endsection
 
-<script>
-    function exportPDF() {
-        window.scrollTo(0, 0);
-
-        const element = document.getElementById("export-area");
-        const images = element.getElementsByTagName("img");
-        const totalImages = images.length;
-        let loadedImages = 0;
-
-        for (let img of images) {
-            if (img.complete) {
-                loadedImages++;
-            } else {
-                img.onload = () => {
-                    loadedImages++;
-                    if (loadedImages === totalImages) renderPDF();
-                };
-            }
-        }
-
-        if (loadedImages === totalImages) {
-            renderPDF();
-        }
-
-        function renderPDF() {
-            html2pdf().set({
-                margin: [0.2, 0.2, 0.2, 0.2],
-                filename: "spk-quality.pdf",
-                image: {
-                    type: "jpeg",
-                    quality: 1
-                },
-                html2canvas: {
-                    scale: 3,
-                    useCORS: true,
-                    letterRendering: true
-                },
-                jsPDF: {
-                    unit: "in",
-                    format: "a4",
-                    orientation: "portrait"
-                },
-                pagebreak: {
-                    mode: ["avoid", "css"]
-                }
-            }).from(element).save();
-        }
+<style>
+    body {
+        font-family: "Times-Roman", serif;
+        font-size: 11px;
+        line-height: 1.2;
     }
-</script>
+
+    table {
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    td,
+    th {
+        border: 0.5px solid #000;
+        padding: 3px 5px;
+    }
+
+    .no-border td {
+        border: none !important;
+    }
+
+    .header-title {
+        font-weight: bold;
+        text-align: center;
+    }
+
+    .judul {
+        font-size: 14px;
+        font-weight: bold;
+        text-align: center;
+    }
+
+    .text-center {
+        text-align: center;
+    }
+
+    .text-right {
+        text-align: right;
+    }
+
+    .info td {
+        padding: 4px 6px;
+    }
+
+    .table-main th {
+        font-weight: bold;
+        text-align: center;
+    }
+
+    .table-main td {
+        height: 20px;
+    }
+
+    .signature {
+        margin-top: 30px;
+        text-align: center;
+    }
+
+    .signature-box {
+        width: 180px;
+        height: 70px;
+        margin: 10px auto;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .signature-box img {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 160%;
+        max-height: 70px;
+    }
+
+    .label {
+        width: 120px;
+    }
+</style>

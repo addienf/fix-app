@@ -38,7 +38,14 @@ class URSResource extends Resource
                     ->collapsible()
                     ->schema([
 
-                        self::autoNumberField('no_urs', 'Nomor URS', [
+                        // self::autoNumberField('no_urs', 'Nomor URS', [
+                        //     'prefix' => 'QKS',
+                        //     'section' => 'MKT',
+                        //     'type' => 'URS',
+                        //     'table' => 'urs',
+                        // ]),
+
+                        self::autoNumberField2('no_urs', 'Nomor URS', [
                             'prefix' => 'QKS',
                             'section' => 'MKT',
                             'type' => 'URS',

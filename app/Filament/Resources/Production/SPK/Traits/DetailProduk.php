@@ -19,51 +19,11 @@ trait DetailProduk
                     ->relationship('details')
                     ->label('')
                     ->schema([
-
-                        self::textInput('nama_produk', 'Nama Produk')
-                            ->readOnly(fn($get) => filled($get('nama_produk')))
-                            ->extraAttributes(
-                                fn($get) =>
-                                filled($get('nama_produk'))
-                                    ? ['style' => 'pointer-events:none; background-color:#f3f4f6;']
-                                    : []
-                            ),
-
-                        self::textInput('nomor_seri', 'Nomor Seri')
-                            ->readOnly(fn($get) => filled($get('nomor_seri')))
-                            ->extraAttributes(
-                                fn($get) =>
-                                filled($get('nomor_seri'))
-                                    ? ['style' => 'pointer-events:none; background-color:#f3f4f6;']
-                                    : []
-                            ),
-
-                        self::textInput('jumlah', 'Jumlah Pesanan')
-                            ->readOnly(fn($get) => filled($get('jumlah')))
-                            ->extraAttributes(
-                                fn($get) =>
-                                filled($get('jumlah'))
-                                    ? ['style' => 'pointer-events:none; background-color:#f3f4f6;']
-                                    : []
-                            ),
-
-                        self::textInput('no_urs', 'No URS')
-                            ->readOnly(fn($get) => filled($get('no_urs')))
-                            ->extraAttributes(
-                                fn($get) =>
-                                filled($get('no_urs'))
-                                    ? ['style' => 'pointer-events:none; background-color:#f3f4f6;']
-                                    : []
-                            ),
-
-                        self::textInput('rencana_pengiriman', 'Rencana Pengiriman')
-                            ->readOnly(fn($get) => filled($get('rencana_pengiriman')))
-                            ->extraAttributes(
-                                fn($get) =>
-                                filled($get('rencana_pengiriman'))
-                                    ? ['style' => 'pointer-events:none; background-color:#f3f4f6;']
-                                    : []
-                            ),
+                        self::textInput('nama_produk', 'Nama Produk'),
+                        self::textInput('nomor_seri', 'Nomor Seri'),
+                        self::textInput('jumlah', 'Jumlah Pesanan'),
+                        self::textInput('no_urs', 'No URS'),
+                        self::textInput('rencana_pengiriman', 'Rencana Pengiriman'),
                     ])
                     ->columns([
                         'default' => 1,

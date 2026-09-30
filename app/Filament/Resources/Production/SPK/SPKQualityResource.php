@@ -75,9 +75,7 @@ class SPKQualityResource extends Resource
 
                 self::textColumn('no_spk', 'No SPK QUality'),
 
-                self::textColumn('dari', 'Dari'),
-
-                self::textColumn('kepada', 'Kepada'),
+                self::textColumn('details.nomor_seri', 'Serial Number'),
 
                 self::textColumn('status_penerimaan', 'Status Penerimaan')
                     ->badge()

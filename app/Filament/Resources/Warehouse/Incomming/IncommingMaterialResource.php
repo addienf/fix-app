@@ -32,8 +32,10 @@ class IncommingMaterialResource extends Resource
 
     public static function getNavigationBadge(): ?string
     {
-        $count = IncommingMaterial::where('status_penerimaan_pic', '!=', 'Diterima')->count();
-
+        $count = IncommingMaterial::where(function ($query) {
+            $query->where('status_penerimaan_pic', '!=', 'Diterima')
+                ->orWhereNull('status_penerimaan_pic');
+        })->count();
         return $count > 0 ? (string) $count : null;
     }
 
@@ -77,28 +79,14 @@ class IncommingMaterialResource extends Resource
         return $table
             ->columns([
                 //
-                // TextColumn::make('permintaanPembelian.permintaanBahanWBB.no_surat')
-                //     ->label('No Surat Permintaan Bahan'),
 
                 TextColumn::make('no_surat')
-                    ->label('No Surat Permintaan Bahan')
-                    ->getStateUsing(function ($record) {
+                    ->label('No Surat'),
 
-                        $noSurat = $record->permintaanPembelian?->permintaanBahanWBB?->no_surat;
-
-                        if ($noSurat) {
-                            return $noSurat;
-                        }
-
-                        $createdAt = $record->permintaanPembelian?->created_at
-                            ? $record->permintaanPembelian->created_at->format('YmdHis')
-                            : now()->format('YmdHis');
-
-                        return "Untuk Stock Pembelian - {$createdAt}";
-                    }),
-
-                self::textColumn('tanggal', 'Tanggal Penerimaan')
-                    ->formatStateUsing(fn($state) => \Carbon\Carbon::parse($state)->format('d F Y')),
+                TextColumn::make('tanggal')
+                    ->label('Tanggal Penerimaan')
+                    ->date('d F Y')
+                    ->placeholder('-'),
 
                 TextColumn::make('status_penerimaan_pic')
                     ->label('Status Penerimaan')
@@ -123,7 +111,8 @@ class IncommingMaterialResource extends Resource
                         ->icon('heroicon-o-trash')
                         ->tooltip('Hapus Data'),
                     Action::make('pdf_view')
-                        ->label(_('Lihat PDF'))
+                        ->label(__('Lihat PDF'))
+                        ->openUrlInNewTab()
                         ->icon('heroicon-o-document')
                         ->color('success')
                         ->visible(fn($record) => $record->status_penerimaan_pic === 'Diterima')
@@ -156,11 +145,6 @@ class IncommingMaterialResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
-        return parent::getEloquentQuery()
-            ->with([
-                'permintaanPembelian',
-                'details',
-                'pic'
-            ]);
+        return parent::getEloquentQuery();
     }
 }

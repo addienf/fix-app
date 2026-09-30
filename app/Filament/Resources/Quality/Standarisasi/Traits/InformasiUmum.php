@@ -76,6 +76,7 @@ trait InformasiUmum
                     'perencanaanProduksi.identifikasiProduks',
                 ])
                     ->whereDoesntHave('standarisasiDrawing')
+                    ->where('status_penerimaan', 'Diterima')
                     ->latest()
                     ->limit(10)
                     ->get()

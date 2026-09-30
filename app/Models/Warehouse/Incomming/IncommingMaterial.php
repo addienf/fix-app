@@ -13,23 +13,19 @@ class IncommingMaterial extends Model
     use HasFactory;
 
     protected $fillable = [
-        'permintaan_pembelian_id',
+        'no_surat',
         'tanggal',
         'kondisi_material',
         'status_penerimaan',
         'dokumen_pendukung',
         'file_upload',
         'status_penerimaan_pic',
+        'is_synced_sheet'
     ];
 
     protected $casts = [
         'tanggal' => 'date'
     ];
-
-    public function permintaanPembelian()
-    {
-        return $this->belongsTo(PermintaanPembelian::class, 'permintaan_pembelian_id');
-    }
 
     public function details()
     {

@@ -76,10 +76,7 @@ trait SimpleFormResource
             ->helperText($helperText ?? 'Unggah file (PDF/JPG/PNG), maksimal ' . ($maxSize / 1024) . ' MB.')
             ->required($required)
             ->openable()
-            // ->downloadable()
-            // ->previewable()
-            ->afterStateUpdated(function ($state) use ($directory, $optimize) {
-                // Kompres otomatis kalau file berupa gambar
+            ->afterStateUpdated(function ($state) use ($optimize) {
                 if ($optimize && $state) {
                     $path = Storage::disk('public')->path($state);
                     if (file_exists($path) && @exif_imagetype($path)) {
@@ -112,7 +109,7 @@ trait SimpleFormResource
             )
             ->required($required)
             ->openable()
-            ->multiple($multiple) // ✅ MULTIPLE AKTIF
+            ->multiple($multiple)
 
             ->afterStateUpdated(function ($state) use ($optimize) {
 
@@ -120,7 +117,6 @@ trait SimpleFormResource
                     return;
                 }
 
-                // 🔥 kalau multiple, $state = array
                 $paths = is_array($state) ? $state : [$state];
 
                 foreach ($paths as $file) {

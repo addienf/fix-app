@@ -145,7 +145,7 @@ class PengecekanPerformaResource extends Resource
     {
         return parent::getEloquentQuery()
             ->with([
-                'penyerahanProdukJadi',
+                'spkQC',
                 'pic',
                 'ketidaksesuaian',
                 'productRelease',

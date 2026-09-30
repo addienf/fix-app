@@ -17,6 +17,7 @@ class ListJadwalProduksis extends ListRecords
             Actions\CreateAction::make()->label('Tambah Data Jadwal Produksi'),
         ];
     }
+
     public function getTabs(): array
     {
         return

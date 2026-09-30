@@ -158,7 +158,7 @@ trait TabelChecklist
             ->label('')
             ->schema([
 
-                Grid::make(3)
+                Grid::make(4)
                     ->schema([
                         TextInput::make('mainPart')
                             ->label('Main Parts')
@@ -185,6 +185,8 @@ trait TabelChecklist
                                 'r' => 'Repaired',
                             ])
                             ->required(),
+
+                        self::textInput('remarks', 'Remark')
                     ]),
 
                 TableRepeater::make('parts')
@@ -215,6 +217,8 @@ trait TabelChecklist
                                 'r' => 'Repaired',
                             ])
                             ->required(),
+
+                        self::textInput('remarks', 'Remark')
 
                     ])
                     ->addable(false)

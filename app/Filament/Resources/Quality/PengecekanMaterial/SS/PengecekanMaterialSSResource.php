@@ -13,7 +13,6 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Actions\ActionGroup;
-use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -82,13 +81,7 @@ class PengecekanMaterialSSResource extends Resource
             ->columns([
                 //
 
-                self::textColumn('kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.perencanaanProduksi.spk.no_spk', 'No SPK Marketing'),
-
-                self::textColumn('no_seri', 'No Seri')
-                    ->getStateUsing(function ($record) {
-                        return $record->kelengkapanMaterial?->standarisasiDrawing?->serahTerimaWarehouse
-                            ?->perencanaanProduksi?->identifikasiProduks?->pluck('no_seri')->filter()->implode(', ') ?? '-';
-                    }),
+                self::textColumn('spkQC.spkMarketing.no_spk', 'No SPK Marketing'),
 
                 self::textColumn('tipe', 'Type/Model'),
 
@@ -151,8 +144,7 @@ class PengecekanMaterialSSResource extends Resource
     {
         return parent::getEloquentQuery()
             ->with([
-                'kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.perencanaanProduksi.spk',
-                'kelengkapanMaterial.standarisasiDrawing.serahTerimaWarehouse.perencanaanProduksi.identifikasiProduks',
+                'spkQC',
                 'pic',
                 'detail',
             ]);

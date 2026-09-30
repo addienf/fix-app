@@ -2,151 +2,323 @@
 
 namespace App\Traits;
 
+use App\Services\DocumentNumber;
 use Filament\Forms\Components\TextInput;
 use Illuminate\Support\Facades\DB;
 
 trait HasAutoNumber
 {
-    public static function autoNumberField(string $name, string $label, array $config): TextInput
+    public static function newAutoNmberField(string $name, string $label, array $config, bool $readOnly = false): TextInput
     {
-        $prefix = $config['prefix'] ?? 'QKS';
-        $section = $config['section'] ?? 'GEN';
-        $type = $config['type'] ?? 'DOC';
-        $table = $config['table'] ?? null;
+        $c = $config + ['prefix' => 'QKS', 'section' => 'GEN', 'type' => 'DOC'];
 
         return TextInput::make($name)
             ->label($label)
-            ->hint("Format: XXX/{$prefix}/{$section}/{$type}/MM/YY")
-            ->default(function () use ($table, $prefix, $section, $type, $name) {
-
-                $month = now()->format('m');
-                $year = now()->format('y');
-
-                $lastNumber = DB::table($table)
-                    ->select(DB::raw("MAX(CAST(SUBSTRING_INDEX({$name}, '/', 1) AS UNSIGNED)) as max_num"))
-                    ->first()
-                    ->max_num;
-
-                $num = $lastNumber ? $lastNumber + 1 : 1;
-                $numStr = str_pad($num, 3, '0', STR_PAD_LEFT);
-
-                return "{$numStr}/{$prefix}/{$section}/{$type}/{$month}/{$year}";
-            })
-            ->unique()
+            ->hint("Format: XXX/{$c['prefix']}/{$c['section']}/{$c['type']}/MM/YY")
+            ->default(fn() => DocumentNumber::next($c['table'], $name, $c['type'], $c['prefix'], $c['section']))
+            ->unique(ignoreRecord: true)
             ->required()
-            ->extraAttributes([
-                'readonly' => true,
-                'style' => 'pointer-events: none;'
-            ]);
+            ->readOnly($readOnly);
     }
 
-    public static function autoNumberField2(string $name, string $label, array $config): TextInput
-    {
-        $prefix = $config['prefix'] ?? 'QKS';
-        $section = $config['section'] ?? 'GEN';
-        $type = $config['type'] ?? 'DOC';
-        $table = $config['table'] ?? null;
+    // public static function autoNumberField(string $name, string $label, array $config): TextInput
+    // {
+    //     $prefix = $config['prefix'] ?? 'QKS';
+    //     $section = $config['section'] ?? 'GEN';
+    //     $type = $config['type'] ?? 'DOC';
+    //     $table = $config['table'] ?? null;
 
-        return TextInput::make($name)
-            ->label($label)
-            ->hint("Format: XXX/{$prefix}/{$section}/{$type}/MM/YY")
-            ->default(function () use ($table, $name, $prefix, $section, $type) {
-                if (! $table) return null;
+    //     return TextInput::make($name)
+    //         ->label($label)
+    //         ->hint("Format: XXX/{$prefix}/{$section}/{$type}/MM/YY")
+    //         ->default(function () use ($table, $prefix, $section, $type, $name) {
 
-                $month = now()->format('m');
-                $year = now()->format('y');
+    //             $month = now()->format('m');
+    //             $year = now()->format('y');
 
-                $last = DB::table($table)
-                    ->select($name)
-                    ->whereNotNull($name)
-                    ->orderByDesc('id')
-                    ->first();
+    //             $lastNumber = DB::table($table)
+    //                 ->select(DB::raw("MAX(CAST(SUBSTRING_INDEX({$name}, '/', 1) AS UNSIGNED)) as max_num"))
+    //                 ->first()
+    //                 ->max_num;
 
-                if ($last && preg_match('/^(\d{3})/', $last->$name, $m)) {
-                    $num = intval($m[1]) + 1;
-                } else {
-                    $num = 1;
-                }
+    //             $num = $lastNumber ? $lastNumber + 1 : 1;
+    //             $numStr = str_pad($num, 3, '0', STR_PAD_LEFT);
 
-                $num = str_pad($num, 3, '0', STR_PAD_LEFT);
+    //             return "{$numStr}/{$prefix}/{$section}/{$type}/{$month}/{$year}";
+    //         })
+    //         ->unique()
+    //         ->required()
+    //         ->extraAttributes([
+    //             'readonly' => true,
+    //             'style' => 'pointer-events: none;'
+    //         ]);
+    // }
 
-                return "{$num}/{$prefix}/{$section}/{$type}/{$month}/{$year}";
-            })
-            ->unique(ignorable: fn($record) => $record)
-            ->required()
-            ->extraAttributes([
-                'readonly' => true,
-                'style' => 'pointer-events: none;',
-            ]);
-    }
+    // public static function autoNumberField2(string $name, string $label, array $config): TextInput
+    // {
+    //     $prefix = $config['prefix'] ?? 'QKS';
+    //     $section = $config['section'] ?? 'GEN';
+    //     $type = $config['type'] ?? 'DOC';
+    //     $table = $config['table'] ?? null;
 
-    public static function generateNoSurat($isStock, string $table, string $column): string
-    {
-        $isStock = $isStock ?? 1;
+    //     return TextInput::make($name)
+    //         ->label($label)
+    //         ->hint("Format: XXX/{$prefix}/{$section}/{$type}/MM/YY")
+    //         ->default(function () use ($table, $name, $prefix, $section, $type) {
+    //             if (! $table) return null;
 
-        $prefix  = 'QKS';
-        $section = 'WBB';
-        $type    = 'PERMINTAAN';
+    //             $romanMonths = [
+    //                 1 => 'I',
+    //                 2 => 'II',
+    //                 3 => 'III',
+    //                 4 => 'IV',
+    //                 5 => 'V',
+    //                 6 => 'VI',
+    //                 7 => 'VII',
+    //                 8 => 'VIII',
+    //                 9 => 'IX',
+    //                 10 => 'X',
+    //                 11 => 'XI',
+    //                 12 => 'XII',
+    //             ];
 
-        if ($isStock == 0) {
-            return "Untuk Stock - " . now()->format('YmdHis');
-        }
+    //             $month = $romanMonths[now()->month];
+    //             $year = now()->format('y');
 
-        $month = now()->format('m');
-        $year  = now()->format('y');
+    //             $last = DB::table($table)
+    //                 ->select($name)
+    //                 ->whereNotNull($name)
+    //                 ->orderByDesc('id')
+    //                 ->first();
 
-        $last = DB::table($table)
-            ->whereMonth('created_at', now()->month)
-            ->whereYear('created_at', now()->year)
-            ->where($column, 'like', "%/{$month}/{$year}")
-            ->orderByDesc($column)
-            ->value($column);
+    //             if ($last && preg_match('/^(\d{3})/', $last->$name, $m)) {
+    //                 $num = intval($m[1]) + 1;
+    //             } else {
+    //                 $num = 1;
+    //             }
 
-        if ($last && preg_match('/^(\d{3})/', $last, $m)) {
-            $num = intval($m[1]) + 1;
-        } else {
-            $num = 1;
-        }
+    //             $num = str_pad($num, 3, '0', STR_PAD_LEFT);
 
-        $num = str_pad($num, 3, '0', STR_PAD_LEFT);
+    //             return "{$num}/{$prefix}/{$section}/{$type}/{$month}/{$year}";
+    //         })
+    //         ->unique(ignorable: fn($record) => $record)
+    //         ->required();
+    // }
 
-        return "{$num}/{$prefix}/{$section}/{$type}/{$month}/{$year}";
-    }
+    // public static function generateNoSurat($isStock, string $table, string $column): string
+    // {
+    //     $isStock = $isStock ?? 1;
 
-    public static function generateNoSurat2(string $table, string $column): string
-    {
-        $prefix  = 'QKS';
-        $section = 'WBB';
-        $type    = 'PERMINTAAN';
+    //     $prefix  = 'QKS';
+    //     $section = 'WBB';
+    //     $type    = 'PERMINTAAN';
 
-        $month = now()->format('m');
-        $year  = now()->format('y');
+    //     if ($isStock == 0) {
+    //         return "Untuk Stock - " . now()->format('YmdHis');
+    //     }
 
-        $last = DB::table($table)
-            ->whereMonth('created_at', now()->month)
-            ->whereYear('created_at', now()->year)
-            ->where($column, 'like', "%/{$month}/{$year}")
-            ->orderByDesc($column)
-            ->value($column);
+    //     $month = now()->format('m');
+    //     $year  = now()->format('y');
 
-        if ($last && preg_match('/^(\d{3})/', $last, $m)) {
-            $num = intval($m[1]) + 1;
-        } else {
-            $num = 1;
-        }
+    //     $last = DB::table($table)
+    //         ->whereMonth('created_at', now()->month)
+    //         ->whereYear('created_at', now()->year)
+    //         ->where($column, 'like', "%/{$month}/{$year}")
+    //         ->orderByDesc($column)
+    //         ->value($column);
 
-        $num = str_pad($num, 3, '0', STR_PAD_LEFT);
+    //     if ($last && preg_match('/^(\d{3})/', $last, $m)) {
+    //         $num = intval($m[1]) + 1;
+    //     } else {
+    //         $num = 1;
+    //     }
 
-        return "{$num}/{$prefix}/{$section}/{$type}/{$month}/{$year}";
-    }
+    //     $num = str_pad($num, 3, '0', STR_PAD_LEFT);
 
-    public static function autoNumberField3(string $name, string $label): TextInput
-    {
-        return TextInput::make($name)
-            ->label($label)
-            ->hint("Format: XXX/QKS/WBB/PERMINTAAN/MM/YY")
-            ->required()
-            ->readOnly()
-            ->dehydrated();
-    }
+    //     return "{$num}/{$prefix}/{$section}/{$type}/{$month}/{$year}";
+    // }
+
+    // public static function generateNoSurat2(string $table, string $column, string $type): string
+    // {
+    //     $prefix  = 'QKS';
+    //     $section = 'WBB';
+    //     // $type    = 'PERMINTAAN';
+
+    //     $month = now()->format('m');
+    //     $year  = now()->format('y');
+
+    //     $last = DB::table($table)
+    //         ->whereMonth('created_at', now()->month)
+    //         ->whereYear('created_at', now()->year)
+    //         ->where($column, 'like', "%/{$month}/{$year}")
+    //         ->orderByDesc($column)
+    //         ->value($column);
+
+    //     if ($last && preg_match('/^(\d{3})/', $last, $m)) {
+    //         $num = intval($m[1]) + 1;
+    //     } else {
+    //         $num = 1;
+    //     }
+
+    //     $num = str_pad($num, 3, '0', STR_PAD_LEFT);
+
+    //     return "{$num}/{$prefix}/{$section}/{$type}/{$month}/{$year}";
+    // }
+
+    // public static function autoNumberField3(string $name, string $label): TextInput
+    // {
+    //     return TextInput::make($name)
+    //         ->label($label)
+    //         ->hint("Format: XXX/QKS/WBB/PERMINTAAN/MM/YY")
+    //         ->required()
+    //         ->readOnly()
+    //         ->dehydrated();
+    // }
+
+    // public static function autoNumberField4(string $name, string $label, array $config): TextInput
+    // {
+    //     $prefix = $config['prefix'] ?? 'QKS';
+    //     $type = $config['type'] ?? 'DOC';
+
+    //     return TextInput::make($name)
+    //         ->label($label)
+    //         ->hint("Format: XXX/{$prefix}/[SECTION]/{$type}/MM/YY")
+    //         ->unique(ignorable: fn($record) => $record)
+    //         ->required();
+    // }
+
+    // protected static function generateAutoNumber($table, $column, $prefix, $section, $type)
+    // {
+    //     if (!$table) return null;
+
+    //     $month = now()->format('m');
+    //     $year = now()->format('y');
+
+    //     $romanMonth = self::monthToRoman($month);
+
+    //     $last = DB::table($table)
+    //         ->where($column, 'like', "%/{$prefix}/%/{$type}/{$romanMonth}/{$year}")
+    //         ->orderByDesc('id')
+    //         ->value($column);
+
+    //     if ($last && preg_match('/^(\d{3})/', $last, $m)) {
+    //         $num = intval($m[1]) + 1;
+    //     } else {
+    //         $num = 1;
+    //     }
+
+    //     $num = str_pad($num, 3, '0', STR_PAD_LEFT);
+
+    //     return "{$num}/{$prefix}/{$section}/{$type}/{$romanMonth}/{$year}";
+    // }
+
+    // protected static function generateAutoNumber3($table, $column, $prefix, $section, $type)
+    // {
+    //     if (!$table) return null;
+
+    //     $month = now()->month;
+    //     $year = now()->format('y');
+    //     $romanMonth = self::monthToRoman($month);
+
+    //     $pattern = "%/{$prefix}/{$section}/{$type}/{$romanMonth}/{$year}";
+
+    //     $last = DB::table($table)
+    //         ->where($column, 'like', $pattern)
+    //         ->orderByDesc($column)
+    //         ->value($column);
+
+    //     $nextNumber = 1;
+
+    //     if ($last && preg_match('/^(\d{3})/', $last, $matches)) {
+    //         $nextNumber = ((int) $matches[1]) + 1;
+    //     }
+
+    //     return sprintf(
+    //         '%03d/%s/%s/%s/%s/%s',
+    //         $nextNumber,
+    //         $prefix,
+    //         $section,
+    //         $type,
+    //         $romanMonth,
+    //         $year
+    //     );
+    // }
+
+    // protected static function monthToRoman($month)
+    // {
+    //     $map = [
+    //         1 => 'I',
+    //         2 => 'II',
+    //         3 => 'III',
+    //         4 => 'IV',
+    //         5 => 'V',
+    //         6 => 'VI',
+    //         7 => 'VII',
+    //         8 => 'VIII',
+    //         9 => 'IX',
+    //         10 => 'X',
+    //         11 => 'XI',
+    //         12 => 'XII',
+    //     ];
+
+    //     return $map[(int)$month];
+    // }
+
+    // public static function newAutoNumber(string $name, string $label, array $config): TextInput
+    // {
+    //     $prefix = $config['prefix'] ?? 'QKS';
+    //     $section = $config['section'] ?? 'GEN';
+    //     $type = $config['type'] ?? 'DOC';
+    //     $table = $config['table'] ?? null;
+
+    //     return TextInput::make($name)
+    //         ->label($label)
+    //         ->hint("Format: XXX/{$prefix}/{$section}/{$type}/MM/YY")
+    //         ->default(function () use ($table, $name, $prefix, $section, $type) {
+    //             if (! $table) return null;
+
+    //             $romanMonths = [
+    //                 1 => 'I',
+    //                 2 => 'II',
+    //                 3 => 'III',
+    //                 4 => 'IV',
+    //                 5 => 'V',
+    //                 6 => 'VI',
+    //                 7 => 'VII',
+    //                 8 => 'VIII',
+    //                 9 => 'IX',
+    //                 10 => 'X',
+    //                 11 => 'XI',
+    //                 12 => 'XII',
+    //             ];
+
+    //             $month = $romanMonths[now()->month];
+    //             $year = now()->format('y');
+
+    //             // Buat akhiran (suffix) untuk bulan dan tahun saat ini
+    //             $currentSuffix = "/{$month}/{$year}";
+
+    //             $last = DB::table($table)
+    //                 ->select($name)
+    //                 ->whereNotNull($name)
+    //                 // Filter pencarian khusus untuk nomor dengan bulan dan tahun saat ini
+    //                 ->where($name, 'LIKE', "%{$currentSuffix}")
+    //                 ->orderByDesc('id')
+    //                 ->first();
+
+    //             // Karena sudah difilter bulan/tahun, jika $last ketemu pasti dari bulan ini
+    //             if ($last && preg_match('/^(\d{3})/', $last->$name, $m)) {
+    //                 $num = intval($m[1]) + 1;
+    //             } else {
+    //                 // Jika tidak ketemu data di bulan/tahun ini, reset ke 1
+    //                 $num = 1;
+    //             }
+
+    //             $num = str_pad($num, 3, '0', STR_PAD_LEFT);
+
+    //             return "{$num}/{$prefix}/{$section}/{$type}/{$month}/{$year}";
+    //         })
+    //         ->unique(ignorable: fn($record) => $record)
+    //         ->required();
+    // }
 }

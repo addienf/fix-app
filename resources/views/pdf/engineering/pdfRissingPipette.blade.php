@@ -99,7 +99,7 @@
         <tbody>
             <tr>
                 <td class="font-bold">Name</td>
-                <td>{{ $rissing->pic?->checkedBy?->name ?? '-' }}</td>
+                <td>{{ $rissing->pic?->checked_name ?? '-' }}</td>
                 <td>{{ optional(value: $rissing->pic)->approved_name }}</td>
             </tr>
             <tr>

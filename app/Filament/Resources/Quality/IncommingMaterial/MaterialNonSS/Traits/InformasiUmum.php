@@ -20,8 +20,6 @@ trait InformasiUmum
             Section::make('Informasi Umum')
             ->collapsible()
             ->schema([
-
-                // Grid::make($isEdit ? 3 : 2)
                 Grid::make([
                     'default' => 1,
                     'md' => $isEdit ? 3 : 2,
@@ -31,7 +29,7 @@ trait InformasiUmum
                         self::select2()
                             ->placeholder('Pilih Nomor Permintaan Pembelian')
                             ->hiddenOn('edit')
-                            ->required(),
+                            ->required(false),
 
                         self::textInput('no_qc', 'No. QC SS'),
 

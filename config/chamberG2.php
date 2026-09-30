@@ -11,7 +11,6 @@ return [
             ['text' => 'Cleaning evaporator sample must be unloaded 50 minutes (racks from row number 1 & 2)', 'show' => false],
         ],
     ],
-
     // [
     //     'mainPart' => 'Humidification System',
     //     'parts' => [
@@ -25,33 +24,31 @@ return [
     //         ['info' => 'Take the photo of the water heater condition and resistance in Ampere Meter'],
     //     ],
     // ],
-
     // [
     //     'mainPart' => 'Air Heating System',
     //     'parts' => [
     //         ['info' => 'Measure the resistance of the air heater'],
     //         'Air Heater 1500 W (30-38 Ohm)',
-    //         'Air Heater 2500 W (46-53 Ohm)',
+    //         'Air Heater 1000 W (46-53 Ohm)',
     //         'Air Heater 1350 W (33-40 Ohm)',
     //         ['info' => 'Take the photo of the water heater condition and resistance in Ampere Meter'],
     //     ],
     // ],
-
     // [
     //     'mainPart' => 'Water Feeding System',
     //     'parts' => [
     //         'Measure the feeding water conductivity (Standard: 20-100 µS)',
     //     ],
     // ],
-
     // [
     //     'mainPart' => 'Controlling System',
     //     'parts' => [
+    //         'Check analogue output temperature function (Standard: 4 - 20 mA)',
+    //         'Check analogue output humidity function (Standard: 4 - 20 mA)',
     //         ['text' => 'Check the analogue output temperature function', 'show' => false],
     //         ['text' => 'Check the analogue output humidity function', 'show' => false],
     //     ],
     // ],
-
     // [
     //     'mainPart' => 'Logging System',
     //     'parts' => [
@@ -61,7 +58,6 @@ return [
     //         ['text' => 'Check total files (max 512 files)', 'show' => false],
     //     ],
     // ],
-
     // [
     //     'mainPart' => 'Alarm System',
     //     'parts' => [
@@ -78,7 +74,6 @@ return [
     //         ['text' => 'Check the synchronisation of individual alarms & CAS', 'show' => false],
     //     ],
     // ],
-
     // [
     //     'mainPart' => 'Interior TL Lamp',
     //     'parts' => [
@@ -86,7 +81,6 @@ return [
     //         ['text' => 'Check the lamp cover condition', 'show' => false],
     //     ],
     // ],
-
     // [
     //     'mainPart' => 'Indicator Lamp',
     //     'parts' => [
@@ -94,7 +88,6 @@ return [
     //         ['text' => 'Check the cooler indicator lamp', 'show' => false],
     //     ],
     // ],
-
     // [
     //     'mainPart' => 'Check with Thermal Camera',
     //     'parts' => [

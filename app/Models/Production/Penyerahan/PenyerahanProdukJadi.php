@@ -4,8 +4,8 @@ namespace App\Models\Production\Penyerahan;
 
 use App\Models\Production\Penyerahan\Pivot\PenyerahanProdukJadiDetail;
 use App\Models\Production\Penyerahan\Pivot\PenyerahanProdukJadiPIC;
+use App\Models\Production\SPK\SPKQuality;
 use App\Models\Quality\Pengecekan\PengecekanPerforma;
-use App\Models\Quality\PengecekanMaterial\Electrical\PengecekanMaterialElectrical;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -14,7 +14,7 @@ class PenyerahanProdukJadi extends Model
     use HasFactory;
 
     protected $fillable = [
-        'pengecekan_electrical_id',
+        'spk_qualities_id',
         'tanggal',
         'penanggug_jawab',
         'penerima',
@@ -27,9 +27,9 @@ class PenyerahanProdukJadi extends Model
         'tanggal' => 'date',
     ];
 
-    public function pengecekanElectrical()
+    public function spkQC()
     {
-        return $this->belongsTo(PengecekanMaterialElectrical::class, 'pengecekan_electrical_id');
+        return $this->belongsTo(SPKQuality::class, 'spk_qualities_id');
     }
 
     public function pengecekanPerforma()

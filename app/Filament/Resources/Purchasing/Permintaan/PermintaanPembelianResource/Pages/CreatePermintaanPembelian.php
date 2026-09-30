@@ -41,7 +41,7 @@ class CreatePermintaanPembelian extends CreateRecord
 
     public function getTitle(): string
     {
-        return 'Tambah Data Jadwal Produksi';
+        return 'Tambah Data Permintaan Pembelian';
     }
 
     public function getBreadcrumb(): string

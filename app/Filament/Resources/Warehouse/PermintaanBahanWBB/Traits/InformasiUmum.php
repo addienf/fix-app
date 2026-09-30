@@ -18,41 +18,24 @@ trait InformasiUmum
     protected static function informasiUmumSection($form): Section
     {
         $isEdit = $form->getOperation() === 'edit';
-
         return
             Section::make('Informasi Umum')
             ->collapsible()
             ->schema([
-
                 self::getIsStock()
                     ->hiddenOn('edit'),
-
                 self::select()
                     ->hidden(
                         fn($get, $livewire) =>
                         $get('is_stock') != 1 ||
                             $livewire instanceof \Filament\Resources\Pages\EditRecord
                     ),
-
                 Grid::make([
                     'default' => 1,
                     'md' => $isEdit ? 3 : 2,
                     'lg' => $isEdit ? 3 : 2,
                 ])
                     ->schema([
-
-                        // self::autoNumberField2('no_surat', 'No Surat', [
-                        //     'prefix' => 'QKS',
-                        //     'section' => 'WBB',
-                        //     'type' => 'PERMINTAAN',
-                        //     'table' => 'permintaan_bahans',
-                        // ])
-                        //     ->rules(function (callable $get) {
-                        //         return $get('is_stock') == 0
-                        //             ? ['nullable']
-                        //             : ['required', Rule::unique('permintaan_bahans', 'no_surat')];
-                        //     })
-                        //     ->hiddenOn('edit'),
                         self::autoNumberField3('no_surat', 'No Surat')
                             ->hiddenOn('edit'),
 
@@ -64,7 +47,6 @@ trait InformasiUmum
 
                         self::textInput('kepada', 'Kepada')
                             ->placeholder('Purchasing'),
-
                     ])
             ]);
     }
@@ -136,7 +118,8 @@ trait InformasiUmum
                     'no_surat',
                     self::generateNoSurat2(
                         'permintaan_bahans',
-                        'no_surat'
+                        'no_surat',
+                        'PERMINTAAN'
                     )
                 );
             })
@@ -145,7 +128,8 @@ trait InformasiUmum
                     'no_surat',
                     self::generateNoSurat2(
                         'permintaan_bahans',
-                        'no_surat'
+                        'no_surat',
+                        'PERMINTAAN'
                     )
                 );
 

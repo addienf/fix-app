@@ -4,15 +4,27 @@ namespace App\Models\Engineering\Maintenance\ChamberWalkinG2\Pivot;
 
 use App\Models\Engineering\Maintenance\ChamberWalkinG2\ChamberWalkinG2;
 use App\Models\User;
+use App\Traits\HasSignature;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 
 class ChamberWalkinG2PIC extends Model
 {
-    use HasFactory;
+    use HasFactory, HasSignature;
 
     protected $table = 'chamber_walkin_g2_pics';
+
+    // protected $fillable = [
+    //     'walk_in_g2_id',
+    //     'checked_name',
+    //     'checked_signature',
+    //     'checked_date',
+    //     'approved_name',
+    //     'approved_signature',
+    //     'approved_date',
+    // ];
+
     protected $fillable = [
         'walk_in_g2_id',
         'checked_name',
@@ -21,7 +33,21 @@ class ChamberWalkinG2PIC extends Model
         'approved_name',
         'approved_signature',
         'approved_date',
+        'sign_token',
+        'sign_token_expires_at',
+        'signed_at',
+        'signed_ip',
     ];
+
+    public function signatureConfig(): array
+    {
+        return [
+            'name_field' => 'approved_name',
+            'signature_field' => 'approved_signature',
+            'date_field' => 'approved_date',
+            'upload_path' => 'Engineering/Maintenance/WalkinChamberG2/Signature',
+        ];
+    }
 
     public function walkinG2()
     {

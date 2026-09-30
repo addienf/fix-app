@@ -163,7 +163,7 @@
         <tbody>
             <tr>
                 <td class="font-bold">Name</td>
-                <td>{{ $refrigerator->pic?->checkedBy?->name ?? '-' }}</td>
+                <td>{{ $refrigerator->pic?->checked_name ?? '-' }}</td>
                 <td>{{ optional(value: $refrigerator->pic)->approved_name }}</td>
             </tr>
             <tr>
