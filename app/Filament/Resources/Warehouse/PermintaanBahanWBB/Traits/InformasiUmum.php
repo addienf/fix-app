@@ -24,6 +24,7 @@ trait InformasiUmum
             ->schema([
                 self::getIsStock()
                     ->hiddenOn('edit'),
+
                 self::select()
                     ->hidden(
                         fn($get, $livewire) =>
@@ -116,21 +117,28 @@ trait InformasiUmum
             ->afterStateHydrated(function (callable $set) {
                 $set(
                     'no_surat',
-                    self::generateNoSurat2(
-                        'permintaan_bahans',
-                        'no_surat',
-                        'PERMINTAAN'
-                    )
+                    static::newAutoNmberField('no_surat', 'No.', [
+                        'prefix' => 'QKS',
+                        'section' => 'WBB',
+                        'type' => 'PB',
+                        'table' => 'permintaan_bahans',
+                    ])
+                    // self::generateNoSurat2(
+                    //     'permintaan_bahans',
+                    //     'no_surat',
+                    //     'PERMINTAAN'
+                    // )
                 );
             })
             ->afterStateUpdated(function ($state, callable $set) {
                 $set(
                     'no_surat',
-                    self::generateNoSurat2(
-                        'permintaan_bahans',
-                        'no_surat',
-                        'PERMINTAAN'
-                    )
+                    static::newAutoNmberField('no_surat', 'No.', [
+                        'prefix' => 'QKS',
+                        'section' => 'WBB',
+                        'type' => 'PB',
+                        'table' => 'permintaan_bahans',
+                    ])
                 );
 
                 if ($state == 0) {

@@ -8,7 +8,7 @@ use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Support\Facades\Log;
 use App\Jobs\SendGenericNotif;
 use App\Notifications\GenericNotification;
-
+use App\Services\DocumentNumber;
 
 class CreatePermintaanSparepart extends CreateRecord
 {
@@ -21,6 +21,12 @@ class CreatePermintaanSparepart extends CreateRecord
         return $this->getResource()::getUrl('index');
     }
 
+    protected function mutateFormDataBeforeCreate(array $data): array
+    {
+        $data['no_surat'] = DocumentNumber::next('permintaan_spareparts', 'no_surat', 'PSAK', 'QKS', 'ENG');
+        return $data;
+    }
+
     protected function afterCreate(): void
     {
         if ($this->record && $this->record->id) {
@@ -28,7 +34,8 @@ class CreatePermintaanSparepart extends CreateRecord
                 $this->record,
                 ['MR', 'engineering'],
                 GenericNotification::class,
-                '/admin/engineering/permintaan-spareparts',
+                // '/admin/engineering/permintaan-spareparts',
+                PermintaanSparepartResource::getUrl('index'),
                 'Data Permintaan Sparepart berhasil dibuat',
                 'Ada data Permintaan Sparepart yang harus di tanda tangani.'
             );

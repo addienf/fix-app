@@ -33,7 +33,7 @@ class IncommingMaterialResource extends Resource
     public static function getNavigationBadge(): ?string
     {
         $count = IncommingMaterial::where(function ($query) {
-            $query->where('status_penerimaan_pic', '!=', 'Diterima')
+            $query->where('status_penerimaan_pic', '!=', 'Selesai')
                 ->orWhereNull('status_penerimaan_pic');
         })->count();
         return $count > 0 ? (string) $count : null;
@@ -44,27 +44,21 @@ class IncommingMaterialResource extends Resource
         return $form
             ->schema([
                 //
-                Hidden::make('status_penerimaan_pic')
-                    ->default('Belum Diterima'),
-
                 self::informasiUmumSection(),
-
                 self::informasiMaterialSection(),
-
                 self::keteranganSection(),
-
                 static::signatureSection(
                     [
                         [
-                            'prefix' => 'submited',
-                            'role' => 'Diserahkan Oleh',
+                            'prefix' => 'received',
+                            'role' => 'Diterima Oleh',
                             'hideLogic' => fn($operation) => $operation === 'edit',
                         ],
                         [
-                            'prefix' => 'received',
-                            'role' => 'Diterima Oleh',
+                            'prefix' => 'submited',
+                            'role' => 'Diserahkan Oleh',
                             'hideLogic' => fn($operation, $record) =>
-                            $operation === 'create' || filled($record?->received_signature)
+                            $operation === 'create' || filled($record?->submited_signature)
                         ],
                     ],
                     title: 'PIC',
@@ -79,24 +73,19 @@ class IncommingMaterialResource extends Resource
         return $table
             ->columns([
                 //
-
-                TextColumn::make('no_surat')
-                    ->label('No Surat'),
-
+                TextColumn::make('no_surat')->label('No Surat'),
                 TextColumn::make('tanggal')
                     ->label('Tanggal Penerimaan')
                     ->date('d F Y')
                     ->placeholder('-'),
-
                 TextColumn::make('status_penerimaan_pic')
                     ->label('Status Penerimaan')
                     ->badge()
                     ->color(
                         fn($state) =>
-                        $state === 'Diterima' ? 'success' : 'danger'
+                        $state === 'Selesai' ? 'success' : 'danger'
                     )
                     ->alignCenter(),
-
             ])
             ->filters([
                 //
@@ -105,7 +94,7 @@ class IncommingMaterialResource extends Resource
                 ActionGroup::make([
                     Tables\Actions\EditAction::make()
                         ->icon('heroicon-o-pencil-square')
-                        ->tooltip('Edit Data Spesifikasi')
+                        ->tooltip('Edit Data Incoming Material')
                         ->color('info'),
                     Tables\Actions\DeleteAction::make()
                         ->icon('heroicon-o-trash')
@@ -115,7 +104,7 @@ class IncommingMaterialResource extends Resource
                         ->openUrlInNewTab()
                         ->icon('heroicon-o-document')
                         ->color('success')
-                        ->visible(fn($record) => $record->status_penerimaan_pic === 'Diterima')
+                        ->visible(fn($record) => $record->status_penerimaan_pic === 'Selesai')
                         ->url(fn($record) => route('pdf.IncomingMaterial', ['record' => $record->id])),
                 ])
             ])
@@ -141,10 +130,5 @@ class IncommingMaterialResource extends Resource
             'edit' => Pages\EditIncommingMaterial::route('/{record}/edit'),
             'pdfIncommingMaterial' => Pages\pdfIncommingMaterial::route('/{record}/pdfIncommingMaterial')
         ];
-    }
-
-    public static function getEloquentQuery(): Builder
-    {
-        return parent::getEloquentQuery();
     }
 }

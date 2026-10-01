@@ -16,11 +16,10 @@ class IncommingMaterialPIC extends Model
 
     protected $fillable = [
         'material_non_ss_id',
-        'submited_signature',
-        'submited_name',
         'received_signature',
         'received_name',
-
+        'submited_signature',
+        'submited_name',
     ];
 
     public function incommingMaterial()
@@ -42,29 +41,28 @@ class IncommingMaterialPIC extends Model
     {
         static::updating(function ($model) {
             if (
-                $model->isDirty('submited_signature') &&
-                $model->getOriginal('submited_signature') &&
-                Storage::disk('public')->exists($model->getOriginal('submited_signature'))
-            ) {
-                Storage::disk('public')->delete($model->getOriginal('submited_signature'));
-            }
-
-            if (
                 $model->isDirty('received_signature') &&
                 $model->getOriginal('received_signature') &&
                 Storage::disk('public')->exists($model->getOriginal('received_signature'))
             ) {
                 Storage::disk('public')->delete($model->getOriginal('received_signature'));
             }
+            if (
+                $model->isDirty('submited_signature') &&
+                $model->getOriginal('submited_signature') &&
+                Storage::disk('public')->exists($model->getOriginal('submited_signature'))
+            ) {
+                Storage::disk('public')->delete($model->getOriginal('submited_signature'));
+            }
         });
 
         static::deleting(function ($model) {
-            if ($model->submited_signature && Storage::disk('public')->exists($model->submited_signature)) {
-                Storage::disk('public')->delete($model->submited_signature);
-            }
-
             if ($model->received_signature && Storage::disk('public')->exists($model->received_signature)) {
                 Storage::disk('public')->delete($model->received_signature);
+            }
+
+            if ($model->submited_signature && Storage::disk('public')->exists($model->submited_signature)) {
+                Storage::disk('public')->delete($model->submited_signature);
             }
         });
     }

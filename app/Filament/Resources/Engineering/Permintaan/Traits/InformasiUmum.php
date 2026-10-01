@@ -43,13 +43,20 @@ trait InformasiUmum
                     ->columnSpanFull()
                     ->hiddenOn(operations: 'edit'),
 
-                self::autoNumberField2('no_surat', 'Nomor Surat', [
+                // self::autoNumberField2('no_surat', 'Nomor Surat', [
+                //     'prefix' => 'QKS',
+                //     'section' => 'ENG',
+                //     'type' => 'PSAK',
+                //     'table' => 'permintaan_spareparts',
+                // ])
+                //     ->hiddenOn('edit'),
+
+                static::newAutoNmberField('no_surat', 'Nomor Surat', [
                     'prefix' => 'QKS',
                     'section' => 'ENG',
                     'type' => 'PSAK',
                     'table' => 'permintaan_spareparts',
-                ])
-                    ->hiddenOn('edit'),
+                ])->hiddenOn('edit'),
 
                 self::dateInput('tanggal', 'Tanggal'),
 

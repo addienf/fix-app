@@ -3,31 +3,18 @@
 namespace App\Filament\Resources\Engineering\Permintaan;
 
 use App\Filament\Resources\Engineering\Permintaan\PermintaanSparepartResource\Pages;
-use App\Filament\Resources\Engineering\Permintaan\PermintaanSparepartResource\RelationManagers;
 use App\Filament\Resources\Engineering\Permintaan\Traits\InformasiUmum;
 use App\Filament\Resources\Engineering\Permintaan\Traits\ListSparepart;
 use App\Models\Engineering\Permintaan\PermintaanSparepart;
-use App\Models\Engineering\SPK\SPKService;
-use App\Services\SignatureUploader;
 use App\Traits\HasSignature;
 use Filament\Actions\Action;
-use Filament\Forms;
-use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Hidden;
-use Filament\Forms\Components\Section;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Actions\ActionGroup;
-use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Icetalker\FilamentTableRepeater\Forms\Components\TableRepeater;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Saade\FilamentAutograph\Forms\Components\SignaturePad;
 
 class PermintaanSparepartResource extends Resource
 {
@@ -41,10 +28,19 @@ class PermintaanSparepartResource extends Resource
     protected static ?string $slug = 'engineering/permintaan-spareparts';
     protected static ?string $navigationIcon = 'heroicon-o-wrench-screwdriver';
 
+    // public static function getNavigationBadge(): ?string
+    // {
+    //     $count = PermintaanSparepart::where('status_penyerahan', '!=', 'Diserahkan')->count();
+
+    //     return $count > 0 ? (string) $count : null;
+    // }
+
     public static function getNavigationBadge(): ?string
     {
-        $count = PermintaanSparepart::where('status_penyerahan', '!=', 'Diserahkan')->count();
-
+        $count = PermintaanSparepart::where(function ($query) {
+            $query->where('status_penyerahan', '!=', 'Diserahkan')
+                ->orWhereNull('status_penyerahan');
+        })->count();
         return $count > 0 ? (string) $count : null;
     }
 
@@ -91,8 +87,7 @@ class PermintaanSparepartResource extends Resource
         return $table
             ->columns([
                 //
-
-                self::textColumn('spkService.no_spk_service', 'No SPK Service'),
+                self::textColumn('no_surat', 'Nomor Surat'),
 
                 self::textColumn('tanggal', 'Tanggal')->date('d F Y'),
 
@@ -150,11 +145,6 @@ class PermintaanSparepartResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
-        return parent::getEloquentQuery()
-            ->with([
-                'spkService',
-                'details',
-                'pic',
-            ]);
+        return parent::getEloquentQuery();
     }
 }
