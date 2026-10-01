@@ -23,8 +23,8 @@ class ListIncommingMaterials extends ListRecords
         return
             [
                 null => Tab::make('All'),
-                'Diterima' => Tab::make()->query(fn($query) => $query->where('status_penerimaan_pic', 'Diterima')),
-                'Belum Diterima' => Tab::make()->query(fn($query) => $query->where('status_penerimaan_pic', 'Belum Diterima')),
+                'Selesai' => Tab::make()->query(fn($query) => $query->where('status_penerimaan_pic', 'Selesai')),
+                'Belum Selesai' => Tab::make()->query(fn($query) => $query->where('status_penerimaan_pic', 'Belum Selesai')),
             ];
     }
 

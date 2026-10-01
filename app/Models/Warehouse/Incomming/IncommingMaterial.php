@@ -27,6 +27,10 @@ class IncommingMaterial extends Model
         'tanggal' => 'date'
     ];
 
+    protected $attributes = [
+        'status_penerimaan_pic' => 'Belum Selesai',
+    ];
+
     public function details()
     {
         return $this->hasMany(IncommingMaterialDetail::class, 'incomming_material_id');
@@ -41,10 +45,10 @@ class IncommingMaterial extends Model
     {
         static::saving(function ($model) {
             if (
-                $model->pic?->received_signature &&
-                $model->status_penerimaan_pic !== 'Diterima'
+                $model->pic?->submited_signature &&
+                $model->status_penerimaan_pic !== 'Selesai'
             ) {
-                $model->status_penerimaan_pic = 'Diterima';
+                $model->status_penerimaan_pic = 'Selesai';
             }
         });
 

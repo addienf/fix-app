@@ -18,7 +18,7 @@
         <tr>
             <td rowspan="3" colspan="2"
                 style="text-align:center; font-size:16px; font-weight:bold; border:0.5px solid #000; vertical-align:middle;">
-                FORMULIR INCOMING MATERIAL
+                Formulir Incoming Material WBB
             </td>
 
             <td style="border:0.5px solid #000; padding-left:8px;">
@@ -34,7 +34,7 @@
                 Tanggal Rilis
             </td>
             <td style="border:0.5px solid #000; text-align:center;">
-                {{ \Carbon\Carbon::parse($incomingMaterial->tanggal)->translatedFormat('d F Y') }}
+                15 Juni 2026
             </td>
         </tr>
 
@@ -160,19 +160,6 @@
     <table class="no-border">
         <tr>
             <td class="text-center" width="50%">
-                Diserahkan Oleh,<br><br>
-
-                <div class="signature-box">
-                    @if (!empty($incomingMaterial->pic->submited_signature))
-                        <img src="{{ public_path('storage/' . $incomingMaterial->pic->submited_signature) }}">
-                    @endif
-                </div>
-
-                <br>
-                <b>{{ $incomingMaterial->pic->submitedName->name ?? '-' }}</b>
-            </td>
-
-            <td class="text-center" width="50%">
                 Diterima Oleh,<br><br>
 
                 <div class="signature-box">
@@ -183,6 +170,19 @@
 
                 <br>
                 <b>{{ $incomingMaterial->pic->receivedName->name ?? '-' }}</b>
+            </td>
+
+            <td class="text-center" width="50%">
+                Diserahkan Oleh,<br><br>
+
+                <div class="signature-box">
+                    @if (!empty($incomingMaterial->pic->submited_signature))
+                        <img src="{{ public_path('storage/' . $incomingMaterial->pic->submited_signature) }}">
+                    @endif
+                </div>
+
+                <br>
+                <b>{{ $incomingMaterial->pic->submitedName->name ?? '-' }}</b>
             </td>
         </tr>
     </table>

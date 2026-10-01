@@ -116,6 +116,7 @@ trait InformasiUmum
     {
         return
             PermintaanSparepart::with('spkService')
+            ->whereDate('tanggal', '>', '2026-09-30')
             ->whereDoesntHave('serahTerima')
             ->where('status_penyerahan', 'Diserahkan')
             ->latest();
