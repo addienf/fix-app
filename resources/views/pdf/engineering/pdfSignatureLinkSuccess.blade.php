@@ -3,153 +3,113 @@
 @section('title', 'Tanda Tangan Berhasil')
 
 @section('content')
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+    <main class="flex min-h-screen items-start justify-center bg-slate-100 p-3 sm:items-center sm:p-6">
+        <div
+            class="w-full max-w-[540px] overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl shadow-slate-900/5">
 
-        body {
-            font-family: system-ui, -apple-system, sans-serif;
-            background: #f8f9fa;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-            color: #333;
-        }
+            {{-- Header: logo + judul + badge. Logo di chip putih supaya tetap terbaca di latar navy --}}
+            <header class="flex items-center gap-3 bg-slate-800 px-5 py-4 text-white sm:px-8">
+                @if (!empty($logoBase64))
+                    <span class="flex shrink-0 items-center rounded-lg bg-white px-2.5 py-1.5">
+                        <img src="{{ $logoBase64 }}" alt="QLab" class="h-7 w-auto">
+                    </span>
+                @endif
 
-        .container {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-            padding: 40px 32px;
-            width: 100%;
-            max-width: 480px;
-            text-align: center;
-        }
+                <div class="min-w-0 flex-1">
+                    <p class="text-sm font-semibold leading-tight">Konfirmasi &amp; Tanda Tangan Berita Acara</p>
+                    <p class="mt-0.5 text-xs text-slate-300">Status tanda tangan</p>
+                </div>
 
-        .logo {
-            width: 100px;
-            height: 100px;
-            /* background: #0066cc; */
-            color: white;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 28px;
-            font-weight: bold;
-            margin: 0 auto 32px;
-        }
+                <span
+                    class="hidden shrink-0 rounded-full bg-white/10 px-2.5 py-0.5 text-[11px] font-semibold text-slate-200 sm:inline-flex">
+                    Confidential
+                </span>
+            </header>
 
-        .success-icon {
-            width: 90px;
-            height: 90px;
-            margin: 0 auto 28px;
-            background: #ecfdf5;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 48px;
-            color: #10b981;
-            box-shadow: 0 2px 10px rgba(16, 185, 129, 0.15);
-        }
+            {{-- Isi: satu fokus visual (ikon sukses) --}}
+            <div class="px-6 pb-8 pt-10 text-center sm:px-10">
+                <div class="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full border border-emerald-200 bg-emerald-50 ring-8 ring-emerald-50/60"
+                    aria-hidden="true">
+                    <svg class="h-10 w-10 text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="9" />
+                        <path d="m8.5 12.5 2.5 2.5 4.5-5" />
+                    </svg>
+                </div>
 
-        h1 {
-            font-size: 28px;
-            color: #111827;
-            margin-bottom: 12px;
-        }
+                <h1 class="mb-3 text-2xl font-bold text-slate-900">Tanda Tangan Berhasil Disimpan</h1>
 
-        .subtitle {
-            font-size: 16px;
-            color: #4b5563;
-            line-height: 1.5;
-            margin-bottom: 32px;
-        }
+                <p class="mx-auto max-w-md text-base leading-relaxed text-slate-600">
+                    Terima kasih. Berita acara telah ditandatangani dan disahkan.
+                </p>
 
-        .thanks {
-            font-size: 18px;
-            font-weight: 500;
-            color: #374151;
-            margin-bottom: 40px;
-        }
+                {{-- Opsional: tampil otomatis hanya jika $pic dikirim dari controller --}}
+                @isset($pic->beritaAcara->no_surat)
+                    <p
+                        class="mt-4 inline-flex max-w-full items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1 text-xs text-slate-600">
+                        <span>No. Surat:</span>
+                        <span class="break-all font-semibold text-slate-800">{{ $pic->beritaAcara->no_surat }}</span>
+                    </p>
+                @endisset
 
-        .action-btn {
-            display: inline-block;
-            padding: 14px 32px;
-            background: #3b82f6;
-            color: white;
-            text-decoration: none;
-            font-weight: 500;
-            border-radius: 8px;
-            transition: background 0.2s;
-        }
+                {{-- Informasi lanjutan --}}
+                <section class="mt-8 rounded-xl border border-emerald-100 bg-emerald-50 p-5 text-left"
+                    aria-labelledby="info-lanjutan">
+                    <h2 id="info-lanjutan" class="mb-3 text-sm font-bold text-emerald-700">Informasi</h2>
 
-        .action-btn:hover {
-            background: #2563eb;
-        }
+                    <ul class="space-y-3">
+                        <li class="flex items-start gap-3 text-sm leading-relaxed text-slate-700">
+                            <svg class="mt-0.5 h-5 w-5 shrink-0 text-emerald-600" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                aria-hidden="true">
+                                <path d="m4.5 12.75 6 6 9-13.5" />
+                            </svg>
+                            <span>Tanda tangan Anda sudah tersimpan dan tercatat bersama waktu serta alamat IP
+                                perangkat.</span>
+                        </li>
+                        <li class="flex items-start gap-3 text-sm leading-relaxed text-slate-700">
+                            <svg class="mt-0.5 h-5 w-5 shrink-0 text-emerald-600" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                aria-hidden="true">
+                                <path d="m4.5 12.75 6 6 9-13.5" />
+                            </svg>
+                            <span>Tidak ada tindakan lanjutan yang perlu Anda lakukan.</span>
+                        </li>
+                        <li class="flex items-start gap-3 text-sm leading-relaxed text-slate-700">
+                            <svg class="mt-0.5 h-5 w-5 shrink-0 text-emerald-600" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                aria-hidden="true">
+                                <path d="m4.5 12.75 6 6 9-13.5" />
+                            </svg>
+                            <span>Jika ada pertanyaan atau koreksi, hubungi teknisi yang mengirimkan link ini.</span>
+                        </li>
+                    </ul>
+                </section>
 
-        .footer-note {
-            margin-top: 40px;
-            font-size: 13px;
-            color: #6b7280;
-        }
-    </style>
+                <button type="button" id="closeBtn"
+                    class="mt-6 w-full rounded-lg bg-blue-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-blue-700 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-blue-200">
+                    Tutup Halaman
+                </button>
 
-    <div class="container">
-        <div class="logo">
-            @if ($logoBase64)
-                <img src="{{ $logoBase64 }}">
-            @endif
+                <p id="closeHint" role="status" class="mt-3 hidden text-sm text-slate-500">
+                    Halaman tidak bisa ditutup otomatis. Silakan tutup tab ini secara manual.
+                </p>
+            </div>
+
+            <footer class="border-t border-slate-200 bg-slate-50 px-6 py-4 text-center text-xs text-slate-500">
+                &copy; {{ date('Y') }} PT. QLab Kinarya Sentosa
+            </footer>
         </div>
-
-        <div class="success-icon">✓</div>
-
-        <h1>Tanda Tangan Berhasil!</h1>
-
-        <div class="subtitle">
-            Dokumen Anda telah ditandatangani secara elektronik dengan aman.
-        </div>
-
-        <div class="thanks">
-            Terima kasih telah menggunakan layanan kami.
-        </div>
-
-        {{-- <a href="index.html" class="action-btn">
-            Kembali ke Beranda
-        </a> --}}
-
-        <div class="footer-note">
-            Halaman akan ditutup dalam <span id="countdown">3</span> detik<br>
-            Jika tidak tertutup otomatis, silakan tutup tab ini.
-        </div>
-    </div>
+    </main>
 
     <script>
-        let timeLeft = 3;
-        const countdownEl = document.getElementById("countdown");
+        document.getElementById('closeBtn').addEventListener('click', function() {
+            window.close();
 
-        const timer = setInterval(() => {
-
-            timeLeft--;
-
-            countdownEl.textContent = timeLeft;
-
-            if (timeLeft <= 0) {
-
-                clearInterval(timer);
-
-                // window.close();
-
-                // window.location.href = "about:blank";
-
-            }
-
-        }, 1000);
+            // Browser memblokir window.close() untuk tab yang tidak dibuka lewat script
+            setTimeout(function() {
+                document.getElementById('closeHint').classList.remove('hidden');
+            }, 300);
+        });
     </script>
 @endsection
