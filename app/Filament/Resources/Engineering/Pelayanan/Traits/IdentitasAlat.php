@@ -2,10 +2,8 @@
 
 namespace App\Filament\Resources\Engineering\Pelayanan\Traits;
 
-use App\Models\General\Product;
 use App\Traits\SimpleFormResource;
 use Filament\Forms\Components\Section;
-use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Icetalker\FilamentTableRepeater\Forms\Components\TableRepeater;
@@ -16,7 +14,7 @@ trait IdentitasAlat
     public static function getIdentitasAlatSection()
     {
         return
-            Section::make('B Identitas Alat')
+            Section::make('B. Identitas Alat')
             ->collapsible()
             ->schema([
                 TableRepeater::make('details')
@@ -42,10 +40,11 @@ trait IdentitasAlat
 
                         TextInput::make('quantity')
                             ->numeric()
+                            ->minValue(1)
+                            ->default(1)
                             ->label('Quantity'),
                     ])
                     ->columnSpanFull()
-                    ->columns(2)
                     ->addable(false)
                     ->reorderable(false)
                     ->deletable(false)

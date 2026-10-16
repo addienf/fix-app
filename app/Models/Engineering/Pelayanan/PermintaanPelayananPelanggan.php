@@ -2,6 +2,7 @@
 
 namespace App\Models\Engineering\Pelayanan;
 
+use App\Enums\StatusPermintaanPelayanan;
 use App\Models\Engineering\Complain\Complain;
 use App\Models\Engineering\Pelayanan\Pivot\PermintaanPelayananPelangganDetail;
 use App\Models\Engineering\Pelayanan\Pivot\PermintaanPelayananPelangganPIC;
@@ -14,7 +15,6 @@ class PermintaanPelayananPelanggan extends Model
     use HasFactory;
 
     protected $fillable = [
-        // 'complain_id',
         'no_form',
         'tanggal',
         'alamat',
@@ -28,18 +28,9 @@ class PermintaanPelayananPelanggan extends Model
     ];
 
     protected $casts = [
-        'jenis_permintaan' => 'array'
+        'jenis_permintaan' => 'array',
+        'status' => StatusPermintaanPelayanan::class,
     ];
-
-    // public function spkService()
-    // {
-    //     return $this->hasOne(SPKService::class, 'pelayanan_id');
-    // }
-
-    // public function complain()
-    // {
-    //     return $this->belongsTo(Complain::class, 'complain_id');
-    // }
 
     public function details()
     {
@@ -49,6 +40,11 @@ class PermintaanPelayananPelanggan extends Model
     public function pic()
     {
         return $this->hasOne(PermintaanPelayananPelangganPIC::class, 'pelayanan_id');
+    }
+
+    public function isDiketahui(): bool
+    {
+        return $this->status === StatusPermintaanPelayanan::Diketahui;
     }
 
     protected static function booted()

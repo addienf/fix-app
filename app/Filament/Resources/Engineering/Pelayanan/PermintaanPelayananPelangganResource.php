@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Engineering\Pelayanan;
 
+use App\Enums\StatusPermintaanPelayanan;
 use App\Filament\Resources\Engineering\Pelayanan\PermintaanPelayananPelangganResource\Pages;
 use App\Filament\Resources\Engineering\Pelayanan\PermintaanPelayananPelangganResource\RelationManagers;
 use App\Filament\Resources\Engineering\Pelayanan\Traits\IdentitasAlat;
@@ -32,7 +33,7 @@ class PermintaanPelayananPelangganResource extends Resource
 
     public static function getNavigationBadge(): ?string
     {
-        $count = PermintaanPelayananPelanggan::where('status', '!=', 'Diketahui')->count();
+        $count = PermintaanPelayananPelanggan::where('status', '!=', StatusPermintaanPelayanan::Diketahui->value)->count();
 
         return $count > 0 ? (string) $count : null;
     }
@@ -42,8 +43,7 @@ class PermintaanPelayananPelangganResource extends Resource
         return $form
             ->schema([
                 //
-                Hidden::make('status')
-                    ->default('Belum Diterima'),
+                Hidden::make('status')->default(StatusPermintaanPelayanan::BelumDiterima->value),
 
                 self::getInformasiSection(),
 
@@ -57,19 +57,19 @@ class PermintaanPelayananPelangganResource extends Resource
                     ->collapsible()
                     ->relationship('pic')
                     ->schema([
-                        self::textInput('dibuat_name', 'Pembuat Form'),
+                        // self::textInput('dibuat_name', 'Pembuat Form'),
 
-                        self::uploadField2(
-                            'dibuat_signature',
-                            'Tanda Tangan Pembuat Form',
-                            'Engineering/PelayananPelanggan/Signatures',
-                            '*Hanya file gambar (PNG, JPG, JPEG) yang diperbolehkan. Maksimal ukuran 10 MB.',
-                            ['image/png', 'image/jpeg'],
-                            10240,
-                            true,
-                            true,
-                            false
-                        ),
+                        // self::uploadField2(
+                        //     'dibuat_signature',
+                        //     'Tanda Tangan Pembuat Form',
+                        //     'Engineering/PelayananPelanggan/Signatures',
+                        //     '*Hanya file gambar (PNG, JPG, JPEG) yang diperbolehkan. Maksimal ukuran 10 MB.',
+                        //     ['image/png', 'image/jpeg'],
+                        //     10240,
+                        //     true,
+                        //     true,
+                        //     false
+                        // ),
 
                         static::signatureSection2(
                             [
@@ -84,12 +84,6 @@ class PermintaanPelayananPelangganResource extends Resource
                                     'hideLogic' => fn($operation, $record) =>
                                     $operation === 'create' || filled($record?->diketahui_signature)
                                 ],
-                                // [
-                                //     'prefix' => 'diketahui',
-                                //     'role' => 'Diketahui Oleh',
-                                //     'hideLogic' => fn($operation, $record) =>
-                                //     $operation === 'create' || blank($record?->diterima_signature) || filled($record?->diketahui_signature)
-                                // ],
                             ],
                             title: 'PIC',
                             uploadPath: 'Engineering/PelayananPelanggan/Signatures'
@@ -104,17 +98,8 @@ class PermintaanPelayananPelangganResource extends Resource
             ->columns([
                 //
                 self::textColumn('no_form', 'Form No'),
-
                 self::textColumn('tanggal', 'Tanggal')->date('d F Y'),
-
-                // self::textColumn('status', 'Status')
-                //     ->badge()
-                //     ->color(fn($state) => [
-                //         'Belum Diketahui' => 'danger',
-                //         'Diterima' => 'warning',
-                //         'Diketahui' => 'success',
-                //     ][$state] ?? 'gray')
-                //     ->alignCenter(),
+                self::textColumn('status', 'Status')->badge(),
             ])
             ->filters([
                 //
@@ -129,10 +114,10 @@ class PermintaanPelayananPelangganResource extends Resource
                         ->icon('heroicon-o-trash')
                         ->tooltip('Hapus Data'),
                     Action::make('pdf_view')
-                        ->label(_('Lihat PDF'))
+                        ->label(__('Lihat PDF'))
                         ->icon('heroicon-o-document')
                         ->color('success')
-                        ->visible(fn($record) => $record->status === 'Diketahui')
+                        // ->visible(fn($record) => $record->status === 'Diketahui')
                         ->url(fn($record) => route('pdf.PelayananPelanggan', ['record' => $record->id])),
                 ])
             ])

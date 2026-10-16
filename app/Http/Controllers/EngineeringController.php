@@ -185,7 +185,7 @@ class EngineeringController extends Controller
         $record = $model::findValidToken($token);
 
         if (!$record) {
-            return response()->view('pdf.engineering.pdfExpiredLink', [], 403);
+            return response()->view('pdf.engineering.pdfExpiredLink', compact('logoBase64'), 403);
         }
 
         $config = $record->signatureConfig();
@@ -200,14 +200,13 @@ class EngineeringController extends Controller
         $record = $model::findValidToken($token);
 
         if (!$record) {
-            return response()->view('pdf.engineering.pdfExpiredLink', [], 403);
+            return response()->view('pdf.engineering.pdfExpiredLink', compact('logoBase64'), 403);
         }
 
         $config = $record->signatureConfig();
 
         $request->validate([
             $config['name_field'] => 'required|string|max:255',
-            $config['jabatan'] => 'required|string|max:255',
             $config['signature_field'] => 'required',
         ]);
 
