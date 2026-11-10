@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Production\Jadwal\Traits;
 
 use App\Models\Production\Jadwal\JadwalProduksi;
 use App\Models\Sales\SPKMarketings\SPKMarketing;
+use App\Traits\HasAutoNumber;
 use App\Traits\SimpleFormResource;
 use Filament\Actions\Action;
 use Filament\Forms\Components\Grid;
@@ -14,7 +15,7 @@ use Illuminate\Support\Str;
 
 trait InformasiUmum
 {
-    use SimpleFormResource;
+    use SimpleFormResource, HasAutoNumber;
     protected static function informasiUmumSection($form): Section
     {
         $isEdit = $form->getOperation() === 'edit';
@@ -32,7 +33,14 @@ trait InformasiUmum
 
                         self::textInput('pic_name', 'Penanggung Jawab'),
 
-                        self::textInput('no_surat', 'No Surat'),
+                        // self::textInput('no_surat', 'No Surat'),
+                        static::newAutoNmberField('no_surat', 'Nomor Surat', [
+                            'prefix' => 'QKS',
+                            'section' => 'PRO',
+                            'type' => 'PP',
+                            'table' => 'jadwal_produksis',
+                        ])
+                            ->hiddenOn('edit'),
 
                         self::select('spk_marketing_id', 'No SPK')
                             ->hiddenOn('edit')
@@ -92,11 +100,6 @@ trait InformasiUmum
                     ->pluck('no_spk', 'id');
             })
             ->getSearchResultsUsing(function (string $search) {
-
-                // if ($search === '') {
-                //     return Cache::get(SPKMarketing::$CACHE_PREFIXES['search_spk'], []);
-                // }
-
                 return SPKMarketing::query()
                     ->select(['id', 'no_spk'])
                     ->where('status_penerimaan', 'Diterima')

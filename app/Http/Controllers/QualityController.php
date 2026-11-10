@@ -11,19 +11,19 @@ use ZipArchive;
 class QualityController extends Controller
 {
     //
-    private function getBase64Logo()
-    {
-        $logoPath = public_path('asset/logo.png');
+    // private function getBase64Logo()
+    // {
+    //     $logoPath = public_path('asset/logo.png');
 
-        if (!file_exists($logoPath)) {
-            return null;
-        }
+    //     if (!file_exists($logoPath)) {
+    //         return null;
+    //     }
 
-        $type = pathinfo($logoPath, PATHINFO_EXTENSION);
+    //     $type = pathinfo($logoPath, PATHINFO_EXTENSION);
 
-        return 'data:image/' . $type . ';base64,' .
-            base64_encode(file_get_contents($logoPath));
-    }
+    //     return 'data:image/' . $type . ';base64,' .
+    //         base64_encode(file_get_contents($logoPath));
+    // }
 
     public function pdfStandarisasiDrawing($id)
     {
@@ -36,14 +36,14 @@ class QualityController extends Controller
                 ?->spk
         )->no_spk ?? '-';
 
-        return view('pdf.quality.pdfStandarisasiDrawing', compact('standarisasi', 'no_spk'));
+        return $this->viewPdf('pdf.quality.pdfStandarisasiDrawing', compact('standarisasi', 'no_spk'));
     }
 
     public function pdfStandarisasiDrawingLampiran($id)
     {
         $standarisasi_lampiran = StandarisasiDrawing::with(['detail'])->findOrFail($id);
 
-        return view('pdf.quality.pdfLampiranStandarisasiDrawing', compact('standarisasi_lampiran'));
+        return $this->viewPdf('pdf.quality.pdfLampiranStandarisasiDrawing', compact('standarisasi_lampiran'));
     }
 
     public function downloadZipStandarisasiDrawing($id)
@@ -76,21 +76,35 @@ class QualityController extends Controller
     public function pdfKelengkapanMaterialSS($id)
     {
         $kelengkapan = KelengkapanMaterialSS::with(['spkQC', 'pic', 'detail', 'pic.inspectedName', 'pic.acceptedName', 'pic.approvedName'])->findOrFail($id);
+        $fileName = 'kelengkapan-material.pdf';
 
-        $logoBase64 = $this->getBase64Logo();
+        // $logoBase64 = $this->getBase64Logo();
 
-        $pdf = Pdf::loadView('pdf.quality.pdfKelengkapanMaterialSS', compact('kelengkapan', 'logoBase64'))
-            ->setPaper('a4', 'portrait');
+        // $pdf = Pdf::loadView('pdf.quality.pdfKelengkapanMaterialSS', compact('kelengkapan', 'logoBase64'))
+        //     ->setPaper('a4', 'portrait');
 
-        return $pdf->stream('kelengkapan-material.pdf');
+        // return $pdf->stream('kelengkapan-material.pdf');
+
+        return $this->streamPdf(
+            view: 'pdf.quality.pdfKelengkapanMaterialSS',
+            data: ['kelengkapan' => $kelengkapan],
+            filename: $fileName
+        );
     }
 
     public function pdfPengecekanMaterialSS($id)
     {
         $pengecekanSS = PengecekanMaterialSS::with(['spkQC', 'pic', 'detail', 'penyerahan', 'pic.inspectedName', 'pic.acceptedName', 'pic.approvedName'])->findOrFail($id);
+        // $fileName = 'pengecekan-material-ss.pdf';
 
         $no_spk = $pengecekanSS?->spkQC?->spkMarketing?->no_spk ?? '-';
 
-        return view('pdf.quality.pdfPengecekanMaterialSS', compact('pengecekanSS', 'no_spk'));
+        return $this->viewPdf('pdf.quality.pdfPengecekanMaterialSS', compact('pengecekanSS', 'no_spk'));
+
+        // return $this->streamPdf(
+        //     view: 'pdf.quality.pdfPengecekanMaterialSS',
+        //     data: ['pengecekanSS' => $pengecekanSS],
+        //     filename: $fileName
+        // );
     }
 }

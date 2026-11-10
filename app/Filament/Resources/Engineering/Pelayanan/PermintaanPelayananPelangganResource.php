@@ -10,14 +10,17 @@ use App\Filament\Resources\Engineering\Pelayanan\Traits\Informasi;
 use App\Models\Engineering\Pelayanan\PermintaanPelayananPelanggan;
 use App\Traits\HasSignature;
 use Filament\Actions\Action;
-use Filament\Forms;
-use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Section;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Actions\Action as ButtonAction;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Table;
+use Illuminate\Support\Str;
 
 class PermintaanPelayananPelangganResource extends Resource
 {
@@ -43,52 +46,39 @@ class PermintaanPelayananPelangganResource extends Resource
         return $form
             ->schema([
                 //
+
                 Hidden::make('status')->default(StatusPermintaanPelayanan::BelumDiterima->value),
 
                 self::getInformasiSection(),
 
-                self::getJenisPermintaan(),
+                // self::getJenisPermintaan(),
 
-                self::getIdentitasAlatSection(),
+                // self::getIdentitasAlatSection(),
 
-                self::getPelaksanaan(),
+                // self::getPelaksanaan(),
 
-                Section::make('Customer Info')
-                    ->collapsible()
-                    ->relationship('pic')
-                    ->schema([
-                        // self::textInput('dibuat_name', 'Pembuat Form'),
-
-                        // self::uploadField2(
-                        //     'dibuat_signature',
-                        //     'Tanda Tangan Pembuat Form',
-                        //     'Engineering/PelayananPelanggan/Signatures',
-                        //     '*Hanya file gambar (PNG, JPG, JPEG) yang diperbolehkan. Maksimal ukuran 10 MB.',
-                        //     ['image/png', 'image/jpeg'],
-                        //     10240,
-                        //     true,
-                        //     true,
-                        //     false
-                        // ),
-
-                        static::signatureSection2(
-                            [
-                                [
-                                    'prefix' => 'diterima',
-                                    'role' => 'Diterima Oleh',
-                                    'hideLogic' => fn($operation) => $operation === 'edit',
-                                ],
-                                [
-                                    'prefix' => 'diketahui',
-                                    'role' => 'Diketahui Oleh,',
-                                    'hideLogic' => fn($operation, $record) =>
-                                    $operation === 'create' || filled($record?->diketahui_signature)
-                                ],
-                            ],
-                            title: 'PIC',
-                            uploadPath: 'Engineering/PelayananPelanggan/Signatures'
-                        )
-                    ]),
+                // Section::make('Customer Info')
+                //     ->collapsible()
+                //     ->relationship('pic')
+                //     ->schema([
+                //         static::signatureSection2(
+                //             [
+                //                 [
+                //                     'prefix' => 'diterima',
+                //                     'role' => 'Diterima Oleh',
+                //                     'hideLogic' => fn($operation) => $operation === 'edit',
+                //                 ],
+                //                 [
+                //                     'prefix' => 'diketahui',
+                //                     'role' => 'Diketahui Oleh,',
+                //                     'hideLogic' => fn($operation, $record) =>
+                //                     $operation === 'create' || filled($record?->diketahui_signature)
+                //                 ],
+                //             ],
+                //             title: 'PIC',
+                //             uploadPath: 'Engineering/PelayananPelanggan/Signatures'
+                //         )
+                //     ]),
             ]);
     }
 
@@ -132,6 +122,7 @@ class PermintaanPelayananPelangganResource extends Resource
     {
         return [
             //
+            // RelationManagers\InvitationsRelationManager::class,
         ];
     }
 

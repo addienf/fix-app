@@ -20,7 +20,7 @@ trait Informasi
                     ->hiddenOn('edit')
                     ->placeholder('Pilih Nomor SPK'),
 
-                self::autoNumberField2('no_order_release', 'Release Order No', [
+                static::newAutoNmberField('no_order_release', 'Release Order No', [
                     'prefix' => 'QKS',
                     'section' => 'QA',
                     'type' => 'PR',
@@ -53,31 +53,62 @@ trait Informasi
             ->preload()
             ->reactive()
             ->required()
-            ->options(
-                PengecekanPerforma::with([
-                    'spkQC:id,spk_marketing_id',
-                    'spkQC.spkMarketing:id,no_spk'
+            ->options(function () {
+                return PengecekanPerforma::with([
+                    'spkQC.spkMarketing.jadwalProduksi.identifikasiProduks'
                 ])
                     ->latest()
                     ->limit(10)
                     ->get()
-                    ->mapWithKeys(fn($item) => [
-                        $item->id => $item->spkQC?->spkMarketing?->no_spk
-                    ])
-            )
+                    ->mapWithKeys(function ($item) {
+                        $jadwal = $item->spkQC?->spkMarketing?->jadwalProduksi;
+                        $noSpk = $item->spkQC?->spkMarketing?->no_spk ?? '-';
+                        $noSeri = $jadwal?->identifikasiProduks->pluck('no_seri')->filter()->implode(', ') ?: '-';
+
+                        return [
+                            $item->id => "{$noSpk} - {$noSeri}"
+                        ];
+                    });
+            })
             ->getSearchResultsUsing(function (string $search) {
                 return PengecekanPerforma::with([
-                    'spkQC:id,spk_marketing_id',
-                    'spkQC.spkMarketing:id,no_spk'
+                    'spkQC.spkMarketing.jadwalProduksi.identifikasiProduks'
                 ])
-                    ->whereHas('spkQC.spkMarketing', function ($q) use ($search) {
-                        $q->where('no_spk', 'like', "%{$search}%");
+                    ->where(function ($query) use ($search) {
+                        $query->whereHas('spkQC.spkMarketing', function ($q) use ($search) {
+                            $q->where('no_spk', 'like', "%{$search}%")
+                                ->orWhereHas('jadwalProduksi.identifikasiProduks', function ($ipq) use ($search) {
+                                    $ipq->where('no_seri', 'like', "%{$search}%");
+                                });
+                        });
                     })
+                    ->latest()
                     ->limit(10)
                     ->get()
-                    ->mapWithKeys(fn($item) => [
-                        $item->id => $item->spkQC?->spkMarketing?->no_spk
-                    ]);
+                    ->mapWithKeys(function ($item) {
+                        $jadwal = $item->spkQC?->spkMarketing?->jadwalProduksi;
+                        $noSpk = $item->spkQC?->spkMarketing?->no_spk ?? '-';
+                        $noSeri = $jadwal?->identifikasiProduks->pluck('no_seri')->filter()->implode(', ') ?: '-';
+
+                        return [
+                            $item->id => "{$noSpk} - {$noSeri}"
+                        ];
+                    });
+            })
+            ->getOptionLabelUsing(function ($value) {
+                $item = PengecekanPerforma::with([
+                    'spkQC.spkMarketing.jadwalProduksi.identifikasiProduks'
+                ])->find($value);
+
+                if (! $item) {
+                    return null;
+                }
+
+                $jadwal = $item->spkQC?->spkMarketing?->jadwalProduksi;
+                $noSpk = $item->spkQC?->spkMarketing?->no_spk ?? '-';
+                $noSeri = $jadwal?->identifikasiProduks->pluck('no_seri')->filter()->implode(', ') ?: '-';
+
+                return "{$noSpk} - {$noSeri}";
             })
             ->afterStateUpdated(function ($state, callable $set) {
                 if (!$state) return;

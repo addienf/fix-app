@@ -25,13 +25,12 @@ trait InformasiUmum
                     'lg' => 2,
                 ])
                     ->schema([
-                        self::autoNumberField2('no_spk', 'Nomor SPK', [
+                        static::newAutoNmberField('no_spk', 'Nomor SPK QC', [
                             'prefix' => 'QKS',
                             'section' => 'PRO',
                             'type' => 'SQ',
                             'table' => 'spk_qualities',
-                        ])
-                            ->hiddenOn('edit'),
+                        ])->hiddenOn('edit'),
 
                         self::selectMaterialID()
                             ->placeholder('Pilih Nomor SPK')

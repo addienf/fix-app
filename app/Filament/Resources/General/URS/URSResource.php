@@ -21,13 +21,16 @@ use Filament\Forms\Components\Select;
 class URSResource extends Resource
 {
     use SimpleFormResource, HasAutoNumber, HasSelectCache;
+
     protected static ?string $model = URS::class;
-    protected static ?int $navigationSort = 21;
-    protected static ?string $navigationGroup = 'General';
+    protected static ?int $navigationSort = 1;
+    protected static ?string $navigationGroup = 'Sales';
     protected static ?string $navigationLabel = 'Penomoran URS';
     protected static ?string $pluralLabel = 'Penomoran URS';
     protected static ?string $modelLabel = 'Penomoran URS';
-    protected static ?string $slug = 'general/penomoran-urs';
+    protected static ?string $slug = 'sales/penomoran-urs';
+    protected static ?string $navigationIcon = 'heroicon-o-arrow-up-circle';
+
 
     public static function form(Form $form): Form
     {
@@ -45,7 +48,14 @@ class URSResource extends Resource
                         //     'table' => 'urs',
                         // ]),
 
-                        self::autoNumberField2('no_urs', 'Nomor URS', [
+                        // self::autoNumberField2('no_urs', 'Nomor URS', [
+                        //     'prefix' => 'QKS',
+                        //     'section' => 'MKT',
+                        //     'type' => 'URS',
+                        //     'table' => 'urs',
+                        // ]),
+
+                        static::newAutoNmberField('no_urs', 'Nomor URS', [
                             'prefix' => 'QKS',
                             'section' => 'MKT',
                             'type' => 'URS',
