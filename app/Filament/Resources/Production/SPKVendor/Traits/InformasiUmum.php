@@ -19,13 +19,21 @@ trait InformasiUmum
             ->collapsible()
             ->schema([
 
-                self::autoNumberField2('no_spk_vendor', 'Nomor SPK Vendor', [
+                static::newAutoNmberField('no_spk_vendor', 'Nomor SPK Vendor', [
                     'prefix' => 'QKS',
                     'section' => 'PRO',
                     'type' => 'SPK',
                     'table' => 'spk_vendors',
                 ])
                     ->columnSpanFull(),
+
+                // self::autoNumberField2('no_spk_vendor', 'Nomor SPK Vendor', [
+                //     'prefix' => 'QKS',
+                //     'section' => 'PRO',
+                //     'type' => 'SPK',
+                //     'table' => 'spk_vendors',
+                // ])
+                //     ->columnSpanFull(),
 
                 self::select(),
 
@@ -72,53 +80,6 @@ trait InformasiUmum
                         ];
                     });
             })
-            // ->getSearchResultsUsing(function (string $search) {
-
-            //     if ($search === '') {
-            //         return [];
-            //     }
-
-            //     return JadwalProduksi::with([
-            //         'spk',
-            //         'identifikasiProduks'
-            //     ])
-            //         ->whereDoesntHave('spkVendor')
-            //         ->where(function ($query) use ($search) {
-            //             $query->whereHas(
-            //                 'jadwalProduksi',
-            //                 fn($q) =>
-            //                 $q->where('no_surat', 'LIKE', "%{$search}%")
-            //             )
-            //                 ->orWhereHas(
-            //                     'spk',
-            //                     fn($q) =>
-            //                     $q->where('no_spk', 'LIKE', "%{$search}%")
-            //                 )
-            //                 ->orWhereHas(
-            //                     'identifikasiProduks',
-            //                     fn($q) =>
-            //                     $q->where('no_seri', 'LIKE', "%{$search}%")
-            //                 );
-            //         })
-            //         ->latest()
-            //         ->limit(20)
-            //         ->get()
-            //         ->mapWithKeys(function ($permintaan) {
-
-            //             $jadwal = $permintaan->jadwalProduksi;
-            //             $spkNo = $jadwal->spk->no_spk ?? '-';
-            //             $noSurat = $jadwal->no_surat ?? '-';
-            //             $noSeri = $jadwal->identifikasiProduks
-            //                 ->pluck('no_seri')
-            //                 ->filter()
-            //                 ->implode(', ') ?: '-';
-
-            //             return [
-            //                 $permintaan->id => "{$noSurat} - {$spkNo} - {$noSeri}",
-            //             ];
-            //         })
-            //         ->toArray();
-            // })
             ->getOptionLabelUsing(function ($value) {
 
                 $jadwal = JadwalProduksi::with([

@@ -79,44 +79,96 @@ trait InformasiUmum
             ->required()
             ->searchable()
             ->reactive()
+            // ->options(function () {
+            //     return SPKQuality::with(['spkMarketing' => function ($query) {
+            //         $query->with('jadwalProduksi');
+            //     }])
+            //         ->whereDoesntHave('penyerahanProdukJadi')
+            //         ->where('status_penerimaan', 'Diterima')
+            //         ->latest()
+            //         ->limit(10)
+            //         ->get()
+            //         ->flatMap(function ($item) {
+
+            //             $jadwalList = JadwalProduksi::with('identifikasiProduks')
+            //                 ->where('spk_marketing_id', $item->spk_marketing_id)->get();
+
+            //             return $jadwalList->map(fn($jadwal) => [
+            //                 'id' => $item->id,
+            //                 'label' => "{$item->spkMarketing->no_spk} - {$jadwal->no_surat} - {$jadwal->identifikasiProduks->no_seri}",
+            //             ]);
+            //         })
+            //         ->unique('label')
+            //         ->mapWithKeys(fn($row) => [
+            //             $row['id'] => $row['label']
+            //         ]);
+            // })
             ->options(function () {
-                return SPKQuality::with(['spkMarketing' => function ($query) {
-                    $query->with('jadwalProduksi');
-                }])
+                return SPKQuality::with([
+                    'spkMarketing.jadwalProduksi.identifikasiProduks'
+                ])
                     ->whereDoesntHave('penyerahanProdukJadi')
                     ->where('status_penerimaan', 'Diterima')
                     ->latest()
                     ->limit(10)
                     ->get()
-                    ->flatMap(function ($item) {
-
-                        $jadwalList = JadwalProduksi::where('spk_marketing_id', $item->spk_marketing_id)->get();
-
-                        return $jadwalList->map(fn($jadwal) => [
-                            'id' => $item->id,
-                            'label' => "{$item->spkMarketing->no_spk} - {$jadwal->no_surat}",
-                        ]);
-                    })
-                    ->unique('label')
-                    ->mapWithKeys(fn($row) => [
-                        $row['id'] => $row['label']
-                    ]);
-            })
-            ->getSearchResultsUsing(function ($search) {
-                return SPKQuality::with('spkMarketing.jadwalProduksi')
-                    ->whereDoesntHave('penyerahanProdukJadi')
-                    ->where('status_penerimaan', 'Diterima')
-                    ->whereHas(
-                        'spkMarketing.jadwalProduksi',
-                        fn($q) => $q->where('no_surat', 'like', "%{$search}%")
-                    )
-                    ->limit(10)
-                    ->get()
                     ->mapWithKeys(function ($item) {
+                        $jadwal = $item->spkMarketing?->jadwalProduksi;
+
+                        $noSeri = $jadwal?->identifikasiProduks->pluck('no_seri')->filter()->implode(', ') ?: '-';
+                        $noSpk = $item->spkMarketing?->no_spk ?? '-';
+                        $noSurat = $jadwal?->no_surat ?? '-';
+
                         return [
-                            $item->id => $item->spkMarketing?->jadwalProduksi?->no_surat
+                            $item->id => "{$noSpk} - {$noSurat} - {$noSeri}"
                         ];
                     });
+            })
+            ->getSearchResultsUsing(function (string $search) {
+                return SPKQuality::with([
+                    'spkMarketing.jadwalProduksi.identifikasiProduks'
+                ])
+                    ->whereDoesntHave('penyerahanProdukJadi')
+                    ->where('status_penerimaan', 'Diterima')
+                    ->where(function ($query) use ($search) {
+                        $query->whereHas('spkMarketing', function ($q) use ($search) {
+                            $q->where('no_spk', 'like', "%{$search}%")
+                                ->orWhereHas('jadwalProduksi', function ($jq) use ($search) {
+                                    $jq->where('no_surat', 'like', "%{$search}%")
+                                        ->orWhereHas('identifikasiProduks', function ($ipq) use ($search) {
+                                            $ipq->where('no_seri', 'like', "%{$search}%");
+                                        });
+                                });
+                        });
+                    })
+                    ->latest()
+                    ->limit(20)
+                    ->get()
+                    ->mapWithKeys(function ($item) {
+                        $jadwal = $item->spkMarketing?->jadwalProduksi;
+
+                        $noSeri = $jadwal?->identifikasiProduks->pluck('no_seri')->filter()->implode(', ') ?: '-';
+                        $noSpk = $item->spkMarketing?->no_spk ?? '-';
+                        $noSurat = $jadwal?->no_surat ?? '-';
+
+                        return [
+                            $item->id => "{$noSpk} - {$noSurat} - {$noSeri}"
+                        ];
+                    });
+            })
+            ->getOptionLabelUsing(function ($value) {
+                $item = SPKQuality::with(['spkMarketing.jadwalProduksi.identifikasiProduks'])->find($value);
+
+                if (! $item) {
+                    return null;
+                }
+
+                $jadwal = $item->spkMarketing?->jadwalProduksi;
+                $noSeri = $jadwal?->identifikasiProduks->pluck('no_seri')->filter()->implode(', ') ?: '-';
+                $noSpk = $item->spkMarketing?->no_spk ?? '-';
+                $noSurat = $jadwal?->no_surat ?? '-';
+
+                return "{$noSpk} - {$noSurat} - {$noSeri}";
             })
             ->afterStateUpdated(function ($state, callable $set) {
 

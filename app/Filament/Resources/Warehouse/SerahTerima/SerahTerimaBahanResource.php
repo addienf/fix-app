@@ -69,6 +69,7 @@ class SerahTerimaBahanResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->defaultSort('created_at', 'desc')
             ->columns([
                 //
                 self::textColumn('no_surat', 'Nomor Surat Serah Terima Bahan'),

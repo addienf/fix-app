@@ -56,7 +56,19 @@ trait ChamberIdentification
                     ->where('status_penerimaan', 'Diterima')
                     ->latest()
                     ->limit(10)
-                    ->pluck('no_spk', 'id');
+                    ->get()
+                    ->mapWithKeys(function ($spkQuality) {
+
+                        $spkNo = $spkQuality->no_spk ?? '-';
+                        $noSeri = $spkQuality->spkMarketing->jadwalProduksi->identifikasiProduks
+                            ->pluck('no_seri')
+                            ->filter()
+                            ->implode(', ') ?: '-';
+
+                        return [
+                            $spkQuality->id => "{$spkNo} - {$noSeri}",
+                        ];
+                    });
             })
             ->getSearchResultsUsing(function ($search) {
                 return
@@ -65,7 +77,19 @@ trait ChamberIdentification
                     ->where('no_spk', 'like', "%{$search}%")
                     ->latest()
                     ->limit(10)
-                    ->pluck('no_spk', 'id');
+                    ->get()
+                    ->mapWithKeys(function ($spkQuality) {
+
+                        $spkNo = $spkQuality->no_spk ?? '-';
+                        $noSeri = $spkQuality->spkMarketing->jadwalProduksi->identifikasiProduks
+                            ->pluck('no_seri')
+                            ->filter()
+                            ->implode(', ') ?: '-';
+
+                        return [
+                            $spkQuality->id => "{$spkNo} - {$noSeri}",
+                        ];
+                    });
             });
     }
 

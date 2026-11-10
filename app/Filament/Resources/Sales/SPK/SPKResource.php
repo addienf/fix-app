@@ -23,7 +23,7 @@ class SPKResource extends Resource
 {
     use SimpleFormResource, HasSignature, HasAutoNumber, InformasiUmum, DetailProduk;
     protected static ?string $model = SPKMarketing::class;
-    protected static ?int $navigationSort = 2;
+    protected static ?int $navigationSort = 3;
     protected static ?string $slug = 'sales/spk-marketing';
     protected static ?string $navigationIcon = 'heroicon-o-arrow-up-circle';
     protected static ?string $navigationGroup = 'Sales';

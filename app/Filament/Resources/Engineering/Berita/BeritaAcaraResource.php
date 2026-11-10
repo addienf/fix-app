@@ -10,12 +10,9 @@ use App\Models\Engineering\Berita\BeritaAcara;
 use App\Models\Engineering\SPK\SPKService;
 use App\Traits\HasSignature;
 use Filament\Actions\Action;
-use Filament\Forms\Components\Actions;
 use Filament\Forms\Components\Actions\Action as ButtonAction;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Grid;
-use Filament\Forms\Components\Hidden;
-use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
@@ -54,7 +51,7 @@ class BeritaAcaraResource extends Resource
                 Section::make('PIC')
                     ->collapsible()
                     ->hidden(function ($get) {
-                        return filled($get('pic.pelanggan_ttd'));
+                        return filled($get('pic.jasa_ttd'));
                     })
                     ->relationship('pic')
                     ->schema([
@@ -63,48 +60,6 @@ class BeritaAcaraResource extends Resource
                             ->required(false),
 
                         self::signatureInput('jasa_ttd', ''),
-                    ]),
-
-                Section::make('Pelanggan')
-                    ->collapsible()
-                    ->relationship('pic')
-                    ->hidden(function ($get, $operation) {
-                        return $operation === 'create'
-                            || filled($get('pic.pelanggan_ttd'));
-                    })
-                    ->mutateRelationshipDataBeforeSaveUsing(function (array $data) {
-
-                        if (!empty($data['pelanggan_ttd_draw'])) {
-                            $data['pelanggan_ttd'] = $data['pelanggan_ttd_draw'];
-                        }
-
-                        if (!empty($data['pelanggan_ttd_upload'])) {
-                            $data['pelanggan_ttd'] = $data['pelanggan_ttd_upload'];
-                        }
-
-                        unset($data['pelanggan_ttd_draw']);
-                        unset($data['pelanggan_ttd_upload']);
-
-                        return $data;
-                    })
-                    ->schema([
-
-                        Grid::make(2)
-                            ->schema([
-                                self::textInput('pelanggan_name', 'Nama Pelanggan')
-                                    ->required(),
-
-                                self::getIsStock(),
-                            ]),
-
-                        self::signatureInput('pelanggan_ttd_draw', '', 'Engineering/Berita/Penyedia')
-                            ->visible(fn($get) => $get('ttd_method') === 'draw'),
-
-                        FileUpload::make('pelanggan_ttd_upload')
-                            ->label('Upload Scan Tanda Tangan')
-                            ->image()
-                            ->directory('Engineering/Berita/Pelanggan')
-                            ->visible(fn($get) => $get('ttd_method') === 'upload'),
                     ]),
 
                 Section::make('Link Tanda Tangan')
@@ -252,9 +207,7 @@ class BeritaAcaraResource extends Resource
             ->default('draw')
             ->live()
             ->dehydrated(false)
-            // ->hidden(fn($record) => filled($record?->pelanggan_ttd))
             ->required()
-            // ->columnSpanFull()
             ->onColor('primary')
             ->offColor('gray')
             ->gridDirection('row');

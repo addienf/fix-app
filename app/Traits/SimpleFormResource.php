@@ -130,45 +130,4 @@ trait SimpleFormResource
                 }
             });
     }
-
-    protected function renderWalkinPdf(
-        string $modelClass,
-        string $view,
-        int $id,
-        string $dataKey = 'walkin'
-    ) {
-        $data = $modelClass::with([
-            'spkService',
-            'detail',
-            'pic',
-            'pic.approvedBy',
-            'pic.checkedBy',
-        ])->findOrFail($id);
-
-        $tagNo = str_replace(['/', ' '], '-', $data->tag_no);
-        $date  = now()->format('Ymd');
-
-        $filename = "MT-{$tagNo}-{$date}.pdf";
-
-        return Pdf::loadView($view, [
-            $dataKey     => $data,
-            'logoBase64' => $this->getBase64Logo(), // 🔥 inject sekali disini
-        ])
-            ->setPaper('A4', 'portrait')
-            ->stream($filename);
-    }
-
-    private function getBase64Logo()
-    {
-        $logoPath = public_path('asset/logo.png');
-
-        if (!file_exists($logoPath)) {
-            return null;
-        }
-
-        $type = pathinfo($logoPath, PATHINFO_EXTENSION);
-
-        return 'data:image/' . $type . ';base64,' .
-            base64_encode(file_get_contents($logoPath));
-    }
 }

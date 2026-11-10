@@ -18,18 +18,24 @@ class PurchaseController extends Controller
         $tanggal = now('Asia/Jakarta')->format('d-m-Y');
         $fileName = 'FO-QKS-PUR-01-01' . ' - ' . $tanggal . '.pdf';
 
-        $logoPath = public_path('asset/logo.png');
-        $type = pathinfo($logoPath, PATHINFO_EXTENSION);
-        if (!file_exists($logoPath)) return null;
-        $data = file_get_contents($logoPath);
-        $logoBase64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
+        // $logoPath = public_path('asset/logo.png');
+        // $type = pathinfo($logoPath, PATHINFO_EXTENSION);
+        // if (!file_exists($logoPath)) return null;
+        // $data = file_get_contents($logoPath);
+        // $logoBase64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
 
-        $pdf = Pdf::loadView(
-            'pdf.purchasing.pdfPermintaanPembelian',
-            compact('permintaan_pembelian', 'logoBase64')
-        )->setPaper('a4', 'portrait');
+        // $pdf = Pdf::loadView(
+        //     'pdf.purchasing.pdfPermintaanPembelian',
+        //     compact('permintaan_pembelian', 'logoBase64')
+        // )->setPaper('a4', 'portrait');
 
-        return $pdf->stream($fileName);
+        // return $pdf->stream($fileName);
+
+        return $this->streamPdf(
+            view: 'pdf.purchasing.pdfPermintaanPembelian',
+            data: ['permintaan_pembelian' => $permintaan_pembelian],
+            filename: $fileName
+        );
     }
 
     public function pdfPenerimaanBarang($id)
@@ -39,16 +45,22 @@ class PurchaseController extends Controller
         $tanggal = now('Asia/Jakarta')->format('d-m-Y');
         $fileName = 'FO-QKS-PUR-01-03' . ' - ' . $tanggal . '.pdf';
 
-        $logoPath = public_path('asset/logo.png');
-        $type = pathinfo($logoPath, PATHINFO_EXTENSION);
-        $data = file_get_contents($logoPath);
-        $logoBase64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
+        // $logoPath = public_path('asset/logo.png');
+        // $type = pathinfo($logoPath, PATHINFO_EXTENSION);
+        // $data = file_get_contents($logoPath);
+        // $logoBase64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
 
-        $pdf = Pdf::loadView(
-            'pdf.purchasing.pdfPenerimaanBarang',
-            compact('penerimaan_barang', 'logoBase64')
-        )->setPaper('a4', 'portrait');
+        // $pdf = Pdf::loadView(
+        //     'pdf.purchasing.pdfPenerimaanBarang',
+        //     compact('penerimaan_barang', 'logoBase64')
+        // )->setPaper('a4', 'portrait');
 
-        return $pdf->stream($fileName);
+        // return $pdf->stream($fileName);
+
+        return $this->streamPdf(
+            view: 'pdf.purchasing.pdfPenerimaanBarang',
+            data: ['penerimaan_barang' => $penerimaan_barang],
+            filename: $fileName
+        );
     }
 }

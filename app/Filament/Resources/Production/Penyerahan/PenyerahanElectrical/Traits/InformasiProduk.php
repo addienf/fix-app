@@ -64,9 +64,12 @@ trait InformasiProduk
                     ->mapWithKeys(function ($std) {
 
                         $spkNo = $std->spkQC->spkMarketing->no_spk ?? '-';
-
+                        $noSeri = $std->spkQC->spkMarketing->jadwalProduksi->identifikasiProduks
+                            ->pluck('no_seri')
+                            ->filter()
+                            ->implode(', ') ?: '-';
                         return [
-                            $std->id => "{$spkNo}",
+                            $std->id => "{$spkNo} - {$noSeri}",
                         ];
                     });
             })
@@ -83,9 +86,12 @@ trait InformasiProduk
                     ->mapWithKeys(function ($std) {
 
                         $spkNo = $std->spkQC->spkMarketing->no_spk ?? '-';
-
+                        $noSeri = $std->spkQC->spkMarketing->jadwalProduksi->identifikasiProduks
+                            ->pluck('no_seri')
+                            ->filter()
+                            ->implode(', ') ?: '-';
                         return [
-                            $std->id => "{$spkNo}",
+                            $std->id => "{$spkNo} - {$noSeri}",
                         ];
                     });
             })

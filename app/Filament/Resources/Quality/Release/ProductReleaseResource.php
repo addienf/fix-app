@@ -87,6 +87,23 @@ class ProductReleaseResource extends Resource
 
                 self::textColumn('no_order_release', 'Release Order No'),
 
+                self::textColumn('no_seri', 'Nomor Seri')
+                    ->getStateUsing(function ($record) {
+                        return $record?->pengecekanPerforma
+                            ?->spkQC
+                            ?->spkMarketing
+                            ?->jadwalProduksi
+                            ?->identifikasiProduks
+                            ?->pluck('no_seri')
+                            ->filter()
+                            ->implode(', ') ?: '-';
+                    })
+                    ->searchable(query: function ($query, string $search) {
+                        $query->whereHas('pengecekanPerforma.spkQC.spkMarketing.jadwalProduksi.identifikasiProduks', function ($q) use ($search) {
+                            $q->where('no_seri', 'like', "%{$search}%");
+                        });
+                    }),
+
                 self::textColumn('product', 'The Product'),
 
                 self::textColumn('status', 'Status')

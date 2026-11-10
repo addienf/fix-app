@@ -4,11 +4,13 @@ namespace App\Models\Engineering\Pelayanan;
 
 use App\Enums\StatusPermintaanPelayanan;
 use App\Models\Engineering\Complain\Complain;
+use App\Models\Engineering\Pelayanan\Pivot\Invitation;
 use App\Models\Engineering\Pelayanan\Pivot\PermintaanPelayananPelangganDetail;
 use App\Models\Engineering\Pelayanan\Pivot\PermintaanPelayananPelangganPIC;
 use App\Models\Engineering\SPK\SPKService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 class PermintaanPelayananPelanggan extends Model
 {
@@ -31,6 +33,11 @@ class PermintaanPelayananPelanggan extends Model
         'jenis_permintaan' => 'array',
         'status' => StatusPermintaanPelayanan::class,
     ];
+
+    public function invitations(): MorphMany
+    {
+        return $this->morphMany(Invitation::class, 'invitable');
+    }
 
     public function details()
     {

@@ -1,4 +1,4 @@
-@extends ('pdf.layout.layout')
+@extends('pdf.layout.layout')
 @section('title', 'Incoming Material PDF')
 @section('content')
     {{-- ================= HEADER (BAKU) ================= --}}

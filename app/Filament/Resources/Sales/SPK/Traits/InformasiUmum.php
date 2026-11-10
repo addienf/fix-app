@@ -28,18 +28,9 @@ trait InformasiUmum
                     ->schema([
 
                         DatePicker::make('tanggal')
-                            ->label('Rencana Pengiriman')
+                            ->label('Tanggal')
                             ->required()
                             ->displayFormat('M d Y'),
-
-                        // self::autoNumberField2('no_spk', 'Nomor SPK', [
-                        //     'prefix' => 'QKS',
-                        //     'section' => 'MKT',
-                        //     'type' => 'SPK',
-                        //     'table' => 'spk_marketings',
-                        // ])
-                        //     ->hiddenOn('edit')
-                        //     ->placeholder($lastValue ? "Data Terakhir : {$lastValue}" : 'Data Belum Tersedia'),
 
                         static::newAutoNmberField('no_spk', 'Nomor SPK', [
                             'prefix' => 'QKS',
@@ -47,8 +38,7 @@ trait InformasiUmum
                             'type' => 'SPK',
                             'table' => 'spk_marketings',
                         ])
-                            ->hiddenOn('edit')
-                            ->placeholder($lastValue ? "Data Terakhir : {$lastValue}" : 'Data Belum Tersedia'),
+                            ->hiddenOn('edit'),
 
                         self::selectSpecInput()
                             ->hiddenOn('edit'),

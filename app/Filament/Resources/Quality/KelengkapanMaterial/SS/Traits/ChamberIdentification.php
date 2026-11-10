@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Quality\KelengkapanMaterial\SS\Traits;
 
 use App\Models\Production\SPK\SPKQuality;
+use App\Traits\SimpleFormResource;
 use Filament\Forms\Components\Card;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
@@ -10,6 +11,7 @@ use Filament\Forms\Components\Textarea;
 
 trait ChamberIdentification
 {
+    use SimpleFormResource;
     protected static function getChamberIdentificationSection($form): Section
     {
         $isEdit = $form->getOperation() === 'edit';
@@ -18,12 +20,9 @@ trait ChamberIdentification
             ->collapsible()
             ->schema([
                 //
-
                 self::getSelectedSPK()
                     ->hiddenOn('edit'),
-
                 self::textInput('tipe', 'Type/Model'),
-
                 self::textInput('ref_document', 'Ref Document'),
             ])
             ->columns([
@@ -49,7 +48,19 @@ trait ChamberIdentification
                     ->where('status_penerimaan', 'Diterima')
                     ->latest()
                     ->limit(10)
-                    ->pluck('no_spk', 'id');
+                    ->get()
+                    ->mapWithKeys(function ($spkQuality) {
+
+                        $spkNo = $spkQuality->no_spk ?? '-';
+                        $noSeri = $spkQuality->spkMarketing->jadwalProduksi->identifikasiProduks
+                            ->pluck('no_seri')
+                            ->filter()
+                            ->implode(', ') ?: '-';
+
+                        return [
+                            $spkQuality->id => "{$spkNo} - {$noSeri}",
+                        ];
+                    });
             })
             ->getSearchResultsUsing(function ($search) {
                 return
@@ -58,7 +69,19 @@ trait ChamberIdentification
                     ->where('no_spk', 'like', "%{$search}%")
                     ->latest()
                     ->limit(10)
-                    ->pluck('no_spk', 'id');
+                    ->get()
+                    ->mapWithKeys(function ($spkQuality) {
+
+                        $spkNo = $spkQuality->no_spk ?? '-';
+                        $noSeri = $spkQuality->spkMarketing->jadwalProduksi->identifikasiProduks
+                            ->pluck('no_seri')
+                            ->filter()
+                            ->implode(', ') ?: '-';
+
+                        return [
+                            $spkQuality->id => "{$spkNo} - {$noSeri}",
+                        ];
+                    });
             });
     }
 

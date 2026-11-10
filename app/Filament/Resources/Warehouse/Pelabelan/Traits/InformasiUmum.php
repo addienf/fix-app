@@ -46,17 +46,27 @@ trait InformasiUmum
             ->preload()
             ->reactive()
             ->required()
-            ->options(
-                ProductRelease::with('pengecekanPerforma.spkQC.spkMarketing')
+            ->options(function () {
+                return ProductRelease::with([
+                    'pengecekanPerforma.spkQC.spkMarketing'
+                ])
                     ->where('status', 'Diketahui')
                     ->whereDoesntHave('qcPassed')
                     ->latest()
                     ->limit(10)
                     ->get()
-                    ->mapWithKeys(fn($item) => [
-                        $item->id => $item->pengecekanPerforma?->spkQC?->spkMarketing?->no_spk
-                    ])
-            )
+                    ->mapWithKeys(function ($item) {
+
+                        $jadwal = $item->pengecekanPerforma?->spkQC?->spkMarketing?->jadwalProduksi;
+
+                        $noSeri = $jadwal?->identifikasiProduks->pluck('no_seri')->filter()->implode(', ') ?: '-';
+                        $noSpk = $item->pengecekanPerforma?->spkQC?->spkMarketing?->no_spk ?? '-';
+
+                        return [
+                            $item->id => "{$noSpk} - {$noSeri}"
+                        ];
+                    });
+            })
             ->getSearchResultsUsing(function (string $search) {
 
                 return
@@ -81,17 +91,19 @@ trait InformasiUmum
                 $release = ProductRelease::with('pengecekanPerforma.spkQC.spkMarketing')->find($state);
 
                 $spec = $release?->pengecekanPerforma?->spkQC?->spkMarketing?->spesifikasiProduct;
+                $jadwal = $release?->pengecekanPerforma?->spkQC?->spkMarketing?->jadwalProduksi;
 
                 $product_name = $spec?->details?->first()?->product?->name ?? '-';
-
                 $product_jumlah = $spec?->details?->first()?->quantity ?? '-';
+                $nomor_seri = $jadwal?->identifikasiProduks?->pluck('no_seri')->filter()->implode(', ') ?: '-';
+                $tipe = $jadwal?->identifikasiProduks?->pluck('tipe')->filter()->implode(', ') ?: '-';
 
 
                 $set('details', [
                     [
                         'nama_produk'   => $product_name ?? '-',
-                        'tipe'          => '',
-                        'serial_number' => '',
+                        'tipe'          => $tipe ?? '',
+                        'serial_number' => $nomor_seri ?? '',
                         'jumlah'        => $product_jumlah ?? '-',
                     ]
                 ]);

@@ -3,6 +3,8 @@
 namespace App\Filament\Resources\Sales\SpesifikasiProducts\Traits;
 
 use App\Models\Sales\URS;
+use App\Traits\HasAutoNumber;
+use App\Traits\SimpleFormResource;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Section;
@@ -11,6 +13,7 @@ use Wallo\FilamentSelectify\Components\ButtonGroup;
 
 trait InformasiUmum
 {
+    use SimpleFormResource, HasAutoNumber;
     protected static function informasiUmumSection(bool $isEdit): Section
     {
         return Section::make('Informasi Umum')
@@ -39,12 +42,13 @@ trait InformasiUmum
                 ->schema([
                     Grid::make(2)
                         ->schema([
-                            self::autoNumberField('no_urs', 'Nomor URS', [
+                            static::newAutoNmberField('no_urs', 'Nomor URS', [
                                 'prefix' => 'QKS',
                                 'section' => 'MKT',
                                 'type' => 'URS',
                                 'table' => 'urs',
                             ]),
+
                             self::selectInput('customer_id', 'Nama Customer', 'customer', 'name')
                                 ->createOptionForm(fn() => self::customerFormSchema()),
                         ]),
@@ -93,25 +97,6 @@ trait InformasiUmum
             ->label('No URS')
             ->placeholder('Pilih Data URS')
             ->searchable()
-            // ->getSearchResultsUsing(function (string $search) {
-
-            //     $key = URS::$CACHE_PREFIXES['search_urs'] . md5($search);
-
-            //     return Cache::remember($key, 300, function () use ($search) {
-            //         return URS::query()
-            //             ->where('no_urs', 'like', "%{$search}%")
-            //             ->orderBy('id', 'desc')
-            //             ->limit(10)
-            //             ->pluck('no_urs', 'id');
-            //     });
-            // })
-            // ->options(function () {
-            //     return Cache::rememberForever(URS::$CACHE_KEYS['select_urs'], function () {
-            //         return URS::orderBy('id', 'desc')
-            //             ->limit(10)
-            //             ->pluck('no_urs', 'id');
-            //     });
-            // })
             ->getSearchResultsUsing(function (string $search) {
                 return URS::query()
                     ->where('no_urs', 'like', "%{$search}%")
@@ -124,7 +109,6 @@ trait InformasiUmum
                     ->limit(10)
                     ->pluck('no_urs', 'id');
             })
-            // ->getOptionLabelUsing(fn($value) => URS::find($value)?->no_urs ?? '-')
             ->native(false)
             ->preload(false)
             ->required();
