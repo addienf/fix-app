@@ -140,7 +140,9 @@
                 $fields = [
                     [
                         'label' => 'Estimated Delivery Date',
-                        'value' => \Carbon\Carbon::parse($spesifikasi->estimasi_pengiriman)->translatedFormat('d F Y'),
+                        'value' => \Carbon\Carbon::parse($spesifikasi->estimasi_pengiriman)
+                            ->locale('id')
+                            ->translatedFormat('d F Y'),
                     ],
                     ['label' => 'Receive Order', 'value' => $status],
                 ];
@@ -222,7 +224,7 @@
                         <tr>
                             @foreach ($roles as $data)
                                 <td class="border border-gray-300 border-[1px] px-2 py-2 text-center">
-                                    {{ $data['date'] ? \Carbon\Carbon::parse($data['date'])->format('d M Y') : '-' }}
+                                    {{ $data['date'] ? \Carbon\Carbon::parse($data['date'])->locale('id')->format('d F Y') : '-' }}
                                 </td>
                             @endforeach
                         </tr>

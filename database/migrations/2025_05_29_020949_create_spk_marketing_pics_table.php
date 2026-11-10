@@ -16,8 +16,10 @@ return new class extends Migration
             $table->foreignId('spk_marketing_id')->constrained('spk_marketings')->onDelete('cascade');
             $table->text('create_signature');
             $table->string('create_name');
+            $table->date('create_date');
             $table->text('receive_signature')->nullable();
             $table->string('receive_name')->nullable();
+            $table->date('receive_date')->nullable();
             $table->timestamps();
         });
     }

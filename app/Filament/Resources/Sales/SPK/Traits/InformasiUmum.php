@@ -43,12 +43,12 @@ trait InformasiUmum
                         self::selectSpecInput()
                             ->hiddenOn('edit'),
 
-                        self::textInput('dari', 'Dari'),
+                        self::textInput('dari', 'Dari')->default('Sales'),
 
                         self::textInput('no_order', 'Nomor Order')
                             ->unique(ignoreRecord: true),
 
-                        self::textInput('kepada', 'Kepada'),
+                        self::textInput('kepada', 'Kepada')->default('Produksi'),
                     ]),
 
             ]);

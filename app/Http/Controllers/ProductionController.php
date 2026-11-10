@@ -15,20 +15,6 @@ use ZipArchive;
 class ProductionController extends Controller
 {
     //
-    // private function getBase64Logo()
-    // {
-    //     $logoPath = public_path('asset/logo.png');
-
-    //     if (!file_exists($logoPath)) {
-    //         return null;
-    //     }
-
-    //     $type = pathinfo($logoPath, PATHINFO_EXTENSION);
-
-    //     return 'data:image/' . $type . ';base64,' .
-    //         base64_encode(file_get_contents($logoPath));
-    // }
-
     public function pdfJadwalProduksi($id)
     {
         $jadwalProduksi = JadwalProduksi::with([
@@ -41,23 +27,14 @@ class ProductionController extends Controller
             'pic.createName',
             'pic.approveName',
         ])->findOrFail($id);
-
+        $this->authorize('view', $jadwalProduksi);
         $tanggal = Carbon::parse($jadwalProduksi->tanggal)->format('d-m-Y');
         $noSuratSafe = str_replace(['/', '\\', ' '], '-', $jadwalProduksi->no_surat);
         $baseName = $noSuratSafe . ' - ' . $tanggal;
 
-        $logoPath = public_path('asset/logo.png');
-        $type = pathinfo($logoPath, PATHINFO_EXTENSION);
-        $logoBase64 = null;
-
-        if (file_exists($logoPath)) {
-            $logoBase64 = 'data:image/' . $type . ';base64,' .
-                base64_encode(file_get_contents($logoPath));
-        }
-
         $pdf = Pdf::loadView('pdf.production.pdfJadwalProduksi', [
             'jadwal' => $jadwalProduksi,
-            'logoBase64' => $logoBase64,
+            'logoBase64' => $this->getBase64Logo(),
         ])->setPaper('a4', 'portrait');
 
         $pdfName = $baseName . '.pdf';
@@ -88,6 +65,7 @@ class ProductionController extends Controller
         }
 
         $zip->close();
+        @unlink($pdfTempPath);
 
         return Storage::disk('public')->download($zipRelativePath);
     }
@@ -97,18 +75,12 @@ class ProductionController extends Controller
         $vendor = SPKVendor::with(['perencanaanProduksi', 'details'])->findOrFail($id);
 
         return $this->viewPdf('pdf.production.pdfSPKVendor', compact('vendor'));
-
-        // return $this->streamPdf(
-        //     view: 'pdf.production.pdfSPKVendor',
-        //     data: ['vendor' => $vendor],
-        //     filename: 'spk-vendor.pdf'
-        // );
     }
 
     public function downloadSPKVendor($id)
     {
         $vendor = SPKVendor::findOrFail($id);
-
+        $this->authorize('view', $vendor);
         //PDF
         $filePath = $vendor->file_path;
         $pdfFullPath = storage_path('app/public/' . $filePath);
@@ -150,13 +122,6 @@ class ProductionController extends Controller
     {
         $spk_qc = SPKQuality::with(['spkMarketing', 'details', 'pic', 'pic.createName', 'pic.receiveName'])->findOrFail($id);
 
-        // $logoBase64 = $this->getBase64Logo();
-
-        // $pdf = Pdf::loadView('pdf.production.pdfSPKQuality', compact('spk_qc', 'logoBase64'))
-        //     ->setPaper('a4', 'portrait');
-
-        // return $pdf->stream('spk-quality.pdf');
-
         return $this->streamPdf(
             view: 'pdf.production.pdfSPKQuality',
             data: ['spk_qc' => $spk_qc],
@@ -169,23 +134,14 @@ class ProductionController extends Controller
         $serahElectrical = PenyerahanElectrical::with(['pengecekanSS', 'sebelumSerahTerima', 'pic', 'penerimaElectrical', 'pic.submitName', 'pic.receiveName', 'pic.knowingName'])->findOrFail($id);
 
         return $this->viewPdf('pdf.production.pdfPenyerahanElectrical', compact('serahElectrical'));
-
-        // return $this->streamPdf(
-        //     view: 'pdf.production.pdfPenyerahanElectrical',
-        //     data: ['serahElectrical' => $serahElectrical],
-        //     filename: 'penyerahan-elektrikal.pdf'
-        // );
     }
 
     public function downloadPenyerahanElectrical($id)
     {
         $spesifikasi = PenyerahanElectrical::with(['sebelumSerahTerima'])->findOrFail($id);
+        $filePath = $spesifikasi?->sebelumSerahTerima?->file_pendukung;
 
-        $filePath = $spesifikasi->sebelumSerahTerima->file_pendukung;
-
-        $fullPath = storage_path('app/public/' . $filePath);
-
-        return response()->download($fullPath);
+        return $this->downloadAttachment($spesifikasi, $filePath);
     }
 
     public function pdfPenyerahanProdukJadi($id)
@@ -193,11 +149,5 @@ class ProductionController extends Controller
         $produkJadi = PenyerahanProdukJadi::with(['details', 'pic', 'pic.submitName', 'pic.receiveName'])->findOrFail($id);
 
         return $this->viewPdf('pdf.production.pdfPenyerahanProdukJadi', compact('produkJadi'));
-
-        // return $this->streamPdf(
-        //     view: 'pdf.production.pdfPenyerahanProdukJadi',
-        //     data: ['produkJadi' => $produkJadi],
-        //     filename: 'penyerahan-produk-jadi.pdf'
-        // );
     }
 }

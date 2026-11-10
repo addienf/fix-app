@@ -41,14 +41,8 @@ class WarehouseController extends Controller
     public function downloadIncomingMaterial(?int $id)
     {
         $incomingMaterial = IncommingMaterial::findOrFail($id);
-        $filePath = $incomingMaterial->file_upload;
 
-        if (!$filePath || !Storage::disk('public')->exists($filePath)) {
-
-            return response()->json(['message' => 'File not found'], 404);
-        }
-
-        return response()->download(storage_path('app/public/' . $filePath));
+        return $this->downloadAttachment($incomingMaterial, $incomingMaterial->file_upload);
     }
 
     public function pdfPeminjamanAlat(?int $id)

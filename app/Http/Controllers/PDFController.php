@@ -18,21 +18,21 @@ class PDFController extends Controller
     //
     use SimpleFormResource;
 
-    public function pdfPermintaanAlatBahan($id)
+    public function pdfPermintaanAlatBahan(?int $id)
     {
         $permintaan_alat_bahan = PermintaanAlatDanBahan::with(['jadwalProduksi', 'details', 'pic', 'pic.dibuatName', 'pic.diketahuiName', 'pic.diserahkanName'])->findOrFail($id);
 
         return $this->viewPdf('pdf.production.pdfPermintaanAlatBahan', compact('permintaan_alat_bahan'));
     }
 
-    public function pdfIncomingMaterialSS($id)
+    public function pdfIncomingMaterialSS(?int $id)
     {
         $incomingSS = IncommingMaterialSS::with(['permintaanPembelian', 'summary', 'detail', 'pic', 'pic.checkedName', 'pic.acceptedName', 'pic.approvedName'])->findOrFail($id);
 
         return $this->viewPdf('pdf.quality.pdfIncomingMaterialSS', compact('incomingSS'));
     }
 
-    public function pdfIncomingMaterialNonSS($id)
+    public function pdfIncomingMaterialNonSS(?int $id)
     {
         $incomingNonSS = IncommingMaterialNonSS::with(['permintaanPembelian', 'summary', 'detail', 'pic', 'pic.checkedName', 'pic.acceptedName', 'pic.approvedName'])->findOrFail($id);
 
@@ -40,48 +40,43 @@ class PDFController extends Controller
     }
 
 
-    public function pdfPengecekanElectrical($id)
+    public function pdfPengecekanElectrical(?int $id)
     {
         $electrical = PengecekanMaterialElectrical::with(['spkQC', 'pic', 'detail', 'pic.inspectedName', 'pic.acceptedName', 'pic.approvedName'])->findOrFail($id);
 
         return $this->viewPdf('pdf.quality.pdfPengecekanElectrical', compact('electrical'));
     }
 
-    public function pdfPengecekanPerforma($id)
+    public function pdfPengecekanPerforma(?int $id)
     {
         $performa = PengecekanPerforma::with(['pic', 'detail', 'pic.inspectedName', 'pic.acceptedName', 'pic.approvedName'])->findOrFail($id);
 
         return $this->viewPdf('pdf.quality.pdfPengecekanPerforma', compact('performa'));
     }
 
-    public function pdfDefectStatus($id)
+    public function pdfDefectStatus(?int $id)
     {
         $defect = DefectStatus::with(['details', 'pic', 'pic.inspectedName', 'pic.acceptedName', 'pic.approvedName'])->findOrFail($id);
 
         return $this->viewPdf('pdf.quality.pdfDefectStatus', compact('defect'));
     }
 
-    public function downloadDefectStatus($id)
+    public function downloadDefectStatus(?int $id)
     {
         $defectStatus = DefectStatus::findOrFail($id);
-
         $filePath = $defectStatus->file_upload;
 
-        if (!$filePath || !Storage::disk('public')->exists($filePath)) {
-            return response()->json(['message' => 'File not found'], 404);
-        }
-
-        return response()->download(storage_path('app/public/' . $filePath));
+        return $this->downloadAttachment($defectStatus, $filePath);
     }
 
-    public function pdfKetidaksesuaian($id)
+    public function pdfKetidaksesuaian(?int $id)
     {
         $ketidaksesuaian = Ketidaksesuaian::with(['pengecekanPerforma', 'pic', 'details', 'snk', 'pic.pelaporName', 'pic.diterimaName'])->findOrFail($id);
 
         return $this->viewPdf('pdf.quality.pdfKetidaksesuaian', compact('ketidaksesuaian'));
     }
 
-    public function pdfProductRelease($id)
+    public function pdfProductRelease(?int $id)
     {
         $release = ProductRelease::with(['pic', 'pic.dibuatName', 'pic.dikonfirmasiName', 'pic.diterimaName', 'pic.diketahuiName'])->findOrFail($id);
 

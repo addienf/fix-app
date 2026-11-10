@@ -40,21 +40,6 @@ class URSResource extends Resource
                 Section::make('Data URS')
                     ->collapsible()
                     ->schema([
-
-                        // self::autoNumberField('no_urs', 'Nomor URS', [
-                        //     'prefix' => 'QKS',
-                        //     'section' => 'MKT',
-                        //     'type' => 'URS',
-                        //     'table' => 'urs',
-                        // ]),
-
-                        // self::autoNumberField2('no_urs', 'Nomor URS', [
-                        //     'prefix' => 'QKS',
-                        //     'section' => 'MKT',
-                        //     'type' => 'URS',
-                        //     'table' => 'urs',
-                        // ]),
-
                         static::newAutoNmberField('no_urs', 'Nomor URS', [
                             'prefix' => 'QKS',
                             'section' => 'MKT',
@@ -79,6 +64,7 @@ class URSResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->defaultSort('created_at', 'desc')
             ->columns([
                 //
                 self::textColumn('no_urs', 'No URS'),

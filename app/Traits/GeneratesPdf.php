@@ -79,4 +79,13 @@ trait GeneratesPdf
         }
         return view($view, $data);
     }
+
+    // Download Attachment
+    protected function downloadAttachment(Model $model, ?string $filePath): \Symfony\Component\HttpFoundation\BinaryFileResponse
+    {
+        $this->authorize('view', $model);
+        abort_if(blank($filePath), 404, 'File belum diunggah.');
+        abort_unless(\Illuminate\Support\Facades\Storage::disk('public')->exists($filePath), 404, 'File tidak ditemukan.');
+        return response()->download(\Illuminate\Support\Facades\Storage::disk('public')->path($filePath));
+    }
 }

@@ -79,6 +79,8 @@ class SPKResource extends Resource
         return $table
             ->columns([
                 //
+                self::textColumn('no_spk', 'Nomor SPK Marketing'),
+
                 self::textColumn('spesifikasiProduct.urs.no_urs', 'No URS'),
 
                 self::textColumn('no_order', 'No Order'),
