@@ -17,8 +17,10 @@ class SPKMarketingPIC extends Model
         'spk_marketing_id',
         'create_signature',
         'create_name',
+        'create_date',
         'receive_signature',
         'receive_name',
+        'receive_date',
     ];
 
     public function spkMarketing()

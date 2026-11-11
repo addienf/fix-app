@@ -6,7 +6,7 @@ use App\Models\Sales\SpesifikasiProducts\Pivot\SpesifikasiProductDetail;
 use App\Models\Sales\SpesifikasiProducts\Pivot\SpesifikasiProductPIC;
 use App\Models\Sales\SPKMarketings\SPKMarketing;
 use App\Models\Sales\URS;
-use App\Traits\HasCacheManager;
+
 use Database\Factories\Sales\SpesifikasiProducts\SpesifikasiProductFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -21,7 +21,7 @@ use Illuminate\Notifications\Notifiable;
  */
 class SpesifikasiProduct extends Model
 {
-    use HasFactory, Notifiable, HasCacheManager;
+    use HasFactory, Notifiable;
 
     protected static $factory = SpesifikasiProductFactory::class;
     protected $fillable = [

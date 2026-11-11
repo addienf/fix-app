@@ -147,14 +147,14 @@ class StandarisasiDrawingResource extends Resource
                         ->icon('heroicon-o-trash')
                         ->tooltip('Hapus Data'),
                     Action::make('pdf_view')
-                        ->label(_('Lihat PDF'))
+                        ->label('Lihat PDF')
                         ->icon('heroicon-o-document')
                         ->tooltip('Lihat Data PDF')
                         ->color('success')
                         ->visible(fn($record) => $record->status_pemeriksaan === 'Diperiksa')
                         ->url(fn($record) => route('pdf.StandarisasiDrawing', ['record' => $record->id])),
                     Action::make('lampiran_view')
-                        ->label(_('Lihat Lampiran'))
+                        ->label('Lihat Lampiran')
                         ->icon('heroicon-o-clipboard')
                         ->tooltip('Lihat Data Lampiran')
                         ->color('primary')

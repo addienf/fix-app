@@ -62,70 +62,7 @@ class BeritaAcaraResource extends Resource
                         self::signatureInput('jasa_ttd', ''),
                     ]),
 
-                Section::make('Link Tanda Tangan')
-                    ->hidden(
-                        fn($get, $operation) =>
-                        $operation === 'create' || filled($get('pic.pelanggan_ttd'))
-                    )
-                    ->schema([
-                        Grid::make(1)
-                            ->schema([
-
-                                TextInput::make('signature_link')
-                                    ->label('')
-                                    ->readOnly()
-                                    ->dehydrated(false)
-                                    ->formatStateUsing(
-                                        fn($record) =>
-                                        $record?->pic?->sign_token
-                                            ? route('signature.show', [
-                                                'type' => 'berita-acara',
-                                                'token' => $record->pic->sign_token,
-                                            ])
-                                            : null
-                                    )
-                                    ->placeholder('Belum ada link dibuat')
-                                    ->suffixActions([
-                                        ButtonAction::make('generate')
-                                            ->icon('heroicon-o-link')
-                                            ->tooltip('Generate Link')
-                                            ->action(function ($record, $set) {
-                                                $record->pic->update([
-                                                    'sign_token' => Str::random(8),
-                                                    'sign_token_expires_at' => now()->addDays(3),
-                                                ]);
-
-                                                $set(
-                                                    'signature_link',
-                                                    route('signature.show', [
-                                                        'type' => 'berita-acara',
-                                                        'token' => $record->pic->fresh()->sign_token,
-                                                    ])
-                                                );
-                                            }),
-
-                                        ButtonAction::make('open')
-                                            ->icon('heroicon-o-arrow-top-right-on-square')
-                                            ->tooltip('Buka Link')
-                                            ->hidden(fn($record) => blank($record->pic?->sign_token))
-                                            ->alpineClickHandler(function ($record) {
-                                                $url = route('signature.show', [
-                                                    'type' => 'berita-acara',
-                                                    'token' => $record->pic->sign_token,
-                                                ]);
-
-                                                return "window.open('$url', '_blank')";
-                                            }),
-
-                                        ButtonAction::make('copy')
-                                            ->icon('heroicon-o-clipboard')
-                                            ->hidden(fn($record) => blank($record->pic?->sign_token))
-                                            ->alpineClickHandler(
-                                                fn($state) => "window.navigator.clipboard.writeText('$state'); \$tooltip('Copied to clipboard', { timeout: 1500 });"
-                                            )
-                                    ]),
-                            ]),
-                    ])
+                self::signatureLinkSection('berita-acara', 'pelanggan_ttd'),
             ]);
     }
 
@@ -156,17 +93,10 @@ class BeritaAcaraResource extends Resource
                         ->tooltip('Edit Data Spesifikasi')
                         ->color('info'),
                     Tables\Actions\DeleteAction::make()
-                        ->after(function ($record) {
-                            $spk = SPKService::find($record->spk_service_id);
-
-                            if ($spk) {
-                                $spk->increment('lama_pelaksanaan');
-                            }
-                        })
                         ->icon('heroicon-o-trash')
                         ->tooltip('Hapus Data'),
                     Action::make('pdf_view')
-                        ->label(_('Lihat PDF'))
+                        ->label('Lihat PDF')
                         ->icon('heroicon-o-document')
                         ->color('success')
                         ->url(fn($record) => route('pdf.beritaAcara', ['record' => $record->id])),
@@ -193,23 +123,5 @@ class BeritaAcaraResource extends Resource
             'create' => Pages\CreateBeritaAcara::route('/create'),
             'edit' => Pages\EditBeritaAcara::route('/{record}/edit'),
         ];
-    }
-
-    private static function getIsStock()
-    {
-        return
-            ButtonGroup::make('ttd_method')
-            ->label('Metode Tanda Tangan')
-            ->options([
-                'draw' => 'Tanda tangan langsung',
-                'upload' => 'Upload scan tanda tangan',
-            ])
-            ->default('draw')
-            ->live()
-            ->dehydrated(false)
-            ->required()
-            ->onColor('primary')
-            ->offColor('gray')
-            ->gridDirection('row');
     }
 }

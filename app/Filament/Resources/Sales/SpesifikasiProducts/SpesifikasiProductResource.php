@@ -8,7 +8,6 @@ use App\Filament\Resources\Sales\SpesifikasiProducts\Traits\ItemRequest;
 use App\Filament\Resources\Sales\SpesifikasiProducts\Traits\PenjelasanTambahan;
 use App\Models\Sales\SpesifikasiProducts\SpesifikasiProduct;
 use App\Traits\HasAutoNumber;
-use App\Traits\HasSelectCache;
 use App\Traits\HasSignature;
 use App\Traits\SimpleFormResource;
 use Filament\Forms\Components\Hidden;
@@ -28,7 +27,6 @@ class SpesifikasiProductResource extends Resource
     use SimpleFormResource,
         HasSignature,
         HasAutoNumber,
-        HasSelectCache,
         InformasiUmum,
         ItemRequest,
         PenjelasanTambahan;
@@ -151,7 +149,7 @@ class SpesifikasiProductResource extends Resource
                                 ->send();
                         }),
                     Action::make('pdf_view')
-                        ->label(_('Lihat PDF'))
+                        ->label('Lihat PDF')
                         ->tooltip('Lihat Dokumen PDF')
                         ->icon('heroicon-o-document')
                         ->color('success')

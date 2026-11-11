@@ -204,7 +204,8 @@
         <table class="info-table">
             <tr>
                 <td style="width: 10%;" class="label-col">Tanggal</td>
-                <td style="width: 38%;">: {{ \Carbon\Carbon::parse($spk_mkt->tanggal)->translatedFormat('d F Y') }}</td>
+                <td style="width: 38%;">:
+                    {{ \Carbon\Carbon::parse($spk_mkt->tanggal)->locale('id')->translatedFormat('d F Y') }}</td>
                 <td style="width: 10%;" class="label-col">No. SPK</td>
                 <td style="width: 42%;">: {{ $spk_mkt->no_spk }}</td>
             </tr>
@@ -247,7 +248,7 @@
                         <td style="text-align: center;">{{ $item->quantity }}</td>
                         <td style="text-align: center;">{{ $spk_mkt->spesifikasiProduct?->urs?->no_urs ?? '-' }}</td>
                         <td style="text-align: center;">
-                            {{ $spk_mkt->spesifikasiProduct?->estimasi_pengiriman ? \Carbon\Carbon::parse($spk_mkt->spesifikasiProduct->estimasi_pengiriman)->translatedFormat('d F Y') : '-' }}
+                            {{ $spk_mkt->spesifikasiProduct?->estimasi_pengiriman ? \Carbon\Carbon::parse($spk_mkt->spesifikasiProduct->estimasi_pengiriman)->locale('id')->translatedFormat('d F Y') : '-' }}
                         </td>
                     </tr>
                 @empty
@@ -280,28 +281,40 @@
                 <td>
                     <div class="sig-title">Yang Membuat,</div>
                     <div class="sig-container">
-                        @if ($createSigBase64)
-                            <img src="{{ $createSigBase64 }}" alt="Signature Pembuat">
+                        @if ($spk_mkt->pic?->create_signature && Storage::disk('public')->exists($spk_mkt->pic->create_signature))
+                            <img src="{{ Storage::disk('public')->path($spk_mkt->pic->create_signature) }}"
+                                alt="Signature Pembuat">
                         @else
                             <div style="height: 48px;"></div>
                         @endif
                     </div>
                     <div class="sig-name">
                         {{ $spk_mkt->pic?->createName?->name ?? '( .................................... )' }}</div>
-                    <div class="sig-role">( Marketing )</div>
+                    <div class="sig-role">{{ Str::headline($spk_mkt->pic->createName->roles->first()?->name ?? '-') }}
+                    </div>
+                    <div class="sig-date">
+                        @if ($spk_mkt?->pic?->create_date && !str_starts_with((string) $spk_mkt->pic->create_date, '0000-00-00'))
+                            {{ \Carbon\Carbon::parse($spk_mkt->pic->create_date)->locale('id')->translatedFormat('d F Y') }}
+                        @endif
+                    </div>
                 </td>
                 <td>
                     <div class="sig-title">Yang Menerima,</div>
                     <div class="sig-container">
-                        @if ($receiveSigBase64)
-                            <img src="{{ $receiveSigBase64 }}" alt="Signature Penerima">
+                        @if ($spk_mkt->pic?->receive_signature && Storage::disk('public')->exists($spk_mkt->pic->receive_signature))
+                            <img src="{{ Storage::disk('public')->path($spk_mkt->pic->receive_signature) }}"
+                                alt="Signature Penerima">
                         @else
                             <div style="height: 48px;"></div>
                         @endif
                     </div>
                     <div class="sig-name">
                         {{ $spk_mkt->pic?->receiveName?->name ?? '( .................................... )' }}</div>
-                    <div class="sig-role">( Produksi )</div>
+                    <div class="sig-role">
+                        {{ Str::headline($spk_mkt->pic->receiveName->roles->first()?->name ?? '-') }}</div>
+                    <div class="sig-date">
+                        {{ \Carbon\Carbon::parse($spk_mkt?->pic?->receive_date ?? $spk_mkt?->pic?->created_at)->locale('id')->translatedFormat('d F Y') }}
+                    </div>
                 </td>
             </tr>
         </table>

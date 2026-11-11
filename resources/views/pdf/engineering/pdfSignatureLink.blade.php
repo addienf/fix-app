@@ -83,7 +83,8 @@
                             class="bg-slate-800 px-6 py-3 text-white text-sm font-medium flex justify-between items-center">
                             <span>Pratinjau Dokumen Berita Acara (PDF)</span>
                             <!-- Tombol untuk membuka PDF di tab baru jika ingin melihat ukuran penuh -->
-                            <a href="{{ route('pdf.beritaAcara', ['record' => $pic->berita_id]) }}" target="_blank"
+                            <a href="{{ route('signature.pdf', ['type' => $type, 'token' => $record->sign_token]) }}"
+                                target="_blank"
                                 class="text-xs text-blue-300 hover:text-white underline font-medium flex items-center gap-1">
                                 🔍 Buka Fullscreen
                             </a>
@@ -92,7 +93,7 @@
                         <!-- EMBED PDF ASLI -->
                         <div class="p-4 bg-slate-50">
                             <embed
-                                src="{{ route('pdf.beritaAcara', ['record' => $pic->berita_id]) }}#toolbar=0&navpanes=0&scrollbar=0"
+                                src="{{ route('signature.pdf', ['type' => $type, 'token' => $record->sign_token]) }}#toolbar=0&navpanes=0&scrollbar=0"
                                 type="application/pdf"
                                 class="w-full h-[600px] rounded-lg border border-slate-300 shadow-sm bg-white">
                         </div>

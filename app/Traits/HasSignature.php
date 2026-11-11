@@ -158,21 +158,23 @@ trait HasSignature
 
     public static function findValidToken(string $token)
     {
-        $record = static::where('sign_token', $token)->firstOrFail();
+        if (blank($token)) {
+            return null;
+        }
+
+        $record = static::where('sign_token', $token)->first();
+        if (! $record) {
+            return null;
+        }
 
         $config = $record->signatureConfig();
         $signatureField = $config['signature_field'];
 
-        // jika sudah pernah sign
-        if ($record->$signatureField) {
+        if (filled($record->$signatureField)) {
             return null;
         }
 
-        // jika token expired
-        if (
-            $record->sign_token_expires_at &&
-            now()->gt($record->sign_token_expires_at)
-        ) {
+        if ($record->sign_token_expires_at && now()->gt($record->sign_token_expires_at)) {
             return null;
         }
 
@@ -193,13 +195,7 @@ trait HasSignature
                 $config['upload_path']
             );
 
-            $ip = request()->header('X-Forwarded-For');
-
-            if ($ip) {
-                $ip = explode(',', $ip)[0];
-            } else {
-                $ip = request()->getClientIp();
-            }
+            $ip = $request->ip();
 
             if ($ip === '127.0.0.1') {
                 $ip = '127.0.0.1 (Local)';
@@ -210,11 +206,143 @@ trait HasSignature
                 $config['signature_field'] => $path,
                 $config['date_field'] => now(),
                 'signed_ip' => $ip,
-
-                // single use token
-                'sign_token' => null,
-                'sign_token_expires_at' => null,
             ]);
         });
+    }
+
+    public static function signatureLinkSection(
+        string $type,
+        string $signatureField = 'approved_signature'
+    ): Section {
+        return Section::make('Link Tanda Tangan')
+            ->hidden(
+                fn($get, $operation) =>
+                $operation === 'create' || filled($get("pic.{$signatureField}"))
+            )
+            ->schema([
+                Grid::make(1)->schema([
+                    TextInput::make('signature_link')
+                        ->label('')
+                        ->readOnly()
+                        ->dehydrated(false)
+                        ->formatStateUsing(
+                            fn($record) => $record?->pic?->sign_token
+                                ? route('signature.show', [
+                                    'type' => $type,
+                                    'token' => $record->pic->sign_token,
+                                ])
+                                : null
+                        )
+                        ->placeholder('Belum ada link dibuat')
+                        ->suffixActions([
+                            \Filament\Forms\Components\Actions\Action::make('generate')
+                                ->icon('heroicon-o-link')
+                                ->tooltip('Generate Link')
+                                ->action(function ($record, $set) use ($type) {
+                                    $token = \Illuminate\Support\Str::random(32);
+
+                                    $record->pic->update([
+                                        'sign_token' => $token,
+                                        'sign_token_expires_at' => now()->addDays(3),
+                                    ]);
+
+                                    $set(
+                                        'signature_link',
+                                        route('signature.show', [
+                                            'type' => $type,
+                                            'token' => $token,
+                                        ])
+                                    );
+                                }),
+
+                            \Filament\Forms\Components\Actions\Action::make('open')
+                                ->icon('heroicon-o-arrow-top-right-on-square')
+                                ->tooltip('Buka Link')
+                                ->hidden(fn($record) => blank($record?->pic?->sign_token))
+                                ->alpineClickHandler(function ($record) use ($type) {
+                                    $url = route('signature.show', [
+                                        'type' => $type,
+                                        'token' => $record->pic->sign_token,
+                                    ]);
+
+                                    return "window.open('$url', '_blank')";
+                                }),
+
+                            \Filament\Forms\Components\Actions\Action::make('copy')
+                                ->icon('heroicon-o-clipboard')
+                                ->hidden(fn($record) => blank($record?->pic?->sign_token))
+                                ->alpineClickHandler(
+                                    fn($state) => "window.navigator.clipboard.writeText('$state'); \$tooltip('Copied to clipboard', { timeout: 1500 });"
+                                ),
+                        ]),
+                ]),
+            ]);
+    }
+
+    public static function customerSignatureSection(string $uploadPath): Section
+    {
+        return Section::make('Pelanggan')
+            ->collapsible()
+            ->relationship('pic')
+            ->hidden(
+                fn($get, $operation) =>
+                $operation === 'create'
+                    || filled($get('pic.approved_signature'))
+                    || blank($get('pic.checked_signature'))
+            )
+            ->mutateRelationshipDataBeforeSaveUsing(function (array $data): array {
+                if (! empty($data['approved_signature_draw'])) {
+                    $data['approved_signature'] = $data['approved_signature_draw'];
+                }
+                if (! empty($data['approved_signature_upload'])) {
+                    $data['approved_signature'] = $data['approved_signature_upload'];
+                }
+                unset($data['approved_signature_draw'], $data['approved_signature_upload']);
+                return $data;
+            })
+            ->schema([
+                Grid::make(2)->schema([
+                    \Wallo\FilamentSelectify\Components\ButtonGroup::make('ttd_method')
+                        ->label('Metode Tanda Tangan')
+                        ->options([
+                            'draw' => 'Tanda tangan langsung',
+                            'upload' => 'Upload scan tanda tangan',
+                        ])
+                        ->default('draw')
+                        ->live()
+                        ->dehydrated(false)
+                        ->required(
+                            fn($get) => filled($get('pic.checked_signature'))
+                                && blank($get('pic.approved_signature'))
+                        )
+                        ->columnSpanFull()
+                        ->onColor('primary')
+                        ->offColor('gray')
+                        ->gridDirection('row'),
+                    TextInput::make('approved_name')
+                        ->label('Nama Pelanggan')
+                        ->maxLength(255)
+                        ->required(
+                            fn($get) => filled($get('pic.checked_signature'))
+                                && blank($get('pic.approved_signature'))
+                        ),
+                    DatePicker::make('approved_date')
+                        ->label('Tanggal')
+                        ->default(now())
+                        ->required(
+                            fn($get) => filled($get('pic.checked_signature'))
+                                && blank($get('pic.approved_signature'))
+                        ),
+                ]),
+                self::signatureInput('approved_signature_draw', '', $uploadPath)
+                    ->visible(fn($get) => $get('ttd_method') === 'draw')
+                    ->required(fn($get) => filled($get('pic.checked_signature'))),
+                \Filament\Forms\Components\FileUpload::make('approved_signature_upload')
+                    ->label('Upload Scan Tanda Tangan')
+                    ->image()
+                    ->directory($uploadPath)
+                    ->visible(fn($get) => $get('ttd_method') === 'upload')
+                    ->required(fn($get) => filled($get('pic.checked_signature'))),
+            ]);
     }
 }

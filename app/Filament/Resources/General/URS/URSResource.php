@@ -4,7 +4,6 @@ namespace App\Filament\Resources\General\URS;
 
 use App\Filament\Resources\General\URS\URSResource\Pages;
 use App\Models\General\Company;
-use App\Models\General\Customer;
 use \App\Models\Sales\URS;
 use App\Traits\HasAutoNumber;
 use App\Traits\HasSelectCache;
@@ -20,7 +19,7 @@ use Filament\Forms\Components\Select;
 
 class URSResource extends Resource
 {
-    use SimpleFormResource, HasAutoNumber, HasSelectCache;
+    use SimpleFormResource, HasAutoNumber;
 
     protected static ?string $model = URS::class;
     protected static ?int $navigationSort = 1;
@@ -40,21 +39,6 @@ class URSResource extends Resource
                 Section::make('Data URS')
                     ->collapsible()
                     ->schema([
-
-                        // self::autoNumberField('no_urs', 'Nomor URS', [
-                        //     'prefix' => 'QKS',
-                        //     'section' => 'MKT',
-                        //     'type' => 'URS',
-                        //     'table' => 'urs',
-                        // ]),
-
-                        // self::autoNumberField2('no_urs', 'Nomor URS', [
-                        //     'prefix' => 'QKS',
-                        //     'section' => 'MKT',
-                        //     'type' => 'URS',
-                        //     'table' => 'urs',
-                        // ]),
-
                         static::newAutoNmberField('no_urs', 'Nomor URS', [
                             'prefix' => 'QKS',
                             'section' => 'MKT',
@@ -79,6 +63,7 @@ class URSResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->defaultSort('created_at', 'desc')
             ->columns([
                 //
                 self::textColumn('no_urs', 'No URS'),

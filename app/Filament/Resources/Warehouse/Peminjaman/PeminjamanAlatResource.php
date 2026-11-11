@@ -74,7 +74,7 @@ class PeminjamanAlatResource extends Resource
                         ->icon('heroicon-o-trash')
                         ->tooltip('Hapus Data'),
                     Action::make('pdf_view')
-                        ->label(_('Lihat PDF'))
+                        ->label('Lihat PDF')
                         ->icon('heroicon-o-document')
                         ->color('success')
                         ->url(fn($record) => route('pdf.PeminjamanAlat', ['record' => $record->id])),

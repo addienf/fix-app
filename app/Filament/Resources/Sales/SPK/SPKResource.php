@@ -79,6 +79,8 @@ class SPKResource extends Resource
         return $table
             ->columns([
                 //
+                self::textColumn('no_spk', 'Nomor SPK Marketing'),
+
                 self::textColumn('spesifikasiProduct.urs.no_urs', 'No URS'),
 
                 self::textColumn('no_order', 'No Order'),
@@ -104,7 +106,7 @@ class SPKResource extends Resource
                         ->icon('heroicon-o-trash')
                         ->tooltip('Hapus Data'),
                     Action::make('pdf_view')
-                        ->label(_('Lihat PDF'))
+                        ->label('Lihat PDF')
                         ->tooltip('Lihat Dokumen PDF')
                         ->icon('heroicon-o-document')
                         ->color('success')

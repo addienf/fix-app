@@ -18,16 +18,33 @@ trait HasModelFilter
             ->map(fn($m) => \Carbon\Carbon::create()->month($m)->format('M'))
             ->toArray();
     }
-
     protected function getCacheKey(string $prefix, string $modelKey, string $period): string
     {
         return "{$prefix}-{$modelKey}-{$period}";
     }
-
+    public function isVisible(): bool
+    {
+        $selectedDepartment = $this->filters['selectedDepartment'] ?? null;
+        $selectedModel = $this->filters['selectedModel'] ?? null;
+        return $selectedDepartment
+            && $selectedModel
+            && config("models.$selectedDepartment.$selectedModel");
+    }
+    protected function getSelectedModelConfig(string $department, string $modelKey): ?array
+    {
+        $config = config("models.$department.$modelKey");
+        if (! $config || ! isset($config['model'])) {
+            return null;
+        }
+        return [
+            'key'   => $modelKey,
+            'label' => $config['label'],
+            'class' => $config['model'],
+        ];
+    }
     public static function getUsedSpkTagKeys()
     {
         return collect()
-
             ->merge(static::mapUsedKeys(WalkinChamber::class))
             ->merge(static::mapUsedKeys(ChamberR2::class))
             ->merge(static::mapUsedKeys(Refrigerator::class))
@@ -35,20 +52,18 @@ trait HasModelFilter
             ->merge(static::mapUsedKeys(RissingPipette::class))
             ->merge(static::mapUsedKeys(ChamberWalkinG2::class))
             ->merge(static::mapUsedKeys(ChamberG2::class))
-
             ->filter()
             ->unique();
     }
-
-    private static function mapUsedKeys($model)
+    private static function mapUsedKeys(string $model)
     {
-        return $model::with('spkService')
+        // Hanya ambil kolom yang dipakai -> hemat memori hingga 90%
+        return $model::query()
+            ->select(['id', 'spk_service_id', 'tag_no'])
+            ->with(['spkService:id,no_spk_service'])
             ->get()
             ->map(
-                fn($item) =>
-                $item->spkService?->no_spk_service .
-                    '|' .
-                    trim($item->tag_no)
+                fn($item) => $item->spkService?->no_spk_service . '|' . trim($item->tag_no)
             );
     }
 }

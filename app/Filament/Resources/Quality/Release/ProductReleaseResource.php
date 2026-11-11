@@ -82,8 +82,20 @@ class ProductReleaseResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->defaultSort('created_at', 'desc')
             ->columns([
                 //
+                // self::textColumn('no_spk', 'Nomor SPK Marketing')
+                //     ->getStateUsing(function ($record) {
+                //         return $record?->pengecekanPerforma
+                //             ?->spkQC
+                //             ?->spkMarketing
+                //             ?->pluck('no_spk')
+                //             ->filter()
+                //             ->implode(', ') ?: '-';
+                //     }),
+
+                self::textColumn('pengecekanPerforma.spkQC.spkMarketing.no_spk', 'Nomor SPK Marketing'),
 
                 self::textColumn('no_order_release', 'Release Order No'),
 
@@ -131,7 +143,7 @@ class ProductReleaseResource extends Resource
                         ->icon('heroicon-o-trash')
                         ->tooltip('Hapus Data'),
                     Action::make('pdf_view')
-                        ->label(_('Lihat PDF'))
+                        ->label('Lihat PDF')
                         ->icon('heroicon-o-document')
                         ->color('success')
                         ->visible(fn($record) => $record->status === 'Diketahui')

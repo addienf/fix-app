@@ -63,7 +63,7 @@ class PengecekanMaterialSSPolicy
      */
     public function forceDelete(User $user, PengecekanMaterialSS $pengecekanMaterialSS): bool
     {
-        return $user->can('{{ ForceDelete }}');
+        return false;
     }
 
     /**
@@ -71,7 +71,7 @@ class PengecekanMaterialSSPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('{{ ForceDeleteAny }}');
+        return false;
     }
 
     /**
@@ -79,7 +79,7 @@ class PengecekanMaterialSSPolicy
      */
     public function restore(User $user, PengecekanMaterialSS $pengecekanMaterialSS): bool
     {
-        return $user->can('{{ Restore }}');
+        return false;
     }
 
     /**
@@ -87,7 +87,7 @@ class PengecekanMaterialSSPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('{{ RestoreAny }}');
+        return false;
     }
 
     /**
@@ -95,7 +95,7 @@ class PengecekanMaterialSSPolicy
      */
     public function replicate(User $user, PengecekanMaterialSS $pengecekanMaterialSS): bool
     {
-        return $user->can('{{ Replicate }}');
+        return false;
     }
 
     /**
@@ -103,6 +103,6 @@ class PengecekanMaterialSSPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('{{ Reorder }}');
+        return false;
     }
 }

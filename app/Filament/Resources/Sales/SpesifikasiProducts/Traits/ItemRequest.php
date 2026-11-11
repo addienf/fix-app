@@ -149,10 +149,9 @@ trait ItemRequest
             ])
             ->defaultItems(1)
             ->minItems(1)
-            ->addable(false)
             ->reorderable(false)
             ->columns(2)
-            ->addActionLabel('Tambah Test');
+            ->addActionLabel('Tambah Jenis Test');
     }
     /* ------------------------------------------------------------------
      |  Konfigurasi

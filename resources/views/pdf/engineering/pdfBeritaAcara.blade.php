@@ -151,7 +151,7 @@
         } elseif ($jenis === 'maintenance') {
             $text = '<span style="text-decoration: line-through;">Service</span>/Maintenance';
         } elseif ($jenis === 'lainnya') {
-            $text = $berita->detail->jenis_pekerjaan_lainnya;
+            $text = e($berita->detail->jenis_pekerjaan_lainnya);
         } else {
             $text = 'Service/Maintenance';
         }

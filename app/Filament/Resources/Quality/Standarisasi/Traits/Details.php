@@ -17,7 +17,7 @@ trait Details
             ->collapsible()
             ->schema([
 
-                self::uploadField2(
+                self::uploadField(
                     'lampiran',
                     'Lampiran',
                     'Quality/StandarisasiDrawing/Files',

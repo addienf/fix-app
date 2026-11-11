@@ -23,7 +23,7 @@ class BeritaAcaraPIC extends Model
         'pelanggan_ttd',
         'sign_token',
         'sign_token_expires_at',
-        'signed_at',
+        '',
         'signed_ip',
     ];
 
@@ -32,7 +32,7 @@ class BeritaAcaraPIC extends Model
         return [
             'name_field' => 'pelanggan_name',
             'signature_field' => 'pelanggan_ttd',
-            'date_field' => '',
+            'date_field' => 'signed_at',
             'upload_path' => 'Engineering/Berita/Pelanggan',
         ];
     }

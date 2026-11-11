@@ -147,17 +147,16 @@ class EngineeringController extends Controller
 
     public function show2(?string $type, ?string $token)
     {
-        $pic = BeritaAcaraPIC::with('beritaAcara')->where('sign_token', $token)->firstOrFail();
         $model = $this->resolveModel($type);
         $logoBase64 = $this->getBase64Logo();
         $record = $model::findValidToken($token);
 
-
-        if (!$record) {
+        if (! $record) {
             return response()->view('pdf.engineering.pdfExpiredLink', compact('logoBase64'), 403);
         }
 
         $config = $record->signatureConfig();
+        $pic = $record;
 
         return view('pdf.engineering.pdfSignatureLink', compact('record', 'type', 'logoBase64', 'config', 'pic'));
     }
@@ -176,12 +175,25 @@ class EngineeringController extends Controller
 
         $request->validate([
             $config['name_field'] => 'required|string|max:255',
-            $config['signature_field'] => 'required',
+            $config['signature_field'] => 'required|string|max:500000',
         ]);
 
         $record->saveSignature($request);
 
         return view('pdf.engineering.pdfSignatureLinkSuccess', compact('logoBase64'));
+    }
+
+    public function previewSignaturePdf(?string $type, ?string $token)
+    {
+        $model = $this->resolveModel($type);
+        $record = $model::findValidToken($token);
+        abort_if(! $record, 403);
+        $berita = BeritaAcara::with(['spkService', 'detail', 'pic', 'pelanggan', 'penyediaJasa', 'pic.jasaName'])
+            ->findOrFail($record->berita_id);
+        return Pdf::loadView('pdf.engineering.pdfBeritaAcara', [
+            'berita' => $berita,
+            'logoBase64' => $this->getBase64Logo(),
+        ])->setPaper('a4', 'portrait')->stream('preview-berita-acara.pdf');
     }
 
     public function invitation(?string $type, ?string $token)

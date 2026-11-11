@@ -7,13 +7,13 @@ use App\Models\Production\PermintaanBahanProduksi\PermintaanAlatDanBahan;
 use App\Models\Purchasing\Permintaan\PermintaanPembelian;
 use App\Models\Warehouse\PermintaanBahanWBB\Pivot\PermintaanBahanDetail;
 use App\Models\Warehouse\PermintaanBahanWBB\Pivot\PermintaanBahanPIC;
-use App\Traits\HasCacheManager;
+
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class PermintaanBahan extends Model
 {
-    use HasFactory, HasCacheManager;
+    use HasFactory;
 
     protected $fillable = [
         'perencanaan_id',
