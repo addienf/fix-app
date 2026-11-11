@@ -175,7 +175,7 @@ class EngineeringController extends Controller
 
         $request->validate([
             $config['name_field'] => 'required|string|max:255',
-            $config['signature_field'] => 'required',
+            $config['signature_field'] => 'required|string|max:500000',
         ]);
 
         $record->saveSignature($request);

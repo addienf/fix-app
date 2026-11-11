@@ -195,13 +195,7 @@ trait HasSignature
                 $config['upload_path']
             );
 
-            $ip = request()->header('X-Forwarded-For');
-
-            if ($ip) {
-                $ip = explode(',', $ip)[0];
-            } else {
-                $ip = request()->getClientIp();
-            }
+            $ip = $request->ip();
 
             if ($ip === '127.0.0.1') {
                 $ip = '127.0.0.1 (Local)';
