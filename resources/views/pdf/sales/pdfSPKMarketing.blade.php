@@ -293,7 +293,9 @@
                     <div class="sig-role">{{ Str::headline($spk_mkt->pic->createName->roles->first()?->name ?? '-') }}
                     </div>
                     <div class="sig-date">
-                        {{ \Carbon\Carbon::parse($spk_mkt?->pic?->create_date)->locale('id')->translatedFormat('d F Y') ?? \Carbon\Carbon::parse($spk_mkt?->pic?->created_at)->locale('id')->translatedFormat('d F Y') }}
+                        @if ($spk_mkt?->pic?->create_date && !str_starts_with((string) $spk_mkt->pic->create_date, '0000-00-00'))
+                            {{ \Carbon\Carbon::parse($spk_mkt->pic->create_date)->locale('id')->translatedFormat('d F Y') }}
+                        @endif
                     </div>
                 </td>
                 <td>
@@ -311,7 +313,7 @@
                     <div class="sig-role">
                         {{ Str::headline($spk_mkt->pic->receiveName->roles->first()?->name ?? '-') }}</div>
                     <div class="sig-date">
-                        {{ \Carbon\Carbon::parse($spk_mkt?->pic?->receive_date)->locale('id')->translatedFormat('d F Y') ?? \Carbon\Carbon::parse($spk_mkt?->pic?->created_at)->locale('id')->translatedFormat('d F Y') }}
+                        {{ \Carbon\Carbon::parse($spk_mkt?->pic?->receive_date ?? $spk_mkt?->pic?->created_at)->locale('id')->translatedFormat('d F Y') }}
                     </div>
                 </td>
             </tr>

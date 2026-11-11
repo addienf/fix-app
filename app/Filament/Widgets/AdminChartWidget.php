@@ -93,29 +93,4 @@ class AdminChartWidget extends AdvancedChartWidget
             ],
         ];
     }
-
-    public function isVisible(): bool
-    {
-        $selectedDepartment = $this->filters['selectedDepartment'] ?? null;
-        $selectedModel = $this->filters['selectedModel'] ?? null;
-
-        return $selectedDepartment
-            && $selectedModel
-            && config("models.$selectedDepartment.$selectedModel");
-    }
-
-    protected function getSelectedModelConfig(string $department, string $modelKey): ?array
-    {
-        $config = config("models.$department.$modelKey");
-
-        if (!$config || !isset($config['model'])) {
-            return null;
-        }
-
-        return [
-            'key'   => $modelKey,
-            'label' => $config['label'],
-            'class' => $config['model'],
-        ];
-    }
 }

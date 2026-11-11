@@ -12,7 +12,7 @@ use App\Models\Production\SPK\SPKVendor;
 use App\Models\Sales\SPKMarketings\SPKMarketing;
 use App\Models\Warehouse\PermintaanBahanWBB\PermintaanBahan;
 use App\Models\Warehouse\SerahTerima\SerahTerimaBahan;
-use App\Traits\HasCacheManager;
+
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
@@ -26,7 +26,7 @@ use Illuminate\Support\Facades\Storage;
  */
 class JadwalProduksi extends Model
 {
-    use HasFactory, HasCacheManager;
+    use HasFactory;
 
     protected $fillable = [
         'spk_marketing_id',

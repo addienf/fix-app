@@ -63,7 +63,7 @@ class KetidaksesuaianPolicy
      */
     public function forceDelete(User $user, Ketidaksesuaian $ketidaksesuaian): bool
     {
-        return $user->can('{{ ForceDelete }}');
+        return false;
     }
 
     /**
@@ -71,7 +71,7 @@ class KetidaksesuaianPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('{{ ForceDeleteAny }}');
+        return false;
     }
 
     /**
@@ -79,7 +79,7 @@ class KetidaksesuaianPolicy
      */
     public function restore(User $user, Ketidaksesuaian $ketidaksesuaian): bool
     {
-        return $user->can('{{ Restore }}');
+        return false;
     }
 
     /**
@@ -87,7 +87,7 @@ class KetidaksesuaianPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('{{ RestoreAny }}');
+        return false;
     }
 
     /**
@@ -95,7 +95,7 @@ class KetidaksesuaianPolicy
      */
     public function replicate(User $user, Ketidaksesuaian $ketidaksesuaian): bool
     {
-        return $user->can('{{ Replicate }}');
+        return false;
     }
 
     /**
@@ -103,6 +103,6 @@ class KetidaksesuaianPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('{{ Reorder }}');
+        return false;
     }
 }

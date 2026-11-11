@@ -57,18 +57,6 @@ class RefrigeratorResource extends Resource
                     ->collapsible()
                     ->relationship('pic')
                     ->schema([
-                        // static::signatureSection2(
-                        //     [
-                        //         [
-                        //             'prefix' => 'checked',
-                        //             'role' => 'Checked By',
-                        //             'hideLogic' => fn($operation) => $operation === 'edit',
-                        //         ],
-                        //     ],
-                        //     title: 'PIC',
-                        //     uploadPath: 'Engineering/Maintenance/Refrigerator/Signature'
-                        // )
-                        //     ->hiddenOn('edit'),
 
                         Section::make('PIC')
                             ->schema([
@@ -95,85 +83,9 @@ class RefrigeratorResource extends Resource
                             ])
                     ])->hiddenOn('edit'),
 
-                Section::make('Pelanggan')
-                    ->collapsible()
-                    ->relationship('pic')
-                    ->hidden(function ($get, $operation) {
-                        return $operation === 'create'
-                            || filled($get('pic.approved_signature'));
-                    })
-                    ->mutateRelationshipDataBeforeSaveUsing(function (array $data) {
+                self::customerSignatureSection('Engineering/Maintenance/Refrigerator/Signature'),
 
-                        if (!empty($data['approved_signature_draw'])) {
-                            $data['approved_signature'] = $data['approved_signature_draw'];
-                        }
-
-                        if (!empty($data['approved_signature_upload'])) {
-                            $data['approved_signature'] = $data['approved_signature_upload'];
-                        }
-
-                        unset($data['approved_signature_draw']);
-                        unset($data['approved_signature_upload']);
-
-                        return $data;
-                    })
-                    ->schema([
-
-                        Grid::make(2)
-                            ->schema([
-                                self::getIsStock(),
-
-                                self::textInput('approved_name', 'Nama Pelanggan')
-                                    ->required(),
-
-                                DatePicker::make("approved_date")
-                                    ->label('Tanggal')
-                                    ->default(now())
-                                    ->required(),
-                            ]),
-
-                        self::signatureInput('approved_signature_draw', '', 'Engineering/Maintenance/Refrigerator/Signature')
-                            ->visible(fn($get) => $get('ttd_method') === 'draw'),
-
-                        FileUpload::make('approved_signature_upload')
-                            ->label('Upload Scan Tanda Tangan')
-                            ->image()
-                            ->directory('Engineering/Maintenance/Refrigerator/Signature')
-                            ->visible(fn($get) => $get('ttd_method') === 'upload'),
-                    ]),
-
-                Section::make('Link Tanda Tangan')
-                    ->hidden(function ($get, $operation) {
-                        return $operation === 'create'
-                            || filled($get('pic.pelanggan_ttd'));
-                    })
-                    ->schema([
-                        Grid::make(2)
-                            ->schema([
-                                Actions::make([
-                                    ButtonAction::make('generate_link')
-                                        ->label('Generate Link')
-                                        ->icon('heroicon-o-link')
-                                        ->action(function ($record) {
-                                            $record->pic->update([
-                                                'sign_token' => Str::random(8),
-                                                'sign_token_expires_at' => now()->addDays(3),
-                                            ]);
-                                        }),
-                                ]),
-
-                                Placeholder::make('sign_link')
-                                    ->label(false)
-                                    ->content(function ($record) {
-                                        return $record->pic?->sign_token
-                                            ? route('signature.show', [
-                                                'type' => 'refrigerator',
-                                                'token' => $record->pic->sign_token,
-                                            ])
-                                            : 'Belum ada link dibuat';
-                                    }),
-                            ])
-                    ])
+                self::signatureLinkSection('refrigerator'),
             ]);
     }
 
@@ -199,7 +111,7 @@ class RefrigeratorResource extends Resource
                         ->icon('heroicon-o-trash')
                         ->tooltip('Hapus Data'),
                     Action::make('pdf_view')
-                        ->label(_('Lihat PDF'))
+                        ->label('Lihat PDF')
                         ->icon('heroicon-o-document')
                         ->color('success')
                         // ->visible(fn($record) => $record->status_penyetujuan === 'Disetujui')

@@ -40,6 +40,13 @@ trait InformasiUmum
                         ])
                             ->hiddenOn('edit'),
 
+                        // static::newAutoNmberField('no_surat', 'No.', [
+                        //     'prefix' => 'QKS',
+                        //     'section' => 'WBB',
+                        //     'type' => 'PM',
+                        //     'table' => 'incomming_materials',
+                        // ]),
+
                         self::selectSpecInput()
                             ->hiddenOn('edit'),
 
@@ -63,30 +70,6 @@ trait InformasiUmum
             ->searchable()
             ->reactive()
             ->required()
-            // ->options(function () {
-            //     return Cache::rememberForever(
-            //         SpesifikasiProduct::$CACHE_KEYS['select_spesifikasi'],
-            //         function () {
-            //             return SpesifikasiProduct::query()
-            //                 ->select(['id', 'urs_id'])
-            //                 ->with([
-            //                     'urs' => fn($q) => $q->select(['id', 'no_urs', 'customer_id'])
-            //                         ->with([
-            //                             'customer' => fn($c) => $c->select(['id', 'name'])
-            //                         ])
-            //                 ])
-            //                 ->whereDoesntHave('spk')
-            //                 ->orderBy('id', 'desc')
-            //                 ->limit(10)
-            //                 ->get()
-            //                 ->mapWithKeys(function ($item) {
-            //                     $noUrs = $item->urs->no_urs ?? '-';
-            //                     $customerName = $item->urs->customer->name ?? '-';
-            //                     return [$item->id => "{$noUrs} - {$customerName}"];
-            //                 });
-            //         }
-            //     );
-            // })
             ->options(function () {
                 return SpesifikasiProduct::query()
                     ->select(['id', 'urs_id'])
@@ -107,31 +90,6 @@ trait InformasiUmum
                         return [$item->id => "{$noUrs} - {$companyName}"];
                     });
             })
-            // ->getSearchResultsUsing(function (string $search) {
-            //     if ($search === '') {
-            //         return Cache::get(SpesifikasiProduct::$CACHE_PREFIXES['search_spesifikasi'], []);
-            //     }
-            //     return SpesifikasiProduct::query()
-            //         ->select(['id', 'urs_id'])
-            //         ->with([
-            //             'urs' => fn($q) => $q->select(['id', 'no_urs', 'customer_id'])
-            //                 ->with([
-            //                     'customer' => fn($c) => $c->select(['id', 'name'])
-            //                 ])
-            //         ])
-            //         ->whereDoesntHave('spk')
-            //         ->whereHas('urs.customer', function ($q) use ($search) {
-            //             $q->where('name', 'LIKE', "%{$search}%")
-            //                 ->orWhere('no_urs', 'LIKE', "%{$search}%");
-            //         })
-            //         ->limit(20)
-            //         ->get()
-            //         ->mapWithKeys(function ($item) {
-            //             $noUrs = $item->urs->no_urs ?? '-';
-            //             $customerName = $item->urs->customer->name ?? '-';
-            //             return [$item->id => "{$noUrs} - {$customerName}"];
-            //         });
-            // })
             ->getSearchResultsUsing(function (string $search) {
                 return SpesifikasiProduct::query()
                     ->select(['id', 'urs_id'])

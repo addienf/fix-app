@@ -4,7 +4,6 @@ namespace App\Filament\Resources\General\URS;
 
 use App\Filament\Resources\General\URS\URSResource\Pages;
 use App\Models\General\Company;
-use App\Models\General\Customer;
 use \App\Models\Sales\URS;
 use App\Traits\HasAutoNumber;
 use App\Traits\HasSelectCache;
@@ -20,7 +19,7 @@ use Filament\Forms\Components\Select;
 
 class URSResource extends Resource
 {
-    use SimpleFormResource, HasAutoNumber, HasSelectCache;
+    use SimpleFormResource, HasAutoNumber;
 
     protected static ?string $model = URS::class;
     protected static ?int $navigationSort = 1;

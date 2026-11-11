@@ -4,7 +4,6 @@ namespace App\Traits;
 
 use App\Services\DocumentNumber;
 use Filament\Forms\Components\TextInput;
-use Illuminate\Support\Facades\DB;
 
 trait HasAutoNumber
 {
@@ -15,7 +14,13 @@ trait HasAutoNumber
         return TextInput::make($name)
             ->label($label)
             ->hint("Format: XXX/{$c['prefix']}/{$c['section']}/{$c['type']}/MM/YY")
-            ->default(fn() => DocumentNumber::next($c['table'], $name, $c['type'], $c['prefix'], $c['section']))
+            ->default(fn() => app(DocumentNumber::class)->next(
+                table: $c['table'],
+                column: $name,
+                type: $c['type'],
+                prefix: $c['prefix'],
+                section: $c['section'],
+            ))
             ->unique(ignoreRecord: true)
             ->required()
             ->readOnly($readOnly);

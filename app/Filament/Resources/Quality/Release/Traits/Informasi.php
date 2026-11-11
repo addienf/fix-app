@@ -57,6 +57,7 @@ trait Informasi
                 return PengecekanPerforma::with([
                     'spkQC.spkMarketing.jadwalProduksi.identifikasiProduks'
                 ])
+                    ->whereDoesntHave('productRelease')
                     ->latest()
                     ->limit(10)
                     ->get()

@@ -7,7 +7,7 @@ use App\Models\Production\SPK\SPKQuality;
 use App\Models\Quality\Standarisasi\StandarisasiDrawing;
 use App\Models\Sales\SpesifikasiProducts\SpesifikasiProduct;
 use App\Models\Sales\SPKMarketings\Pivot\SPKMarketingPIC;
-use App\Traits\HasCacheManager;
+
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -25,7 +25,7 @@ class SPKMarketing extends Model
 {
     protected static $factory = SPKMarketing::class;
 
-    use HasFactory, HasCacheManager;
+    use HasFactory;
 
     protected $table = 'spk_marketings';
 

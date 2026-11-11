@@ -81,6 +81,18 @@ class IncommingMaterialSSResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(
+                fn(Builder $query) => $query
+                    ->orderByRaw("CAST(SUBSTRING_INDEX(no_qc, '/', -1) AS UNSIGNED) DESC")
+                    ->orderByRaw("
+                        FIELD(
+                            SUBSTRING_INDEX(SUBSTRING_INDEX(no_qc, '/', 5), '/', -1),
+                            'I', 'II', 'III', 'IV', 'V', 'VI',
+                            'VII', 'VIII', 'IX', 'X', 'XI', 'XII'
+                        ) DESC
+                    ")
+                    ->orderByRaw("CAST(SUBSTRING_INDEX(no_qc, '/', 1) AS UNSIGNED) DESC")
+            )
             ->columns([
                 //
 
@@ -113,7 +125,7 @@ class IncommingMaterialSSResource extends Resource
                         ->icon('heroicon-o-trash')
                         ->tooltip('Hapus Data'),
                     Action::make('pdf_view')
-                        ->label(_('Lihat PDF'))
+                        ->label('Lihat PDF')
                         ->tooltip('Lihat Dokumen PDF')
                         ->icon('heroicon-o-document')
                         ->color('success')

@@ -8,13 +8,13 @@ use App\Models\Quality\IncommingMaterial\MaterialNonSS\IncommingMaterialNonSS;
 use App\Models\Quality\IncommingMaterial\MaterialSS\IncommingMaterialSS;
 use App\Models\Warehouse\Incomming\IncommingMaterial;
 use App\Models\Warehouse\PermintaanBahanWBB\PermintaanBahan;
-use App\Traits\HasCacheManager;
+
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class PermintaanPembelian extends Model
 {
-    use HasFactory, HasCacheManager;
+    use HasFactory;
 
     protected $fillable = [
         'permintaan_bahan_wbb_id',

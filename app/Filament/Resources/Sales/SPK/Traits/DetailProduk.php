@@ -2,18 +2,13 @@
 
 namespace App\Filament\Resources\Sales\SPK\Traits;
 
-use App\Models\Sales\SpesifikasiProducts\SpesifikasiProduct;
-use App\Models\Sales\SPKMarketings\SPKMarketing;
-use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Fieldset;
-use Filament\Forms\Components\Grid;
+use App\Traits\SimpleFormResource;
 use Filament\Forms\Components\Section;
-use Filament\Forms\Components\Select;
 use Icetalker\FilamentTableRepeater\Forms\Components\TableRepeater;
-use Wallo\FilamentSelectify\Components\ButtonGroup;
 
 trait DetailProduk
 {
+    use SimpleFormResource;
     protected static function detailProdukSection(): Section
     {
         return Section::make('Detail Produk Yang Dipesan')

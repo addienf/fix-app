@@ -47,4 +47,17 @@ class BeritaAcara extends Model
     {
         return $this->hasOne(PenyediaJasa::class, 'berita_id');
     }
+
+    protected static function booted(): void
+    {
+        static::created(function (self $berita) {
+            $spk = $berita->spkService;
+            if ($spk && $spk->lama_pelaksanaan > 0) {
+                $spk->decrement('lama_pelaksanaan');
+            }
+        });
+        static::deleted(function (self $berita) {
+            $berita->spkService?->increment('lama_pelaksanaan');
+        });
+    }
 }

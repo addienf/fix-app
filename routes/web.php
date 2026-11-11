@@ -102,3 +102,6 @@ Route::post('/qlb/{type}/{token}', [EngineeringController::class, 'store2'])
 
 Route::get('/qlb/form/{type}/{token}', [EngineeringController::class, 'invitation'])
     ->name('invitation.link');
+
+Route::get('/qlb/{type}/{token}/pdf', [EngineeringController::class, 'previewSignaturePdf'])
+    ->name('signature.pdf');

@@ -17,13 +17,13 @@ use App\Models\Engineering\Service\ServiceReport;
 use App\Models\Engineering\SPK\SPKService\Pivot\PemeriksaanPersetujuan;
 use App\Models\Engineering\SPK\SPKService\Pivot\Petugas;
 use App\Models\Engineering\SPK\SPKService\Pivot\SPKServicePIC;
-use App\Traits\HasCacheManager;
+
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class SPKService extends Model
 {
-    use HasFactory, HasCacheManager;
+    use HasFactory;
 
     protected $table = 'spk_services';
 

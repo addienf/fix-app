@@ -71,6 +71,7 @@ class IncommingMaterialResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->defaultSort('created_at', 'desc')
             ->columns([
                 //
                 TextColumn::make('no_surat')->label('No Surat'),

@@ -12,14 +12,7 @@ use App\Services\DocumentNumber;
 class CreateSPK extends CreateRecord
 {
     protected static string $resource = SPKResource::class;
-
     protected static bool $canCreateAnother = false;
-
-    protected function mutateFormDataBeforeCreate(array $data): array
-    {
-        $data['no_spk'] = DocumentNumber::next('spk_marketings', 'no_spk', 'SPK', 'QKS', 'SPK');
-        return $data;
-    }
 
     protected function getRedirectUrl(): string
     {
@@ -33,7 +26,6 @@ class CreateSPK extends CreateRecord
                 $this->record,
                 ['sales', 'production'],
                 GenericNotification::class,
-                // '/admin/sales/spk-marketing',
                 SPKResource::getUrl('index'),
                 'Data SPK Marketing berhasil dibuat',
                 'Ada data SPK Marketing yang harus di tanda tangani.'

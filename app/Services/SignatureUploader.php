@@ -8,41 +8,35 @@ use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
 class SignatureUploader
 {
+    private const ALLOWED_EXTENSIONS = ['png', 'jpg', 'jpeg'];
+
     public static function handle($input, string $prefix, string $path): ?string
     {
-        // return $fullPath;
-        if (!$input) {
+        if (! $input) {
             return null;
         }
 
-        // 1️⃣ Jika dari signature pad (base64)
-        if (is_string($input) && str_starts_with($input, 'data:image')) {
-
-            $base64 = preg_replace('/^data:image\/(png|jpeg|jpg);base64,/', '', $input);
-            $base64 = str_replace(' ', '+', $base64);
-            $imageData = base64_decode($base64, true);
-
+        if (is_string($input) && preg_match('/^data:image\/(png|jpeg|jpg);base64,/', $input, $matches)) {
+            $ext = $matches[1] === 'jpeg' ? 'jpg' : $matches[1];
+            $base64 = substr($input, strpos($input, ',') + 1);
+            $imageData = base64_decode(str_replace(' ', '+', $base64), true);
             if ($imageData === false) {
                 return null;
             }
-
-            $fileName = $prefix . Str::random(10) . '.jpg';
-            $fullPath = $path . '/' . $fileName;
-
+            $fullPath = "{$path}/{$prefix}" . Str::random(10) . ".{$ext}";
             Storage::disk('public')->put($fullPath, $imageData);
-
             return $fullPath;
         }
 
-        // 2️⃣ Jika dari upload file
         if ($input instanceof TemporaryUploadedFile) {
-
-            $fileName = $prefix . Str::random(10) . '.' . $input->getClientOriginalExtension();
-
+            $ext = strtolower($input->extension() ?: $input->getClientOriginalExtension());
+            if (! in_array($ext, self::ALLOWED_EXTENSIONS, true)) {
+                return null;
+            }
+            $fileName = $prefix . Str::random(10) . '.' . $ext;
             return $input->storeAs($path, $fileName, 'public');
         }
 
-        // 3️⃣ Jika sudah berupa path (kadang Filament kirim string)
         if (is_string($input) && Storage::disk('public')->exists($input)) {
             return $input;
         }

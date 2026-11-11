@@ -6,13 +6,13 @@ use App\Models\Engineering\Complain\Pivot\ComplainDetail;
 use App\Models\Engineering\Complain\Pivot\ComplainPIC;
 use App\Models\Engineering\Pelayanan\PermintaanPelayananPelanggan;
 use App\Models\General\Company;
-use App\Traits\HasCacheManager;
+
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Complain extends Model
 {
-    use HasFactory, HasCacheManager;
+    use HasFactory;
 
     protected $fillable = [
         'form_no',
